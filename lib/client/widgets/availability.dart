@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:e1547/app/app.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/logs/logs.dart';
@@ -141,10 +142,10 @@ class _CookieCapturePageState extends State<CookieCapturePage> {
     ..loadRequest(Uri.https(context.read<Client>().host));
 
   Future<void> setCookies(BuildContext context) async {
-    CookiesService cookiesService = context.read<CookiesService>();
+    CookiesService cookies = context.read<AppDatabases>().cookies;
     ClientService clientService = context.read<ClientService>();
-    await cookiesService.load(Uri.https(clientService.host).toString());
-    clientService.cookies = cookiesService.cookies;
+    await cookies.load(Uri.https(clientService.host).toString());
+    clientService.cookies = cookies.value;
   }
 
   @override

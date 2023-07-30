@@ -1,20 +1,8 @@
-import 'dart:io';
-
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:window_manager/window_manager.dart';
-
-/// Returns an initializes WindowManager or null the current Platform is unsupported.
-Future<WindowManager?> initializeWindowManager() async {
-  if ([Platform.isWindows, Platform.isLinux, Platform.isMacOS].any((e) => e)) {
-    WindowManager manager = WindowManager.instance;
-    await manager.ensureInitialized();
-    return manager;
-  }
-  return null;
-}
 
 class WindowFrame extends StatefulWidget {
   const WindowFrame({super.key, required this.child});
@@ -222,11 +210,8 @@ class WindowShortcuts extends StatelessWidget {
   Widget build(BuildContext context) {
     return CallbackShortcuts(
       bindings: {
-        const SingleActivator(LogicalKeyboardKey.escape): () => context
-            .read<RouterDrawerController>()
-            .navigatorKey
-            .currentState
-            ?.maybePop(),
+        const SingleActivator(LogicalKeyboardKey.escape): () =>
+            context.read<RouterDrawerController>().navigator?.maybePop(),
         const SingleActivator(LogicalKeyboardKey.f11): () async {
           WindowManager? manager = context.read<WindowManager?>();
           if (manager == null) return;

@@ -2,7 +2,7 @@
 export 'data/background.dart';
 export 'data/capabilities.dart';
 export 'data/database.dart';
-export 'data/info.dart';
+export 'data/initialize.dart';
 export 'data/link.dart';
 export 'data/navigation.dart';
 export 'data/task.dart';

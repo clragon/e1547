@@ -1,9 +1,7 @@
 import 'dart:io';
 
 /// Provides information about what features are available on this Platform.
-class PlatformCapabilities {
-  const PlatformCapabilities._();
-
+abstract final class PlatformCapabilities {
   /// Whether this platform supports background workers.
   /// This returns false on iOS < 13 because the old API is unsupported.
   static bool get hasBackgroundWorker {

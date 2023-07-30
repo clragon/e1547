@@ -5,12 +5,17 @@ import 'package:webview_cookie_manager/webview_cookie_manager.dart';
 
 Future<CookiesService> initializeCookiesService(List<String> hosts) async {
   final service = CookiesService();
-  await service.loadAll(
-    hosts.map((e) => Uri.https(e).toString()).toList(),
-  );
+  hosts = hosts.map((e) => Uri.https(e).toString()).toList();
+  for (final url in hosts) {
+    await service.load(url);
+  }
   return service;
 }
 
+/// Stores web browser cookies in memory.
+/// On supported platforms, cookies are also loaded from and saved to disk.
+///
+/// Before using this class, you must call [load] at least once.
 class CookiesService {
   CookiesService({
     WebviewCookieManager? cookieManager,
@@ -18,43 +23,42 @@ class CookiesService {
 
   final WebviewCookieManager cookieManager;
 
-  List<Cookie>? _cookies;
+  List<Cookie>? _value;
 
-  List<Cookie> get cookies {
-    if (_cookies == null) {
+  /// The cookies currently stored in memory.
+  ///
+  /// [load] must be called at least once before accessing this.
+  List<Cookie> get value {
+    if (_value == null) {
       throw StateError(
         '$runtimeType: load must be called at least once before accessing cookies!',
       );
     }
-    return List.unmodifiable(_cookies!);
+    return List.unmodifiable(_value!);
   }
 
-  /// Loads cookies from disk.
-  /// All already loaded cookies from [url] will be replaced.
-  /// This must be called at least once before [cookies] is accessed.
+  /// Loads cookies for [url] from disk.
+  ///
+  /// This must be called at least once before [value] is accessed.
+  /// On unsupported platforms, no disk loading will occur.
   Future<void> load(String url) async {
-    _cookies?.removeWhere((e) => e.domain == url);
+    _value ??= [];
+    _value!.removeWhere((e) => e.domain == url);
     try {
-      _cookies = await cookieManager.getCookies(url);
+      _value!.addAll(await cookieManager.getCookies(url));
     } on MissingPluginException {
-      _cookies = [];
+      // platform is not supported
     }
   }
 
-  /// Loads cookies from disk.
-  /// All already loaded cookies from [urls] will be replaced.
-  Future<void> loadAll(List<String> urls) async {
-    for (final url in urls) {
-      await load(url);
-    }
-  }
-
-  /// Writes cookies to disk.
+  /// Sets [cookies] and saves them to disk.
+  /// On unsupported platforms, no disk saving will occur.
   Future<void> save(List<Cookie> cookies) async {
+    _value = cookies;
     try {
       await cookieManager.setCookies(cookies);
     } on MissingPluginException {
-      return;
+      // platform is not supported
     }
   }
 }

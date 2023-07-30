@@ -1,7 +1,9 @@
-// This file contains global, app-wide default providers.
-// They are not meant for usage further down the tree.
-// Using them in such a manner could cause conflicts,
-// because no two controllers should be attached to the Settings.
+/// This file contains global, app-wide default providers.
+///
+/// They are not meant for usage further down the tree.
+/// Using them in such a manner could cause conflicts,
+/// because no two controllers should be attached to global singletons.
+library;
 
 import 'package:e1547/app/app.dart';
 import 'package:e1547/client/client.dart';
@@ -14,12 +16,11 @@ import 'package:e1547/user/user.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sub/flutter_sub.dart';
 
-class ClientServiceProvider extends SubChangeNotifierProvider4<AppInfo,
-    Settings, AppDatabases, CookiesService, ClientService> {
+class ClientServiceProvider extends SubChangeNotifierProvider3<AppInfo,
+    Settings, AppDatabases, ClientService> {
   ClientServiceProvider({super.child, TransitionBuilder? builder})
       : super(
-          create: (context, appInfo, settings, databases, cookies) =>
-              ClientService(
+          create: (context, appInfo, settings, databases) => ClientService(
             allowedHosts: appInfo.allowedHosts,
             host: settings.host.value,
             customHost: settings.customHost.value,
@@ -27,7 +28,7 @@ class ClientServiceProvider extends SubChangeNotifierProvider4<AppInfo,
             userAgent: appInfo.userAgent,
             cache: databases.httpCache,
             memoryCache: databases.httpMemoryCache,
-            cookies: cookies.cookies,
+            cookies: databases.cookies.value,
           ),
           builder: (context, child) => SubListener(
             listenable: context.watch<ClientService>(),
