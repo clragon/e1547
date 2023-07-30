@@ -4,6 +4,7 @@ import 'package:e1547/client/client.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/logs/logs.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:window_manager/window_manager.dart';
 
 Future<void> main() async {
@@ -13,6 +14,7 @@ Future<void> main() async {
   Logs logs = await initializeLogger(databases: databases);
   CookiesService cookies = await initializeCookiesService(appInfo.allowedHosts);
   WindowManager? windowManager = await initializeWindowManager();
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
   initializeBackgroundTasks();
   runApp(
     MultiProvider(
