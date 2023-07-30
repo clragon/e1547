@@ -22,7 +22,7 @@ abstract class ClientDataController<KeyType, ItemType>
   @override
   Future<void> getNextPage({bool reset = false, bool background = false}) {
     if (reset) {
-      // _cancelToken.cancel('$runtimeType is refreshing');
+      _cancelToken.cancel('$runtimeType is refreshing');
       _cancelToken = CancelToken();
     }
     return super.getNextPage(reset: reset, background: background);
