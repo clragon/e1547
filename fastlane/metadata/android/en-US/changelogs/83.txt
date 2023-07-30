@@ -1,0 +1,4 @@
+### Fixed
+- downloads on android (again, for the final time)
+- bookmarks being erroneously refreshed
+- lag when selecting date for history search
