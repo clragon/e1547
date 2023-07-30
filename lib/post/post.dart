@@ -1,6 +1,7 @@
 // data
 export 'data/actions.dart';
 export 'data/controller.dart';
+export 'data/download.dart';
 export 'data/editing.dart';
 export 'data/favorites.dart';
 export 'data/filter.dart';
