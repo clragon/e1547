@@ -75,7 +75,10 @@ abstract class DataController<KeyType, ItemType> with ChangeNotifier {
   /// Fetches the next page of items.
   ///
   /// If [reset] is true, all items are deleted and the first page is loaded.
-  /// If [background] is true, items will be deleted after the next page is loaded.
+  /// If [background] is additionally true, items will be replaced with the next page after it is loaded.
+  ///
+  /// If this is called during another page being loaded,
+  /// this will complete after with no new request being made.
   @mustCallSuper
   Future<void> getNextPage({
     bool reset = false,
@@ -130,6 +133,7 @@ abstract class DataController<KeyType, ItemType> with ChangeNotifier {
     notifyListeners();
   }
 
+  /// Waits for the current call to [getNextPage] to complete.
   Future<void> _waitForFetch() async {
     if (_fetching) {
       Completer<void> completer = Completer<void>();
@@ -145,6 +149,12 @@ abstract class DataController<KeyType, ItemType> with ChangeNotifier {
     }
   }
 
+  /// Schedules a refresh.
+  ///
+  /// [background] is equivalent to the parameter of the same name in [getNextPage].
+  ///
+  /// If multiple refreshes are scheduled during the same [getNextPage] call,
+  /// only the last one will be executed.
   Future<void> _scheduleReset(bool background) async {
     Object id = _resetter = Object();
     await _waitForFetch();

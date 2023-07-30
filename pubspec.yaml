@@ -98,6 +98,8 @@ dependency_overrides:
       ref: 544a80f
 
 dev_dependencies:
+  flutter_test:
+    sdk: flutter
   flutter_lints: ^2.0.1
   flutter_launcher_icons: ^0.13.0
   flutter_native_splash: ^2.2.16
