@@ -1,12 +1,13 @@
 import 'dart:async';
 
 import 'package:e1547/interface/data/controller.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+import '../../test/mock_item.dart';
 
 void main() {
   void verifyFirstRequest(DataController controller) {
-    expect(controller.items, orderedEquals(const [MockItem('1')]));
+    expect(controller.items, orderedEquals(const [MockItem(1)]));
     expect(controller.nextPageKey, 2);
     expect(controller.error, null);
   }
@@ -53,7 +54,7 @@ void main() {
       final controller = MockDataController();
       controller.mockPerformRequest = (page, force) async {
         return const PageResponse.last(
-          items: [MockItem('1')],
+          items: [MockItem(1)],
         );
       };
       await controller.getNextPage();
@@ -77,7 +78,7 @@ void main() {
       final done1 = controller.getNextPage();
       final done2 = controller.getNextPage();
       await [done1, done2].wait;
-      expect(controller.items, orderedEquals(const [MockItem('1')]));
+      expect(controller.items, orderedEquals(const [MockItem(1)]));
       expect(controller.nextPageKey, 2);
       expect(controller.error, null);
     });
@@ -121,7 +122,7 @@ void main() {
       };
       controller.refresh(background: true);
       await completer1.future;
-      expect(controller.items!, orderedEquals(const [MockItem('1')]));
+      expect(controller.items!, orderedEquals(const [MockItem(1)]));
       expect(controller.nextPageKey, 2);
       expect(controller.error, null);
       completer2.complete();
@@ -170,7 +171,7 @@ void main() {
 
     test('can be disposed', () async {
       final controller = MockDataController();
-      expect(() => controller.dispose(), returnsNormally);
+      expect(controller.dispose, returnsNormally);
     });
   });
 
@@ -179,21 +180,21 @@ void main() {
       final controller = MockDataController();
       await controller.getNextPage();
       verifyFirstRequest(controller);
-      controller.updateItem(0, const MockItem('2'));
-      expect(controller.items, orderedEquals(const [MockItem('2')]));
+      controller.updateItem(0, const MockItem(2));
+      expect(controller.items, orderedEquals(const [MockItem(2)]));
     });
 
     test('throws an error if index is -1', () async {
       final controller = MockDataController();
       await controller.getNextPage();
-      expect(() => controller.updateItem(-1, const MockItem('2')),
-          throwsStateError);
+      expect(
+          () => controller.updateItem(-1, const MockItem(2)), throwsStateError);
     });
 
     test('throws an error if items is null', () async {
       final controller = MockDataController();
-      expect(() => controller.updateItem(0, const MockItem('2')),
-          throwsStateError);
+      expect(
+          () => controller.updateItem(0, const MockItem(2)), throwsStateError);
     });
 
     test('can assert item ownership', () async {
@@ -201,8 +202,8 @@ void main() {
       expect(() => controller.assertOwnsItem(const MockItem('never')),
           throwsStateError);
       await controller.getNextPage();
-      expect(() => controller.assertOwnsItem(const MockItem('1')),
-          returnsNormally);
+      expect(
+          () => controller.assertOwnsItem(const MockItem(1)), returnsNormally);
       expect(() => controller.assertOwnsItem(const MockItem('never')),
           throwsStateError);
     });
@@ -212,28 +213,11 @@ void main() {
     test('can wait for the first page', () async {
       final controller = MockDataController();
       await controller.waitForFirstPage();
-      expect(controller.items, orderedEquals(const [MockItem('1')]));
+      expect(controller.items, orderedEquals(const [MockItem(1)]));
       expect(controller.nextPageKey, 2);
       expect(controller.error, null);
     });
   });
-}
-
-@immutable
-class MockItem {
-  const MockItem(this.id);
-
-  final String id;
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) || other is MockItem && id == other.id;
-
-  @override
-  int get hashCode => id.hashCode;
-
-  @override
-  String toString() => 'MockItem($id)';
 }
 
 class MockDataController extends DataController<int, MockItem> {
@@ -245,7 +229,7 @@ class MockDataController extends DataController<int, MockItem> {
   static Future<PageResponse<int, MockItem>> defaultMockPerformRequest(
       int page, bool force) async {
     return PageResponse(
-      items: [MockItem(page.toString())],
+      items: [MockItem(page)],
       nextPageKey: page + 1,
     );
   }
