@@ -90,12 +90,15 @@ extension PostDenying on Post {
 
   List<String>? getDeniers(List<String> denylist) {
     List<String> deniers = [];
+
     for (String line in denylist) {
       List<String> deny = [];
       List<String> any = [];
       List<String> allow = [];
 
-      line.split(' ').where((tag) => tagToRaw(tag).isNotEmpty).forEach((tag) {
+      for (final tag in line.split(' ')) {
+        if (tagToRaw(tag).isEmpty) continue;
+
         switch (tag[0]) {
           case '-':
             allow.add(tag.substring(1));
@@ -107,20 +110,21 @@ extension PostDenying on Post {
             deny.add(tag);
             break;
         }
-      });
+      }
 
       bool denied = deny.every(hasTag);
-      bool allowed = allow.any(hasTag);
-      bool optional = any.isEmpty || any.any(hasTag);
+      if (!denied) continue;
 
-      if (denied && optional && !allowed) {
-        deniers.add(line);
-      }
+      bool allowed = allow.any(hasTag);
+      if (allowed) continue;
+
+      bool optional = any.isEmpty || any.any(hasTag);
+      if (!optional) continue;
+
+      deniers.add(line);
     }
-    if (deniers.isEmpty) {
-      return null;
-    }
-    return deniers;
+
+    return deniers.isEmpty ? null : deniers;
   }
 
   bool isIgnored() => (file.url == null && !flags.deleted) || file.ext == 'swf';
