@@ -11,10 +11,7 @@ Future<void> initializeCurrentUserAvatar(BuildContext context) async {
   PostsController? controller =
       await context.read<CurrentUserAvatarValue>().controller;
   Post? avatar = controller?.items?.first;
-  if (avatar?.sample.url != null) {
-    // The buildcontext used here comes from MaterialApp,
-    // therefore if it goes invalid, the app is already closed.
-    // ignore: use_build_context_synchronously
+  if (avatar?.sample.url != null && context.mounted) {
     await precacheImage(
       CachedNetworkImageProvider(avatar!.sample.url!),
       context,
@@ -28,7 +25,6 @@ class CurrentUserAvatar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Consumer<CurrentUserAvatarValue>(
-      // TODO: replace this with AsyncBuilder and fix it
       builder: (context, value, child) => FutureBuilder<PostsController?>(
         future: value.controller,
         builder: (context, snapshot) {
