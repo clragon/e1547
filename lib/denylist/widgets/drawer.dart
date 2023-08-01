@@ -164,10 +164,10 @@ class DrawerDenySwitchBody extends StatelessWidget {
         SwitchListTile(
           title: const Text('Blacklist'),
           subtitle: denying && count > 0
-              ? TweenAnimationBuilder(
+              ? TweenAnimationBuilder<int>(
                   tween: IntTween(begin: 0, end: count),
                   duration: defaultAnimationDuration,
-                  builder: (context, int value, child) =>
+                  builder: (context, value, child) =>
                       Text('blocked $value posts'),
                 )
               : null,
@@ -212,10 +212,10 @@ class DrawerDenySwitchBody extends StatelessWidget {
                   }
                   return CrossFade(
                     showChild: 0 < count,
-                    child: TweenAnimationBuilder(
+                    child: TweenAnimationBuilder<int>(
                       tween: IntTween(begin: 0, end: count),
                       duration: defaultAnimationDuration,
-                      builder: (context, int value, child) => Text(
+                      builder: (context, value, child) => Text(
                         '$value inactive entries',
                         style: TextStyle(
                           fontStyle: FontStyle.italic,
