@@ -206,7 +206,7 @@ class PageResponse<KeyType, ItemType> {
 
 extension DataControllerItemManipulation<KeyType, ItemType>
     on DataController<KeyType, ItemType> {
-  /// Updates the item at [index] with [item].
+  /// Updates the item at [index] of [rawItems] with [item].
   ///
   /// Throws an Error if [index] is -1 or if the controller has no items.
   void updateItem(int index, ItemType item) {
@@ -221,7 +221,7 @@ extension DataControllerItemManipulation<KeyType, ItemType>
 
   @protected
   void assertOwnsItem(ItemType item) {
-    if (items == null || !items!.contains(item)) {
+    if (rawItems == null || !rawItems!.contains(item)) {
       throw StateError('$runtimeType doesn\'t own this ${item.runtimeType}');
     }
   }
