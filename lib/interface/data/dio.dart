@@ -5,8 +5,8 @@ import 'package:dio_cache_interceptor/dio_cache_interceptor.dart';
 
 export 'package:dio_cache_interceptor/dio_cache_interceptor.dart';
 
-class CacheConfig extends CacheOptions {
-  CacheConfig({
+class ClientCacheConfig extends CacheOptions {
+  ClientCacheConfig({
     super.policy,
     super.hitCacheOnErrorExcept,
     super.keyBuilder,
@@ -26,9 +26,9 @@ class CacheConfig extends CacheOptions {
   /// This allows clearing all pages of an endpoint at once.
   final String? pageParam;
 
-  static CacheConfig? fromExtra(RequestOptions request) {
+  static ClientCacheConfig? fromExtra(RequestOptions request) {
     final CacheOptions? config = CacheOptions.fromExtra(request);
-    if (config != null && config is CacheConfig) {
+    if (config != null && config is ClientCacheConfig) {
       return config;
     }
 
@@ -36,7 +36,7 @@ class CacheConfig extends CacheOptions {
   }
 
   @override
-  CacheConfig copyWith({
+  ClientCacheConfig copyWith({
     CachePolicy? policy,
     Nullable<List<int>>? hitCacheOnErrorExcept,
     CacheKeyBuilder? keyBuilder,
@@ -48,7 +48,7 @@ class CacheConfig extends CacheOptions {
     Nullable<CacheCipher>? cipher,
     bool? allowPostMethod,
   }) =>
-      CacheConfig(
+      ClientCacheConfig(
         policy: policy ?? this.policy,
         hitCacheOnErrorExcept: hitCacheOnErrorExcept != null
             ? hitCacheOnErrorExcept.value
@@ -64,25 +64,25 @@ class CacheConfig extends CacheOptions {
       );
 }
 
-class CacheInterceptor extends DioCacheInterceptor {
-  CacheInterceptor({required CacheConfig options})
+class ClientCacheInterceptor extends DioCacheInterceptor {
+  ClientCacheInterceptor({required ClientCacheConfig options})
       : _options = options,
         super(options: options);
 
-  final CacheConfig _options;
+  final ClientCacheConfig _options;
 
   CacheStore _getCacheStore(CacheOptions options) =>
       options.store ?? _options.store!;
 
-  CacheConfig _getCacheConfig(RequestOptions options) =>
-      CacheConfig.fromExtra(options) ?? _options;
+  ClientCacheConfig _getCacheConfig(RequestOptions options) =>
+      ClientCacheConfig.fromExtra(options) ?? _options;
 
   @override
   void onRequest(
     RequestOptions options,
     RequestInterceptorHandler handler,
   ) async {
-    final CacheConfig config = _getCacheConfig(options);
+    final ClientCacheConfig config = _getCacheConfig(options);
 
     bool isForceRefreshing = [
       CachePolicy.refresh,
@@ -104,7 +104,7 @@ class CacheInterceptor extends DioCacheInterceptor {
 
   @override
   void onResponse(Response response, ResponseInterceptorHandler handler) async {
-    final CacheConfig config = _getCacheConfig(response.requestOptions);
+    final ClientCacheConfig config = _getCacheConfig(response.requestOptions);
 
     final CacheControl cacheControl = CacheControl.fromHeader(
       response.headers[HttpHeaders.cacheControlHeader],

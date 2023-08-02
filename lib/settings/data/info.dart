@@ -97,11 +97,13 @@ class AppInfo extends PackageInfo {
       responseLevel: LogLevel.debug,
       errorLevel: LogLevel.warning,
     ));
-    dio.interceptors.add(CacheInterceptor(options: CacheConfig(store: cache)));
+    dio.interceptors.add(
+      ClientCacheInterceptor(options: ClientCacheConfig(store: cache)),
+    );
     List<dynamic> releases = await dio
         .get(
           'https://api.github.com/repos/$github/releases',
-          options: CacheConfig(
+          options: ClientCacheConfig(
             store: cache,
             policy: force ? CachePolicy.refresh : CachePolicy.request,
           ).toOptions(),

@@ -48,8 +48,8 @@ class Client {
     ));
     if (cache != null) {
       _dio.interceptors.add(
-        CacheInterceptor(
-          options: CacheConfig(
+        ClientCacheInterceptor(
+          options: ClientCacheConfig(
             store: cache,
             maxAge: const Duration(minutes: 5),
             pageParam: 'page',
@@ -421,7 +421,7 @@ class Client {
     Map<String, dynamic> body = await _dio
         .get(
           'users/${credentials!.username}.json',
-          options: CacheConfig(
+          options: ClientCacheConfig(
             store: memoryCache,
             policy:
                 (force ?? false) ? CachePolicy.refresh : CachePolicy.request,

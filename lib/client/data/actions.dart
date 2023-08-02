@@ -21,7 +21,7 @@ Future<T> rateLimit<T>(Future<T> call, [Duration? duration]) => Future.wait(
     .then((value) => value[0]);
 
 Options forceOptions(bool? force) {
-  return CacheConfig(
+  return ClientCacheConfig(
     policy: (force ?? false) ? CachePolicy.refresh : CachePolicy.request,
   ).toOptions();
 }
