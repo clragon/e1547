@@ -54,6 +54,9 @@ abstract class DataController<KeyType, ItemType> with ChangeNotifier {
   /// The identifier for the last scheduled reset.
   Object? _resetter;
 
+  /// Whether this controller has been disposed.
+  bool _disposed = false;
+
   /// The proxy paging controller for this controller.
   late final PagingController<KeyType, ItemType> paging =
       ProxyPagingController(this);
@@ -84,6 +87,7 @@ abstract class DataController<KeyType, ItemType> with ChangeNotifier {
     bool reset = false,
     bool background = false,
   }) async {
+    ChangeNotifier.debugAssertNotDisposed(this);
     if (_fetching) {
       if (reset) return _scheduleReset(background);
       return _waitForFetch();
@@ -96,6 +100,7 @@ abstract class DataController<KeyType, ItemType> with ChangeNotifier {
       if (reset) key = firstPageKey;
       if (key == null) return;
       PageResponse response = await performRequest(key, reset);
+      if (_disposed) return;
       if (response.error != null) {
         error = response.error;
         return;
@@ -105,7 +110,9 @@ abstract class DataController<KeyType, ItemType> with ChangeNotifier {
       _nextPageKey = response.nextPageKey;
     } finally {
       _fetching = false;
-      notifyListeners();
+      if (!_disposed) {
+        notifyListeners();
+      }
     }
   }
 
@@ -165,6 +172,7 @@ abstract class DataController<KeyType, ItemType> with ChangeNotifier {
   @override
   void dispose() {
     paging.dispose();
+    _disposed = true;
     super.dispose();
   }
 }

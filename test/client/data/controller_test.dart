@@ -7,19 +7,13 @@ import '../../test/mock_item.dart';
 
 void main() {
   group('ClientDataController', () {
-    test(
-      'cancels on dispose',
-      () async {
-        final controller = MockPageClientDataController();
-        controller.getNextPage();
-        expect(controller.dispose, returnsNormally);
-        expect(controller.cancelToken.isCancelled, isTrue);
-        expect(controller.error, isA<FakeClientException>());
-      },
-      // TODO: make DataController check if it was disposed before finishing getNexPage
-      skip: 'This currently fails because'
-          ' DataController will try to notify after cancellation.',
-    );
+    test('cancels on dispose', () async {
+      final controller = MockPageClientDataController();
+      controller.getNextPage();
+      expect(controller.dispose, returnsNormally);
+      expect(controller.cancelToken.isCancelled, isTrue);
+      expect(controller.items, null);
+    });
   });
 
   group('PageClientDataController', () {
