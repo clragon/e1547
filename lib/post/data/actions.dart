@@ -126,8 +126,6 @@ extension PostDenying on Post {
 
     return deniers.isEmpty ? null : deniers;
   }
-
-  bool isIgnored() => (file.url == null && !flags.deleted) || file.ext == 'swf';
 }
 
 enum PostType {

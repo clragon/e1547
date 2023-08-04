@@ -133,9 +133,9 @@ class Client {
     List<Post> posts =
         List<Post>.from(body['posts'].map((e) => Post.fromJson(e)));
 
-    if (ordered) {
-      posts.removeWhere((e) => e.isIgnored());
-    }
+    posts.removeWhere(
+      (e) => (e.file.url == null && !e.flags.deleted) || e.file.ext == 'swf',
+    );
 
     return posts;
   }

@@ -256,7 +256,7 @@ class FollowUpdate with ObjectLoggy {
       bool latestReached = posts.any((e) => e.id == follow.latest);
       bool depleted = allPosts.length < limit;
       if ([limitReached, latestReached, depleted].any((e) => e)) {
-        posts.removeWhere((e) => e.isIgnored() || e.isDeniedBy(denylist));
+        posts.removeWhere((e) => e.isDeniedBy(denylist));
         result.add(follow.withUnseen(posts));
       }
     }
@@ -274,7 +274,7 @@ class FollowUpdate with ObjectLoggy {
       ordered: false,
       force: force,
     ));
-    posts.removeWhere((e) => e.isIgnored() || e.isDeniedBy(denylist));
+    posts.removeWhere((e) => e.isDeniedBy(denylist));
     follow = follow.withUnseen(posts);
     RegExpMatch? match = poolRegex().firstMatch(follow.tags);
     if (follow.title == null && match != null) {
