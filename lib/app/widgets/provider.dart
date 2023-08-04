@@ -35,7 +35,7 @@ class ClientServiceProvider extends SubChangeNotifierProvider3<AppInfo,
             listener: () {
               ClientService service = context.read<ClientService>();
               Settings settings = context.read<Settings>();
-              CookiesService cookies = context.read<CookiesService>();
+              CookiesService cookies = context.read<AppDatabases>().cookies;
               settings.host.value = service.host;
               settings.customHost.value = service.customHost;
               settings.credentials.value = service.credentials;
