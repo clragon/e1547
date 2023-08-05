@@ -23,6 +23,6 @@ class ClientProvider extends SubProvider<ClientService, Client> {
               service.cookies,
             ];
           },
-          dispose: (context, client) => client.close(force: true),
+          dispose: (context, client) => client.close(),
         );
 }
