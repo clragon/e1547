@@ -78,6 +78,9 @@ class ThumbnailController extends PostsController {
   Map<int, List<int>> _ids = {};
 
   @override
+  int? get nextPageKey => _ids.length;
+
+  @override
   @protected
   @mustCallSuper
   void reset() {
@@ -86,8 +89,8 @@ class ThumbnailController extends PostsController {
   }
 
   Future<void> loadIds(List<int> ids, {bool force = false}) async {
-    _ids[_ids.length] = ids;
-    await getNextPage();
+    _ids[nextPageKey! + 1] = ids;
+    await getNextPage(reset: force);
   }
 
   @override
