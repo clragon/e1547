@@ -19,12 +19,15 @@ class DenylistService extends ChangeNotifier {
 
   final Mutex _resourceLock = Mutex();
 
+  bool _disposed = false;
+
   @protected
   Future<void> protect(
           FutureOr<List<String>> Function(List<String> data) updater) async =>
       _resourceLock.protect(
         () async {
           _items = await updater(List.from(items));
+          if (_disposed) return;
           notifyListeners();
           await push();
         },
@@ -71,6 +74,12 @@ class DenylistService extends ChangeNotifier {
 
   /// Replaces the entire denied entry list.
   Future<void> set(List<String> value) async => protect((data) => value.trim());
+
+  @override
+  void dispose() {
+    _disposed = true;
+    super.dispose();
+  }
 }
 
 class DenylistUpdateException implements Exception {
