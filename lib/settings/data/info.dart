@@ -202,7 +202,7 @@ class AppVersion {
   final List<String>? binaries;
 }
 
-typedef AppInfoClientException = DioError;
+typedef AppInfoClientException = DioException;
 
 extension StoreSource on Source {
   bool get isFromStore => ![

@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:e1547/interface/interface.dart';
 
-typedef ClientException = DioError;
+typedef ClientException = DioException;
 
 Future<bool> validateCall(Future<void> Function() call) async {
   try {
