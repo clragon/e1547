@@ -1,29 +1,41 @@
-import 'dart:math';
+import 'dart:async';
 
+import 'package:e1547/interface/interface.dart';
 import 'package:e1547/logs/logs.dart';
+import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
-import 'package:mutex/mutex.dart';
-import 'package:video_player/video_player.dart';
-import 'package:wakelock_plus/wakelock_plus.dart';
+import 'package:media_kit/media_kit.dart';
+import 'package:rxdart/rxdart.dart';
 
-class VideoHandler extends ChangeNotifier {
-  VideoHandler({bool muteVideos = false}) : _muteVideos = muteVideos;
+export 'package:media_kit_video/media_kit_video.dart';
 
-  static VideoHandler of(BuildContext context) =>
-      context.dependOnInheritedWidgetOfExactType<VideoHandlerData>()!.handler;
+class VideoPlayer extends Player {
+  VideoPlayer() {
+    controller.waitUntilFirstFrameRendered.then((_) => _initialized.add(true));
+    stream.error.first.then((_) => _initialized.add(true));
+  }
+
+  late final VideoController _controller = VideoController(this);
+  VideoController get controller => _controller;
+
+  final BehaviorSubject<bool> _initialized = BehaviorSubject.seeded(false);
+  Stream<bool> get initialized => _initialized.stream;
+
+  bool get isInitialized => _initialized.value;
+}
+
+class VideoService extends ChangeNotifier {
+  VideoService({bool muteVideos = false}) : _muteVideos = muteVideos;
+
+  static void ensureInitialized() => MediaKit.ensureInitialized();
 
   // To prevent the app from crashing due tue OutOfMemoryErrors,
   // the list of all loaded videos is global.
-  static final Map<VideoConfig, VideoPlayerController> _videos = {};
+  static final Map<VideoConfig, VideoPlayer> _videos = {};
 
   final Loggy _loggy = Loggy('Videos');
 
   final int maxLoaded = 3;
-
-  // 50mb
-  final int maxSize = 5 * pow(10, 7).toInt();
-
-  final Mutex _loadingLock = Mutex();
 
   bool _muteVideos;
 
@@ -31,100 +43,40 @@ class VideoHandler extends ChangeNotifier {
 
   set muteVideos(bool value) {
     _muteVideos = value;
-    _videos.values.forEach((e) => e.setVolume(muteVideos ? 0 : 1));
+    _videos.values.forEach((e) => e.setVolume(muteVideos ? 0 : 100));
     notifyListeners();
     _loggy.debug('${_muteVideos ? 'Muted' : 'Unmuted'} all controllers');
   }
 
-  VideoPlayerController getVideo(VideoConfig key) => _videos.putIfAbsent(
-        key,
-        () => VideoPlayerController.networkUrl(
-          Uri.parse(key.url),
-          videoPlayerOptions: VideoPlayerOptions(
-            mixWithOthers: true,
-          ),
-        ),
-      );
-
-  Future<void> loadVideo(VideoConfig key) async =>
-      _loadingLock.protect(() async {
-        VideoPlayerController? controller = getVideo(key);
-        if (controller.value.isInitialized) return;
-
-        while (true) {
-          Map<VideoConfig, VideoPlayerController> loaded = Map.of(_videos)
-            ..removeWhere((key, value) => !value.value.isInitialized);
-          int loadedSize = loaded.keys
-              .fold<int>(0, (current, config) => current + config.size);
-          if (loaded.length < maxLoaded && loadedSize < maxSize) {
-            break;
-          }
-          _loggy.debug(
-              'Too many (${loaded.length}) or too large ($loadedSize) videos loaded!');
-          await disposeVideo(loaded.keys.first);
-        }
-
-        controller.addListener(controller.wakelock);
-        await controller.setLooping(true);
-        await controller.setVolume(muteVideos ? 0 : 1);
-        await controller.initialize();
-        notifyListeners();
-        _loggy.debug('Loaded $key');
-      });
+  VideoPlayer getVideo(VideoConfig key) {
+    while (true) {
+      Map<VideoConfig, VideoPlayer> loaded = Map.of(_videos);
+      loaded.remove(key);
+      if (loaded.length < maxLoaded) break;
+      _loggy.debug('Too many (${loaded.length}) videos loaded!');
+      disposeVideo(loaded.keys.first);
+    }
+    return _videos.putIfAbsent(
+      key,
+      () {
+        VideoPlayer player = VideoPlayer();
+        player.open(Media(key.url), play: false);
+        player.setPlaylistMode(PlaylistMode.single);
+        player.setVolume(_muteVideos ? 0 : 100);
+        return player;
+      },
+    );
+  }
 
   Future<void> disposeVideo(VideoConfig key) async {
-    VideoPlayerController? controller = _videos[key];
+    VideoPlayer? controller = _videos[key];
     if (controller != null) {
-      await controller.pause();
-      controller.removeListener(controller.wakelock);
-      await controller.dispose();
       _videos.remove(key);
+      await controller.pause();
+      await controller.dispose();
       notifyListeners();
       _loggy.debug('Unloaded $key');
     }
-  }
-}
-
-class VideoHandlerData extends InheritedNotifier<VideoHandler> {
-  const VideoHandlerData({required this.handler, required super.child})
-      : super(notifier: handler);
-
-  final VideoHandler handler;
-
-  @override
-  bool updateShouldNotify(covariant VideoHandlerData oldWidget) =>
-      oldWidget.handler != handler;
-}
-
-extension Wake on VideoPlayerController {
-  void wakelock() {
-    value.isPlaying ? WakelockPlus.enable() : WakelockPlus.disable();
-  }
-}
-
-class VideoHandlerVolumeControl extends StatefulWidget {
-  const VideoHandlerVolumeControl();
-
-  @override
-  State<VideoHandlerVolumeControl> createState() =>
-      _VideoHandlerVolumeControlState();
-}
-
-class _VideoHandlerVolumeControlState extends State<VideoHandlerVolumeControl> {
-  @override
-  Widget build(BuildContext context) {
-    bool muted = VideoHandler.of(context).muteVideos;
-    return InkWell(
-      onTap: () => VideoHandler.of(context).muteVideos = !muted,
-      child: Padding(
-        padding: const EdgeInsets.all(4),
-        child: Icon(
-          muted ? Icons.volume_off : Icons.volume_up,
-          size: 24,
-          color: Colors.white,
-        ),
-      ),
-    );
   }
 }
 
@@ -144,4 +96,35 @@ class VideoConfig {
 
   @override
   String toString() => 'Video($url)';
+}
+
+class VideoServiceProvider
+    extends SubChangeNotifierProvider<Settings, VideoService> {
+  VideoServiceProvider({super.child, super.builder})
+      : super(
+          create: (context, settings) => VideoService(
+            muteVideos: settings.muteVideos.value,
+          ),
+        );
+}
+
+class VideoServiceVolumeControl extends StatelessWidget {
+  const VideoServiceVolumeControl();
+
+  @override
+  Widget build(BuildContext context) {
+    VideoService service = context.watch<VideoService>();
+    bool muted = service.muteVideos;
+    return InkWell(
+      onTap: () => service.muteVideos = !muted,
+      child: Padding(
+        padding: const EdgeInsets.all(4),
+        child: Icon(
+          muted ? Icons.volume_off : Icons.volume_up,
+          size: 24,
+          color: Colors.white,
+        ),
+      ),
+    );
+  }
 }

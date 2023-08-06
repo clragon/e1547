@@ -5,7 +5,6 @@ import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
-import 'package:video_player/video_player.dart';
 
 extension PostTagging on Post {
   bool hasTag(String tag) {
@@ -119,30 +118,22 @@ extension PostTyping on Post {
 }
 
 extension PostVideoPlaying on Post {
-  VideoConfig? get videoConfig => type == PostType.video && file.url != null
-      ? VideoConfig(
+  VideoPlayer? getVideo(BuildContext context, {bool? listen}) {
+    if (type == PostType.video && file.url != null) {
+      VideoService service;
+      if (listen ?? true) {
+        service = context.watch<VideoService>();
+      } else {
+        service = context.read<VideoService>();
+      }
+      return service.getVideo(
+        VideoConfig(
           url: file.url!,
           size: file.size,
-        )
-      : null;
-
-  VideoPlayerController? getVideo(BuildContext context) {
-    if (videoConfig != null) {
-      return VideoHandler.of(context).getVideo(videoConfig!);
+        ),
+      );
     }
     return null;
-  }
-
-  Future<void> loadVideo(BuildContext context) async {
-    if (videoConfig != null) {
-      await VideoHandler.of(context).loadVideo(videoConfig!);
-    }
-  }
-
-  Future<void> disposeVideo(BuildContext context) async {
-    if (videoConfig != null) {
-      await VideoHandler.of(context).disposeVideo(videoConfig!);
-    }
   }
 }
 

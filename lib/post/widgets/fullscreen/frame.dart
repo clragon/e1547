@@ -21,56 +21,54 @@ class PostFullscreenFrame extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
-    return ScaffoldFrame(
-      controller: ScaffoldFrame.maybeOf(context),
-      child: Theme(
-        data: theme.copyWith(
-          appBarTheme: theme.appBarTheme.copyWith(
-            systemOverlayStyle: theme.appBarTheme.systemOverlayStyle!.copyWith(
-              statusBarIconBrightness: Brightness.light,
-              statusBarColor: Colors.black26,
-            ),
+    return Theme(
+      data: theme.copyWith(
+        appBarTheme: theme.appBarTheme.copyWith(
+          systemOverlayStyle: theme.appBarTheme.systemOverlayStyle!.copyWith(
+            statusBarIconBrightness: Brightness.light,
+            statusBarColor: Colors.black26,
           ),
         ),
+      ),
+      child: ScaffoldFrame(
+        controller: ScaffoldFrame.maybeOf(context),
         child: ScaffoldFrameSystemUI(
           child: Builder(
-            builder: (context) => AdaptiveScaffold(
-              extendBodyBehindAppBar: true,
-              extendBody: true,
-              appBar: ScaffoldFrameAppBar(
-                child: PostFullscreenAppBar(post: post),
-              ),
-              drawer: drawer,
-              endDrawer: endDrawer,
-              bottomNavigationBar: post.getVideo(context) != null
-                  ? VideoBar(
-                      videoController: post.getVideo(context)!,
-                    )
-                  : null,
-              body: GestureDetector(
-                behavior: HitTestBehavior.translucent,
-                onTap: () {
-                  ScaffoldFrameController controller =
-                      ScaffoldFrame.of(context);
-                  controller.toggleFrame();
-                  if ((post.getVideo(context)?.value.isPlaying ?? false) &&
-                      controller.visible) {
-                    controller.hideFrame(duration: const Duration(seconds: 2));
-                  }
-                },
-                child: Stack(
-                  fit: StackFit.passthrough,
-                  alignment: Alignment.center,
-                  children: [
-                    child,
-                    if (post.getVideo(context) != null)
-                      VideoButton(
-                        videoController: post.getVideo(context)!,
-                      ),
-                  ],
+            builder: (context) {
+              VideoPlayer? player = post.getVideo(context);
+              return AdaptiveScaffold(
+                extendBodyBehindAppBar: true,
+                extendBody: true,
+                appBar: ScaffoldFrameAppBar(
+                  child: PostFullscreenAppBar(post: post),
                 ),
-              ),
-            ),
+                drawer: drawer,
+                endDrawer: endDrawer,
+                bottomNavigationBar:
+                    player != null ? VideoBar(player: player) : null,
+                body: GestureDetector(
+                  behavior: HitTestBehavior.translucent,
+                  onTap: () {
+                    ScaffoldFrameController controller =
+                        ScaffoldFrame.of(context);
+                    controller.toggleFrame();
+                    if ((player?.state.playing ?? false) &&
+                        controller.visible) {
+                      controller.hideFrame(
+                          duration: const Duration(seconds: 2));
+                    }
+                  },
+                  child: Stack(
+                    fit: StackFit.passthrough,
+                    alignment: Alignment.center,
+                    children: [
+                      child,
+                      if (player != null) VideoButton(player: player),
+                    ],
+                  ),
+                ),
+              );
+            },
           ),
         ),
       ),

@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 Future<void> main() async {
   await initializeDateFormatting();
   WidgetsFlutterBinding.ensureInitialized();
+  VideoService.ensureInitialized();
   AppInfo appInfo = await initializeAppInfo();
   AppDatabases databases = await initializeAppdatabases(info: appInfo);
   Logs logs = await initializeLogger(databases: databases);

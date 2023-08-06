@@ -21,6 +21,5 @@ abstract final class PlatformCapabilities {
 
   /// Whether this platform supports playing videos.
   /// Platform views are not supported on desktop right now.
-  static bool get hasVideos =>
-      [Platform.isAndroid, Platform.isIOS].any((e) => e);
+  static bool get hasVideos => true;
 }

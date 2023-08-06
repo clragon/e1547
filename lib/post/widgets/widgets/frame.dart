@@ -6,12 +6,11 @@ import 'package:flutter/services.dart';
 import 'package:flutter_sub/flutter_sub.dart';
 
 class ScaffoldFrameController extends ValueNotifier<bool> {
-  ScaffoldFrameController({this.onToggle, this.visible = false})
-      : super(visible);
+  ScaffoldFrameController({bool visible = false}) : super(visible);
 
-  final void Function(bool shown)? onToggle;
   Timer? frameToggler;
-  bool visible;
+  set visible(bool value) => this.value = value;
+  bool get visible => value;
 
   void showFrame({Duration? duration}) =>
       toggleFrame(shown: true, duration: duration);
@@ -21,14 +20,10 @@ class ScaffoldFrameController extends ValueNotifier<bool> {
 
   void toggleFrame({bool? shown, Duration? duration}) {
     bool result = shown ?? !visible;
-    if (result == visible) {
-      return;
-    }
+
     frameToggler?.cancel();
     void toggle() {
       visible = result;
-      notifyListeners();
-      onToggle?.call(visible);
     }
 
     if (duration == null) {
@@ -53,9 +48,7 @@ class ScaffoldFrame extends StatelessWidget {
   final Widget child;
   final ScaffoldFrameController? controller;
 
-  static ScaffoldFrameController of(BuildContext context) => context
-      .dependOnInheritedWidgetOfExactType<_ScaffoldFrameData>()!
-      .notifier!;
+  static ScaffoldFrameController of(BuildContext context) => maybeOf(context)!;
 
   static ScaffoldFrameController? maybeOf(BuildContext context) => context
       .dependOnInheritedWidgetOfExactType<_ScaffoldFrameData>()
@@ -151,7 +144,13 @@ class _ScaffoldFrameSystemUIState extends State<ScaffoldFrameSystemUI>
   void initState() {
     super.initState();
     SystemChrome.setSystemUIChangeCallback(
-        (shown) async => ScaffoldFrame.of(context).toggleFrame(shown: shown));
+      (shown) async {
+        ScaffoldFrameController controller = ScaffoldFrame.of(context);
+        if (controller.visible != shown) {
+          controller.toggleFrame(shown: shown);
+        }
+      },
+    );
   }
 
   @override

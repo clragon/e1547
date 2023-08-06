@@ -29,6 +29,7 @@ class App extends StatelessWidget {
           drawerHeader: (context) => UserDrawerHeader(),
         ),
         CurrentUserAvatarProvider(),
+        VideoServiceProvider(),
       ],
       child: Consumer3<AppInfo, Settings, RouterDrawerController>(
         builder: (context, appInfo, settings, navigation, child) =>
@@ -75,12 +76,7 @@ class App extends StatelessWidget {
                             child: ClientAvailabilityCheck(
                               child: AppLinkHandler(
                                 child: NotificationHandler(
-                                  child: VideoHandlerData(
-                                    handler: VideoHandler(
-                                      muteVideos: settings.muteVideos.value,
-                                    ),
-                                    child: child!,
-                                  ),
+                                  child: child!,
                                 ),
                               ),
                             ),

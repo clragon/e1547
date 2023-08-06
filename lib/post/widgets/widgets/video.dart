@@ -4,173 +4,242 @@ import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sub/flutter_sub.dart';
-import 'package:video_player/video_player.dart';
+import 'package:rxdart/rxdart.dart';
 
-class VideoButton extends StatefulWidget {
-  const VideoButton({super.key, required this.videoController, this.size = 54});
+class VideoButton extends StatelessWidget {
+  const VideoButton({super.key, required this.player, this.size = 54});
 
-  final VideoPlayerController videoController;
+  final VideoPlayer player;
   final double size;
 
   @override
-  State<VideoButton> createState() => _VideoButtonState();
-}
-
-class _VideoButtonState extends State<VideoButton> {
-  @override
   Widget build(BuildContext context) {
     ScaffoldFrameController? frameController = ScaffoldFrame.maybeOf(context);
-    return SubAnimationController(
-      duration: defaultAnimationDuration,
-      keys: [widget.videoController],
-      builder: (context, animationController) => AnimatedBuilder(
-        animation: Listenable.merge([widget.videoController, frameController]),
-        builder: (context, child) {
-          bool loading = !widget.videoController.value.isInitialized ||
-              widget.videoController.value.isBuffering;
-          bool shown = !widget.videoController.value.isPlaying || loading;
-          if (frameController != null) {
-            shown = frameController.visible || shown;
-          }
+    return SubStream<List<bool>>(
+      create: () => CombineLatestStream.list([
+        player.stream.playing.startWith(player.state.playing),
+        player.stream.buffering.startWith(player.state.buffering),
+        player.initialized.startWith(player.isInitialized),
+      ]),
+      keys: [player],
+      builder: (context, states) => SubAnimationController(
+        duration: defaultAnimationDuration,
+        keys: [player],
+        builder: (context, animationController) => AnimatedBuilder(
+          animation: Listenable.merge([frameController]),
+          builder: (context, child) {
+            var [playing, buffering, initialized] = states.data ??
+                [
+                  player.state.playing,
+                  player.state.buffering,
+                  player.isInitialized
+                ];
 
-          return ScaffoldFrameChild(
-            shown: shown,
-            child: Material(
-              clipBehavior: Clip.antiAlias,
-              shape: const CircleBorder(),
-              color: Colors.black26,
-              child: IconButton(
-                iconSize: widget.size,
-                onPressed: () {
-                  if (widget.videoController.value.isPlaying) {
-                    frameController?.cancel();
-                    widget.videoController.pause();
-                  } else {
-                    widget.videoController.play();
-                    frameController?.hideFrame(
-                        duration: const Duration(milliseconds: 500));
-                  }
-                },
-                icon: Center(
-                  child: CrossFade(
-                    secondChild: const Center(
-                      child: Padding(
-                        padding: EdgeInsets.all(8),
-                        child: CircularProgressIndicator(),
+            bool loading = !initialized || buffering;
+            bool alwaysVisible = !playing || loading;
+            bool shown = alwaysVisible || (frameController?.visible ?? false);
+            bool showPlayButton = !playing || (playing && !loading);
+
+            return ScaffoldFrameChild(
+              shown: shown,
+              child: Material(
+                clipBehavior: Clip.antiAlias,
+                shape: const CircleBorder(),
+                color: Colors.black26,
+                child: IconButton(
+                  iconSize: size,
+                  onPressed: () {
+                    if (player.state.playing) {
+                      frameController?.cancel();
+                      player.pause();
+                    } else {
+                      player.play();
+                      frameController?.hideFrame(
+                          duration: const Duration(milliseconds: 500));
+                    }
+                  },
+                  icon: Center(
+                    child: CrossFade(
+                      showChild: showPlayButton,
+                      duration: const Duration(milliseconds: 100),
+                      secondChild: const Center(
+                        child: Padding(
+                          padding: EdgeInsets.all(8),
+                          child: CircularProgressIndicator(),
+                        ),
                       ),
-                    ),
-                    showChild:
-                        !widget.videoController.value.isPlaying || !loading,
-                    duration: const Duration(milliseconds: 100),
-                    child: SubListener(
-                      initialize: true,
-                      listenable: widget.videoController,
-                      listener: () {
-                        if (widget.videoController.value.isPlaying) {
-                          animationController.forward();
-                        } else {
-                          animationController.reverse();
-                        }
-                      },
-                      builder: (context) => AnimatedBuilder(
-                        animation: animationController,
-                        builder: (context, child) => AnimatedIcon(
-                          icon: AnimatedIcons.play_pause,
-                          progress: animationController,
-                          size: widget.size,
-                          color: Colors.white,
+                      child: SubValue<StreamSubscription<bool>>(
+                        create: () {
+                          if (player.state.playing) {
+                            animationController.forward();
+                          } else {
+                            animationController.reverse();
+                          }
+                          return player.stream.playing.listen((event) {
+                            if (event) {
+                              animationController.forward();
+                            } else {
+                              animationController.reverse();
+                            }
+                          });
+                        },
+                        keys: [player, animationController],
+                        dispose: (value) => value.cancel(),
+                        builder: (context, _) => AnimatedBuilder(
+                          animation: animationController,
+                          builder: (context, child) => AnimatedIcon(
+                            icon: AnimatedIcons.play_pause,
+                            progress: animationController,
+                            size: size,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
                     ),
                   ),
                 ),
               ),
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }
 }
 
-class VideoBar extends StatelessWidget {
-  const VideoBar({required this.videoController});
+class VideoBar extends StatefulWidget {
+  const VideoBar({required this.player});
 
-  final VideoPlayerController videoController;
+  final VideoPlayer player;
+
+  @override
+  State<VideoBar> createState() => _VideoBarState();
+}
+
+class _VideoBarState extends State<VideoBar> {
+  bool playing = false;
+  bool seeking = false;
+  Duration position = Duration.zero;
+  Duration duration = Duration.zero;
+  Duration buffer = Duration.zero;
+
+  List<StreamSubscription> subscriptions = [];
+
+  @override
+  void initState() {
+    super.initState();
+    playing = widget.player.state.playing;
+    position = widget.player.state.position;
+    duration = widget.player.state.duration;
+    buffer = widget.player.state.buffer;
+    subscriptions.addAll(
+      [
+        widget.player.stream.playing.listen((event) {
+          setState(() {
+            playing = event;
+          });
+        }),
+        widget.player.stream.completed.listen((event) {
+          setState(() {
+            position = Duration.zero;
+          });
+        }),
+        widget.player.stream.position.listen((event) {
+          setState(() {
+            if (!seeking) position = event;
+          });
+        }),
+        widget.player.stream.duration.listen((event) {
+          setState(() {
+            duration = event;
+          });
+        }),
+        widget.player.stream.buffer.listen((event) {
+          setState(() {
+            buffer = event;
+          });
+        }),
+      ],
+    );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    for (final s in subscriptions) {
+      s.cancel();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: ScaffoldFrameChild(
-        child: AnimatedBuilder(
-          animation: videoController,
-          builder: (context, child) => CrossFade.builder(
-            showChild: videoController.value.isInitialized,
-            builder: (context) => Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const VideoHandlerVolumeControl(),
-                      const SizedBox(
-                        width: 4,
-                      ),
-                      Text(
-                        videoController.value.position
-                            .toString()
-                            .substring(2, 7),
-                      ),
-                      Flexible(
-                          child: Slider(
-                        max: videoController.value.duration.inMilliseconds
-                            .toDouble(),
-                        value: videoController.value.position.inMilliseconds
-                            .toDouble()
-                            .clamp(
-                              0,
-                              videoController.value.duration.inMilliseconds
-                                  .toDouble(),
-                            ),
-                        onChangeStart: (value) =>
-                            ScaffoldFrame.maybeOf(context)?.cancel(),
-                        onChanged: (value) => videoController
-                            .seekTo(Duration(milliseconds: value.toInt())),
-                        onChangeEnd: (value) {
-                          if (videoController.value.isPlaying) {
-                            ScaffoldFrame.maybeOf(context)?.hideFrame(
-                                duration: const Duration(seconds: 2));
-                          }
-                        },
-                      )),
-                      Text(
-                        videoController.value.duration
-                            .toString()
-                            .substring(2, 7),
-                      ),
-                      const SizedBox(
-                        width: 4,
-                      ),
-                      InkWell(
-                        onTap: Navigator.of(context).maybePop,
-                        child: Padding(
-                          padding: const EdgeInsets.all(4),
-                          child: Icon(
-                            Icons.fullscreen_exit,
-                            size: 24,
-                            color: Theme.of(context).iconTheme.color,
-                          ),
-                        ),
-                      ),
-                    ],
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const VideoServiceVolumeControl(),
+                  const SizedBox(
+                    width: 4,
                   ),
-                ),
-              ],
+                  Text(position.toString().substring(2, 7)),
+                  Flexible(
+                    child: Slider(
+                      max: duration.inMilliseconds.toDouble(),
+                      value: position.inMilliseconds.toDouble().clamp(
+                            0.0,
+                            duration.inMilliseconds.toDouble(),
+                          ),
+                      secondaryTrackValue:
+                          buffer.inMilliseconds.toDouble().clamp(
+                                0.0,
+                                duration.inMilliseconds.toDouble(),
+                              ),
+                      onChangeStart: (e) {
+                        seeking = true;
+                        ScaffoldFrame.maybeOf(context)
+                            ?.toggleFrame(shown: true);
+                      },
+                      onChanged: position.inMilliseconds > 0
+                          ? (e) {
+                              setState(() {
+                                position = Duration(milliseconds: e ~/ 1);
+                              });
+                            }
+                          : null,
+                      onChangeEnd: (e) {
+                        seeking = false;
+                        widget.player.seek(Duration(milliseconds: e ~/ 1));
+                        ScaffoldFrame.maybeOf(context)
+                            ?.toggleFrame(shown: false);
+                      },
+                    ),
+                  ),
+                  Text(duration.toString().substring(2, 7)),
+                  const SizedBox(
+                    width: 4,
+                  ),
+                  InkWell(
+                    onTap: Navigator.of(context).maybePop,
+                    child: Padding(
+                      padding: const EdgeInsets.all(4),
+                      child: Icon(
+                        Icons.fullscreen_exit,
+                        size: 24,
+                        color: Theme.of(context).iconTheme.color,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );
@@ -178,10 +247,10 @@ class VideoBar extends StatelessWidget {
 }
 
 class VideoGesture extends StatefulWidget {
-  const VideoGesture({required this.forward, required this.videoController});
+  const VideoGesture({required this.forward, required this.player});
 
   final bool forward;
-  final VideoPlayerController videoController;
+  final VideoPlayer player;
 
   @override
   State<VideoGesture> createState() => _VideoGestureState();
@@ -203,36 +272,30 @@ class _VideoGestureState extends State<VideoGesture>
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
       onDoubleTap: () async {
-        if (widget.videoController.value.isInitialized) {
-          Duration current = (await widget.videoController.position)!;
-          bool boundOnZero = current == Duration.zero;
-          // final position is never reported, so we subtract 1 ms.
-          // see: https://github.com/flutter/flutter/issues/90114
-          bool boundOnEnd = current ==
-              widget.videoController.value.duration -
-                  const Duration(milliseconds: 1);
-          if ((!widget.forward && boundOnZero) ||
-              (widget.forward && boundOnEnd)) {
-            return;
-          }
-
-          Duration target = current;
-          if (widget.forward) {
-            target += const Duration(seconds: 10);
-          } else {
-            target -= const Duration(seconds: 10);
-          }
-          setState(() {
-            combo++;
-          });
-
-          widget.videoController.seekTo(target);
-          comboReset?.cancel();
-          comboReset = Timer(const Duration(milliseconds: 900),
-              () => setState(() => combo = 0));
-          await animationController.forward();
-          await animationController.reverse();
+        Duration current = widget.player.state.position;
+        bool boundOnZero = current == Duration.zero;
+        bool boundOnEnd = current == widget.player.state.duration;
+        if ((!widget.forward && boundOnZero) ||
+            (widget.forward && boundOnEnd)) {
+          return;
         }
+
+        Duration target = current;
+        if (widget.forward) {
+          target += const Duration(seconds: 10);
+        } else {
+          target -= const Duration(seconds: 10);
+        }
+        setState(() {
+          combo++;
+        });
+
+        widget.player.seek(target);
+        comboReset?.cancel();
+        comboReset = Timer(
+            const Duration(milliseconds: 900), () => setState(() => combo = 0));
+        await animationController.forward();
+        await animationController.reverse();
       },
       child: FadeTransition(
         opacity: fadeAnimation,
@@ -287,31 +350,26 @@ class _VideoGestureState extends State<VideoGesture>
   }
 }
 
-class VideoGestures extends StatefulWidget {
-  const VideoGestures({required this.videoController, required this.child});
+class VideoGestures extends StatelessWidget {
+  const VideoGestures({required this.player, required this.child});
 
   final Widget child;
-  final VideoPlayerController videoController;
+  final VideoPlayer player;
 
-  @override
-  State<VideoGestures> createState() => _VideoGesturesState();
-}
-
-class _VideoGesturesState extends State<VideoGestures> {
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) => Stack(
         alignment: Alignment.center,
         children: [
-          widget.child,
+          child,
           Positioned.fill(
             child: Row(
               children: [
                 Expanded(
                   child: VideoGesture(
                     forward: false,
-                    videoController: widget.videoController,
+                    player: player,
                   ),
                 ),
                 SizedBox(
@@ -320,7 +378,7 @@ class _VideoGesturesState extends State<VideoGestures> {
                 Expanded(
                   child: VideoGesture(
                     forward: true,
-                    videoController: widget.videoController,
+                    player: player,
                   ),
                 ),
               ],
@@ -355,7 +413,7 @@ class PostVideoRoute extends StatefulWidget {
 }
 
 class PostVideoRouteState extends State<PostVideoRoute> with RouteAware {
-  late VideoPlayerController? _videoController;
+  late VideoPlayer? player;
   late RouterDrawerController _navigation;
   late final bool _wasPlaying;
   bool _keepPlaying = false;
@@ -367,7 +425,9 @@ class PostVideoRouteState extends State<PostVideoRoute> with RouteAware {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
-        _wasPlaying = widget.post.getVideo(context)?.value.isPlaying ?? false;
+        _wasPlaying =
+            widget.post.getVideo(context, listen: false)?.state.playing ??
+                false;
       }
     });
   }
@@ -378,7 +438,7 @@ class PostVideoRouteState extends State<PostVideoRoute> with RouteAware {
     if (_keepPlaying) {
       _keepPlaying = false;
     } else {
-      _videoController?.pause();
+      player?.pause();
     }
   }
 
@@ -387,7 +447,7 @@ class PostVideoRouteState extends State<PostVideoRoute> with RouteAware {
     super.didChangeDependencies();
     _navigation = context.watch<RouterDrawerController>();
     _navigation.routeObserver.subscribe(this, ModalRoute.of(context)!);
-    _videoController = widget.post.getVideo(context);
+    player = widget.post.getVideo(context);
   }
 
   @override
@@ -402,35 +462,10 @@ class PostVideoRouteState extends State<PostVideoRoute> with RouteAware {
     _navigation.routeObserver.unsubscribe(this);
     if (widget.stopOnDispose && !_wasPlaying) {
       WidgetsBinding.instance.addPostFrameCallback(
-        (_) => _videoController?.pause(),
+        (_) => player?.pause(),
       );
     }
     super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) => widget.child;
-}
-
-class PostVideoLoader extends StatefulWidget {
-  const PostVideoLoader({required this.post, required this.child});
-
-  final Post post;
-  final Widget child;
-
-  @override
-  State<PostVideoLoader> createState() => _PostVideoLoaderState();
-}
-
-class _PostVideoLoaderState extends State<PostVideoLoader> {
-  Future<void> ensureVideo() async {
-    await widget.post.loadVideo(context);
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    WidgetsBinding.instance.addPostFrameCallback((_) => ensureVideo());
   }
 
   @override
@@ -444,6 +479,8 @@ class PostVideoWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    VideoPlayer player = post.getVideo(context)!;
+
     Widget placeholder() {
       return PostImageWidget(
         post: post,
@@ -454,17 +491,21 @@ class PostVideoWidget extends StatelessWidget {
       );
     }
 
-    if (post.getVideo(context) != null) {
-      return AnimatedBuilder(
-        animation: post.getVideo(context)!,
-        builder: (context, child) => post.getVideo(context)!.value.isInitialized
-            ? AspectRatio(
-                aspectRatio: post.getVideo(context)!.value.aspectRatio,
-                child: VideoPlayer(post.getVideo(context)!),
-              )
-            : placeholder(),
-      );
-    }
-    return placeholder();
+    return SubStream<bool>(
+      create: () => player.initialized,
+      keys: [player],
+      builder: (context, snapshot) {
+        bool initialized = snapshot.data ?? player.isInitialized;
+        if (!initialized) return placeholder();
+        return AspectRatio(
+          aspectRatio: post.file.width / post.file.height,
+          child: Video(
+            controller: player.controller,
+            fill: Colors.transparent,
+            controls: null,
+          ),
+        );
+      },
+    );
   }
 }
