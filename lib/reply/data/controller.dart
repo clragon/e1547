@@ -9,9 +9,8 @@ class RepliesController extends CursorClientDataController<Reply> {
     required this.client,
     required this.topicId,
     required this.denylist,
-    bool? orderByOldest,
+    super.orderByOldest,
   }) {
-    this.orderByOldest = orderByOldest ?? true;
     denylist.addListener(applyFilter);
   }
 

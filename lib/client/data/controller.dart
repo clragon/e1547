@@ -70,13 +70,16 @@ abstract class PageClientDataController<T>
 
 abstract class CursorClientDataController<T>
     extends ClientDataController<String, T> {
-  CursorClientDataController() : super(firstPageKey: _defaultPage);
+  CursorClientDataController({
+    bool? orderByOldest,
+  })  : _orderByOldest = orderByOldest ?? true,
+        super(firstPageKey: _defaultPage);
 
   static const String _defaultPage = 'default';
   static const String _cursorFirstPage = 'a0';
   static const String _indexFirstPage = '1';
 
-  bool _orderByOldest = true;
+  bool _orderByOldest;
   bool get orderByOldest => _orderByOldest;
   set orderByOldest(bool value) {
     if (_orderByOldest == value) return;
