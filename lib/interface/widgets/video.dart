@@ -4,7 +4,7 @@ import 'package:e1547/logs/logs.dart';
 import 'package:flutter/material.dart';
 import 'package:mutex/mutex.dart';
 import 'package:video_player/video_player.dart';
-import 'package:wakelock/wakelock.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 
 class VideoHandler extends ChangeNotifier {
   VideoHandler({bool muteVideos = false}) : _muteVideos = muteVideos;
@@ -38,8 +38,8 @@ class VideoHandler extends ChangeNotifier {
 
   VideoPlayerController getVideo(VideoConfig key) => _videos.putIfAbsent(
         key,
-        () => VideoPlayerController.network(
-          key.url,
+        () => VideoPlayerController.networkUrl(
+          Uri.parse(key.url),
           videoPlayerOptions: VideoPlayerOptions(
             mixWithOthers: true,
           ),
@@ -98,7 +98,7 @@ class VideoHandlerData extends InheritedNotifier<VideoHandler> {
 
 extension Wake on VideoPlayerController {
   void wakelock() {
-    value.isPlaying ? Wakelock.enable() : Wakelock.disable();
+    value.isPlaying ? WakelockPlus.enable() : WakelockPlus.disable();
   }
 }
 
