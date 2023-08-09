@@ -689,7 +689,7 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "0078c43"
+      ref: "4.0.0-dev.1"
       resolved-ref: "0078c4365fb8cc81ff8e8de2fc95a4af164eae7d"
       url: "https://github.com/clragon/infinite_scroll_pagination.git"
     source: git
@@ -1496,7 +1496,7 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "16badbb"
+      ref: "1.0.4"
       resolved-ref: "16badbb93a94e36400a4c676e41e6deeda828b1e"
       url: "https://github.com/clragon/username_generator.git"
     source: git

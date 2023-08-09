@@ -76,7 +76,7 @@ dependencies:
   username_generator:
     git:
       url: https://github.com/clragon/username_generator.git
-      ref: 16badbb
+      ref: 1.0.4
   wakelock_plus: ^1.1.1
   webview_cookie_manager: ^2.0.6
   window_manager: ^0.3.5
@@ -91,7 +91,7 @@ dependency_overrides:
   infinite_scroll_pagination:
     git:
       url: https://github.com/clragon/infinite_scroll_pagination.git
-      ref: 0078c43
+      ref: 4.0.0-dev.1
   workmanager:
     git:
       url: https://github.com/fluttercommunity/flutter_workmanager.git
