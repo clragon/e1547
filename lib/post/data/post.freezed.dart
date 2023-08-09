@@ -61,7 +61,8 @@ abstract class $PostCopyWith<$Res> {
       {int id,
       DateTime createdAt,
       DateTime? updatedAt,
-      @JsonKey(name: 'file') PostSourceFile fileRaw,
+      @JsonKey(name: 'file')
+          PostSourceFile fileRaw,
       PostPreviewFile preview,
       PostSampleFile sample,
       Score score,
@@ -82,7 +83,7 @@ abstract class $PostCopyWith<$Res> {
       bool hasNotes,
       double? duration,
       @JsonKey(includeFromJson: false, includeToJson: false)
-      VoteStatus voteStatus});
+          VoteStatus voteStatus});
 
   $PostSourceFileCopyWith<$Res> get fileRaw;
   $PostPreviewFileCopyWith<$Res> get preview;
@@ -289,7 +290,8 @@ abstract class _$$_PostCopyWith<$Res> implements $PostCopyWith<$Res> {
       {int id,
       DateTime createdAt,
       DateTime? updatedAt,
-      @JsonKey(name: 'file') PostSourceFile fileRaw,
+      @JsonKey(name: 'file')
+          PostSourceFile fileRaw,
       PostPreviewFile preview,
       PostSampleFile sample,
       Score score,
@@ -310,7 +312,7 @@ abstract class _$$_PostCopyWith<$Res> implements $PostCopyWith<$Res> {
       bool hasNotes,
       double? duration,
       @JsonKey(includeFromJson: false, includeToJson: false)
-      VoteStatus voteStatus});
+          VoteStatus voteStatus});
 
   @override
   $PostSourceFileCopyWith<$Res> get fileRaw;
@@ -468,7 +470,8 @@ class _$_Post extends _Post {
       {required this.id,
       required this.createdAt,
       required this.updatedAt,
-      @JsonKey(name: 'file') required this.fileRaw,
+      @JsonKey(name: 'file')
+          required this.fileRaw,
       required this.preview,
       required this.sample,
       required this.score,
@@ -489,7 +492,7 @@ class _$_Post extends _Post {
       required this.hasNotes,
       required this.duration,
       @JsonKey(includeFromJson: false, includeToJson: false)
-      this.voteStatus = VoteStatus.unknown})
+          this.voteStatus = VoteStatus.unknown})
       : _tags = tags,
         _lockedTags = lockedTags,
         _sources = sources,
@@ -674,7 +677,8 @@ abstract class _Post extends Post {
       {required final int id,
       required final DateTime createdAt,
       required final DateTime? updatedAt,
-      @JsonKey(name: 'file') required final PostSourceFile fileRaw,
+      @JsonKey(name: 'file')
+          required final PostSourceFile fileRaw,
       required final PostPreviewFile preview,
       required final PostSampleFile sample,
       required final Score score,
@@ -695,7 +699,7 @@ abstract class _Post extends Post {
       required final bool hasNotes,
       required final double? duration,
       @JsonKey(includeFromJson: false, includeToJson: false)
-      final VoteStatus voteStatus}) = _$_Post;
+          final VoteStatus voteStatus}) = _$_Post;
   const _Post._() : super._();
 
   factory _Post.fromJson(Map<String, dynamic> json) = _$_Post.fromJson;

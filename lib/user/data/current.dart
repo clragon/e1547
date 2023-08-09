@@ -60,7 +60,7 @@ class CurrentUser with _$CurrentUser {
     required int commentThreshold,
     required String defaultImageSize,
     required String? favoriteTags,
-    required String blacklistedTags,
+    required String? blacklistedTags,
     required String timeZone,
     required int perPage,
     required String? customStyle,

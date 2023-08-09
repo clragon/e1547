@@ -65,7 +65,7 @@ _$_CurrentUser _$$_CurrentUserFromJson(Map<String, dynamic> json) =>
       commentThreshold: json['comment_threshold'] as int,
       defaultImageSize: json['default_image_size'] as String,
       favoriteTags: json['favorite_tags'] as String?,
-      blacklistedTags: json['blacklisted_tags'] as String,
+      blacklistedTags: json['blacklisted_tags'] as String?,
       timeZone: json['time_zone'] as String,
       perPage: json['per_page'] as int,
       customStyle: json['custom_style'] as String?,

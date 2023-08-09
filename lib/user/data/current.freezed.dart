@@ -74,7 +74,7 @@ mixin _$CurrentUser {
   int get commentThreshold => throw _privateConstructorUsedError;
   String get defaultImageSize => throw _privateConstructorUsedError;
   String? get favoriteTags => throw _privateConstructorUsedError;
-  String get blacklistedTags => throw _privateConstructorUsedError;
+  String? get blacklistedTags => throw _privateConstructorUsedError;
   String get timeZone => throw _privateConstructorUsedError;
   int get perPage => throw _privateConstructorUsedError;
   String? get customStyle => throw _privateConstructorUsedError;
@@ -153,7 +153,7 @@ abstract class $CurrentUserCopyWith<$Res> {
       int commentThreshold,
       String defaultImageSize,
       String? favoriteTags,
-      String blacklistedTags,
+      String? blacklistedTags,
       String timeZone,
       int perPage,
       String? customStyle,
@@ -233,7 +233,7 @@ class _$CurrentUserCopyWithImpl<$Res, $Val extends CurrentUser>
     Object? commentThreshold = null,
     Object? defaultImageSize = null,
     Object? favoriteTags = freezed,
-    Object? blacklistedTags = null,
+    Object? blacklistedTags = freezed,
     Object? timeZone = null,
     Object? perPage = null,
     Object? customStyle = freezed,
@@ -462,10 +462,10 @@ class _$CurrentUserCopyWithImpl<$Res, $Val extends CurrentUser>
           ? _value.favoriteTags
           : favoriteTags // ignore: cast_nullable_to_non_nullable
               as String?,
-      blacklistedTags: null == blacklistedTags
+      blacklistedTags: freezed == blacklistedTags
           ? _value.blacklistedTags
           : blacklistedTags // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
       timeZone: null == timeZone
           ? _value.timeZone
           : timeZone // ignore: cast_nullable_to_non_nullable
@@ -573,7 +573,7 @@ abstract class _$$_CurrentUserCopyWith<$Res>
       int commentThreshold,
       String defaultImageSize,
       String? favoriteTags,
-      String blacklistedTags,
+      String? blacklistedTags,
       String timeZone,
       int perPage,
       String? customStyle,
@@ -651,7 +651,7 @@ class __$$_CurrentUserCopyWithImpl<$Res>
     Object? commentThreshold = null,
     Object? defaultImageSize = null,
     Object? favoriteTags = freezed,
-    Object? blacklistedTags = null,
+    Object? blacklistedTags = freezed,
     Object? timeZone = null,
     Object? perPage = null,
     Object? customStyle = freezed,
@@ -880,10 +880,10 @@ class __$$_CurrentUserCopyWithImpl<$Res>
           ? _value.favoriteTags
           : favoriteTags // ignore: cast_nullable_to_non_nullable
               as String?,
-      blacklistedTags: null == blacklistedTags
+      blacklistedTags: freezed == blacklistedTags
           ? _value.blacklistedTags
           : blacklistedTags // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
       timeZone: null == timeZone
           ? _value.timeZone
           : timeZone // ignore: cast_nullable_to_non_nullable
@@ -1110,7 +1110,7 @@ class _$_CurrentUser implements _CurrentUser {
   @override
   final String? favoriteTags;
   @override
-  final String blacklistedTags;
+  final String? blacklistedTags;
   @override
   final String timeZone;
   @override
@@ -1390,7 +1390,7 @@ abstract class _CurrentUser implements CurrentUser {
       required final int commentThreshold,
       required final String defaultImageSize,
       required final String? favoriteTags,
-      required final String blacklistedTags,
+      required final String? blacklistedTags,
       required final String timeZone,
       required final int perPage,
       required final String? customStyle,
@@ -1514,7 +1514,7 @@ abstract class _CurrentUser implements CurrentUser {
   @override
   String? get favoriteTags;
   @override
-  String get blacklistedTags;
+  String? get blacklistedTags;
   @override
   String get timeZone;
   @override

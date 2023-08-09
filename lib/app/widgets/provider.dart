@@ -107,7 +107,7 @@ class DenylistProvider
             pull: () async {
               CurrentUser? user = await client.currentUser(force: true);
               if (user == null) return null;
-              return user.blacklistedTags.split('\n');
+              return user.blacklistedTags?.split('\n');
             },
             push: (value) async {
               settings.denylist.value = value;
