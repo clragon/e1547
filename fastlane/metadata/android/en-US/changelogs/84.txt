@@ -1,0 +1,2 @@
+### Fixed
+- login for new users with no blacklist
