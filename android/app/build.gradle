@@ -59,10 +59,10 @@ android {
 
     signingConfigs {
         release {
-            if (keystorePropertiesFile.exists()) {
+            if (keystoreProperties['storeFile']) {
                 keyAlias keystoreProperties['keyAlias']
                 keyPassword keystoreProperties['keyPassword']
-                storeFile keystoreProperties['storeFile']
+                storeFile file(keystoreProperties['storeFile'])
                 storePassword keystoreProperties['storePassword']
             } else {
                 initWith signingConfigs.debug
