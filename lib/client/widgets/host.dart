@@ -1,5 +1,4 @@
 import 'package:e1547/client/client.dart';
-import 'package:e1547/dtext/dtext.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -34,14 +33,15 @@ class _HostPageState extends State<HostPage> {
       setState(() {
         loading = true;
       });
-      String host = linkToDisplay(controller.text);
-      await service.setCustomHost(host);
+      await service.setCustomHost(controller.text);
     } on CustomHostDefaultException {
       error = 'Custom host cannot be default host';
     } on CustomHostIncompatibleException {
       error = 'Host API incompatible';
     } on CustomHostUnreachableException {
       error = 'Host cannot be reached';
+    } on CustomHostInvalidException {
+      error = 'Host is invalid';
     } finally {
       if (mounted) {
         setState(() {

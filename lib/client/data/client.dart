@@ -28,7 +28,7 @@ class Client {
   }) {
     _dio = Dio(
       BaseOptions(
-        baseUrl: Uri.https(host, '/').toString(),
+        baseUrl: host,
         headers: {
           HttpHeaders.userAgentHeader: userAgent,
           HttpHeaders.cookieHeader: cookies
@@ -59,11 +59,27 @@ class Client {
     }
   }
 
+  /// The host of this client.
+  /// Must be a fully qualified URL that ends in a slash.
   final String host;
+
+  /// The user agent of this client.
+  /// Format: `appname/version (developer)`
   final String userAgent;
+
+  /// The cache to use for this client.
   final CacheStore? cache;
+
+  /// The memory cache to use for this client.
+  /// This is used to cache the current user.
   final CacheStore? memoryCache;
+
+  /// The credentials to use for this client.
   final Credentials? credentials;
+
+  /// The cookies to use for this client.
+  ///
+  /// This is used to get past the Cloudflare bot check.
   final List<Cookie>? cookies;
 
   late Dio _dio;
@@ -74,12 +90,14 @@ class Client {
 
   bool get hasLogin => credentials != null;
 
-  String withHost(String path) => Uri.parse(path)
-      .replace(
-        scheme: 'https',
-        host: host,
-      )
-      .toString();
+  /// Appends [path] to [host] and returns the result.
+  String withHost(String path) {
+    if (path.startsWith('/')) {
+      path = path.substring(1);
+    }
+    Uri uri = Uri.parse(host);
+    return uri.replace(path: '${uri.path}$path').toString();
+  }
 
   Future<void> availability() async => _dio.get('');
 

@@ -1,6 +1,7 @@
 import 'package:e1547/app/app.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/denylist/denylist.dart';
+import 'package:e1547/dtext/dtext.dart';
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/history/history.dart';
 import 'package:e1547/interface/interface.dart';
@@ -34,7 +35,7 @@ class SettingsPage extends StatelessWidget {
                   onLongPress: () => setCustomHost(context),
                   child: SwitchListTile(
                     title: const Text('Host'),
-                    subtitle: Text(service.host),
+                    subtitle: Text(linkToDisplay(service.host)),
                     secondary: const Icon(Icons.storage),
                     value: service.isCustomHost,
                     onChanged: (value) async {

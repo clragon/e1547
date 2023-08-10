@@ -8,14 +8,15 @@ import 'package:flutter/foundation.dart';
 class ClientService extends ChangeNotifier {
   ClientService({
     required this.userAgent,
-    required this.allowedHosts,
+    required List<String> allowedHosts,
     String? host,
     String? customHost,
     this.cache,
     this.memoryCache,
     Credentials? credentials,
     List<Cookie> cookies = const [],
-  })  : _host = host ?? allowedHosts.first,
+  })  : _host = sanitizeHost(host ?? allowedHosts.first),
+        allowedHosts = List.unmodifiable(allowedHosts.map(sanitizeHost)),
         _customHost = customHost,
         _credentials = credentials,
         _cookies = List.unmodifiable(cookies);
@@ -26,7 +27,7 @@ class ClientService extends ChangeNotifier {
   final CacheStore? cache;
   final CacheStore? memoryCache;
 
-  String _host;
+  late String _host;
 
   String get host => _host;
 
@@ -34,7 +35,7 @@ class ClientService extends ChangeNotifier {
 
   set host(String value) {
     if (_host == value) return;
-    _host = value;
+    _host = sanitizeHost(value);
     notifyListeners();
   }
 
@@ -44,7 +45,11 @@ class ClientService extends ChangeNotifier {
 
   set customHost(String? value) {
     if (_customHost == value) return;
-    _customHost = value;
+    if (value != null) {
+      _customHost = sanitizeHost(value);
+    } else {
+      _customHost = null;
+    }
     notifyListeners();
   }
 
@@ -78,6 +83,11 @@ class ClientService extends ChangeNotifier {
       }
       customHost = null;
     } else {
+      try {
+        value = sanitizeHost(value);
+      } on FormatException {
+        throw CustomHostInvalidException(host: value!);
+      }
       await Future.delayed(
         Duration(seconds: 1, milliseconds: Random().nextInt(300)),
       );
@@ -127,6 +137,26 @@ class ClientService extends ChangeNotifier {
   }
 
   void logout() => credentials = null;
+
+  /// Ensures that [host] is a valid URL.
+  ///
+  /// If no scheme is provided, `https` is used.
+  static String sanitizeHost(String host) {
+    Uri uri = Uri.parse(host);
+    if (uri.host.isEmpty && uri.path.isNotEmpty) {
+      uri = Uri.https(uri.path);
+    }
+    uri = Uri(
+      scheme: uri.scheme,
+      host: uri.host,
+      port: uri.port,
+      path: uri.path,
+    );
+    if (!uri.path.endsWith('/')) {
+      uri = uri.replace(path: '${uri.path}/');
+    }
+    return uri.toString();
+  }
 }
 
 abstract class CustomHostException implements Exception {
@@ -152,4 +182,9 @@ class CustomHostIncompatibleException extends CustomHostException {
 class CustomHostUnreachableException extends CustomHostException {
   CustomHostUnreachableException({required super.host})
       : super(message: 'Host cannot be reached');
+}
+
+class CustomHostInvalidException extends CustomHostException {
+  CustomHostInvalidException({required super.host})
+      : super(message: 'Host is invalid');
 }
