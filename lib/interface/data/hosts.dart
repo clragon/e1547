@@ -3,7 +3,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 final Map<IconData, List<String>> hostIcons = {
   FontAwesomeIcons.mastodon: ['mastodon.art', 'baraag.net', 'aryion.com'],
-  FontAwesomeIcons.discord: ['cdn.discordapp.com'],
+  FontAwesomeIcons.discord: ['discord.com', 'cdn.discordapp.com'],
   FontAwesomeIcons.tumblr: ['media.tumblr.com', 'tumblr.com'],
   FontAwesomeIcons.vk: ['pp.userapi.com', 'vk.me'],
   FontAwesomeIcons.wikipediaW: ['upload.wikimedia.org'],
