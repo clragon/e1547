@@ -18,6 +18,10 @@ final Map<IconData, List<String>> hostIcons = {
   ],
   FontAwesomeIcons.paw: ['furaffinity.net'],
   FontAwesomeIcons.p: ['pixiv.net'],
+  FontAwesomeIcons.splotch: [
+    'inkbunny.net',
+    'nl.ib.metapix.net',
+  ],
 };
 
 IconData? getHostIcon(String url) {
