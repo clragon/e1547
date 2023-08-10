@@ -1,10 +1,10 @@
 import 'package:e1547/interface/interface.dart';
 import 'package:flutter/foundation.dart';
 
-class Tagset extends Iterable<StringTag> {
-  Tagset(Set<StringTag> tags) : _tags = {for (final t in tags) t.name: t};
+class TagSet extends Iterable<StringTag> {
+  TagSet(Set<StringTag> tags) : _tags = {for (final t in tags) t.name: t};
 
-  Tagset.parse(String tagString) : _tags = {} {
+  TagSet.parse(String tagString) : _tags = {} {
     for (final ts in tagString.split(' ').trim()) {
       if (ts.trim().isEmpty) {
         continue;

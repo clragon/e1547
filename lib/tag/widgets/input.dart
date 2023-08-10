@@ -191,8 +191,8 @@ class _AdvancedTagInputState extends State<AdvancedTagInput> {
     super.dispose();
   }
 
-  Future<void> withTags(Future<Tagset> Function(Tagset tags) editor) async {
-    controller.text = '${await editor(Tagset.parse(controller.text))} ';
+  Future<void> withTags(Future<TagSet> Function(TagSet tags) editor) async {
+    controller.text = '${await editor(TagSet.parse(controller.text))} ';
     controller.setFocusToEnd();
   }
 
