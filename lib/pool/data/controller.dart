@@ -112,19 +112,19 @@ class PoolController extends PostsController {
   PoolController({
     required super.client,
     required super.denylist,
-    required this.pool,
+    required this.id,
     bool orderByOldest = true,
   }) : super(
           orderPools: orderByOldest,
           canSearch: false,
         );
 
-  final Pool pool;
+  final int id;
 
   @override
   @protected
   Future<List<Post>> fetch(int page, bool force) async => client.poolPosts(
-        pool.id,
+        id,
         page,
         orderByOldest: orderPools,
         force: force,

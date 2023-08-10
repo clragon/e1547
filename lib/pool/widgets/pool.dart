@@ -26,7 +26,7 @@ class _PoolPageState extends State<PoolPage> {
       create: (context, client, denylist) => PoolController(
         client: client,
         denylist: denylist,
-        pool: widget.pool,
+        id: widget.pool.id,
         orderByOldest: widget.orderByOldest ?? true,
       ),
       child: Consumer<PostsController>(
