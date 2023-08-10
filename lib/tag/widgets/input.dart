@@ -7,141 +7,131 @@ import 'package:e1547/post/post.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_sub/flutter_sub.dart';
 import 'package:intl/intl.dart';
 
-class TagInput extends StatefulWidget {
+class TagInput extends StatelessWidget {
   const TagInput({
-    required this.labelText,
     required this.submit,
     required this.controller,
     this.multiInput = true,
     this.category,
+    this.direction,
     this.readOnly = false,
+    this.labelText,
+    this.decoration,
     this.textInputAction,
   });
 
-  final String? labelText;
   final SubmitString submit;
   final TextEditingController? controller;
   final bool multiInput;
   final int? category;
+  final AxisDirection? direction;
   final bool readOnly;
+  final String? labelText;
+  final InputDecoration? decoration;
   final TextInputAction? textInputAction;
 
   @override
-  State<TagInput> createState() => _TagInputState();
-}
-
-class _TagInputState extends State<TagInput> {
-  late TextEditingController controller;
-
-  @override
-  void initState() {
-    super.initState();
-    controller = widget.controller ?? TextEditingController();
-    controller.text = sortTags(controller.text);
-    if (controller.text != '') {
-      controller.text = '${controller.text} ';
-    }
-    controller.setFocusToEnd();
-  }
-
-  @override
-  void didUpdateWidget(covariant TagInput oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.controller != oldWidget.controller) {
-      if (oldWidget.controller == null) {
-        controller.dispose();
-      }
-      controller = widget.controller ?? TextEditingController();
-    }
-  }
-
-  @override
-  void dispose() {
-    if (widget.controller == null) {
-      controller.dispose();
-    }
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return SearchInput<TagSuggestion>(
-      labelText: widget.labelText,
-      controller: widget.controller,
-      submit: (result) => widget.submit(sortTags(result)),
-      readOnly: widget.readOnly,
-      inputFormatters: [
-        LowercaseTextInputFormatter(),
-        if (!widget.multiInput) FilteringTextInputFormatter.deny(' '),
-      ],
-      textInputAction: widget.textInputAction,
-      onSuggestionSelected: (suggestion) {
-        List<String> tags = controller.text.split(' ').trim();
-        List<String> before = [];
-        for (String tag in tags) {
-          before.add(tag);
-          if (before.join(' ').length >= controller.selection.extent.offset) {
-            String operator = tags[tags.indexOf(tag)][0];
-            if (operator != '-' && operator != '~') {
-              operator = '';
+    return SubDefault<TextEditingController>(
+      value: controller,
+      create: TextEditingController.new,
+      builder: (context, controller) => SubEffect(
+        effect: () {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            controller.text = sortTags(controller.text);
+            if (controller.text.isNotEmpty) {
+              controller.text += ' ';
             }
-            tags[tags.indexOf(tag)] = operator + suggestion.name;
-            break;
-          }
-        }
-        controller.text = '${sortTags(tags.join(' '))} ';
-        controller.setFocusToEnd();
-      },
-      itemBuilder: (context, itemData) => Row(
-        children: [
-          Container(
-            color: TagCategory.values
-                .firstWhereOrNull((e) => e.id == itemData.category)
-                ?.color,
-            height: 54,
-            width: 5,
+          });
+          return null;
+        },
+        keys: [controller],
+        child: SearchInput<TagSuggestion>(
+          controller: controller,
+          submit: (result) => submit(sortTags(result)),
+          direction: direction,
+          readOnly: readOnly,
+          labelText: labelText,
+          decoration: decoration,
+          inputFormatters: [
+            LowercaseTextInputFormatter(),
+            if (!multiInput) FilteringTextInputFormatter.deny(' '),
+          ],
+          textInputAction: textInputAction,
+          onSuggestionSelected: (suggestion) {
+            List<String> tags = controller.text.split(' ').trim();
+            List<String> before = [];
+            for (String tag in tags) {
+              before.add(tag);
+              if (before.join(' ').length >=
+                  controller.selection.extent.offset) {
+                String operator = tags[tags.indexOf(tag)][0];
+                if (operator != '-' && operator != '~') {
+                  operator = '';
+                }
+                tags[tags.indexOf(tag)] = operator + suggestion.name;
+                break;
+              }
+            }
+            controller.text = '${sortTags(tags.join(' '))} ';
+            controller.setFocusToEnd();
+          },
+          itemBuilder: (context, itemData) => Row(
+            children: [
+              Container(
+                color: TagCategory.values
+                    .firstWhereOrNull((e) => e.id == itemData.category)
+                    ?.color,
+                height: 54,
+                width: 5,
+              ),
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Text(
+                  itemData.name,
+                  style: const TextStyle(fontSize: 16),
+                ),
+              ),
+              const Spacer(),
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Text(
+                  NumberFormat.compact().format(itemData.postCount),
+                  style: const TextStyle(fontSize: 16),
+                ),
+              ),
+            ],
           ),
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Text(
-              itemData.name,
-              style: const TextStyle(fontSize: 16),
-            ),
-          ),
-          const Spacer(),
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Text(
-              NumberFormat.compact().format(itemData.postCount),
-              style: const TextStyle(fontSize: 16),
-            ),
-          ),
-        ],
+          suggestionsCallback: (pattern) async {
+            List<String> tags = controller.text.split(' ');
+            List<String> before = [];
+            int selection = 0;
+            for (final tag in tags) {
+              before.add(tag);
+              if (before.join(' ').length >=
+                  controller.selection.extent.offset) {
+                selection = tags.indexOf(tag);
+                break;
+              }
+            }
+            if (tagToRaw(tags[selection].trim()).isNotEmpty &&
+                !tags[selection].contains(':')) {
+              return context
+                  .read<Client>()
+                  .autocomplete(
+                    tagToRaw(tags[selection]),
+                    category: category,
+                  )
+                  .then((value) => value.take(3));
+            } else {
+              return [];
+            }
+          },
+        ),
       ),
-      suggestionsCallback: (pattern) async {
-        List<String> tags = controller.text.split(' ');
-        List<String> before = [];
-        int selection = 0;
-        for (final tag in tags) {
-          before.add(tag);
-          if (before.join(' ').length >= controller.selection.extent.offset) {
-            selection = tags.indexOf(tag);
-            break;
-          }
-        }
-        if (tagToRaw(tags[selection].trim()).isNotEmpty &&
-            !tags[selection].contains(':')) {
-          return context
-              .read<Client>()
-              .autocomplete(tagToRaw(tags[selection]),
-                  category: widget.category)
-              .then((value) => value.take(3));
-        } else {
-          return [];
-        }
-      },
     );
   }
 }

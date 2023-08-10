@@ -11,18 +11,23 @@ class SearchInput<T> extends StatelessWidget {
     required this.itemBuilder,
     required this.submit,
     this.controller,
+    this.direction,
     this.readOnly = false,
-    this.category,
     this.labelText,
+    this.decoration,
     this.textInputAction,
     this.inputFormatters,
-  });
+  }) : assert(
+          decoration == null || labelText == null,
+          'Cannot specify both a decoration and a labelText\n',
+        );
 
-  final String? labelText;
   final SubmitString submit;
   final TextEditingController? controller;
-  final int? category;
+  final AxisDirection? direction;
   final bool readOnly;
+  final String? labelText;
+  final InputDecoration? decoration;
   final TextInputAction? textInputAction;
   final List<TextInputFormatter>? inputFormatters;
   final SuggestionSelectionCallback<T> onSuggestionSelected;
@@ -32,23 +37,24 @@ class SearchInput<T> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TypeAheadField<T>(
-      direction: AxisDirection.up,
+      direction: direction ?? AxisDirection.down,
       hideOnEmpty: true,
       hideOnError: true,
       hideKeyboard: readOnly,
       keepSuggestionsOnSuggestionSelected: true,
       // This implementation is very crude and will not react to FAB position changes
-      suggestionsBoxDecoration: Scaffold.of(context).hasFloatingActionButton
-          ? const SuggestionsBoxDecoration(
-              shape: SearchInputCutout(),
-              clipBehavior: Clip.antiAlias,
-            )
-          : const SuggestionsBoxDecoration(),
+      suggestionsBoxDecoration:
+          (Scaffold.maybeOf(context)?.hasFloatingActionButton ?? false)
+              ? const SuggestionsBoxDecoration(
+                  shape: SearchInputCutout(),
+                  clipBehavior: Clip.antiAlias,
+                )
+              : const SuggestionsBoxDecoration(),
       textFieldConfiguration: TextFieldConfiguration(
         controller: controller,
         autofocus: true,
         inputFormatters: inputFormatters,
-        decoration: InputDecoration(labelText: labelText),
+        decoration: decoration ?? InputDecoration(labelText: labelText),
         onSubmitted: submit,
         textInputAction: textInputAction ?? TextInputAction.search,
       ),
