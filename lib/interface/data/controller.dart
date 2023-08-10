@@ -94,7 +94,6 @@ abstract class DataController<KeyType, ItemType> with ChangeNotifier {
     }
     try {
       _fetching = true;
-      error = null;
       if (reset && !background) this.reset();
       KeyType? key = nextPageKey;
       if (reset) key = firstPageKey;
@@ -102,12 +101,14 @@ abstract class DataController<KeyType, ItemType> with ChangeNotifier {
       PageResponse response = await performRequest(key, reset);
       if (_disposed) return;
       if (response.error != null) {
-        error = response.error;
+        _error = response.error;
         return;
+      } else {
+        _error = null;
       }
       if (reset && background) this.reset();
-      rawItems = [if (rawItems != null) ...rawItems!, ...response.items!];
       _nextPageKey = response.nextPageKey;
+      rawItems = [if (rawItems != null) ...rawItems!, ...response.items!];
     } finally {
       _fetching = false;
       if (!_disposed) {
@@ -238,6 +239,7 @@ extension DataControllerItemManipulation<KeyType, ItemType>
 extension PageLoading<KeyType, ItemType, Config>
     on DataController<KeyType, ItemType> {
   Future<void> waitForFirstPage() async {
+    if (error != null) return;
     if (items == null) return getNextPage();
   }
 }
