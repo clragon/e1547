@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:e1547/client/client.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:flutter/foundation.dart';
@@ -66,62 +64,4 @@ abstract class PageClientDataController<T>
           }
         },
       );
-}
-
-abstract class CursorClientDataController<T>
-    extends ClientDataController<String, T> {
-  CursorClientDataController({
-    bool? orderByOldest,
-  })  : _orderByOldest = orderByOldest ?? true,
-        super(firstPageKey: _defaultPage);
-
-  static const String _defaultPage = 'default';
-  static const String _cursorFirstPage = 'a0';
-  static const String _indexFirstPage = '1';
-
-  bool _orderByOldest;
-  bool get orderByOldest => _orderByOldest;
-  set orderByOldest(bool value) {
-    if (_orderByOldest == value) return;
-    _orderByOldest = value;
-    notifyListeners();
-    refresh();
-  }
-
-  @protected
-  int getId(T item);
-
-  @override
-  Future<PageResponse<String, T>> performRequest(
-    String page,
-    bool force,
-  ) async =>
-      withError(
-        () async {
-          if (page == _defaultPage) {
-            page = orderByOldest ? _cursorFirstPage : _indexFirstPage;
-          }
-          List<T> items = await fetch(page, force);
-          if (orderByOldest) {
-            items.sort((a, b) => getId(a).compareTo(getId(b)));
-          }
-          if (items.isEmpty) {
-            return PageResponse.last(items: items);
-          } else {
-            return PageResponse(
-              items: items,
-              nextPageKey: _getNextpageKey(page, items),
-            );
-          }
-        },
-      );
-
-  String _getNextpageKey(String current, List<T> items) {
-    if (orderByOldest) {
-      if (items.isEmpty) return _cursorFirstPage;
-      return 'a${items.map((e) => getId(e)).reduce(max)}';
-    } else {
-      return (int.parse(current) + 1).toString();
-    }
-  }
 }

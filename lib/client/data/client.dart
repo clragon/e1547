@@ -544,8 +544,9 @@ class Client {
 
   Future<List<Comment>> comments(
     int postId,
-    String page, {
+    int page, {
     bool? force,
+    bool? ascending,
     CancelToken? cancelToken,
   }) async {
     Object body = await _dio
@@ -554,6 +555,7 @@ class Client {
           queryParameters: {
             'group_by': 'comment',
             'search[post_id]': postId,
+            'search[order]': ascending ?? false ? 'id_asc' : 'id_desc',
             'page': page,
           },
           options: forceOptions(force),
@@ -692,7 +694,8 @@ class Client {
 
   Future<List<Reply>> replies(
     int topicId,
-    String page, {
+    int page, {
+    bool? ascending,
     bool? force,
     CancelToken? cancelToken,
   }) async {
@@ -701,6 +704,7 @@ class Client {
           'forum_posts.json',
           queryParameters: {
             'search[topic_id]': topicId,
+            'search[order]': ascending ?? false ? 'id_asc' : 'id_desc',
             'page': page,
           },
           options: forceOptions(force),

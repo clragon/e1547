@@ -142,7 +142,7 @@ class PostDetailCommentsWrapper extends StatelessWidget {
             SliverPadding(
               padding: const EdgeInsets.symmetric(horizontal: 12)
                   .add(const EdgeInsets.only(bottom: 30)),
-              sliver: PagedSliverList<String, Comment>(
+              sliver: PagedSliverList<int, Comment>(
                 pagingController: controller.paging,
                 builderDelegate: defaultPagedChildBuilderDelegate(
                   pagingController: controller.paging,

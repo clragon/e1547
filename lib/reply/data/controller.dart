@@ -4,13 +4,13 @@ import 'package:e1547/interface/interface.dart';
 import 'package:e1547/reply/reply.dart';
 import 'package:flutter/material.dart';
 
-class RepliesController extends CursorClientDataController<Reply> {
+class RepliesController extends PageClientDataController<Reply> {
   RepliesController({
     required this.client,
     required this.topicId,
     required this.denylist,
-    super.orderByOldest,
-  }) {
+    bool? orderByOldest,
+  }) : _orderByOldest = orderByOldest ?? true {
     denylist.addListener(applyFilter);
   }
 
@@ -19,18 +19,23 @@ class RepliesController extends CursorClientDataController<Reply> {
   final int topicId;
   final DenylistService denylist;
 
-  @override
-  @protected
-  Future<List<Reply>> fetch(String page, bool force) => client.replies(
-        topicId,
-        page,
-        force: force,
-        cancelToken: cancelToken,
-      );
+  bool _orderByOldest;
+  bool get orderByOldest => _orderByOldest;
+  set orderByOldest(bool value) {
+    if (_orderByOldest == value) return;
+    _orderByOldest = value;
+    refresh();
+  }
 
   @override
   @protected
-  int getId(Reply item) => item.id;
+  Future<List<Reply>> fetch(int page, bool force) => client.replies(
+        topicId,
+        page,
+        ascending: orderByOldest,
+        force: force,
+        cancelToken: cancelToken,
+      );
 
   @override
   void dispose() {

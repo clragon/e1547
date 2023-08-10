@@ -5,12 +5,13 @@ import 'package:e1547/denylist/denylist.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
 
-class CommentsController extends CursorClientDataController<Comment> {
+class CommentsController extends PageClientDataController<Comment> {
   CommentsController({
     required this.client,
     required this.postId,
     required this.denylist,
-  }) {
+    bool? orderByOldest,
+  }) : _orderByOldest = orderByOldest ?? true {
     denylist.addListener(applyFilter);
   }
 
@@ -19,22 +20,27 @@ class CommentsController extends CursorClientDataController<Comment> {
   final int postId;
   final DenylistService denylist;
 
+  bool _orderByOldest;
+  bool get orderByOldest => _orderByOldest;
+  set orderByOldest(bool value) {
+    if (_orderByOldest == value) return;
+    _orderByOldest = value;
+    refresh();
+  }
+
   @override
   @protected
   Future<List<Comment>> fetch(
-    String page,
+    int page,
     bool force,
   ) =>
       client.comments(
         postId,
         page,
+        ascending: orderByOldest,
         force: force,
         cancelToken: cancelToken,
       );
-
-  @override
-  @protected
-  int getId(Comment item) => item.id;
 
   @override
   List<Comment>? filter(List<Comment>? items) => super.filter(
