@@ -12,16 +12,10 @@ final Map<IconData, List<String>> hostIcons = {
   FontAwesomeIcons.facebookF: ['.fbcdn.net'],
   FontAwesomeIcons.twitter: ['.twimg.com', 'twitter.com'],
   FontAwesomeIcons.redditAlien: ['reddit.com'],
-  FontAwesomeIcons.deviantart: [
-    '.deviantart.com',
-    '.deviantart.net',
-  ],
+  FontAwesomeIcons.deviantart: ['.deviantart.com', '.deviantart.net'],
   FontAwesomeIcons.paw: ['furaffinity.net'],
-  FontAwesomeIcons.p: ['pixiv.net'],
-  FontAwesomeIcons.splotch: [
-    'inkbunny.net',
-    'nl.ib.metapix.net',
-  ],
+  FontAwesomeIcons.p: ['pixiv.net', 'i.pximg.net'],
+  FontAwesomeIcons.splotch: ['inkbunny.net', 'nl.ib.metapix.net'],
 };
 
 IconData? getHostIcon(String url) {
