@@ -29,7 +29,23 @@ class FollowsDatabase extends _$FollowsDatabase {
   FollowsDatabase(super.e);
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
+
+  @override
+  MigrationStrategy get migration => MigrationStrategy(
+        onUpgrade: (m, from, to) async {
+          if (from == 1) {
+            await customUpdate(
+              'UPDATE ${followsTable.actualTableName} SET ${followsTable.host.escapedName} = ? || ${followsTable.host.escapedName} || ?',
+              variables: [
+                const Variable<String>('https://'),
+                const Variable<String>('/')
+              ],
+              updates: {followsTable},
+            );
+          }
+        },
+      );
 
   Expression<bool> _hostQuery($FollowsTableTable tbl, String? host) =>
       Variable(host).isNull() | tbl.host.equalsNullable(host);

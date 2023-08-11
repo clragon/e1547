@@ -32,7 +32,23 @@ class HistoriesDatabase extends _$HistoriesDatabase {
   HistoriesDatabase(super.e);
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
+
+  @override
+  MigrationStrategy get migration => MigrationStrategy(
+        onUpgrade: (m, from, to) async {
+          if (from == 1) {
+            await customUpdate(
+              'UPDATE ${historiesTable.actualTableName} SET ${historiesTable.host.escapedName} = ? || ${historiesTable.host.escapedName} || ?',
+              variables: [
+                const Variable<String>('https://'),
+                const Variable<String>('/')
+              ],
+              updates: {historiesTable},
+            );
+          }
+        },
+      );
 
   Expression<bool> _hostQuery($HistoriesTableTable tbl, String? host) =>
       Variable(host).isNull() | tbl.host.equalsNullable(host);
