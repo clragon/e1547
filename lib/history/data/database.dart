@@ -39,7 +39,9 @@ class HistoriesDatabase extends _$HistoriesDatabase {
         onUpgrade: (m, from, to) async {
           if (from == 1) {
             await customUpdate(
-              'UPDATE ${historiesTable.actualTableName} SET ${historiesTable.host.escapedName} = ? || ${historiesTable.host.escapedName} || ?',
+              'UPDATE ${historiesTable.actualTableName} SET'
+              ' ${historiesTable.host.escapedNameFor(SqlDialect.sqlite)} = ?'
+              ' || ${historiesTable.host.escapedNameFor(SqlDialect.sqlite)} || ?',
               variables: [
                 const Variable<String>('https://'),
                 const Variable<String>('/')

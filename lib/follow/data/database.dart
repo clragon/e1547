@@ -36,7 +36,9 @@ class FollowsDatabase extends _$FollowsDatabase {
         onUpgrade: (m, from, to) async {
           if (from == 1) {
             await customUpdate(
-              'UPDATE ${followsTable.actualTableName} SET ${followsTable.host.escapedName} = ? || ${followsTable.host.escapedName} || ?',
+              'UPDATE ${followsTable.actualTableName} SET'
+              ' ${followsTable.host.escapedNameFor(SqlDialect.sqlite)} = ?'
+              ' || ${followsTable.host.escapedNameFor(SqlDialect.sqlite)} || ?',
               variables: [
                 const Variable<String>('https://'),
                 const Variable<String>('/')
