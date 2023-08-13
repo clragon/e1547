@@ -42,42 +42,9 @@ extension PostTagging on Post {
           }
           break;
         case 'score':
-          RegExpMatch? match = RegExp(
-            r'^(?<direction>[<>])?(?<equals>=)?(?<score>d+)\$',
-          ).firstMatch(value);
-          if (match == null) return false;
-          bool greater = match.namedGroup('direction') == '>';
-          bool smaller = match.namedGroup('direction') == '<';
-          bool equal = match.namedGroup('equals') == '=';
-          int? score = int.tryParse(match.namedGroup('score')!);
-          if (score != null) {
-            if (greater) {
-              if (equal) {
-                if (this.score.total >= score) {
-                  return true;
-                }
-              } else {
-                if (this.score.total > score) {
-                  return true;
-                }
-              }
-            }
-            if (smaller) {
-              if (equal) {
-                if (this.score.total <= score) {
-                  return true;
-                }
-              } else {
-                if (this.score.total < score) {
-                  return true;
-                }
-              }
-            }
-            if ((!greater && !smaller) && this.score.total == score) {
-              return true;
-            }
-          }
-          break;
+          NumberRange? range = NumberRange.tryParse(value);
+          if (range == null) return false;
+          return range.has(score.total);
       }
     }
 

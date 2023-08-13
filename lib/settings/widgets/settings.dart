@@ -160,13 +160,15 @@ class SettingsPage extends StatelessWidget {
                               context: context,
                               builder: (context) => RangeDialog(
                                 title: const Text('Tile size'),
-                                value: value,
+                                value: NumberRange(value),
+                                initialMode: RangeDialogMode.exact,
+                                canChangeMode: false,
                                 division: (300 / 50).round(),
                                 min: 100,
                                 max: 400,
                                 onSubmit: (value) {
-                                  if (value == null || value <= 0) return;
-                                  settings.tileSize.value = value;
+                                  if (value == null || value.value <= 0) return;
+                                  settings.tileSize.value = value.value;
                                 },
                               ),
                             ),

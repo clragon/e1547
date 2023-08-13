@@ -214,10 +214,12 @@ class _AdvancedTagInputState extends State<AdvancedTagInput> {
               context: context,
               builder: (context) => RangeDialog(
                 title: Text('Minimum $filterType'),
-                value: value,
+                value: NumberRange(value),
+                initialMode: RangeDialogMode.exact,
+                canChangeMode: false,
                 division: 10,
                 max: 100,
-                onSubmit: (value) => min = value,
+                onSubmit: (value) => min = value?.value,
               ),
             );
 

@@ -27,7 +27,7 @@ export 'widgets/padding.dart';
 export 'widgets/pagination.dart';
 export 'widgets/popups.dart';
 export 'widgets/prompt.dart';
-export 'widgets/range_dialog.dart';
+export 'widgets/range.dart';
 export 'widgets/refreshing.dart';
 export 'widgets/scaffold.dart';
 export 'widgets/selection.dart';
