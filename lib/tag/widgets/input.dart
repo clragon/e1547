@@ -330,6 +330,7 @@ class _AdvancedTagInputState extends State<AdvancedTagInput> {
           controller: controller,
           submit: widget.submit,
           textInputAction: widget.textInputAction,
+          direction: AxisDirection.up,
         ),
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 10),

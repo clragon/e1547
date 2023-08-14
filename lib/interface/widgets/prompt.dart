@@ -195,8 +195,9 @@ class PromptFloatingActionButton extends StatelessWidget {
                   context,
                   builder(context, controller),
                 ),
-        child:
-            controller.isShown ? confirmIcon ?? const Icon(Icons.check) : icon,
+        child: controller.isShown
+            ? (confirmIcon ?? const Icon(Icons.check))
+            : icon,
       ),
     );
   }
@@ -225,7 +226,7 @@ class SheetFloatingActionButton extends StatelessWidget {
       builder: (context, controller) => PromptFloatingActionButton(
         controller: controller,
         builder: builder,
-        confirmIcon: Icon(confirmIcon),
+        confirmIcon: confirmIcon != null ? Icon(confirmIcon) : null,
         icon: Icon(actionIcon),
       ),
     );
