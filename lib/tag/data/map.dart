@@ -5,18 +5,23 @@ import 'package:collection/collection.dart';
 class TagMap extends DelegatingMap<String, String?> {
   TagMap() : super(SplayTreeMap<String, String?>(_tagComparator));
 
-  factory TagMap.from(Map<String, String?> tags) {
-    final map = TagMap();
-    tags.forEach((key, value) => map[key] = value);
-    return map;
-  }
+  factory TagMap.from(Map<String, String?> tags) => TagMap()..addAll(tags);
 
   factory TagMap.parse(String value) {
-    final map = TagMap();
+    TagMap map = TagMap();
+    RegExp tagRegex = RegExp(r'^(?<name>[^:]+)(:(?<value>[^:]*))?$');
     for (final tag in value.split(' ').where((e) => e.trim().isNotEmpty)) {
-      final parts = tag.split(':');
-      final name = parts.first;
-      final tagValue = parts.length > 1 ? parts[1] : null;
+      RegExpMatch? match = tagRegex.firstMatch(tag);
+      if (match == null) {
+        throw FormatException(
+          'Failed to parse tag',
+          value,
+          value.indexOf(tag),
+        );
+      }
+      String name = match.namedGroup('name')!.toLowerCase();
+      String? tagValue = match.namedGroup('value')?.toLowerCase();
+      if (tagValue?.isEmpty ?? false) tagValue = null;
       map[name] = tagValue;
     }
     return map;
@@ -44,8 +49,7 @@ class TagMap extends DelegatingMap<String, String?> {
     }
   }
 
-  String? getTag(String key) =>
-      this[key] != null ? '$key:${this[key]}' : this[key];
+  String? getTag(String key) => '$key:${this[key] ?? ''}';
 
   Iterable<String> getTags() => keys.map(getTag).whereType<String>();
 
