@@ -1,54 +1,42 @@
-import 'package:e1547/interface/interface.dart';
+import 'dart:collection';
+
+import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 
-class TagSet extends Iterable<StringTag> {
-  TagSet(Set<StringTag> tags) : _tags = {for (final t in tags) t.name: t};
+class TagSet extends DelegatingSet<StringTag> {
+  TagSet() : super(SplayTreeSet<StringTag>());
 
-  TagSet.parse(String tagString) : _tags = {} {
-    for (final ts in tagString.split(' ').trim()) {
-      if (ts.trim().isEmpty) {
-        continue;
-      }
-      StringTag t = StringTag.parse(ts);
-      _tags[t.name] = t;
+  factory TagSet.from(Set<StringTag> value) => TagSet()..addAll(value);
+
+  factory TagSet.parse(String value) {
+    final set = TagSet();
+    for (final tag in value.split(' ').where((e) => e.trim().isNotEmpty)) {
+      set.add(StringTag.parse(tag));
     }
+    return set;
   }
 
-  final Map<String, StringTag> _tags;
+  String? operator [](Object? key) {
+    if (key is String) {
+      return firstWhereOrNull((tag) => tag.name == key)?.value;
+    }
+    return null;
+  }
 
+  void operator []=(String key, String? value) => add(StringTag(key, value));
+
+  List<String> get keys => map((e) => e.name).toList();
+
+  bool containsKey(String key) => keys.contains(key);
+
+  void removeKey(String key) => removeWhere((tag) => tag.name == key);
+
+  @override
+  String toString() => join(' ');
+}
+
+extension TagSetLink on TagSet {
   String get link => '/posts?tags=${toString()}';
-
-  @override
-  bool contains(Object? element) => _tags.containsValue(element);
-
-  bool containsTag(String tag) => _tags.containsKey(tag);
-
-  String? operator [](String? name) {
-    StringTag? t = _tags[name!];
-    if (t == null) {
-      return null;
-    }
-
-    return t.value;
-  }
-
-  void operator []=(String name, String? value) {
-    _tags[name] = StringTag(name, value);
-  }
-
-  void remove(String? name) {
-    _tags.remove(name);
-  }
-
-  @override
-  Iterator<StringTag> get iterator => _tags.values.iterator;
-
-  @override
-  String toString() {
-    List<StringTag> tags = _tags.values.toList();
-    tags.sort();
-    return tags.join(' ');
-  }
 }
 
 @immutable

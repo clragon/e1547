@@ -228,7 +228,7 @@ class _AdvancedTagInputState extends State<AdvancedTagInput> {
             }
 
             if (min == 0) {
-              tags.remove(filterType);
+              tags.removeKey(filterType);
             } else {
               tags[filterType] = '>=$min';
             }
@@ -257,7 +257,7 @@ class _AdvancedTagInputState extends State<AdvancedTagInput> {
 
           withTags((tags) async {
             if (orderType == 'default') {
-              tags.remove('order');
+              tags.removeKey('order');
             } else {
               tags['order'] = orderType;
             }
@@ -307,12 +307,12 @@ class _AdvancedTagInputState extends State<AdvancedTagInput> {
             if (key == null) {
               return tags;
             }
-            if (key == 'status' && tags.containsTag('status')) {
-              tags.remove('status');
+            if (key == 'status' && tags.containsKey('status')) {
+              tags.removeKey('status');
               return tags;
             }
-            if (key == 'inpool' && tags.containsTag('inpool')) {
-              tags.remove('inpool');
+            if (key == 'inpool' && tags.containsKey('inpool')) {
+              tags.removeKey('inpool');
               return tags;
             }
             tags[key!] = value;
