@@ -1,85 +1,28 @@
 import 'dart:collection';
 
 import 'package:collection/collection.dart';
-import 'package:flutter/foundation.dart';
 
-class TagSet extends DelegatingSet<StringTag> {
-  TagSet() : super(SplayTreeSet<StringTag>());
+class TagMap extends DelegatingMap<String, String?> {
+  TagMap() : super(SplayTreeMap<String, String?>(_tagComparator));
 
-  factory TagSet.from(Set<StringTag> value) => TagSet()..addAll(value);
+  factory TagMap.from(Map<String, String?> tags) {
+    final map = TagMap();
+    tags.forEach((key, value) => map[key] = value);
+    return map;
+  }
 
-  factory TagSet.parse(String value) {
-    final set = TagSet();
+  factory TagMap.parse(String value) {
+    final map = TagMap();
     for (final tag in value.split(' ').where((e) => e.trim().isNotEmpty)) {
-      set.add(StringTag.parse(tag));
+      final parts = tag.split(':');
+      final name = parts.first;
+      final tagValue = parts.length > 1 ? parts[1] : null;
+      map[name] = tagValue;
     }
-    return set;
+    return map;
   }
 
-  String? operator [](Object? key) {
-    if (key is String) {
-      return firstWhereOrNull((tag) => tag.name == key)?.value;
-    }
-    return null;
-  }
-
-  void operator []=(String key, String? value) => add(StringTag(key, value));
-
-  List<String> get keys => map((e) => e.name).toList();
-
-  bool containsKey(String key) => keys.contains(key);
-
-  void removeKey(String key) => removeWhere((tag) => tag.name == key);
-
-  @override
-  String toString() => join(' ');
-}
-
-extension TagSetLink on TagSet {
-  String get link => '/posts?tags=${toString()}';
-}
-
-@immutable
-class StringTag implements Comparable<StringTag> {
-  const StringTag(this.name, [this._value]);
-
-  factory StringTag.parse(String tag) {
-    tag = tag.trim();
-    if (tag.isEmpty) throw const FormatException('Input is empty');
-
-    RegExp pattern = RegExp(r'^(?<name>[-~]?.+?)(?::(?<value>.+))?$');
-    RegExpMatch? match = pattern.firstMatch(tag);
-
-    if (match == null) throw FormatException('Invalid tag format', tag);
-
-    String name = match.namedGroup('name')!;
-    String? value = match.namedGroup('value');
-
-    return StringTag(name, value);
-  }
-
-  final String name;
-  final String? _value;
-  String? get value => (_value?.isNotEmpty ?? false) ? _value : null;
-
-  @override
-  String toString() => '$name${value != null ? ':$value' : ''}';
-
-  @override
-  bool operator ==(Object other) =>
-      other is StringTag && name == other.name && value == other.value;
-
-  @override
-  int get hashCode => toString().hashCode;
-
-  @override
-  int compareTo(StringTag other) {
-    if (value != null && other.value == null) {
-      return -1;
-    } else if (value == null && other.value != null) {
-      return 1;
-    }
-
+  static int _tagComparator(String a, String b) {
     int getPrefixValue(String prefix) {
       switch (prefix[0]) {
         case '-':
@@ -91,13 +34,25 @@ class StringTag implements Comparable<StringTag> {
       }
     }
 
-    int firstValue = getPrefixValue(name);
-    int secondValue = getPrefixValue(other.name);
+    int firstValue = getPrefixValue(a);
+    int secondValue = getPrefixValue(b);
 
     if (firstValue != secondValue) {
       return firstValue.compareTo(secondValue);
     } else {
-      return toString().compareTo(other.toString());
+      return a.compareTo(b);
     }
   }
+
+  String? getTag(String key) =>
+      this[key] != null ? '$key:${this[key]}' : this[key];
+
+  Iterable<String> getTags() => keys.map(getTag).whereType<String>();
+
+  @override
+  String toString() => getTags().join(' ');
+}
+
+extension TagMapLink on TagMap {
+  String get link => '/posts?tags=${toString()}';
 }

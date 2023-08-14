@@ -181,8 +181,8 @@ class _AdvancedTagInputState extends State<AdvancedTagInput> {
     super.dispose();
   }
 
-  Future<void> withTags(Future<TagSet> Function(TagSet tags) editor) async {
-    controller.text = '${await editor(TagSet.parse(controller.text))} ';
+  Future<void> withTags(Future<TagMap> Function(TagMap tags) editor) async {
+    controller.text = '${await editor(TagMap.parse(controller.text))} ';
     controller.setFocusToEnd();
   }
 
@@ -228,7 +228,7 @@ class _AdvancedTagInputState extends State<AdvancedTagInput> {
             }
 
             if (min == 0) {
-              tags.removeKey(filterType);
+              tags.remove(filterType);
             } else {
               tags[filterType] = '>=$min';
             }
@@ -257,7 +257,7 @@ class _AdvancedTagInputState extends State<AdvancedTagInput> {
 
           withTags((tags) async {
             if (orderType == 'default') {
-              tags.removeKey('order');
+              tags.remove('order');
             } else {
               tags['order'] = orderType;
             }
@@ -308,11 +308,11 @@ class _AdvancedTagInputState extends State<AdvancedTagInput> {
               return tags;
             }
             if (key == 'status' && tags.containsKey('status')) {
-              tags.removeKey('status');
+              tags.remove('status');
               return tags;
             }
             if (key == 'inpool' && tags.containsKey('inpool')) {
-              tags.removeKey('inpool');
+              tags.remove('inpool');
               return tags;
             }
             tags[key!] = value;
