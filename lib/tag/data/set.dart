@@ -45,62 +45,34 @@ class TagSet extends Iterable<StringTag> {
 
   @override
   String toString() {
-    List<StringTag> meta = [];
-    List<StringTag> normal = [];
-
-    for (StringTag t in _tags.values) {
-      if (t.value != null) {
-        meta.add(t);
-      } else {
-        normal.add(t);
-      }
-    }
-
-    // normal tags, then optional, then subtracting
-    int order(StringTag a, StringTag b) {
-      int getPrefixValue(String prefix) {
-        switch (prefix) {
-          case '-':
-            return 1;
-          case '~':
-            return 0;
-          default:
-            return -1;
-        }
-      }
-
-      int firstValue = getPrefixValue(a.name[0]);
-      int secondValue = getPrefixValue(b.name[0]);
-      return firstValue.compareTo(secondValue);
-    }
-
-    normal.sort(order);
-    meta.sort(order);
-
-    // meta tags first
-    List<StringTag> output = [];
-    output.addAll(meta);
-    output.addAll(normal);
-    return output.join(' ');
+    List<StringTag> tags = _tags.values.toList();
+    tags.sort();
+    return tags.join(' ');
   }
 }
 
 @immutable
-class StringTag {
+class StringTag implements Comparable<StringTag> {
   const StringTag(this.name, [this._value]);
 
   factory StringTag.parse(String tag) {
     tag = tag.trim();
-    if (tag.isEmpty) throw ArgumentError('StringTag cannot be empty.');
-    List<String> parts = tag.split(':');
-    String name = parts.first;
-    String? value = parts.skip(1).join(':');
+    if (tag.isEmpty) throw const FormatException('Input is empty');
+
+    RegExp pattern = RegExp(r'^(?<name>[-~]?.+?)(?::(?<value>.+))?$');
+    RegExpMatch? match = pattern.firstMatch(tag);
+
+    if (match == null) throw FormatException('Invalid tag format', tag);
+
+    String name = match.namedGroup('name')!;
+    String? value = match.namedGroup('value');
+
     return StringTag(name, value);
   }
 
   final String name;
   final String? _value;
-  String? get value => _value?.isNotEmpty ?? false ? _value : null;
+  String? get value => (_value?.isNotEmpty ?? false) ? _value : null;
 
   @override
   String toString() => '$name${value != null ? ':$value' : ''}';
@@ -111,4 +83,33 @@ class StringTag {
 
   @override
   int get hashCode => toString().hashCode;
+
+  @override
+  int compareTo(StringTag other) {
+    if (value != null && other.value == null) {
+      return -1;
+    } else if (value == null && other.value != null) {
+      return 1;
+    }
+
+    int getPrefixValue(String prefix) {
+      switch (prefix[0]) {
+        case '-':
+          return 1;
+        case '~':
+          return 0;
+        default:
+          return -1;
+      }
+    }
+
+    int firstValue = getPrefixValue(name);
+    int secondValue = getPrefixValue(other.name);
+
+    if (firstValue != secondValue) {
+      return firstValue.compareTo(secondValue);
+    } else {
+      return toString().compareTo(other.toString());
+    }
+  }
 }
