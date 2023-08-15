@@ -43,10 +43,10 @@ abstract class TagSetBase with SetMixin<String> {
       final (name, _) = split(tag);
       if (name == key) {
         remove(tag);
-        add(combine(key, value));
         break;
       }
     }
+    add(combine(key, value));
   }
 
   bool containsKey(String key) {
