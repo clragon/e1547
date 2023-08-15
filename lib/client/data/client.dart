@@ -553,7 +553,9 @@ class Client {
         )
         .then((value) => value.data);
 
-    if (body is List<dynamic> && body.isNotEmpty) {
+    if (body is List<dynamic>) {
+      body.removeWhere((e) => e['status'] == 'deleted');
+      if (body.isEmpty) return null;
       return body.first['consequent_name'];
     }
 

@@ -227,6 +227,12 @@ class FollowUpdate with ObjectLoggy {
     bool hasLeftovers() {
       List<Post> picked = updates.values.flattened.toList();
       List<Post> leftovers = allPosts.whereNot(picked.contains).toList();
+      if (leftovers.isNotEmpty) {
+        loggy.info(
+          'Follow update found ${leftovers.length} leftover posts!\n'
+          '${prettyLogObject(leftovers, header: 'Leftovers')}',
+        );
+      }
       return leftovers.isNotEmpty;
     }
 
