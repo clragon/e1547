@@ -7,7 +7,7 @@ class TagMap extends DelegatingMap<String, String?> {
 
   factory TagMap.from(Map<String, String?> tags) => TagMap()..addAll(tags);
 
-  factory TagMap.parse(String value) {
+  static TagMap parse(String value) {
     TagMap map = TagMap();
     RegExp tagRegex = RegExp(r'^(?<name>[^:]+)(:(?<value>[^:]*))?$');
     for (final tag in value.split(' ').where((e) => e.trim().isNotEmpty)) {
@@ -25,6 +25,14 @@ class TagMap extends DelegatingMap<String, String?> {
       map[name] = tagValue;
     }
     return map;
+  }
+
+  static TagMap? tryParse(String value) {
+    try {
+      return TagMap.parse(value);
+    } on FormatException {
+      return null;
+    }
   }
 
   static int _tagComparator(String a, String b) {
