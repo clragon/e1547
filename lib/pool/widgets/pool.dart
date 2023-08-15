@@ -37,7 +37,7 @@ class _PoolPageState extends State<PoolPage> {
             HistoriesService service = context.read<HistoriesService>();
             Client client = context.read<Client>();
             try {
-              await controller.waitForFirstPage();
+              await controller.waitForNextPage();
               await service.addPool(
                 client.host,
                 widget.pool,

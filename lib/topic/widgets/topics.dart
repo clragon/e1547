@@ -1,10 +1,8 @@
-import 'package:e1547/client/client.dart';
 import 'package:e1547/history/history.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/reply/reply.dart';
 import 'package:e1547/topic/topic.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_sub/flutter_sub.dart';
 
 class TopicsPage extends StatefulWidget {
   const TopicsPage({this.search});
@@ -21,24 +19,14 @@ class _TopicsPageState extends State<TopicsPage> with RouterDrawerEntryWidget {
     return TopicsProvider(
       search: widget.search,
       child: Consumer<TopicsController>(
-        builder: (context, controller, child) => SubListener(
-          initialize: true,
-          listenable: controller,
-          listener: () async {
-            HistoriesService service = context.read<HistoriesService>();
-            Client client = context.read<Client>();
-            try {
-              await controller.waitForFirstPage();
-              await service.addTopicSearch(
-                client.host,
-                controller.search,
-                topics: controller.items!,
-              );
-            } on ClientException {
-              return;
-            }
-          },
-          builder: (context) => RefreshableDataPage(
+        builder: (context, controller, child) => ControllerHistoryConnector(
+          controller: controller,
+          addToHistory: (context, service, data) => service.addTopicSearch(
+            controller.client.host,
+            controller.search,
+            topics: controller.items!,
+          ),
+          child: RefreshableDataPage(
             appBar: const DefaultAppBar(
               title: Text('Topics'),
               actions: [ContextDrawerButton()],

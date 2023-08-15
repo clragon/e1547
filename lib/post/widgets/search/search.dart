@@ -86,11 +86,8 @@ class _PostsSearchPageState extends State<PostsSearchPage> {
             HistoriesService historiesService =
                 context.read<HistoriesService>();
             await updatePool();
-            try {
-              await controller.waitForFirstPage();
-            } on ClientException {
-              return;
-            }
+            await controller.waitForNextPage();
+            if (controller.error != null) return;
             await updateFollow();
             if (pool != null) {
               historiesService.addPool(host, pool!, posts: controller.items);

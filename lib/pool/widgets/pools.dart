@@ -1,4 +1,3 @@
-import 'package:e1547/client/client.dart';
 import 'package:e1547/denylist/denylist.dart';
 import 'package:e1547/history/history.dart';
 import 'package:e1547/interface/interface.dart';
@@ -9,7 +8,6 @@ import 'package:e1547/post/post.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_sub/flutter_sub.dart';
 
 class PoolsPage extends StatefulWidget {
   const PoolsPage({this.search});
@@ -26,24 +24,15 @@ class _PoolsPageState extends State<PoolsPage> with RouterDrawerEntryWidget {
     return PoolsProvider(
       search: widget.search,
       child: Consumer<PoolsController>(
-        builder: (context, controller, child) => SubListener(
-          initialize: true,
-          listenable: controller,
-          listener: () async {
-            HistoriesService service = context.read<HistoriesService>();
-            Client client = context.read<Client>();
-            try {
-              await controller.waitForFirstPage();
-              await service.addPoolSearch(
-                client.host,
-                controller.search,
-                pools: controller.items,
-              );
-            } on ClientException {
-              return;
-            }
-          },
-          builder: (context) => RefreshableDataPage.builder(
+        builder: (context, controller, child) => ControllerHistoryConnector(
+          controller: controller,
+          addToHistory: (context, service, controller) async =>
+              service.addPoolSearch(
+            controller.client.host,
+            controller.search,
+            pools: controller.items,
+          ),
+          child: RefreshableDataPage.builder(
             appBar: const DefaultAppBar(
               title: Text('Pools'),
               actions: [ContextDrawerButton()],

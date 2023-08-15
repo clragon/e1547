@@ -1,10 +1,8 @@
-import 'package:e1547/client/client.dart';
 import 'package:e1547/history/history.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/reply/reply.dart';
 import 'package:e1547/topic/topic.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_sub/flutter_sub.dart';
 
 class RepliesPage extends StatelessWidget {
   const RepliesPage({required this.topic, this.orderByOldest});
@@ -18,24 +16,14 @@ class RepliesPage extends StatelessWidget {
       topicId: topic.id,
       orderByOldest: orderByOldest,
       child: Consumer<RepliesController>(
-        builder: (context, controller, child) => SubListener(
-          initialize: true,
-          listenable: controller,
-          listener: () async {
-            HistoriesService service = context.read<HistoriesService>();
-            Client client = context.read<Client>();
-            try {
-              await controller.waitForFirstPage();
-              await service.addTopic(
-                client.host,
-                topic,
-                replies: controller.items!,
-              );
-            } on ClientException {
-              return;
-            }
-          },
-          builder: (context) => RefreshableDataPage(
+        builder: (context, controller, child) => ControllerHistoryConnector(
+          controller: controller,
+          addToHistory: (context, service, data) => service.addTopic(
+            controller.client.host,
+            topic,
+            replies: controller.items!,
+          ),
+          child: RefreshableDataPage(
             appBar: DefaultAppBar(
               title: Text(topic.title),
               actions: [

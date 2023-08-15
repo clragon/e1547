@@ -67,7 +67,7 @@ class CurrentUserAvatarValue {
           id: id,
           filterMode: PostFilterMode.unavailable,
         );
-        await controller.waitForFirstPage();
+        await controller.getNextPage();
         return controller;
       }
     } on Exception {
@@ -106,7 +106,7 @@ class UserAvatar extends StatelessWidget {
     }
     return SubFuture<PostsController>(
       create: () => Future<PostsController>(() async {
-        await controller.waitForFirstPage();
+        await controller.getNextPage();
         return controller;
       }),
       keys: [controller],

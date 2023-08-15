@@ -157,6 +157,15 @@ abstract class DataController<KeyType, ItemType> with ChangeNotifier {
     }
   }
 
+  /// Waits for the next page to be loaded.
+  ///
+  /// Does not request a new page.
+  Future<void> waitForNextPage() async {
+    if (error != null) return;
+    if (nextPageKey == null) return;
+    if (items == null) _waitForFetch();
+  }
+
   /// Schedules a refresh.
   ///
   /// [background] is equivalent to the parameter of the same name in [getNextPage].
@@ -233,13 +242,5 @@ extension DataControllerItemManipulation<KeyType, ItemType>
     if (rawItems == null || !rawItems!.contains(item)) {
       throw StateError('$runtimeType doesn\'t own this ${item.runtimeType}');
     }
-  }
-}
-
-extension PageLoading<KeyType, ItemType, Config>
-    on DataController<KeyType, ItemType> {
-  Future<void> waitForFirstPage() async {
-    if (error != null) return;
-    if (items == null) return getNextPage();
   }
 }

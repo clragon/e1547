@@ -4,7 +4,6 @@ import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_sub/flutter_sub.dart';
 
 class FavPage extends StatelessWidget {
   const FavPage();
@@ -18,19 +17,15 @@ class FavPage extends StatelessWidget {
           denylist: denylist,
         ),
         child: Consumer<PostsController>(
-          builder: (context, controller, child) => SubListener(
-            listener: () async {
-              HistoriesService service = context.read<HistoriesService>();
-              await controller.waitForFirstPage();
-              if (controller.error != null) return;
-              await service.addPostSearch(
-                controller.client.host,
-                controller.search,
-                posts: controller.items,
-              );
-            },
-            listenable: controller,
-            builder: (context) => LoadingPage(
+          builder: (context, controller, child) => ControllerHistoryConnector(
+            controller: controller,
+            addToHistory: (context, service, controller) =>
+                service.addPostSearch(
+              controller.client.host,
+              controller.search,
+              posts: controller.items,
+            ),
+            child: LoadingPage(
               isEmpty: controller.error is NoUserLoginException,
               isError: controller.error is NoUserLoginException,
               onError: Column(

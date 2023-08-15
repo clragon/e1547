@@ -169,6 +169,16 @@ void main() {
       verifySecondRequest(controller);
     });
 
+    test('should wait for the next fetch', () async {
+      final controller = MockDataController();
+      final done = controller.waitForNextPage();
+      controller.getNextPage();
+      await done;
+      expect(controller.items, orderedEquals(const [MockItem(1)]));
+      expect(controller.nextPageKey, 2);
+      expect(controller.error, null);
+    });
+
     test('can be disposed', () async {
       final controller = MockDataController();
       expect(controller.dispose, returnsNormally);
@@ -206,16 +216,6 @@ void main() {
           () => controller.assertOwnsItem(const MockItem(1)), returnsNormally);
       expect(() => controller.assertOwnsItem(const MockItem('never')),
           throwsStateError);
-    });
-  });
-
-  group('PageLoading Extension', () {
-    test('can wait for the first page', () async {
-      final controller = MockDataController();
-      await controller.waitForFirstPage();
-      expect(controller.items, orderedEquals(const [MockItem(1)]));
-      expect(controller.nextPageKey, 2);
-      expect(controller.error, null);
     });
   });
 }

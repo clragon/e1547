@@ -43,7 +43,7 @@ class SingleFuturePostsProvider
               client: client,
               denylist: denylist,
             );
-            await controller.waitForFirstPage();
+            await controller.getNextPage();
             return controller;
           }),
           keys: (context) => [id],

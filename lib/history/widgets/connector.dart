@@ -73,12 +73,8 @@ class _ControllerHistoryConnectorState<T extends DataController?>
       listenable: Listenable.merge([widget.controller]),
       listener: () async {
         if (widget.controller == null) return;
-        try {
-          await widget.controller!.waitForFirstPage();
-        } on Exception {
-          // we failed to load, abort adding a history entry.
-          return;
-        }
+        await widget.controller!.waitForNextPage();
+        if (widget.controller!.error != null) return;
         if (!mounted) return;
         widget.addToHistory(
           context,
