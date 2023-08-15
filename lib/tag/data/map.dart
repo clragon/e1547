@@ -49,7 +49,7 @@ class TagMap extends DelegatingMap<String, String?> {
     }
   }
 
-  String? getTag(String key) => '$key:${this[key] ?? ''}';
+  String? getTag(String key) => this[key] != null ? '$key:${this[key]}' : key;
 
   Iterable<String> getTags() => keys.map(getTag).whereType<String>();
 
