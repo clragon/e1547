@@ -196,32 +196,32 @@ class _AdvancedTagInputState extends State<AdvancedTagInput> {
           String? filterType = filterTypes[selection];
 
           withTags((tags) async {
-            String? valueString = tags[filterType!];
-            int value =
-                valueString == null ? 0 : int.parse(valueString.substring(2));
+            NumberRange? current =
+                NumberRange.tryParse(tags[filterType!] ?? '');
+            current ??= const NumberRange(20);
+            current = NumberRange(current.value);
 
-            int? min;
             await showDialog(
               context: context,
               builder: (context) => RangeDialog(
                 title: Text('Minimum $filterType'),
-                value: NumberRange(value),
+                value: current,
                 initialMode: RangeDialogMode.exact,
                 canChangeMode: false,
                 division: 10,
                 max: 100,
-                onSubmit: (value) => min = value?.value,
+                onSubmit: (value) => current = value,
               ),
             );
 
-            if (min == null) {
-              return tags;
-            }
-
-            if (min == 0) {
+            if (current == null) {
               tags.remove(filterType);
             } else {
-              tags[filterType] = '>=$min';
+              current = NumberRange(
+                current!.value,
+                comparison: NumberComparison.greaterThanOrEqual,
+              );
+              tags[filterType] = current.toString();
             }
             return tags;
           });

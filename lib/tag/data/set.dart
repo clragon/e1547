@@ -19,7 +19,21 @@ abstract class TagSetBase with SetMixin<String> {
   String? lookup(Object? element) => _tags.lookup(element);
 
   @override
-  bool remove(Object? value) => _tags.remove(value);
+  bool remove(Object? value) {
+    if (value is! String) return false;
+    final (name, tagValue) = split(value);
+    if (tagValue == null) {
+      for (final tag in this) {
+        final (tagName, _) = split(tag);
+        if (tagName == name) {
+          return _tags.remove(tag);
+        }
+      }
+    } else {
+      return _tags.remove(value);
+    }
+    return false;
+  }
 
   @override
   Iterator<String> get iterator => _tags.iterator;
