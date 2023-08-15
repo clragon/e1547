@@ -495,10 +495,9 @@ class Client {
     bool? force,
     CancelToken? cancelToken,
   }) async {
+    if (search.contains(':')) return [];
     if (category == null) {
-      if (search.length < 3) {
-        return [];
-      }
+      if (search.length < 3) return [];
       Object body = await _dio
           .get(
             'tags/autocomplete.json',

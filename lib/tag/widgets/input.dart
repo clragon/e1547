@@ -33,6 +33,17 @@ class TagInput extends StatelessWidget {
   final InputDecoration? decoration;
   final TextInputAction? textInputAction;
 
+  int findTag(List<String> tags, int offset) {
+    List<String> before = [];
+    for (final tag in tags) {
+      before.add(tag);
+      if (before.join(' ').length >= offset) {
+        return tags.indexOf(tag);
+      }
+    }
+    return tags.length - 1;
+  }
+
   @override
   Widget build(BuildContext context) {
     return SubDefault<TextEditingController>(
@@ -63,20 +74,12 @@ class TagInput extends StatelessWidget {
           textInputAction: textInputAction,
           onSuggestionSelected: (suggestion) {
             List<String> tags = controller.text.split(' ').trim();
-            List<String> before = [];
-            for (String tag in tags) {
-              before.add(tag);
-              if (before.join(' ').length >=
-                  controller.selection.extent.offset) {
-                String operator = tags[tags.indexOf(tag)][0];
-                if (operator != '-' && operator != '~') {
-                  operator = '';
-                }
-                tags[tags.indexOf(tag)] = operator + suggestion.name;
-                break;
-              }
-            }
-            controller.text = '${sortTags(tags.join(' '))} ';
+            int selection = findTag(tags, controller.selection.extent.offset);
+            String tag = tags[selection];
+            String operator = tag[0];
+            if (!['-', '~'].contains(operator)) operator = '';
+            tags[selection] = operator + suggestion.name;
+            controller.text = '${TagSet.from(tags)} ';
             controller.setFocusToEnd();
           },
           itemBuilder: (context, itemData) => Row(
@@ -106,29 +109,17 @@ class TagInput extends StatelessWidget {
             ],
           ),
           suggestionsCallback: (pattern) async {
-            List<String> tags = controller.text.split(' ');
-            List<String> before = [];
-            int selection = 0;
-            for (final tag in tags) {
-              before.add(tag);
-              if (before.join(' ').length >=
-                  controller.selection.extent.offset) {
-                selection = tags.indexOf(tag);
-                break;
-              }
-            }
-            if (tagToRaw(tags[selection].trim()).isNotEmpty &&
-                !tags[selection].contains(':')) {
-              return context
-                  .read<Client>()
-                  .autocomplete(
-                    tagToRaw(tags[selection]),
-                    category: category,
-                  )
-                  .then((value) => value.take(3));
-            } else {
-              return [];
-            }
+            List<String> tags = controller.text.split(' ').trim();
+            int selection = findTag(tags, controller.selection.extent.offset);
+            String tag = tags[selection];
+            if (tag.isEmpty) return [];
+            return context
+                .read<Client>()
+                .autocomplete(
+                  tagToRaw(tags[selection]),
+                  category: category,
+                )
+                .then((value) => value.take(3));
           },
         ),
       ),
@@ -181,8 +172,8 @@ class _AdvancedTagInputState extends State<AdvancedTagInput> {
     super.dispose();
   }
 
-  Future<void> withTags(Future<TagMap> Function(TagMap tags) editor) async {
-    controller.text = '${await editor(TagMap.parse(controller.text))} ';
+  Future<void> withTags(Future<TagSet> Function(TagSet tags) editor) async {
+    controller.text = '${await editor(TagSet.parse(controller.text))} ';
     controller.setFocusToEnd();
   }
 

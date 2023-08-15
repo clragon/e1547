@@ -61,7 +61,7 @@ class _PostsSearchPageState extends State<PostsSearchPage> {
             setState(() {
               loadingInfo = true;
             });
-            TagMap input = TagMap.parse(controller.search);
+            TagSet input = TagSet.parse(controller.search);
             RegExpMatch? match = poolRegex().firstMatch(input.toString());
             if (input.length == 1 && match != null) {
               if (match.namedGroup('id')! != pool?.id.toString()) {
@@ -104,7 +104,7 @@ class _PostsSearchPageState extends State<PostsSearchPage> {
             if (pool != null) {
               return tagToName(pool!.name);
             }
-            if (TagMap.parse(controller.search).length == 1) {
+            if (TagSet.parse(controller.search).length == 1) {
               return tagToName(controller.search);
             }
             return 'Search';
@@ -123,7 +123,7 @@ class _PostsSearchPageState extends State<PostsSearchPage> {
                 actions: [
                   CrossFade(
                     showChild: !loadingInfo &&
-                        TagMap.parse(controller.search).isNotEmpty,
+                        TagSet.parse(controller.search).isNotEmpty,
                     child: IconButton(
                       icon: const Icon(Icons.info_outline),
                       onPressed: pool != null
