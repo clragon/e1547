@@ -33,7 +33,7 @@ class PoolsController extends PageClientDataController<Pool> {
   @override
   @protected
   void reset() {
-    thumbnails.reset();
+    thumbnails.resetIds();
     super.reset();
   }
 
@@ -80,13 +80,7 @@ class ThumbnailController extends PostsController {
   @override
   int? get nextPageKey => _ids.length;
 
-  @override
-  @protected
-  @mustCallSuper
-  void reset() {
-    _ids = {};
-    super.reset();
-  }
+  void resetIds() => _ids = {};
 
   Future<void> loadIds(List<int> ids, {bool force = false}) async {
     _ids[nextPageKey! + 1] = ids;
