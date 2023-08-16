@@ -1,8 +1,8 @@
 // data
 export 'data/actions.dart';
 export 'data/count.dart';
+export 'data/map.dart';
 export 'data/regex.dart';
-export 'data/set.dart';
 export 'data/tag.dart';
 // widgets
 export 'widgets/card.dart';
