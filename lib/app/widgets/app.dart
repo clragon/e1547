@@ -9,7 +9,6 @@ import 'package:e1547/user/user.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:intl/date_symbol_data_local.dart';
 import 'package:relative_time/relative_time.dart';
 
 class App extends StatelessWidget {
@@ -64,7 +63,6 @@ class App extends StatelessWidget {
                     child: WindowShortcuts(
                       child: StartupActions(
                         actions: [
-                          (_) => initializeDateFormatting(),
                           (_) => context.read<FollowsUpdater>().update(
                                 client: context.read<Client>(),
                                 denylist: context.read<DenylistService>().items,

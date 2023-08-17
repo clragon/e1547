@@ -2,7 +2,11 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/date_symbol_data_local.dart' as intl_dates;
 import 'package:intl/intl.dart';
+
+Future<void> initializeDateFormatting() async =>
+    intl_dates.initializeDateFormatting();
 
 int notZero(double value) => value < 1 ? 1 : value.round();
 

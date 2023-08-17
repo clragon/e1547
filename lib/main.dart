@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 Future<void> main() async {
+  await initializeDateFormatting();
   WidgetsFlutterBinding.ensureInitialized();
   AppInfo appInfo = await initializeAppInfo();
   AppDatabases databases = await initializeAppdatabases(info: appInfo);
