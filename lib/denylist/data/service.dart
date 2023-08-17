@@ -28,6 +28,7 @@ class DenylistService extends ChangeNotifier {
         () async {
           _items = await updater(List.from(items));
           if (_disposed) return;
+          if (listEquals(items, _items)) return;
           notifyListeners();
           await push();
         },

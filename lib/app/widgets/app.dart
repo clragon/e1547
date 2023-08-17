@@ -65,7 +65,6 @@ class App extends StatelessWidget {
                       child: StartupActions(
                         actions: [
                           (_) => initializeDateFormatting(),
-                          (_) => context.read<DenylistService>().pull(),
                           (_) => context.read<FollowsUpdater>().update(
                                 client: context.read<Client>(),
                                 denylist: context.read<DenylistService>().items,
