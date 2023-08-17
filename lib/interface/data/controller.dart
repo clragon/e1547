@@ -94,6 +94,7 @@ abstract class DataController<KeyType, ItemType> with ChangeNotifier {
     }
     try {
       _fetching = true;
+      _error = null;
       if (reset && !background) this.reset();
       KeyType? key = nextPageKey;
       if (reset) key = firstPageKey;
@@ -103,12 +104,12 @@ abstract class DataController<KeyType, ItemType> with ChangeNotifier {
       if (response.error != null) {
         _error = response.error;
         return;
-      } else {
-        _error = null;
       }
       if (reset && background) this.reset();
       _nextPageKey = response.nextPageKey;
       rawItems = [if (rawItems != null) ...rawItems!, ...response.items!];
+    } on Exception catch (e) {
+      _error = e;
     } finally {
       _fetching = false;
       if (!_disposed) {
