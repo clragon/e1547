@@ -20,30 +20,24 @@ Future<void> loadingNotification<T>({
   Widget? icon,
 }) async {
   String getStatus(LoadingNotificationStatus status, int progress) {
-    switch (status) {
-      case LoadingNotificationStatus.loading:
-        return onProgress?.call(items, progress) ??
-            'Item ${progress + 1}/${items.length}';
-      case LoadingNotificationStatus.cancelled:
-        return onCancel?.call(items, progress) ?? 'Cancelled task';
-      case LoadingNotificationStatus.failed:
-        return onFailure?.call(items, progress) ?? 'Failed at Item $progress';
-      case LoadingNotificationStatus.done:
-        return onDone?.call(items) ?? 'Done';
-    }
+    return switch (status) {
+      LoadingNotificationStatus.loading => onProgress?.call(items, progress) ??
+          'Item ${progress + 1}/${items.length}',
+      LoadingNotificationStatus.cancelled =>
+        onCancel?.call(items, progress) ?? 'Cancelled task',
+      LoadingNotificationStatus.failed =>
+        onFailure?.call(items, progress) ?? 'Failed at Item $progress',
+      LoadingNotificationStatus.done => onDone?.call(items) ?? 'Done',
+    };
   }
 
   IconData getStatusIcon(LoadingNotificationStatus status) {
-    switch (status) {
-      case LoadingNotificationStatus.loading:
-        return Icons.download;
-      case LoadingNotificationStatus.cancelled:
-        return Icons.cancel;
-      case LoadingNotificationStatus.failed:
-        return Icons.warning_amber_outlined;
-      case LoadingNotificationStatus.done:
-        return Icons.check;
-    }
+    return switch (status) {
+      LoadingNotificationStatus.loading => Icons.download,
+      LoadingNotificationStatus.cancelled => Icons.cancel,
+      LoadingNotificationStatus.failed => Icons.warning_amber_outlined,
+      LoadingNotificationStatus.done => Icons.check
+    };
   }
 
   LoadingNotificationStatus status = LoadingNotificationStatus.loading;
@@ -71,9 +65,7 @@ Future<void> loadingNotification<T>({
       ),
       action: SnackBarAction(
         label: 'CANCEL',
-        onPressed: () {
-          status = LoadingNotificationStatus.cancelled;
-        },
+        onPressed: () => status = LoadingNotificationStatus.cancelled,
       ),
       duration: const Duration(days: 1),
     ),
@@ -117,9 +109,6 @@ Future<void> loadingNotification<T>({
       duration: const Duration(milliseconds: 500),
     ),
   );
-
-  await Future.delayed(const Duration(seconds: 2));
-  messenger.hideCurrentMaterialBanner();
 }
 
 class LoadingNotification extends StatelessWidget {
@@ -139,39 +128,37 @@ class LoadingNotification extends StatelessWidget {
   Widget build(BuildContext context) {
     return ValueListenableBuilder<int>(
       valueListenable: progress,
-      builder: (context, value, child) {
-        return Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: messageBuilder(context, value),
+      builder: (context, value, child) => Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: messageBuilder(context, value),
+          ),
+          TweenAnimationBuilder<double>(
+            tween: Tween<double>(
+              begin: 0,
+              end: value.toDouble(),
             ),
-            TweenAnimationBuilder<double>(
-              tween: Tween<double>(
-                begin: 0,
-                end: value.toDouble(),
-              ),
-              duration: animationDuration ?? defaultAnimationDuration,
-              builder: (context, value, child) {
-                double? indicator = 1 / max;
-                if (indicator < 0) {
-                  indicator = 1;
-                }
-                indicator = indicator * value;
-                if (indicator == 0) {
-                  indicator = null;
-                }
-                return LinearProgressIndicator(
-                  value: indicator,
-                  color: Theme.of(context).colorScheme.secondary,
-                );
-              },
-            )
-          ],
-        );
-      },
+            duration: animationDuration ?? defaultAnimationDuration,
+            builder: (context, value, child) {
+              double? indicator = 1 / max;
+              if (indicator < 0) {
+                indicator = 1;
+              }
+              indicator = indicator * value;
+              if (indicator == 0) {
+                indicator = null;
+              }
+              return LinearProgressIndicator(
+                value: indicator,
+                color: Theme.of(context).colorScheme.secondary,
+              );
+            },
+          ),
+        ],
+      ),
     );
   }
 }
