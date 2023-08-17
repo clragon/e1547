@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
@@ -57,7 +59,8 @@ class TileLayout extends StatelessWidget {
           builder: (context, constraints) {
             tileSize = this.tileSize ?? tileSize;
             stagger = this.stagger ?? stagger;
-            int crossAxisCount = notZero(constraints.maxWidth / tileSize);
+            int crossAxisCount =
+                max(1, constraints.maxWidth / tileSize).round();
             return TileLayoutData(
               tileHeightFactor: tileHeightFactor,
               tileSize: tileSize,
