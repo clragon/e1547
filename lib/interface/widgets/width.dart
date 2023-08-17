@@ -13,12 +13,11 @@ class LimitedWidthLayoutData extends InheritedWidget {
   EdgeInsets get padding => EdgeInsets.symmetric(horizontal: space);
 
   @override
-  bool updateShouldNotify(covariant LimitedWidthLayoutData oldWidget) {
-    return oldWidget.space != space;
-  }
+  bool updateShouldNotify(covariant LimitedWidthLayoutData oldWidget) =>
+      oldWidget.space != space || oldWidget.maxWidth != maxWidth;
 }
 
-class LimitedWidthLayout extends StatefulWidget {
+class LimitedWidthLayout extends StatelessWidget {
   factory LimitedWidthLayout({
     required Widget child,
     double maxWidth = 600,
@@ -41,29 +40,23 @@ class LimitedWidthLayout extends StatefulWidget {
   final double tolerance;
   final WidgetBuilder builder;
 
-  @override
-  State<LimitedWidthLayout> createState() => _LimitedWidthLayoutState();
-
-  static LimitedWidthLayoutData of(BuildContext context) =>
-      context.dependOnInheritedWidgetOfExactType<LimitedWidthLayoutData>()!;
+  static LimitedWidthLayoutData of(BuildContext context) => maybeOf(context)!;
 
   static LimitedWidthLayoutData? maybeOf(BuildContext context) =>
       context.dependOnInheritedWidgetOfExactType<LimitedWidthLayoutData>();
-}
 
-class _LimitedWidthLayoutState extends State<LimitedWidthLayout> {
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        double padding = (constraints.maxWidth - widget.maxWidth) / 2;
-        if (padding < widget.tolerance) {
+        double padding = (constraints.maxWidth - maxWidth) / 2;
+        if (padding < tolerance) {
           padding = 0;
         }
         return LimitedWidthLayoutData(
           space: padding,
-          maxWidth: widget.maxWidth,
-          child: Builder(builder: widget.builder),
+          maxWidth: maxWidth,
+          child: Builder(builder: builder),
         );
       },
     );
