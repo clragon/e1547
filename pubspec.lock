@@ -689,11 +689,11 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "4.0.0-dev.1"
-      resolved-ref: "0078c4365fb8cc81ff8e8de2fc95a4af164eae7d"
+      ref: "4.1.0-dev.1"
+      resolved-ref: c36d9b0e6b4fd58f4d614bf9f80aaeae75a72c98
       url: "https://github.com/clragon/infinite_scroll_pagination.git"
     source: git
-    version: "4.0.0-dev.1"
+    version: "4.0.0"
   intl:
     dependency: "direct main"
     description:
