@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:dio_cache_interceptor_db_store/dio_cache_interceptor_db_store.dart';
+import 'package:drift/drift.dart';
+import 'package:drift/native.dart';
 import 'package:e1547/app/app.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/interface/interface.dart';
@@ -38,6 +40,15 @@ Future<AppDatabases> initializeAppdatabases({required AppInfo info}) async {
     historyDb: connectDatabase('history.sqlite'),
   );
 }
+
+DatabaseConnection connectDatabase(String name) =>
+    DatabaseConnection.delayed(Future(
+      () async => NativeDatabase.createBackgroundConnection(
+        File(
+          join((await getApplicationSupportDirectory()).path, name),
+        ),
+      ),
+    ));
 
 /// Initializes the logger used by the app with default production values.
 Future<Logs> initializeLogger({
