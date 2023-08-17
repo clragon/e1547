@@ -9,7 +9,10 @@ mixin PostFilterableController<KeyType> on DataController<KeyType, Post> {
   PostFilterMode get filterMode;
 
   Map<Post, List<String>>? _deniedPosts;
-  Map<Post, List<String>>? get deniedPosts => _deniedPosts.maybeUnmodifiable();
+  Map<Post, List<String>>? get deniedPosts {
+    if (_deniedPosts == null) return null;
+    return Map.unmodifiable(_deniedPosts!);
+  }
 
   bool _denying = true;
   bool get denying => _denying;
@@ -49,7 +52,8 @@ mixin PostFilterableController<KeyType> on DataController<KeyType, Post> {
 
   List<String>? getDeniers(Post post) {
     assertOwnsItem(post);
-    return _deniedPosts![post].maybeUnmodifiable();
+    if (_deniedPosts![post] == null) return null;
+    return List.unmodifiable(_deniedPosts![post]!);
   }
 
   bool isDenied(Post post) => getDeniers(post) != null;
