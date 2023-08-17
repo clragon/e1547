@@ -61,7 +61,7 @@ dependencies:
   notified_preferences: ^2.0.0
   package_info_plus: ^4.1.0
   path: ^1.8.2
-  path_provider: ^2.0.13
+  path_provider: ^2.1.0
   path_to_regexp: ^0.4.0
   permission_handler: ^10.4.3
   pub_semver: ^2.1.3
