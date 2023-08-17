@@ -5,6 +5,7 @@ import 'package:e1547/app/app.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/logs/logs.dart';
+import 'package:flutter/widgets.dart';
 import 'package:notified_preferences/notified_preferences.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
@@ -59,6 +60,18 @@ Future<Logs> initializeLogger({
     (error, trace) => Loggy('Flutter').log(logLevelCritical, error, trace),
   );
   return logs;
+}
+
+/// Registers an error callback for uncaught exceptions and flutter errors.
+void registerFlutterErrorHandler(
+  void Function(Object error, StackTrace? trace) handler,
+) {
+  WidgetsFlutterBinding.ensureInitialized();
+  WidgetsBinding.instance.platformDispatcher.onError = (error, stack) {
+    handler(error, stack);
+    return false;
+  };
+  FlutterError.onError = (details) => handler(details.exception, details.stack);
 }
 
 /// Returns an initialized WindowManager or null the current Platform is unsupported.
