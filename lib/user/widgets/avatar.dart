@@ -7,87 +7,77 @@ import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sub/flutter_sub.dart';
 
-Future<void> initializeCurrentUserAvatar(BuildContext context) async {
-  PostsController? controller =
-      await context.read<CurrentUserAvatarValue>().controller;
-  Post? avatar = controller?.items?.first;
-  if (avatar?.sample.url != null && context.mounted) {
-    await precacheImage(
-      CachedNetworkImageProvider(avatar!.sample.url!),
-      context,
-    );
-  }
-}
-
 class CurrentUserAvatar extends StatelessWidget {
   const CurrentUserAvatar();
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<CurrentUserAvatarValue>(
-      builder: (context, value, child) => FutureBuilder<PostsController?>(
-        future: value.controller,
-        builder: (context, snapshot) {
-          if (snapshot.hasError) {
-            return CircleAvatar(
-              backgroundColor: Theme.of(context).colorScheme.surface,
-              child: const Icon(Icons.warning_amber),
-            );
-          }
-
-          return UserAvatar(
-            id: snapshot.data?.items!.first.id,
-            controller: snapshot.data,
+    return Consumer<CurrentUserAvatarController>(
+      builder: (context, controller, child) {
+        if (controller.error != null) {
+          return CircleAvatar(
+            backgroundColor: Theme.of(context).colorScheme.surface,
+            child: const Icon(Icons.warning_amber),
           );
-        },
-      ),
+        }
+
+        return UserAvatar(
+          id: controller.items?.firstOrNull?.id,
+          controller: controller,
+        );
+      },
     );
   }
 }
 
-class CurrentUserAvatarValue {
-  CurrentUserAvatarValue({
-    required this.client,
-    required this.denylist,
-  });
+class CurrentUserAvatarController extends PostsController {
+  CurrentUserAvatarController({
+    required super.client,
+    required super.denylist,
+  }) : super(filterMode: PostFilterMode.unavailable);
 
-  final Client client;
-  final DenylistService denylist;
-  late final Future<PostsController?> _controller = _createController();
-
-  Future<PostsController?> get controller => _controller;
-
-  Future<PostsController?> _createController() async {
-    try {
-      int? id = (await client.currentUser())?.avatarId;
-      if (id != null) {
-        PostsController controller = SinglePostController(
-          client: client,
-          denylist: denylist,
-          id: id,
-          filterMode: PostFilterMode.unavailable,
-        );
-        await controller.getNextPage();
-        return controller;
-      }
-    } on Exception {
-      return null;
-    }
-    return null;
+  @override
+  Future<List<Post>> fetch(int page, bool force) async {
+    if (page != firstPageKey) return [];
+    int? id = (await client.currentUser())?.avatarId;
+    if (id == null) return [];
+    return [
+      await client.post(
+        id,
+        force: force,
+        cancelToken: cancelToken,
+      ),
+    ];
   }
 }
 
-class CurrentUserAvatarProvider
-    extends SubProvider2<Client, DenylistService, CurrentUserAvatarValue> {
-  CurrentUserAvatarProvider({super.child, super.builder})
+class CurrentUserAvatarProvider extends SubChangeNotifierProvider2<Client,
+    DenylistService, CurrentUserAvatarController> {
+  CurrentUserAvatarProvider({super.child, TransitionBuilder? builder})
       : super(
-          create: (context, client, denylist) => CurrentUserAvatarValue(
+          create: (context, client, denylist) => CurrentUserAvatarController(
             client: client,
             denylist: denylist,
+          )..getNextPage(),
+          builder: (context, child) => SubEffect(
+            effect: () {
+              Future(() async {
+                PostsController? controller =
+                    context.read<CurrentUserAvatarController>();
+                await controller.waitForNextPage();
+                Post? avatar = controller.items?.first;
+                if (avatar?.sample.url != null && context.mounted) {
+                  await precacheImage(
+                    CachedNetworkImageProvider(avatar!.sample.url!),
+                    context,
+                  );
+                }
+              });
+              return null;
+            },
+            keys: [context.watch<CurrentUserAvatarController>()],
+            child: builder?.call(context, child) ?? child!,
           ),
-          dispose: (context, value) => value.controller
-              .then((value) => value?.dispose())
-              .onError((error, stackTrace) => null),
         );
 }
 

@@ -67,7 +67,6 @@ class App extends StatelessWidget {
                                 client: context.read<Client>(),
                                 denylist: context.read<DenylistService>().items,
                               ),
-                          initializeCurrentUserAvatar,
                         ],
                         onError: (error) => Loggy('Startup')
                             .error('Startup action failed', error),
