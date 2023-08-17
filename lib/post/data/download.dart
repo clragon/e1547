@@ -61,7 +61,7 @@ extension PostDownloading on Post {
             'Could not read SAF file!',
           ));
           if (downloadMd5 != fileMd5) {
-            file.writeToFileAsBytes(
+            await file.writeToFileAsBytes(
               bytes: downloadBytes,
             );
           }
