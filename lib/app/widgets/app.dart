@@ -72,9 +72,8 @@ class App extends StatelessWidget {
                               ),
                           initializeCurrentUserAvatar,
                         ],
-                        onError: (context, error) {
-                          // errors in startup actions are ignored.
-                        },
+                        onError: (error) => Loggy('Startup')
+                            .error('Startup action failed', error),
                         child: ErrorNotifier(
                           child: LockScreen(
                             child: ClientAvailabilityCheck(

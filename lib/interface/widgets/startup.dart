@@ -15,7 +15,7 @@ class StartupActions extends StatefulWidget {
   final List<StartupCallback> actions;
 
   /// The error handler for any action that fails. If this is is null, the errors are thrown like normal.
-  final void Function(BuildContext context, Object error)? onError;
+  final void Function(Object error)? onError;
 
   /// The child widget.
   final Widget child;
@@ -35,7 +35,7 @@ class _StartupActionsState extends State<StartupActions> {
             await element(context);
           } on Exception catch (e) {
             if (widget.onError != null) {
-              widget.onError!(context, e);
+              widget.onError!(e);
             } else {
               rethrow;
             }
