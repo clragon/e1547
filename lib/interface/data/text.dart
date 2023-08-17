@@ -8,8 +8,6 @@ import 'package:intl/intl.dart';
 Future<void> initializeDateFormatting() async =>
     intl_dates.initializeDateFormatting();
 
-Key joinKeys(List<dynamic> keys) => Key(keys.join('_'));
-
 class LowercaseTextInputFormatter extends TextInputFormatter {
   @override
   TextEditingValue formatEditUpdate(
