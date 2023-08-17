@@ -10,7 +10,9 @@ class TagMap extends MapBase<String, String?> {
 
   factory TagMap.parse(String tags) {
     TagMap result = TagMap();
-    result._tags.addAll(tags.split(' ').map(StringTag.parse));
+    result._tags.addAll(
+      tags.trim().split(' ').where((e) => e.isNotEmpty).map(StringTag.parse),
+    );
     return result;
   }
 
