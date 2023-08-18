@@ -34,7 +34,7 @@ dependencies:
   sliding_sheet:
     git:
       url: https://github.com/clragon/sliding_sheet.git
-      ref: be64d6d
+      ref: 0.6.0
   webview_flutter: ^4.2.2
 
   # data
