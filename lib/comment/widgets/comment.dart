@@ -146,7 +146,7 @@ class CommentTile extends StatelessWidget {
                           comment: comment,
                         ).then((value) {
                           if (value) {
-                            controller.refresh();
+                            controller.refresh(force: true);
                           }
                         });
                       },
@@ -166,7 +166,7 @@ class CommentTile extends StatelessWidget {
                         comment: comment,
                       ).then((value) {
                         if (value) {
-                          controller.refresh();
+                          controller.refresh(force: true);
                         }
                       });
                     },

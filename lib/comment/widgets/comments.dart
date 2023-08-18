@@ -31,7 +31,7 @@ class PostCommentsPage extends StatelessWidget {
                     postId: postId,
                   ).then((value) {
                     if (value) {
-                      controller.refresh();
+                      controller.refresh(force: true);
                     }
                   }),
                 )

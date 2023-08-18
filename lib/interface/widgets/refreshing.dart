@@ -48,7 +48,7 @@ class RefreshableDataPage extends StatelessWidget {
         floatingActionButton: floatingActionButton,
         refreshController: refreshController,
         refresh: (_) async {
-          await controller.getNextPage(reset: true, background: true);
+          await controller.refresh(force: true, background: true);
           if (controller.error != null) {
             refreshController.refreshFailed();
           }

@@ -48,14 +48,22 @@ class FavoritePostsController extends PostsController {
   }
 
   @override
-  Future<void> getNextPage({bool reset = false, bool background = false}) {
+  Future<void> getNextPage({
+    bool force = false,
+    bool reset = false,
+    bool background = false,
+  }) {
     if (error is NoUserLoginException) {
       Credentials? credentials = client.credentials;
       if (credentials != null) {
         search = 'fav:${client.credentials?.username}';
       }
     }
-    return super.getNextPage(reset: reset, background: background);
+    return super.getNextPage(
+      force: force,
+      reset: reset,
+      background: background,
+    );
   }
 }
 

@@ -95,7 +95,7 @@ class PostDetailCommentsWrapper extends StatelessWidget {
                               PopupMenuTile(
                                 title: 'Refresh',
                                 icon: Icons.refresh,
-                                value: () => controller.refresh(),
+                                value: () => controller.refresh(force: true),
                               ),
                               PopupMenuTile(
                                 icon: Icons.sort,
@@ -121,7 +121,7 @@ class PostDetailCommentsWrapper extends StatelessWidget {
                                           commentCount: post.commentCount + 1,
                                         ),
                                       );
-                                      controller.refresh();
+                                      controller.refresh(force: true);
                                     }
                                   },
                                   error: 'You must be logged in to comment!',

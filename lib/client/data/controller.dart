@@ -18,12 +18,20 @@ abstract class ClientDataController<KeyType, ItemType>
   Future<void> evictCache() => fetch(firstPageKey, true);
 
   @override
-  Future<void> getNextPage({bool reset = false, bool background = false}) {
+  Future<void> getNextPage({
+    bool force = false,
+    bool reset = false,
+    bool background = false,
+  }) {
     if (reset) {
       _cancelToken.cancel('$runtimeType is refreshing');
       _cancelToken = CancelToken();
     }
-    return super.getNextPage(reset: reset, background: background);
+    return super.getNextPage(
+      force: force,
+      reset: reset,
+      background: background,
+    );
   }
 
   @protected

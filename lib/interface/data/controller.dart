@@ -72,8 +72,8 @@ abstract class DataController<KeyType, ItemType> with ChangeNotifier {
   ///
   /// If [background] is true, items will be deleted after the next page is loaded.
   @nonVirtual
-  Future<void> refresh({bool background = false}) =>
-      getNextPage(reset: true, background: background);
+  Future<void> refresh({bool force = false, bool background = false}) =>
+      getNextPage(force: force, reset: true, background: background);
 
   /// Fetches the next page of items.
   ///
@@ -84,6 +84,7 @@ abstract class DataController<KeyType, ItemType> with ChangeNotifier {
   /// this will complete after with no new request being made.
   @mustCallSuper
   Future<void> getNextPage({
+    bool force = false,
     bool reset = false,
     bool background = false,
   }) async {
@@ -99,7 +100,7 @@ abstract class DataController<KeyType, ItemType> with ChangeNotifier {
       KeyType? key = nextPageKey;
       if (reset) key = firstPageKey;
       if (key == null) return;
-      PageResponse response = await performRequest(key, reset);
+      PageResponse response = await performRequest(key, force);
       if (_disposed) return;
       if (response.error != null) {
         _error = response.error;
