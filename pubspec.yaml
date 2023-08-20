@@ -41,7 +41,6 @@ dependencies:
   app_links: ^3.3.0
   async: ^2.9.0
   collection: ^1.16.0
-  crypto: ^3.0.1
   dio: ^5.3.2
   dio_cache_interceptor: ^3.4.0
   dio_cache_interceptor_db_store: ^5.1.0

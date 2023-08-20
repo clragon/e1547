@@ -2,8 +2,6 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:crypto/crypto.dart';
-
 import 'package:e1547/post/post.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:e1547/tag/tag.dart';
@@ -23,56 +21,55 @@ extension PostDownloading on Post {
       File download = await DefaultCacheManager().getSingleFile(file.url!);
       if (Platform.isAndroid) {
         Uint8List downloadBytes = await download.readAsBytes();
-        String downloadMime = await _throwOnNull(lookupMimeType(download.path),
-            'Could not determine MIME of download!');
+        String downloadMime = await _throwOnNull(
+          lookupMimeType(download.path),
+          'Could not determine MIME of download!',
+        );
         Uri target = Uri.parse(settings.downloadPath.value);
-        if (target.path == '/tree/primary${Uri.encodeComponent(':Pictures')}') {
-          target = target.replace(path: '${target.path}/${appInfo.appName}');
-        }
         if (!await isPersistedUri(target)) {
           target = await _throwOnNull(
             openDocumentTree(initialUri: target),
-            'No SAF folder was chosen!',
+            'No download folder was chosen!',
           );
           settings.downloadPath.value = target.toString();
         }
         DocumentFile dir = await _throwOnNull(
-            target.toDocumentFile(), 'Could not open SAF folder!');
-        if (target.path == '/tree/primary${Uri.encodeComponent(':Pictures')}') {
-          DocumentFile? subdir = await dir.findFile(appInfo.appName);
-          if (subdir != null &&
-              await _throwOnNull(
-                subdir.isDirectory,
-                'Could not determine App SAF directory',
-              )) {
-            dir = subdir;
+          target.toDocumentFile(),
+          'Could not open download folder!',
+        );
+        if (dir.name == 'Pictures' && (await dir.parentFile()) == null) {
+          DocumentFile? appDir = await _getFolderChild(dir, appInfo.appName);
+          if (appDir != null) {
+            dir = appDir;
           } else {
             dir = await _throwOnNull(
               dir.createDirectory(appInfo.appName),
-              'Could not create App SAF folder!',
+              'Could not create App download folder!',
             );
           }
         }
-        DocumentFile? file = await dir.findFile(_downloadName());
+        String fileName = _downloadName();
+        DocumentFile? file = await _getFolderChild(dir, fileName);
         if (file != null) {
-          Digest downloadMd5 = md5.convert(downloadBytes);
-          Digest fileMd5 = md5.convert(await _throwOnNull(
-            file.getContent(),
-            'Could not read SAF file!',
-          ));
-          if (downloadMd5 != fileMd5) {
-            await file.writeToFileAsBytes(
+          bool success = await _throwOnNull(
+            file.writeToFileAsBytes(
               bytes: downloadBytes,
+            ),
+            'Could not write to existing download file!',
+          );
+          if (!success) {
+            throw PostDownloadException(
+              'Could not write to existing download file!',
             );
           }
         } else {
           file = await _throwOnNull(
             dir.createFile(
               mimeType: downloadMime,
-              displayName: _downloadName(),
+              displayName: fileName,
               bytes: downloadBytes,
             ),
-            'Could not create SAF file!',
+            'Could not create download file!',
           );
         }
       } else if (Platform.isIOS) {
@@ -80,15 +77,30 @@ extension PostDownloading on Post {
       } else {
         String directory = (await getDownloadsDirectory())!.path;
         File target = File(join(directory, _downloadName()));
-        if (!target.existsSync() ||
-            md5.convert(await download.readAsBytes()) !=
-                md5.convert(await target.readAsBytes())) {
-          await download.copy(target.path);
-        }
+        await download.copy(target.path);
       }
+    } on PostDownloadException {
+      rethrow;
     } on Exception catch (e) {
       throw PostDownloadException.from(e);
     }
+  }
+
+  /// This is a workaround for
+  /// https://github.com/alexrintt/shared-storage/issues/144
+  ///
+  /// Preferably, we would use [DocumentFile.child].
+  Future<DocumentFile?> _getFolderChild(
+    DocumentFile folder,
+    String name,
+  ) async {
+    DocumentFile? file = await Uri.parse(
+      '${folder.uri}%2F${Uri.encodeComponent(name)}',
+    ).toDocumentFile();
+    if (file == null) return null;
+    bool? exists = await file.exists();
+    if (exists == null || exists == false) return null;
+    return file;
   }
 
   String _downloadName() {
