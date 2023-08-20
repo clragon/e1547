@@ -32,16 +32,15 @@ class HistoriesDatabase extends _$HistoriesDatabase {
   HistoriesDatabase(super.e);
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 1;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
         onUpgrade: (m, from, to) async {
-          if (from == 1) {
+          if (from < 2) {
             await customUpdate(
               'UPDATE ${historiesTable.actualTableName} SET'
-              ' ${historiesTable.host.escapedNameFor(SqlDialect.sqlite)} = ?'
-              ' || ${historiesTable.host.escapedNameFor(SqlDialect.sqlite)} || ?',
+              ' host = ? || host || ?',
               variables: [
                 const Variable<String>('https://'),
                 const Variable<String>('/')
@@ -49,11 +48,23 @@ class HistoriesDatabase extends _$HistoriesDatabase {
               updates: {historiesTable},
             );
           }
+          if (to < 2) {
+            await customUpdate(
+              'UPDATE ${historiesTable.actualTableName} SET'
+              ' host = SUBSTR(SUBSTR(host, 9), 1, LENGTH(SUBSTR(host, 9)) - 1)',
+              updates: {historiesTable},
+            );
+          }
         },
       );
 
+  T _simplifyHost<T extends String?>(T host) {
+    if (host == null) return null as T;
+    return Uri.parse(host).host as T;
+  }
+
   Expression<bool> _hostQuery($HistoriesTableTable tbl, String? host) =>
-      Variable(host).isNull() | tbl.host.equalsNullable(host);
+      Variable(host).isNull() | tbl.host.equalsNullable(_simplifyHost(host));
 
   Selectable<int> _lengthExpression({String? host}) {
     final Expression<int> count = historiesTable.id.count();

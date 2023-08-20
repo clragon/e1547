@@ -29,7 +29,7 @@ class FollowsDatabase extends _$FollowsDatabase {
   FollowsDatabase(super.e);
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 1;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -37,8 +37,7 @@ class FollowsDatabase extends _$FollowsDatabase {
           if (from == 1) {
             await customUpdate(
               'UPDATE ${followsTable.actualTableName} SET'
-              ' ${followsTable.host.escapedNameFor(SqlDialect.sqlite)} = ?'
-              ' || ${followsTable.host.escapedNameFor(SqlDialect.sqlite)} || ?',
+              ' host = ? || host || ?',
               variables: [
                 const Variable<String>('https://'),
                 const Variable<String>('/')
@@ -46,11 +45,23 @@ class FollowsDatabase extends _$FollowsDatabase {
               updates: {followsTable},
             );
           }
+          if (to < 2) {
+            await customUpdate(
+              'UPDATE ${followsTable.actualTableName} SET'
+              ' host = SUBSTR(SUBSTR(host, 9), 1, LENGTH(SUBSTR(host, 9)) - 1)',
+              updates: {followsTable},
+            );
+          }
         },
       );
 
+  T _simplifyHost<T extends String?>(T host) {
+    if (host == null) return null as T;
+    return Uri.parse(host).host as T;
+  }
+
   Expression<bool> _hostQuery($FollowsTableTable tbl, String? host) =>
-      Variable(host).isNull() | tbl.host.equalsNullable(host);
+      Variable(host).isNull() | tbl.host.equalsNullable(_simplifyHost(host));
 
   Selectable<int> _lengthExpression({String? host}) {
     final Expression<int> count = followsTable.id.count();
