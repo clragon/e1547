@@ -34,30 +34,6 @@ class HistoriesDatabase extends _$HistoriesDatabase {
   @override
   int get schemaVersion => 1;
 
-  @override
-  MigrationStrategy get migration => MigrationStrategy(
-        onUpgrade: (m, from, to) async {
-          if (from < 2) {
-            await customUpdate(
-              'UPDATE ${historiesTable.actualTableName} SET'
-              ' host = ? || host || ?',
-              variables: [
-                const Variable<String>('https://'),
-                const Variable<String>('/')
-              ],
-              updates: {historiesTable},
-            );
-          }
-          if (to < 2) {
-            await customUpdate(
-              'UPDATE ${historiesTable.actualTableName} SET'
-              ' host = SUBSTR(SUBSTR(host, 9), 1, LENGTH(SUBSTR(host, 9)) - 1)',
-              updates: {historiesTable},
-            );
-          }
-        },
-      );
-
   T _simplifyHost<T extends String?>(T host) {
     if (host == null) return null as T;
     return Uri.parse(host).host as T;
