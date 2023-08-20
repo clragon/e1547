@@ -73,7 +73,7 @@ class TagInput extends StatelessWidget {
           ],
           textInputAction: textInputAction,
           onSuggestionSelected: (suggestion) {
-            List<String> tags = controller.text.split(' ').trim();
+            List<String> tags = controller.text.split(' ');
             int selection = findTag(tags, controller.selection.extent.offset);
             String tag = tags[selection];
             String operator = tag[0];
@@ -109,7 +109,7 @@ class TagInput extends StatelessWidget {
             ],
           ),
           suggestionsCallback: (pattern) async {
-            List<String> tags = controller.text.split(' ').trim();
+            List<String> tags = controller.text.split(' ');
             int selection = findTag(tags, controller.selection.extent.offset);
             String tag = tags[selection];
             if (tag.isEmpty) return [];

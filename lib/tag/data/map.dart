@@ -105,8 +105,8 @@ class StringTag implements Comparable<StringTag> {
   /// Negated tags are considered smaller than union tags.
   @override
   int compareTo(StringTag other) {
-    if (value == null && other.value != null) return -1;
-    if (value != null && other.value == null) return 1;
+    if (value == null && other.value != null) return 1;
+    if (value != null && other.value == null) return -1;
     if (prefix != other.prefix) {
       if (prefix == null) return -1;
       if (other.prefix == null) return 1;
