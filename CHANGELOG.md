@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Fixed
+- android download lag
+- infinite loading
+
 ## [16.2.4+84] - 2023-08-09
 ### Fixed
 - login for new users with no blacklist
@@ -779,6 +784,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Fixed
 - API client bindings
 
+[Unreleased]: https://github.com/clragon/e1547/compare/16.2.4+84...HEAD
 [16.2.4+84]: https://github.com/clragon/e1547/compare/16.2.3+83...16.2.4+84
 [16.2.3+83]: https://github.com/clragon/e1547/compare/16.2.2+82...16.2.3+83
 [16.2.2+82]: https://github.com/clragon/e1547/compare/16.2.1+81...16.2.2+82
