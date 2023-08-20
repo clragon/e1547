@@ -128,7 +128,12 @@ class HistoriesService extends HistoriesDatabase with ChangeNotifier {
         host,
         HistoryRequest(
           visitedAt: DateTime.now(),
-          link: TagMap.parse(search).link,
+          link: Uri(
+            path: '/posts',
+            queryParameters: {
+              if (search.isNotEmpty) 'tags': TagMap.parse(search),
+            },
+          ).toString(),
           thumbnails: _getThumbnails(posts),
         ),
       );

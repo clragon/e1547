@@ -56,10 +56,6 @@ class TagMap extends MapBase<String, String?> {
   }
 }
 
-extension TagSetLink on TagMap {
-  String get link => '/posts?tags=${toString()}';
-}
-
 /// Represents a tag with a name and an optional value.
 ///
 /// Can be parsed from a string in the format `name:value`.
