@@ -41,10 +41,11 @@ class LogStringBody extends StatelessWidget {
     if (matches.isEmpty) {
       return Text(value.ellipse(500).split('\n').take(10).join('\n'));
     }
+    int processed = 0;
     List<InlineSpan> spans = [];
     for (final match in matches) {
-      spans.add(TextSpan(text: value.substring(0, match.start)));
-      value = value.substring(match.end);
+      spans.add(TextSpan(text: value.substring(processed, match.start)));
+      processed = match.end;
       String title = match.namedGroup('title')!.trim();
       String content = match
           .namedGroup('content')!
@@ -66,7 +67,7 @@ class LogStringBody extends StatelessWidget {
         ),
       );
     }
-    spans.add(TextSpan(text: value));
+    spans.add(TextSpan(text: value.substring(processed)));
 
     return Text.rich(TextSpan(children: spans));
   }
