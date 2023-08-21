@@ -79,7 +79,7 @@ class TagInput extends StatelessWidget {
             String operator = tag[0];
             if (!['-', '~'].contains(operator)) operator = '';
             tags[selection] = operator + suggestion.name;
-            controller.text = '${TagMap.parse(tags.join(' '))} ';
+            controller.text = '${QueryMap.parse(tags.join(' '))} ';
             controller.setFocusToEnd();
           },
           itemBuilder: (context, itemData) => Row(
@@ -172,8 +172,8 @@ class _AdvancedTagInputState extends State<AdvancedTagInput> {
     super.dispose();
   }
 
-  Future<void> withTags(Future<TagMap> Function(TagMap tags) editor) async {
-    controller.text = '${await editor(TagMap.parse(controller.text))} ';
+  Future<void> withTags(Future<QueryMap> Function(QueryMap tags) editor) async {
+    controller.text = '${await editor(QueryMap.parse(controller.text))} ';
     controller.setFocusToEnd();
   }
 

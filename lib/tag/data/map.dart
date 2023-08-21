@@ -3,20 +3,34 @@ import 'dart:collection';
 import 'package:collection/collection.dart';
 import 'package:flutter/widgets.dart';
 
-class TagMap extends MapBase<String, String?> {
-  TagMap() : _tags = SplayTreeSet<StringTag>();
+/// A collection of parameters.
+///
+/// Entries are comprised of a name and an optional value.
+/// They are sorted by
+///
+/// A key may be present multiple times with different values.
+/// When accessing a key, the first value is returned.
+/// To access all values of a key, use [toMapAll].
+class QueryMap extends MapBase<String, String?> {
+  /// Creates an empty query map.
+  QueryMap() : _tags = SplayTreeSet<QueryValue>();
 
-  factory TagMap.from(Map<String, String?> other) => TagMap()..addAll(other);
+  /// Creates a query map from a map.
+  factory QueryMap.from(Map<String, String?> other) =>
+      QueryMap()..addAll(other);
 
-  factory TagMap.parse(String tags) {
-    TagMap result = TagMap();
+  /// Creates a query map from a string.
+  ///
+  /// Input is expected to be in the format `name:value name2`.
+  factory QueryMap.parse(String tags) {
+    QueryMap result = QueryMap();
     result._tags.addAll(
-      tags.trim().split(' ').where((e) => e.isNotEmpty).map(StringTag.parse),
+      tags.trim().split(' ').where((e) => e.isNotEmpty).map(QueryValue.parse),
     );
     return result;
   }
 
-  final Set<StringTag> _tags;
+  final Set<QueryValue> _tags;
 
   List<String> get tags => _tags.map((tag) => tag.toString()).toList();
 
@@ -27,7 +41,7 @@ class TagMap extends MapBase<String, String?> {
   @override
   void operator []=(String key, String? value) {
     remove(key);
-    _tags.add(StringTag(key, value));
+    _tags.add(QueryValue(key, value));
   }
 
   @override
@@ -50,9 +64,19 @@ class TagMap extends MapBase<String, String?> {
   @override
   String toString() => _tags.map((tag) => tag.toString()).join(' ');
 
-  bool equals(TagMap? other) {
-    MapEquality<String, String?> equality = const MapEquality();
-    return equality.equals(this, other);
+  /// Returns a new QueryMap with the same values.
+  Map<String, String?> toMap() => QueryMap.from(this);
+
+  Map<String, List<String?>> toMapAll() {
+    Map<String, List<String?>> result = {};
+    for (final tag in _tags) {
+      if (result.containsKey(tag.name)) {
+        result[tag.name]!.add(tag.value);
+      } else {
+        result[tag.name] = [tag.value];
+      }
+    }
+    return result;
   }
 }
 
@@ -60,16 +84,16 @@ class TagMap extends MapBase<String, String?> {
 ///
 /// Can be parsed from a string in the format `name:value`.
 @immutable
-class StringTag implements Comparable<StringTag> {
-  const StringTag(this.name, [this.value]);
+class QueryValue implements Comparable<QueryValue> {
+  const QueryValue(this.name, [this.value]);
 
-  factory StringTag.parse(String tag) {
+  factory QueryValue.parse(String tag) {
     List<String> result = tag.split(':');
     String? value;
     if (result.length > 1) {
       value = result.sublist(1).join(':');
     }
-    return StringTag(result[0], value);
+    return QueryValue(result[0], value);
   }
 
   final String name;
@@ -80,33 +104,25 @@ class StringTag implements Comparable<StringTag> {
 
   @override
   bool operator ==(Object other) =>
-      other is StringTag && name == other.name && value == other.value;
+      other is QueryValue && name == other.name && value == other.value;
 
   @override
   int get hashCode => Object.hash(name, value);
 
-  /// The prefix of the tag, if any.
+  /// Whether this value starts with a special character instead of a letter.
   ///
-  /// The prefix is either `-` for a negated tag or `~` for a union tag.
-  String? get prefix {
-    if (name.startsWith('-') || name.startsWith('~')) {
-      return name[0];
-    }
-    return null;
-  }
+  /// Usually, those values are meant to denote special syntax.
+  bool get _isSpecial => RegExp(r'^[a-zA-Z]').hasMatch(name);
 
-  /// Compares this tag to another tag.
-  ///
-  /// Tags are compared by their prefix, name and value.
-  /// Negated tags are considered smaller than union tags.
+  /// Compares this vlaue to another value.
   @override
-  int compareTo(StringTag other) {
+  int compareTo(QueryValue other) {
     if (value == null && other.value != null) return 1;
     if (value != null && other.value == null) return -1;
-    if (prefix != other.prefix) {
-      if (prefix == null) return -1;
-      if (other.prefix == null) return 1;
-      return prefix!.compareTo(other.prefix!);
+    if (_isSpecial != other._isSpecial) {
+      if (_isSpecial) return 1;
+      if (other._isSpecial) return -1;
+      return name[0].compareTo(other.name[0]);
     }
     if (name != other.name) return name.compareTo(other.name);
     if (value == null && other.value == null) return 0;
