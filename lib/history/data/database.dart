@@ -32,7 +32,38 @@ class HistoriesDatabase extends _$HistoriesDatabase {
   HistoriesDatabase(super.e);
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
+
+  @override
+  MigrationStrategy get migration => MigrationStrategy(
+        onUpgrade: (m, from, to) async {
+          if (from < 2) {
+            String linkRegex = r'/posts\?tags=(?<tags>.+)';
+            List<History> entries = await all(linkRegex: linkRegex).first;
+
+            for (final entry in entries) {
+              String tags =
+                  RegExp(linkRegex).firstMatch(entry.link)!.namedGroup('tags')!;
+
+              String decoded = Uri.decodeQueryComponent(tags);
+              if (decoded != tags) {
+                tags = decoded;
+              }
+
+              String link = Uri(
+                path: '/posts',
+                queryParameters: {'tags': tags},
+              ).toString();
+
+              await (update(historiesTable)
+                    ..where((tbl) => tbl.id.equals(entry.id)))
+                  .write(HistoryCompanion(
+                link: Value(link),
+              ));
+            }
+          }
+        },
+      );
 
   T _simplifyHost<T extends String?>(T host) {
     if (host == null) return null as T;
