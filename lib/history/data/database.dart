@@ -174,7 +174,7 @@ class HistoriesDatabase extends _$HistoriesDatabase {
   Future<void> add(String host, HistoryRequest item) async =>
       into(historiesTable).insert(
         HistoryCompanion(
-          host: Value(host),
+          host: Value(_simplifyHost(host)),
           visitedAt: Value(item.visitedAt),
           link: Value(item.link),
           thumbnails: Value(item.thumbnails),
@@ -188,7 +188,7 @@ class HistoriesDatabase extends _$HistoriesDatabase {
           historiesTable,
           items.map(
             (item) => HistoryCompanion(
-              host: Value(host),
+              host: Value(_simplifyHost(host)),
               visitedAt: Value(item.visitedAt),
               link: Value(item.link),
               thumbnails: Value(item.thumbnails),

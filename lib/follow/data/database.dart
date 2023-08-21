@@ -163,7 +163,7 @@ class FollowsDatabase extends _$FollowsDatabase {
   Future<void> add(String host, FollowRequest item) =>
       into(followsTable).insert(
         FollowCompanion(
-          host: Value(host),
+          host: Value(_simplifyHost(host)),
           tags: Value(item.tags),
           title: Value(item.title),
           alias: Value(item.alias),
@@ -177,7 +177,7 @@ class FollowsDatabase extends _$FollowsDatabase {
           followsTable,
           items.map(
             (item) => FollowCompanion(
-              host: Value(host),
+              host: Value(_simplifyHost(host)),
               tags: Value(item.tags),
               title: Value(item.title),
               alias: Value(item.alias),
