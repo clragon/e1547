@@ -131,7 +131,7 @@ class HistoriesService extends HistoriesDatabase with ChangeNotifier {
           link: Uri(
             path: '/posts',
             queryParameters: {
-              if (search.isNotEmpty) 'tags': QueryMap.parse(search),
+              if (search.isNotEmpty) 'tags': QueryMap.parse(search).toString(),
             },
           ).toString(),
           thumbnails: _getThumbnails(posts),
