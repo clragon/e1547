@@ -6,7 +6,10 @@ import 'package:flutter/widgets.dart';
 /// A collection of parameters.
 ///
 /// Entries are comprised of a name and an optional value.
-/// They are sorted by
+/// Sorting is applied in this order:
+/// - Entries with value
+/// - Entries without value
+/// - Entries with special character names
 ///
 /// A key may be present multiple times with different values.
 /// When accessing a key, the first value is returned.
@@ -114,14 +117,14 @@ class QueryValue implements Comparable<QueryValue> {
   /// Usually, those values are meant to denote special syntax.
   bool get _isSpecial => RegExp(r'^[a-zA-Z]').hasMatch(name);
 
-  /// Compares this vlaue to another value.
+  /// Compares this value to another value.
   @override
   int compareTo(QueryValue other) {
     if (value == null && other.value != null) return 1;
     if (value != null && other.value == null) return -1;
     if (_isSpecial != other._isSpecial) {
-      if (_isSpecial) return 1;
-      if (other._isSpecial) return -1;
+      if (_isSpecial) return -1;
+      if (other._isSpecial) return 1;
       return name[0].compareTo(other.name[0]);
     }
     if (name != other.name) return name.compareTo(other.name);
