@@ -46,22 +46,9 @@ class LogRecordExpandable extends StatelessWidget {
                       decoration: BoxDecoration(
                         border: Border.all(color: color),
                       ),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Flexible(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                ExpandablePanel(
-                                  collapsed: content,
-                                  expanded: fullContent ?? content,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
+                      child: ExpandablePanel(
+                        collapsed: content,
+                        expanded: fullContent ?? content,
                       ),
                     ),
                     if (title != null)
@@ -76,8 +63,8 @@ class LogRecordExpandable extends StatelessWidget {
                         ),
                       ),
                     Positioned(
-                      right: 16,
-                      top: -10,
+                      right: 8,
+                      bottom: -10,
                       child: Material(
                         color: Theme.of(context).cardColor,
                         child: Row(
@@ -86,8 +73,9 @@ class LogRecordExpandable extends StatelessWidget {
                             if (fullContent != null)
                               Builder(
                                 builder: (context) => InkWell(
-                                  onTap:
-                                      ExpandableController.of(context)?.toggle,
+                                  onTap: ExpandableController.of(context,
+                                          required: true)!
+                                      .toggle,
                                   child: ExpandableIcon(),
                                 ),
                               ),

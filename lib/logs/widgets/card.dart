@@ -61,7 +61,7 @@ class LogStringBody extends StatelessWidget {
             key: ValueKey(Object.hash(item, content)),
             color: item.level.color,
             title: Text(title),
-            content: Text(short),
+            content: Text(short.trim().isNotEmpty ? short : 'No content'),
             fullContent: short != content ? Text(content) : null,
           ),
         ),
