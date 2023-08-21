@@ -145,18 +145,17 @@ abstract class DataController<KeyType, ItemType> with ChangeNotifier {
 
   /// Waits for the current call to [getNextPage] to complete.
   Future<void> _waitForFetch() async {
-    if (_fetching) {
-      Completer<void> completer = Completer<void>();
-      void onUpdate() {
-        if (!_fetching) {
-          removeListener(onUpdate);
-          completer.complete();
-        }
-      }
+    Completer<void> completer = Completer<void>();
 
-      addListener(onUpdate);
-      return completer.future;
+    void onUpdate() {
+      if (!_fetching) {
+        removeListener(onUpdate);
+        completer.complete();
+      }
     }
+
+    addListener(onUpdate);
+    return completer.future;
   }
 
   /// Waits for the next page to be loaded.
@@ -165,7 +164,7 @@ abstract class DataController<KeyType, ItemType> with ChangeNotifier {
   Future<void> waitForNextPage() async {
     if (error != null) return;
     if (nextPageKey == null) return;
-    if (items == null) _waitForFetch();
+    if (items == null) return _waitForFetch();
   }
 
   /// Schedules a refresh.

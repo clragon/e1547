@@ -72,14 +72,15 @@ class _ControllerHistoryConnectorState<T extends DataController?>
       initialize: true,
       listenable: Listenable.merge([widget.controller]),
       listener: () async {
-        if (widget.controller == null) return;
-        await widget.controller!.waitForNextPage();
-        if (widget.controller!.error != null) return;
+        T? controller = widget.controller;
+        if (controller == null) return;
+        await controller.waitForNextPage();
+        if (controller.error != null) return;
         if (!mounted) return;
         widget.addToHistory(
           context,
           context.read<HistoriesService>(),
-          widget.controller,
+          controller,
         );
       },
       builder: (context) => widget.child,
