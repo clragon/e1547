@@ -1,0 +1,3 @@
+### Fixed
+- adding history entries
+- sorting tags
