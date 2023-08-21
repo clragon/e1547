@@ -65,7 +65,7 @@ class CurrentUserAvatarProvider extends SubChangeNotifierProvider2<Client,
                 PostsController? controller =
                     context.read<CurrentUserAvatarController>();
                 await controller.waitForNextPage();
-                Post? avatar = controller.items?.first;
+                Post? avatar = controller.items?.firstOrNull;
                 if (avatar?.sample.url != null && context.mounted) {
                   await precacheImage(
                     CachedNetworkImageProvider(avatar!.sample.url!),
