@@ -4,9 +4,83 @@ import 'package:e1547/app/app.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/history/history.dart';
 import 'package:e1547/interface/interface.dart';
-import 'package:e1547/pool/pool.dart';
+import 'package:e1547/pool/data/controller.dart';
 import 'package:e1547/post/post.dart';
+import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
+
+class PoolsPageFloatingActionButton extends StatelessWidget {
+  const PoolsPageFloatingActionButton({
+    super.key,
+    required this.controller,
+  });
+
+  final PoolsController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    return SearchPromptFloationgActionButton(
+      tags: controller.search,
+      onSubmit: (value) => controller.search = QueryMap.from(value),
+      filters: [
+        WrapperFilterConfig(
+          wrapper: (value) => 'search[$value]',
+          unwrapper: (value) => value.substring(7, value.length - 1),
+          filters: [
+            PrimaryFilterConfig(
+              filter: PoolNameFilterTag(
+                tag: 'name_matches',
+              ),
+              filters: const [
+                TextFilterTag(
+                  tag: 'description_matches',
+                  name: 'Description',
+                  icon: Icon(Icons.description),
+                ),
+                TextFilterTag(
+                  tag: 'creator_name',
+                  name: 'Creator',
+                  icon: Icon(Icons.person),
+                ),
+                ToggleFilterTag(
+                  tag: 'is_active',
+                  name: 'Active',
+                  enabled: 'true',
+                  disabled: 'false',
+                  description: 'Is active',
+                ),
+                ChoiceFilterTag(
+                  tag: 'category',
+                  name: 'Category',
+                  icon: Icon(Icons.category),
+                  options: [
+                    ChoiceFilterTagValue(value: null, name: 'Default'),
+                    ChoiceFilterTagValue(value: 'series', name: 'Series'),
+                    ChoiceFilterTagValue(
+                        value: 'collection', name: 'Collection'),
+                  ],
+                ),
+                ChoiceFilterTag(
+                  tag: 'order',
+                  name: 'Sort by',
+                  icon: Icon(Icons.sort),
+                  options: [
+                    ChoiceFilterTagValue(value: null, name: 'Default'),
+                    ChoiceFilterTagValue(value: 'name', name: 'Name'),
+                    ChoiceFilterTagValue(value: 'created_at', name: 'Created'),
+                    ChoiceFilterTagValue(value: 'updated_at', name: 'Updated'),
+                    ChoiceFilterTagValue(
+                        value: 'post_count', name: 'Post count'),
+                  ],
+                ),
+              ],
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
 
 class _PoolSearchResult {
   const _PoolSearchResult({
@@ -22,43 +96,36 @@ class _PoolSearchResult {
   final String? link;
 }
 
-class PoolSearchInput extends StatefulWidget {
-  const PoolSearchInput({
-    super.key,
-    required this.controller,
-    required this.actionController,
-  });
-
-  final PoolsController controller;
-  final ActionController actionController;
-
-  @override
-  State<PoolSearchInput> createState() => _PoolSearchInputState();
+class PoolNameFilterTag extends BuilderFilterTag {
+  PoolNameFilterTag({
+    required super.tag,
+    super.name,
+  }) : super(
+          builder: (context, state) => PoolNameFilter(state: state),
+        );
 }
 
-class _PoolSearchInputState extends State<PoolSearchInput> {
-  late TextEditingController textController;
+class PoolNameFilter extends StatelessWidget {
+  const PoolNameFilter({
+    super.key,
+    required this.state,
+  });
 
-  @override
-  void initState() {
-    super.initState();
-    String text = widget.controller.search.trim();
-    if (text.isNotEmpty) {
-      text = '$text ';
-    }
-    textController = TextEditingController(text: text);
-  }
+  final FilterTagState state;
 
   @override
   Widget build(BuildContext context) {
-    return ControlledTextWrapper(
-      textController: textController,
-      submit: (value) => widget.controller.search = value.trim(),
-      actionController: widget.actionController,
-      builder: (context, controller, submit) => SearchInput<_PoolSearchResult>(
-        submit: submit,
+    FilterTagThemeData theme = FilterTagTheme.of(context);
+    return SubTextValue(
+      value: state.value,
+      onChanged: state.onChanged,
+      builder: (context, controller) => SearchInput<_PoolSearchResult>(
+        direction: AxisDirection.up,
+        submit: (value) => state.onSubmit?.call(value),
         controller: controller,
         labelText: 'Pool title',
+        decoration: theme.decoration,
+        focusNode: theme.focusNode,
         onSuggestionSelected: (value) {
           if (value.link != null) {
             Navigator.of(context).pop();
@@ -90,7 +157,7 @@ class _PoolSearchInputState extends State<PoolSearchInput> {
                     )
                     .first)
                 .map((e) {
-              String? name = parseLink(e.link)?.search;
+              String? name = parseLink(e.link)?.search?['search[name_matches]'];
               if (name != null) {
                 return _PoolSearchResult(time: e.visitedAt, name: name);
               }

@@ -1,9 +1,6 @@
-import 'dart:async';
-
 import 'package:collection/collection.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/interface/interface.dart';
-import 'package:e1547/post/post.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -21,6 +18,7 @@ class TagInput extends StatelessWidget {
     this.labelText,
     this.decoration,
     this.textInputAction,
+    this.focusNode,
   });
 
   final SubmitString submit;
@@ -32,6 +30,7 @@ class TagInput extends StatelessWidget {
   final String? labelText;
   final InputDecoration? decoration;
   final TextInputAction? textInputAction;
+  final FocusNode? focusNode;
 
   int findTag(List<String> tags, int offset) {
     List<String> before = [];
@@ -72,6 +71,7 @@ class TagInput extends StatelessWidget {
             if (!multiInput) FilteringTextInputFormatter.deny(' '),
           ],
           textInputAction: textInputAction,
+          focusNode: focusNode,
           onSuggestionSelected: (suggestion) {
             List<String> tags = controller.text.split(' ');
             int selection = findTag(tags, controller.selection.extent.offset);
@@ -123,217 +123,6 @@ class TagInput extends StatelessWidget {
           },
         ),
       ),
-    );
-  }
-}
-
-class AdvancedTagInput extends StatefulWidget {
-  const AdvancedTagInput({
-    required this.submit,
-    required this.controller,
-    this.labelText,
-    this.textInputAction,
-  });
-
-  final TextEditingController? controller;
-  final SubmitString submit;
-  final String? labelText;
-  final TextInputAction? textInputAction;
-
-  @override
-  State<AdvancedTagInput> createState() => _AdvancedTagInputState();
-}
-
-class _AdvancedTagInputState extends State<AdvancedTagInput> {
-  late TextEditingController controller;
-
-  @override
-  void initState() {
-    super.initState();
-    controller = widget.controller ?? TextEditingController();
-  }
-
-  @override
-  void didUpdateWidget(covariant AdvancedTagInput oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.controller != oldWidget.controller) {
-      if (oldWidget.controller == null) {
-        controller.dispose();
-      }
-      controller = widget.controller ?? TextEditingController();
-    }
-  }
-
-  @override
-  void dispose() {
-    if (widget.controller == null) {
-      controller.dispose();
-    }
-    super.dispose();
-  }
-
-  Future<void> withTags(Future<QueryMap> Function(QueryMap tags) editor) async {
-    controller.text = '${await editor(QueryMap.parse(controller.text))} ';
-    controller.setFocusToEnd();
-  }
-
-  List<PopupMenuEntry<String>> popMenuFromMap(Map<String, String> strings) =>
-      strings.keys.map((e) => PopupMenuItem(value: e, child: Text(e))).toList();
-
-  @override
-  Widget build(BuildContext context) {
-    Widget filterByWidget() {
-      Map<String, String> filterTypes = {
-        'Score': 'score',
-        'Favorites': 'favcount',
-      };
-
-      return PopupMenuButton<String>(
-        icon: const Icon(Icons.filter_list),
-        tooltip: 'Filter by',
-        itemBuilder: (context) => popMenuFromMap(filterTypes),
-        onSelected: (selection) {
-          String? filterType = filterTypes[selection];
-
-          withTags((tags) async {
-            NumberRange? current =
-                NumberRange.tryParse(tags[filterType!] ?? '');
-            current ??= const NumberRange(20);
-            current = NumberRange(current.value);
-
-            await showDialog(
-              context: context,
-              builder: (context) => RangeDialog(
-                title: Text('Minimum $filterType'),
-                value: current,
-                initialMode: RangeDialogMode.exact,
-                canChangeMode: false,
-                division: 10,
-                max: 100,
-                onSubmit: (value) => current = value,
-              ),
-            );
-
-            if (current == null) {
-              tags.remove(filterType);
-            } else {
-              current = NumberRange(
-                current!.value,
-                comparison: NumberComparison.greaterThanOrEqual,
-              );
-              tags[filterType] = current.toString();
-            }
-            return tags;
-          });
-        },
-      );
-    }
-
-    Widget sortByWidget() {
-      Map<String, String> orders = {
-        'Default': 'default',
-        'New': 'new',
-        'Score': 'score',
-        'Favorites': 'favcount',
-        'Rank': 'rank',
-        'Random': 'random',
-      };
-
-      return PopupMenuButton<String>(
-        icon: const Icon(Icons.sort),
-        tooltip: 'Sort by',
-        itemBuilder: (context) => popMenuFromMap(orders),
-        onSelected: (String selection) {
-          String? orderType = orders[selection];
-
-          withTags((tags) async {
-            if (orderType == 'default') {
-              tags.remove('order');
-            } else {
-              tags['order'] = orderType;
-            }
-
-            return tags;
-          });
-        },
-      );
-    }
-
-    Widget statusWidget() {
-      Map<String, String> status = {
-        'Rating': 'rating',
-        'Deleted': 'deleted',
-        'Pool': 'pool',
-      };
-
-      return PopupMenuButton<String>(
-        icon: const Icon(Icons.playlist_add_check),
-        tooltip: 'Conditions',
-        itemBuilder: (context) => popMenuFromMap(status),
-        onSelected: (selection) async {
-          String? key;
-          String? value;
-
-          switch (status[selection]) {
-            case 'rating':
-              await showRatingDialog(
-                context: context,
-                onSelected: (rating) {
-                  key = 'rating';
-                  value = rating.name;
-                },
-              );
-              break;
-            case 'deleted':
-              key = 'status';
-              value = 'deleted';
-              break;
-            case 'pool':
-              key = 'inpool';
-              value = 'true';
-              break;
-          }
-
-          await withTags((tags) async {
-            if (key == null) {
-              return tags;
-            }
-            if (key == 'status' && tags.containsKey('status')) {
-              tags.remove('status');
-              return tags;
-            }
-            if (key == 'inpool' && tags.containsKey('inpool')) {
-              tags.remove('inpool');
-              return tags;
-            }
-            tags[key!] = value;
-            return tags;
-          });
-        },
-      );
-    }
-
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        TagInput(
-          labelText: widget.labelText,
-          controller: controller,
-          submit: widget.submit,
-          textInputAction: widget.textInputAction,
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 10),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              statusWidget(),
-              filterByWidget(),
-              sortByWidget(),
-            ],
-          ),
-        ),
-      ],
     );
   }
 }

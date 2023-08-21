@@ -16,11 +16,9 @@ class SearchInput<T> extends StatelessWidget {
     this.labelText,
     this.decoration,
     this.textInputAction,
+    this.focusNode,
     this.inputFormatters,
-  }) : assert(
-          decoration == null || labelText == null,
-          'Cannot specify both a decoration and a labelText\n',
-        );
+  });
 
   final SubmitString submit;
   final TextEditingController? controller;
@@ -29,6 +27,7 @@ class SearchInput<T> extends StatelessWidget {
   final String? labelText;
   final InputDecoration? decoration;
   final TextInputAction? textInputAction;
+  final FocusNode? focusNode;
   final List<TextInputFormatter>? inputFormatters;
   final SuggestionSelectionCallback<T> onSuggestionSelected;
   final ItemBuilder<T> itemBuilder;
@@ -53,8 +52,12 @@ class SearchInput<T> extends StatelessWidget {
       textFieldConfiguration: TextFieldConfiguration(
         controller: controller,
         autofocus: true,
+        focusNode: focusNode,
         inputFormatters: inputFormatters,
-        decoration: decoration ?? InputDecoration(labelText: labelText),
+        decoration: decoration?.copyWith(
+              labelText: labelText,
+            ) ??
+            InputDecoration(labelText: labelText),
         onSubmitted: submit,
         textInputAction: textInputAction ?? TextInputAction.search,
       ),

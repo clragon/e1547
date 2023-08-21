@@ -321,7 +321,7 @@ class Client {
 
   Future<List<Pool>> pools(
     int page, {
-    String? search,
+    QueryMap? search,
     bool? force,
     CancelToken? cancelToken,
   }) async {
@@ -329,7 +329,7 @@ class Client {
         .get(
           'pools.json',
           queryParameters: {
-            'search[name_matches]': search,
+            ...?search,
             'page': page,
           },
           options: forceOptions(force),
@@ -473,8 +473,8 @@ class Client {
   }
 
   Future<List<Tag>> tags(
-    String search, {
-    int? category,
+    int page, {
+    QueryMap? search,
     bool? force,
     CancelToken? cancelToken,
   }) async {
@@ -482,10 +482,8 @@ class Client {
         .get(
           'tags.json',
           queryParameters: {
-            'search[name_matches]': search,
-            'search[category]': category,
-            'search[order]': 'count',
-            'limit': 3,
+            ...?search,
+            'page': page,
           },
           options: forceOptions(force),
           cancelToken: cancelToken,
@@ -530,8 +528,13 @@ class Client {
     } else {
       List<TagSuggestion> tags = [];
       for (final tag in await this.tags(
-        '$search*',
-        category: category,
+        1,
+        search: QueryMap.from({
+          'search[name_matches]': search,
+          'search[category]': category,
+          'search[order]': 'count',
+          'limit': 3,
+        }),
         force: force,
       )) {
         tags.add(
@@ -548,8 +551,9 @@ class Client {
     }
   }
 
-  Future<String?> tagAlias(
-    String tag, {
+  Future<String?> tagAliases(
+    int page, {
+    QueryMap? search,
     bool? force,
     CancelToken? cancelToken,
   }) async {
@@ -557,7 +561,8 @@ class Client {
         .get(
           'tag_aliases.json',
           queryParameters: {
-            'search[antecedent_name]': tag,
+            ...?search,
+            'page': page,
           },
           options: forceOptions(force),
           cancelToken: cancelToken,
@@ -574,8 +579,8 @@ class Client {
   }
 
   Future<List<Comment>> comments(
-    int postId,
     int page, {
+    QueryMap? search,
     bool? force,
     bool? ascending,
     CancelToken? cancelToken,
@@ -584,9 +589,7 @@ class Client {
         .get(
           'comments.json',
           queryParameters: {
-            'group_by': 'comment',
-            'search[post_id]': postId,
-            'search[order]': ascending ?? false ? 'id_asc' : 'id_desc',
+            ...?search,
             'page': page,
           },
           options: forceOptions(force),
@@ -680,17 +683,16 @@ class Client {
 
   Future<List<Topic>> topics(
     int page, {
-    String? search,
+    QueryMap? search,
     bool? force,
     CancelToken? cancelToken,
   }) async {
-    String? title = search?.isNotEmpty ?? false ? search : null;
     Object body = await _dio
         .get(
           'forum_topics.json',
           queryParameters: {
+            ...?search,
             'page': page,
-            'search[title_matches]': title,
           },
           options: forceOptions(force),
           cancelToken: cancelToken,

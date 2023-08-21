@@ -4,6 +4,7 @@ export 'data/controller.dart';
 export 'data/topic.dart';
 // widgets
 export 'widgets/drawer.dart';
+export 'widgets/input.dart';
 export 'widgets/loading.dart';
 export 'widgets/prompt.dart';
 export 'widgets/tile.dart';

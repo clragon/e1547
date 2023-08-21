@@ -3,14 +3,15 @@ import 'package:e1547/denylist/denylist.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/pool/pool.dart';
 import 'package:e1547/post/post.dart';
-import 'package:flutter/material.dart';
+import 'package:e1547/tag/tag.dart';
+import 'package:flutter/foundation.dart';
 
 class PoolsController extends PageClientDataController<Pool> {
   PoolsController({
     required this.client,
     required this.denylist,
-    String? search,
-  })  : _search = search ?? '',
+    QueryMap? search,
+  })  : _search = search ?? QueryMap(),
         thumbnails = ThumbnailController(
           client: client,
           denylist: denylist,
@@ -22,11 +23,11 @@ class PoolsController extends PageClientDataController<Pool> {
 
   final ThumbnailController thumbnails;
 
-  String _search = '';
-  String get search => _search;
-  set search(String value) {
-    if (value == _search) return;
-    _search = value;
+  QueryMap _search;
+  QueryMap get search => _search;
+  set search(QueryMap value) {
+    if (mapEquals(_search, value)) return;
+    _search = QueryMap.from(value);
     refresh();
   }
 
@@ -58,7 +59,7 @@ class PoolsController extends PageClientDataController<Pool> {
 
 class PoolsProvider extends SubChangeNotifierProvider2<Client, DenylistService,
     PoolsController> {
-  PoolsProvider({String? search, super.child, super.builder})
+  PoolsProvider({QueryMap? search, super.child, super.builder})
       : super(
           create: (context, client, denylist) => PoolsController(
             client: client,

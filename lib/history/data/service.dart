@@ -156,7 +156,7 @@ class HistoriesService extends HistoriesDatabase with ChangeNotifier {
 
   Future<void> addPoolSearch(
     String host,
-    String search, {
+    QueryMap search, {
     List<Pool>? pools,
   }) =>
       add(
@@ -165,8 +165,7 @@ class HistoriesService extends HistoriesDatabase with ChangeNotifier {
           visitedAt: DateTime.now(),
           link: Uri(
             path: '/pools',
-            queryParameters:
-                search.isNotEmpty ? {'search[name_matches]': search} : null,
+            queryParameters: search.isNotEmpty ? search : null,
           ).toString(),
           subtitle: pools?.isNotEmpty ?? false
               ? _composeSearchSubtitle({
@@ -193,7 +192,7 @@ class HistoriesService extends HistoriesDatabase with ChangeNotifier {
 
   Future<void> addTopicSearch(
     String host,
-    String search, {
+    QueryMap search, {
     List<Topic>? topics,
   }) =>
       add(
@@ -202,8 +201,7 @@ class HistoriesService extends HistoriesDatabase with ChangeNotifier {
           visitedAt: DateTime.now(),
           link: Uri(
             path: '/forum_topics',
-            queryParameters:
-                search.isNotEmpty ? {'search[title_matches]': search} : null,
+            queryParameters: search.isNotEmpty ? search : null,
           ).toString(),
           subtitle: topics?.isNotEmpty ?? false
               ? _composeSearchSubtitle(

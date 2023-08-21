@@ -62,7 +62,7 @@ class HistoryTile extends StatelessWidget {
                                 icon: Icons.info,
                                 value: () => showTagSearchPrompt(
                                   context: context,
-                                  tag: parseLink(entry.link)!.search!,
+                                  tag: parseLink(entry.link)!.search!['tags']!,
                                 ),
                               ),
                             if (entry.subtitle != null)

@@ -2,8 +2,6 @@ import 'package:e1547/denylist/denylist.dart';
 import 'package:e1547/history/history.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/pool/pool.dart';
-import 'package:e1547/pool/widgets/input.dart';
-import 'package:e1547/pool/widgets/tile.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:e1547/tag/tag.dart';
@@ -12,7 +10,7 @@ import 'package:flutter/material.dart';
 class PoolsPage extends StatefulWidget {
   const PoolsPage({this.search});
 
-  final String? search;
+  final QueryMap? search;
 
   @override
   State<StatefulWidget> createState() => _PoolsPageState();
@@ -37,12 +35,8 @@ class _PoolsPageState extends State<PoolsPage> with RouterDrawerEntryWidget {
               title: Text('Pools'),
               actions: [ContextDrawerButton()],
             ),
-            floatingActionButton: SheetFloatingActionButton(
-              actionIcon: Icons.search,
-              builder: (context, actionController) => PoolSearchInput(
-                controller: controller,
-                actionController: actionController,
-              ),
+            floatingActionButton: PoolsPageFloatingActionButton(
+              controller: controller,
             ),
             drawer: const RouterDrawer(),
             endDrawer: ContextDrawer(

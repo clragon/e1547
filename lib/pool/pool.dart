@@ -3,7 +3,9 @@ export 'data/actions.dart';
 export 'data/controller.dart';
 export 'data/pool.dart';
 // widgets
+export 'widgets/input.dart';
 export 'widgets/loading.dart';
 export 'widgets/pool.dart';
 export 'widgets/pools.dart';
 export 'widgets/prompt.dart';
+export 'widgets/tile.dart';

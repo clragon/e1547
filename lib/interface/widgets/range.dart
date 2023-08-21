@@ -161,7 +161,8 @@ class NumberRangeInputFormatter extends FilteringTextInputFormatter {
 
     if (newRange != null) {
       return newValue.copyWith(
-          text: newRange.clamp(min?.toInt(), max?.toInt()).toString());
+        text: newRange.clamp(min?.toInt(), max?.toInt()).toString(),
+      );
     }
 
     return newValue;
@@ -198,17 +199,40 @@ class RangeDialog extends StatefulWidget {
     required this.max,
     this.division,
     this.title,
+    this.enforceMax,
     this.initialMode,
     this.canChangeMode,
   });
 
+  /// The title of the dialog.
   final Widget? title;
+
+  /// The initial value of the dialog.
   final NumberRange? value;
-  final double max;
+
+  /// The minimum value of the dialog.
+  /// Defaults to 0.
   final double min;
+
+  /// The maximum value of the dialog.
+  /// Defaults to 100.
+  final double max;
+
+  /// The number of divisions to display in the slider.
   final int? division;
-  final bool? canChangeMode;
+
+  /// Whether to enforce the maximum value.
+  /// If false, the user may enter a value higher than [max].
+  /// Defaults to true.
+  final bool? enforceMax;
+
+  /// The initial mode of the dialog.
   final RangeDialogMode? initialMode;
+
+  /// Whether the user can change the mode of the dialog.
+  final bool? canChangeMode;
+
+  /// Called when the user submits the dialog.
   final ValueChanged<NumberRange?> onSubmit;
 
   @override
@@ -371,7 +395,7 @@ class _RangeDialogState extends State<RangeDialog> {
                     inputFormatters: [
                       NumberRangeInputFormatter(
                         min: widget.min,
-                        max: widget.max,
+                        max: (widget.enforceMax ?? true) ? widget.max : null,
                       )
                     ],
                   ),

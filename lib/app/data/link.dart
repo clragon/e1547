@@ -4,6 +4,7 @@ import 'package:e1547/pool/pool.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/reply/reply.dart';
 import 'package:e1547/settings/settings.dart';
+import 'package:e1547/tag/tag.dart';
 import 'package:e1547/topic/topic.dart';
 import 'package:e1547/user/user.dart';
 import 'package:e1547/wiki/wiki.dart';
@@ -13,90 +14,22 @@ import 'package:path_to_regexp/path_to_regexp.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart' as urls;
 
-Future<void> launch(String uri) async {
+Future<void> launch(String url) async {
+  Uri uri = Uri.parse(url);
   if ((Platform.isAndroid || Platform.isIOS) &&
-      RegExp(r'http(s)?://(e621|e926)\.net/*').hasMatch(uri)) {
-    await tabs.launch(uri);
+      ['e621.net', 'e926.net'].contains(uri.host)) {
+    await tabs.launch(url);
   } else {
-    await urls.launchUrl(Uri.parse(uri),
-        mode: urls.LaunchMode.externalApplication);
+    await urls.launchUrl(
+      uri,
+      mode: urls.LaunchMode.externalApplication,
+    );
   }
 }
 
 const String queryDivider = r'[^\s/?&#]';
 const String _queryRegex = r'(' + queryDivider + r'+)';
 const String _showEnding = r':_(s|/show)';
-
-class Link {
-  const Link({
-    required this.type,
-    this.id,
-    this.name,
-    this.search,
-    this.page,
-  });
-
-  final String type;
-  final int? id;
-  final String? name;
-  final String? search;
-  final int? page;
-}
-
-class LinkParser {
-  LinkParser({
-    required this.path,
-    this.parameters,
-    required this.transformer,
-  });
-
-  final String path;
-  final List<String>? parameters;
-  final Link? Function(Map<String, String> arguments) transformer;
-
-  final RegExp _parameterPattern = RegExp(
-    r'^(?<name>[^ ()?]+)(?<pattern>\(\S+\))?(?<optional>\?)?',
-    caseSensitive: false,
-  );
-
-  Link? parse(String link) {
-    Uri? url = Uri.tryParse(link);
-    if (url == null) {
-      return null;
-    }
-
-    List<String> names = [];
-    Match? match = pathToRegExp(path, parameters: names, caseSensitive: false)
-        .firstMatch(url.path);
-    if (match != null) {
-      Map<String, String> arguments = extract(names, match);
-
-      if (parameters != null) {
-        for (final argument in parameters!) {
-          RegExpMatch match = _parameterPattern.firstMatch(argument)!;
-          String name = match.namedGroup('name')!;
-          String? pattern = match.namedGroup('pattern');
-          bool optional = match.namedGroup('optional') != null;
-
-          String? value = url.queryParameters[name];
-          if (value == null) {
-            if (optional) continue;
-            return null;
-          }
-          if (pattern != null && !RegExp(pattern).hasMatch(value)) {
-            if (optional) continue;
-            return null;
-          }
-          arguments[name] = value;
-        }
-      }
-
-      return transformer(arguments);
-    }
-
-    return null;
-  }
-}
 
 enum LinkType {
   post,
@@ -107,37 +40,74 @@ enum LinkType {
   reply,
 }
 
+class Link {
+  const Link({
+    required this.type,
+    this.id,
+    this.search,
+  });
+
+  final LinkType type;
+  final Object? id;
+  final QueryMap? search;
+}
+
+class LinkParser {
+  LinkParser({
+    required this.path,
+    required this.transformer,
+  });
+
+  final String path;
+  final Link? Function(Map<String, String> args, QueryMap? query) transformer;
+
+  Link? parse(String link) {
+    Uri? uri = Uri.tryParse(link);
+    if (uri == null) return null;
+
+    List<String> names = [];
+    Match? match = pathToRegExp(path, parameters: names, caseSensitive: false)
+        .firstMatch(uri.path);
+
+    if (match != null) {
+      Map<String, String> arguments = extract(names, match);
+      QueryMap? query = QueryMap.from(uri.queryParameters);
+      if (query.isEmpty) query = null;
+      return transformer(arguments, query);
+    }
+
+    return null;
+  }
+}
+
 final List<LinkParser> allLinkParsers = [
   LinkParser(
     path: r'/post' '$_showEnding' r'/:id(\d+)',
-    parameters: [r'q?'],
-    transformer: (arguments) => Link(
-      type: LinkType.post.name,
-      id: int.parse(arguments['id']!),
-      search: arguments['q'],
+    transformer: (args, query) => Link(
+      type: LinkType.post,
+      id: int.parse(args['id']!),
+      search: query,
     ),
   ),
   LinkParser(
     path: r'/posts',
-    parameters: [r'tags?'],
-    transformer: (arguments) => Link(
-      type: LinkType.post.name,
-      search: arguments['tags'],
+    transformer: (args, query) => Link(
+      type: LinkType.post,
+      search: query,
     ),
   ),
   LinkParser(
     path: r'/pool' '$_showEnding' r'/:id(\d+)',
-    transformer: (arguments) => Link(
-      type: LinkType.pool.name,
-      id: int.parse(arguments['id']!),
+    transformer: (args, query) => Link(
+      type: LinkType.pool,
+      search: query,
     ),
   ),
   LinkParser(
     path: r'/pools',
-    parameters: [r'search[name_matches]?'],
-    transformer: (arguments) => Link(
-      type: LinkType.pool.name,
-      search: arguments['search[name_matches]'],
+    transformer: (args, query) => Link(
+      type: LinkType.pool,
+      search: query,
     ),
   ),
   LinkParser(
@@ -145,86 +115,60 @@ final List<LinkParser> allLinkParsers = [
         '$_showEnding'
         r'/:name'
         '$_queryRegex',
-    transformer: (arguments) {
-      int? id = int.tryParse(arguments['name']!);
-      return Link(
-        type: LinkType.user.name,
-        id: id,
-        name: id == null ? arguments['name']! : null,
-      );
-    },
+    transformer: (args, query) => Link(
+      type: LinkType.user,
+      id: int.tryParse(args['name']!) ?? args['name']!,
+      search: query,
+    ),
   ),
   LinkParser(
     path: r'/wiki_pages'
         r'/:name'
         '$_queryRegex',
-    transformer: (arguments) {
-      int? id = int.tryParse(arguments['name']!);
-      return Link(
-        type: LinkType.wiki.name,
-        id: id,
-        name: id == null ? arguments['name']! : null,
-      );
-    },
+    transformer: (args, query) => Link(
+      type: LinkType.wiki,
+      id: int.tryParse(args['name']!) ?? args['name']!,
+    ),
   ),
   LinkParser(
     path: r'/wiki_pages',
-    parameters: [r'search[title]'],
-    transformer: (arguments) => Link(
-      type: LinkType.wiki.name,
-      search: arguments[r'search[title]']!,
+    transformer: (args, query) => Link(
+      type: LinkType.wiki,
+      search: query,
     ),
   ),
   LinkParser(
     path: r'/forum_topics/:id(\d+)',
-    parameters: [r'page(\d+)?'],
-    transformer: (arguments) => Link(
-      type: LinkType.topic.name,
-      id: int.parse(arguments['id']!),
-      page: arguments['page'] != null ? int.parse(arguments['page']!) : null,
+    transformer: (args, query) => Link(
+      type: LinkType.topic,
+      id: int.parse(args['id']!),
+      search: query,
     ),
   ),
   LinkParser(
     path: r'/forum_topics',
-    parameters: [r'search[title_matches]?'],
-    transformer: (arguments) => Link(
-      type: LinkType.topic.name,
-      search: arguments[r'search[title_matches]'],
+    transformer: (args, query) => Link(
+      type: LinkType.topic,
+      search: query,
     ),
   ),
   LinkParser(
     path: r'/forum_posts/:id(\d+)',
-    transformer: (arguments) => Link(
-      type: LinkType.reply.name,
-      id: int.parse(arguments['id']!),
+    transformer: (args, query) => Link(
+      type: LinkType.reply,
+      id: int.parse(args['id']!),
     ),
   ),
   LinkParser(
     path: r'/forum_posts',
-    parameters: [r'search[topic_title_matches]'],
-    transformer: (arguments) => Link(
-      type: LinkType.reply.name,
-      search: arguments[r'search[topic_title_matches]'],
+    transformer: (args, query) => Link(
+      type: LinkType.reply,
+      search: query,
     ),
   ),
 ];
 
 Link? parseLink(String link) {
-  Uri? url = Uri.tryParse(link);
-  if (url != null) {
-    if (['e621.net', 'e926.net'].any((e) => e == url!.host)) {
-      url = url.replace(scheme: '', host: '');
-      link = url.toString();
-    }
-  }
-  if (link.startsWith('///')) {
-    link = link.substring(2);
-  }
-  if (link.endsWith('/')) {
-    link = link.substring(0, link.length - 1);
-  }
-  link = Uri.decodeFull(link);
-
   for (LinkParser parser in allLinkParsers) {
     Link? result = parser.parse(link);
     if (result != null) {
@@ -237,9 +181,8 @@ Link? parseLink(String link) {
 VoidCallback? parseLinkOnTap(BuildContext context, String link) {
   final Link? result = parseLink(link);
   if (result != null) {
-    LinkType? type = LinkType.values.asNameMap()[result.type];
     if (!context.read<Settings>().showBeta.value &&
-        [LinkType.topic, LinkType.reply].contains(type)) {
+        [LinkType.topic, LinkType.reply].contains(result.type)) {
       return null;
     }
 
@@ -254,41 +197,44 @@ VoidCallback? parseLinkOnTap(BuildContext context, String link) {
       };
     }
 
-    switch (type) {
+    switch (result.type) {
       case LinkType.post:
-        if (result.id != null) {
-          return navWrapper((context) => PostLoadingPage(result.id!));
+        int? id = result.id as int?;
+        if (id != null) {
+          return navWrapper((context) => PostLoadingPage(id));
         }
-        return navWrapper((context) => PostsSearchPage(tags: result.search));
+        return navWrapper(
+            (context) => PostsSearchPage(tags: result.search!['tags']));
       case LinkType.pool:
-        if (result.id != null) {
-          return navWrapper((context) => PoolLoadingPage(result.id!));
+        int? id = result.id as int?;
+        if (id != null) {
+          return navWrapper((context) => PoolLoadingPage(id));
         }
         return navWrapper((context) => PoolsPage(search: result.search), true);
       case LinkType.user:
-        String? name = result.name ?? result.id?.toString();
-        if (name != null) {
-          return navWrapper((context) => UserLoadingPage(name));
+        Object? id = result.id;
+        if (id != null) {
+          return navWrapper((context) => UserLoadingPage(id.toString()));
         }
         break;
       case LinkType.wiki:
-        String? name = result.name ?? result.id?.toString();
-        if (name != null) {
-          return navWrapper((context) => WikiLoadingPage(name));
+        Object? id = result.id;
+        if (id != null) {
+          return navWrapper((context) => WikiLoadingPage(id.toString()));
         }
         break;
       case LinkType.topic:
-        if (result.id != null) {
-          return navWrapper((context) => TopicLoadingPage(result.id!));
+        int? id = result.id as int?;
+        if (id != null) {
+          return navWrapper((context) => TopicLoadingPage(id));
         }
         return navWrapper((context) => TopicsPage(search: result.search), true);
       case LinkType.reply:
-        if (result.id != null) {
-          return navWrapper((context) => ReplyLoadingPage(result.id!));
+        int? id = result.id as int?;
+        if (id != null) {
+          return navWrapper((context) => ReplyLoadingPage(id));
         }
         return navWrapper((context) => TopicsPage(search: result.search), true);
-      case null:
-        return null;
     }
   }
   return null;

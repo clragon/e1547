@@ -1,6 +1,7 @@
 // data
 export 'data/actions.dart';
 export 'data/count.dart';
+export 'data/filter.dart';
 export 'data/map.dart';
 export 'data/regex.dart';
 export 'data/tag.dart';
@@ -9,7 +10,9 @@ export 'widgets/actions.dart';
 export 'widgets/card.dart';
 export 'widgets/drawer.dart';
 export 'widgets/editor.dart';
+export 'widgets/filter.dart';
 export 'widgets/gesture.dart';
 export 'widgets/input.dart';
 export 'widgets/plus.dart';
 export 'widgets/prompt.dart';
+export 'widgets/search.dart';

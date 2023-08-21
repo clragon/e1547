@@ -16,13 +16,13 @@ class QueryMap extends MapBase<String, String?> {
   QueryMap() : _tags = SplayTreeSet<QueryValue>();
 
   /// Creates a query map from a map.
-  factory QueryMap.from(Map<String, String?> other) =>
+  factory QueryMap.from(Map<String, Object?> other) =>
       QueryMap.fromIterable(other.entries);
 
-  factory QueryMap.fromIterable(Iterable<MapEntry<String, String?>> other) {
+  factory QueryMap.fromIterable(Iterable<MapEntry<String, Object?>> other) {
     QueryMap result = QueryMap();
     for (final entry in other) {
-      result._tags.add(QueryValue(entry.key, entry.value));
+      result._tags.add(QueryValue(entry.key, entry.value.toString()));
     }
     return result;
   }

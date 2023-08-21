@@ -8,19 +8,17 @@ import 'package:provider/provider.dart';
 extension Identification on History {
   bool isItem(LinkType type) {
     Link? parsed = parseLink(link);
-    return type == LinkType.values.asNameMap()[parsed?.type] &&
-        (parsed?.id != null || parsed?.name != null);
+    return type == parsed?.type && parsed?.id != null;
   }
 
   bool isSearch(LinkType type) {
     Link? parsed = parseLink(link);
-    return type == LinkType.values.asNameMap()[parsed?.type] &&
-        parsed?.search != null;
+    return type == parsed?.type && (parsed?.search?.isNotEmpty ?? false);
   }
 
   String getName(BuildContext context) {
     Link? parsed = parseLink(link);
-    LinkType? type = LinkType.values.asNameMap()[parsed?.type];
+    LinkType? type = parsed?.type;
     if (parsed == null || type == null) {
       if (title != null) {
         return title!;
@@ -39,19 +37,18 @@ extension Identification on History {
       return title!;
     }
 
-    if (parsed.name != null) {
+    if (parsed.id is String) {
       switch (type) {
         case LinkType.user:
-          return '${parsed.name} - User';
+          return '${parsed.id} - User';
         case LinkType.wiki:
-          return '${parsed.name} - Wiki';
+          return '${parsed.id} - Wiki';
         default:
           break;
       }
     }
 
-    int? id = parsed.id;
-    if (id != null) {
+    if (parsed.id is int) {
       switch (type) {
         case LinkType.post:
           return 'Post #$id';
@@ -68,28 +65,29 @@ extension Identification on History {
       }
     }
 
-    String? search = parsed.search;
+    QueryMap? search = parsed.search;
     if (search != null && search.isNotEmpty) {
       switch (type) {
         case LinkType.post:
           String? username = context.read<Client>().credentials?.username;
-          if (username != null && favRegex(username).hasMatch(search)) {
+          if (username != null &&
+              favRegex(username).hasMatch(search['tags'] ?? '')) {
             return 'Favorites';
           }
-          if (search == 'order:rank') {
+          if (search['tags'] == 'order:rank') {
             return 'Hot posts';
           }
-          return 'Posts - ${tagToName(search)}';
+          return 'Posts - ${tagToName(search['tags'] ?? '')}';
         case LinkType.pool:
-          return 'Pools - $search';
+          return 'Pools - ${search['search[name_matches]'] ?? ''}';
         case LinkType.user:
-          return 'Users - $search';
+          return 'Users - ${search['search[name_matches]'] ?? ''}';
         case LinkType.wiki:
-          return 'Wikis - $search';
+          return 'Wikis - ${search['search[title]'] ?? ''}';
         case LinkType.topic:
-          return 'Topics - $search';
+          return 'Topics - ${search['search[title_matches]'] ?? ''}';
         case LinkType.reply:
-          return 'Replies - $search';
+          return 'Replies - ${search['search[topic_title_matches]'] ?? ''}';
       }
     }
 
