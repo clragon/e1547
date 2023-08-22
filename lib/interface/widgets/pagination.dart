@@ -153,39 +153,56 @@ PagedChildBuilderDelegate<T> defaultPagedChildBuilderDelegate<T>({
   PagingController? pagingController,
   Widget? onEmpty,
   Widget? onError,
+  Widget Function(BuildContext context, Widget child)? pageBuilder,
 }) {
+  pageBuilder ??= (context, child) => child;
   return PagedChildBuilderDelegate<T>(
     itemBuilder: itemBuilder,
-    firstPageProgressIndicatorBuilder: (context) => const Material(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          CircularProgressIndicator(),
-        ],
-      ),
-    ),
-    newPageProgressIndicatorBuilder: (context) => const Material(
-      child: Center(
-        child: Padding(
-          padding: EdgeInsets.all(16),
-          child: CircularProgressIndicator(),
+    firstPageProgressIndicatorBuilder: (context) => pageBuilder!(
+      context,
+      const Material(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CircularProgressIndicator(),
+          ],
         ),
       ),
     ),
-    noItemsFoundIndicatorBuilder: (context) => IconMessage(
-      icon: const Icon(Icons.clear),
-      title: onEmpty ?? const Text('Nothing to see here'),
+    newPageProgressIndicatorBuilder: (context) => pageBuilder!(
+      context,
+      const Material(
+        child: Center(
+          child: Padding(
+            padding: EdgeInsets.all(16),
+            child: CircularProgressIndicator(),
+          ),
+        ),
+      ),
     ),
-    firstPageErrorIndicatorBuilder: (context) => IconMessage(
-      icon: const Icon(Icons.warning_amber_outlined),
-      title: onError ?? const Text('Failed to load'),
-      action: PagedChildBuilderRetryButton(pagingController),
+    noItemsFoundIndicatorBuilder: (context) => pageBuilder!(
+      context,
+      IconMessage(
+        icon: const Icon(Icons.clear),
+        title: onEmpty ?? const Text('Nothing to see here'),
+      ),
     ),
-    newPageErrorIndicatorBuilder: (context) => IconMessage(
-      direction: Axis.horizontal,
-      icon: const Icon(Icons.warning_amber_outlined),
-      title: onError ?? const Text('Failed to load'),
-      action: PagedChildBuilderRetryButton(pagingController),
+    firstPageErrorIndicatorBuilder: (context) => pageBuilder!(
+      context,
+      IconMessage(
+        icon: const Icon(Icons.warning_amber_outlined),
+        title: onError ?? const Text('Failed to load'),
+        action: PagedChildBuilderRetryButton(pagingController),
+      ),
+    ),
+    newPageErrorIndicatorBuilder: (context) => pageBuilder!(
+      context,
+      IconMessage(
+        direction: Axis.horizontal,
+        icon: const Icon(Icons.warning_amber_outlined),
+        title: onError ?? const Text('Failed to load'),
+        action: PagedChildBuilderRetryButton(pagingController),
+      ),
     ),
   );
 }

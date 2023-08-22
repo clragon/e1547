@@ -22,7 +22,13 @@ class PostsRouteConnector extends StatefulWidget {
 }
 
 class _PostsRouteConnectorState extends State<PostsRouteConnector> {
-  late List<Post>? pageItems = widget.controller.items;
+  List<Post>? pageItems;
+
+  @override
+  void initState() {
+    super.initState();
+    pageItems = widget.controller.items;
+  }
 
   void popOrRemove() {
     if (ModalRoute.of(context)!.isCurrent) {
@@ -33,11 +39,16 @@ class _PostsRouteConnectorState extends State<PostsRouteConnector> {
   }
 
   void updatePages() {
-    if (pageItems == null || widget.controller.items == null) {
+    List<Post>? previous = pageItems;
+    List<Post>? current = widget.controller.items;
+    if (previous == null || current == null) {
       return popOrRemove();
     }
-    for (int i = 0; i < pageItems!.length; i++) {
-      if (pageItems![i].id != widget.controller.items![i].id) {
+    if (previous.length > current.length) {
+      return popOrRemove();
+    }
+    for (int i = 0; i < previous.length; i++) {
+      if (previous[i].id != current[i].id) {
         return popOrRemove();
       }
     }
@@ -46,7 +57,6 @@ class _PostsRouteConnectorState extends State<PostsRouteConnector> {
 
   @override
   Widget build(BuildContext context) => SubListener(
-        initialize: true,
         listener: updatePages,
         listenable: widget.controller,
         builder: (context) => ChangeNotifierProvider.value(

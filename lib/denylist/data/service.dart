@@ -23,12 +23,14 @@ class DenylistService extends ChangeNotifier {
 
   @protected
   Future<void> protect(
-          FutureOr<List<String>> Function(List<String> data) updater) async =>
+    FutureOr<List<String>> Function(List<String> data) updater,
+  ) async =>
       _resourceLock.protect(
         () async {
-          _items = await updater(List.from(items));
+          List<String> updated = await updater(List.from(items));
           if (_disposed) return;
-          if (listEquals(items, _items)) return;
+          if (listEquals(updated, _items)) return;
+          _items = updated;
           notifyListeners();
           await push();
         },

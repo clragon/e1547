@@ -39,6 +39,10 @@ class _PostDetailGalleryState extends State<PostDetailGallery> {
             pagingController: widget.controller.paging,
             builderDelegate: defaultPagedChildBuilderDelegate<Post>(
               pagingController: controller.paging,
+              pageBuilder: (context, child) => Scaffold(
+                appBar: const TransparentAppBar(child: DefaultAppBar()),
+                body: child,
+              ),
               onEmpty: const Text('No posts'),
               onError: const Text('Failed to load posts'),
               itemBuilder: (context, item, index) => SubScrollController(
