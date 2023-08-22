@@ -17,7 +17,15 @@ class QueryMap extends MapBase<String, String?> {
 
   /// Creates a query map from a map.
   factory QueryMap.from(Map<String, String?> other) =>
-      QueryMap()..addAll(other);
+      QueryMap.fromIterable(other.entries);
+
+  factory QueryMap.fromIterable(Iterable<MapEntry<String, String?>> other) {
+    QueryMap result = QueryMap();
+    for (final entry in other) {
+      result._tags.add(QueryValue(entry.key, entry.value));
+    }
+    return result;
+  }
 
   /// Creates a query map from a string.
   ///
@@ -45,12 +53,6 @@ class QueryMap extends MapBase<String, String?> {
   }
 
   @override
-  void clear() => _tags.clear();
-
-  @override
-  Iterable<String> get keys => _tags.map((tag) => tag.name);
-
-  @override
   String? remove(Object? key) {
     for (final tag in _tags) {
       if (tag.name == key) {
@@ -62,11 +64,25 @@ class QueryMap extends MapBase<String, String?> {
   }
 
   @override
+  void clear() => _tags.clear();
+
+  @override
+  Iterable<String> get keys => _tags.map((tag) => tag.name);
+
+  @override
+  Iterable<String?> get values => _tags.map((tag) => tag.value);
+
+  @override
+  Iterable<MapEntry<String, String?>> get entries =>
+      _tags.map((tag) => MapEntry(tag.name, tag.value));
+
+  @override
   String toString() => _tags.map((tag) => tag.toString()).join(' ');
 
   /// Returns a new QueryMap with the same values.
   Map<String, String?> toMap() => QueryMap.from(this);
 
+  /// Returns a new QueryMap with all values.
   Map<String, List<String?>> toMapAll() {
     Map<String, List<String?>> result = {};
     for (final tag in _tags) {
