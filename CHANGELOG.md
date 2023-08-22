@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [16.2.8+88] - 2023-08-22
 ### Fixed
 - empty search history
 - post editing inputs
@@ -799,7 +799,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Fixed
 - API client bindings
 
-[Unreleased]: https://github.com/clragon/e1547/compare/16.2.7+87...HEAD
+[16.2.8+88]: https://github.com/clragon/e1547/compare/16.2.7+87...16.2.8+88
 [16.2.7+87]: https://github.com/clragon/e1547/compare/16.2.6+86...16.2.7+87
 [16.2.6+86]: https://github.com/clragon/e1547/compare/16.2.5+85...16.2.6+86
 [16.2.5+85]: https://github.com/clragon/e1547/compare/16.2.4+84...16.2.5+85

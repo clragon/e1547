@@ -1,0 +1,3 @@
+### Fixed
+- empty search history
+- post editing inputs
