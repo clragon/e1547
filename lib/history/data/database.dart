@@ -45,9 +45,15 @@ class HistoriesDatabase extends _$HistoriesDatabase {
               String tags =
                   RegExp(linkRegex).firstMatch(entry.link)!.namedGroup('tags')!;
 
-              String decoded = Uri.decodeQueryComponent(tags);
-              if (decoded != tags) {
-                tags = decoded;
+              try {
+                String decoded = Uri.decodeQueryComponent(tags);
+                if (decoded != tags) {
+                  tags = decoded;
+                }
+              }
+              // ignore: avoid_catching_errors
+              on ArgumentError {
+                // url is not encoded
               }
 
               String link = Uri(
