@@ -23,6 +23,7 @@ Future<AppInfo> initializeAppInfo() async => AppInfo.fromPlatform(
       discord: 'MRwKGqfmUz',
       website: 'e1547.clynamic.net',
       kofi: 'binaryfloof',
+      email: 'support@clynamic.net',
       allowedHosts: ['e926.net', 'e621.net'],
     );
 

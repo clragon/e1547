@@ -112,6 +112,24 @@ class _AboutPageState extends State<AboutPage> {
                           link: 'https://',
                           extra: appInfo.website,
                         ),
+                      if (appInfo.kofi != null &&
+                          ![
+                            Source.IS_INSTALLED_FROM_PLAY_STORE,
+                            Source.IS_INSTALLED_FROM_APP_STORE,
+                          ].contains(appInfo.source))
+                        linkListTile(
+                          leading: const FaIcon(FontAwesomeIcons.mugSaucer),
+                          title: const Text('Ko-fi'),
+                          link: 'https://ko-fi.com/',
+                          extra: appInfo.kofi,
+                        ),
+                      if (appInfo.email != null)
+                        linkListTile(
+                          leading: const FaIcon(FontAwesomeIcons.solidEnvelope),
+                          title: const Text('Email'),
+                          link: 'mailto:',
+                          extra: appInfo.email,
+                        ),
                       const Divider(),
                       linkListTile(
                         leading: const FaIcon(FontAwesomeIcons.googlePlay),
@@ -223,7 +241,7 @@ class _VersionTile extends StatelessWidget {
               children: [
                 ListTile(
                   leading: icon,
-                  title: const Text('Update'),
+                  title: const Text('Version'),
                   subtitle: Text(message),
                   onTap: onTap,
                 ),

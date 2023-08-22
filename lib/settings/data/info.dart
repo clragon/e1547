@@ -8,6 +8,8 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:store_checker/store_checker.dart';
 
+export 'package:store_checker/store_checker.dart' show Source;
+
 class AppInfo extends PackageInfo {
   /// Represents constant global application configuration.
   AppInfo({
@@ -16,6 +18,7 @@ class AppInfo extends PackageInfo {
     required this.discord,
     required this.website,
     required this.kofi,
+    required this.email,
     required this.allowedHosts,
     required this.source,
     required super.appName,
@@ -32,6 +35,7 @@ class AppInfo extends PackageInfo {
     required String? discord,
     required String? website,
     required String? kofi,
+    required String? email,
     required List<String> allowedHosts,
   }) async {
     PackageInfo info = await PackageInfo.fromPlatform();
@@ -47,6 +51,7 @@ class AppInfo extends PackageInfo {
       discord: discord,
       website: website,
       kofi: kofi,
+      email: email,
       allowedHosts: allowedHosts,
       source: source,
       appName: info.appName,
@@ -71,6 +76,9 @@ class AppInfo extends PackageInfo {
 
   /// Developer ko-fi username.
   final String? kofi;
+
+  /// Developer email.
+  final String? email;
 
   /// Source of installation.
   final Source source;
