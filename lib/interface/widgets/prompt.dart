@@ -12,9 +12,6 @@ abstract class PromptActionController extends ActionController {
   void onSuccess() => close();
 
   @override
-  void reset();
-
-  @override
   void setAction(ActionControllerCallback submit) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       super.setAction(submit);
@@ -143,22 +140,18 @@ class ActionBottomSheet extends StatelessWidget {
           children: [
             CrossFade(
               showChild: controller.isLoading,
-              child: const Center(
-                child: Padding(
-                  padding: EdgeInsets.only(right: 10),
-                  child: SizedCircularProgressIndicator(size: 16),
-                ),
+              child: const Padding(
+                padding: EdgeInsets.only(right: 10),
+                child: SizedCircularProgressIndicator(size: 16),
               ),
             ),
             CrossFade(
               showChild: controller.isError && !controller.isForgiven,
-              child: Center(
-                child: Padding(
-                  padding: const EdgeInsets.only(right: 10),
-                  child: Icon(
-                    Icons.clear,
-                    color: Theme.of(context).colorScheme.error,
-                  ),
+              child: Padding(
+                padding: const EdgeInsets.only(right: 10),
+                child: Icon(
+                  Icons.clear,
+                  color: Theme.of(context).colorScheme.error,
                 ),
               ),
             ),

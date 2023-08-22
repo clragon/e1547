@@ -177,6 +177,14 @@ class PostEditingController extends SheetActionController
 
   bool get loading => _loading;
 
+  @override
+  void reset() {
+    super.reset();
+    if (_loading) {
+      stopEditing();
+    }
+  }
+
   void startEditing() => value = PostEdit.fromPost(post);
 
   void stopEditing() {

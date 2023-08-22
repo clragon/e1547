@@ -37,7 +37,7 @@ class SearchInput<T> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TypeAheadField<T>(
-      direction: direction ?? AxisDirection.down,
+      direction: direction ?? AxisDirection.up,
       hideOnEmpty: true,
       hideOnError: true,
       hideKeyboard: readOnly,
