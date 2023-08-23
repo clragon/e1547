@@ -8,6 +8,29 @@ import 'package:e1547/tag/tag.dart';
 import 'package:e1547/wiki/wiki.dart';
 import 'package:flutter/material.dart';
 
+Future<void> tagSearchPrompt({
+  required BuildContext context,
+  required String tag,
+}) async {
+  bool isDesktop = [
+    TargetPlatform.windows,
+    TargetPlatform.linux,
+    TargetPlatform.macOS,
+  ].contains(Theme.of(context).platform);
+
+  if (isDesktop) {
+    return tagSearchDialog(
+      context: context,
+      tag: tag,
+    );
+  }
+
+  return tagSearchSheet(
+    context: context,
+    tag: tag,
+  );
+}
+
 Future<void> tagSearchSheet({
   required BuildContext context,
   required String tag,
@@ -57,24 +80,28 @@ class TagSearchSheet extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 8),
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (controller != null)
-                  TagSearchActions(
+            const Divider(indent: 4, endIndent: 4),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (controller != null)
+                    TagSearchActions(
+                      tag: tag,
+                      controller: controller!,
+                    ),
+                  TagListActions(
                     tag: tag,
-                    controller: controller!,
                   ),
-                TagListActions(
-                  tag: tag,
-                ),
-              ],
-            )
+                ],
+              ),
+            ),
           ],
         ),
       ),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 20),
         child: ConstrainedBox(
           constraints: const BoxConstraints(minHeight: 600),
           child: TagSearchInfo(
@@ -95,60 +122,116 @@ class TagSearchInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget tagInfo(String tag) {
-      return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8),
-        child: ExpandableNotifier(
-          child: ExpandableTheme(
-            data: ExpandableThemeData(
-              headerAlignment: ExpandablePanelHeaderAlignment.center,
-              iconColor: Theme.of(context).iconTheme.color,
-            ),
-            child: ExpandablePanel(
-              header: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 4),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 4),
-                        child: Text(
-                          tagToName(tag),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(fontSize: 16),
-                        ),
-                      ),
-                    ),
-                    if (controller != null)
-                      RemoveTagAction(
-                        controller: controller!,
-                        tag: tag,
-                      ),
-                  ],
+    List<String> tags = QueryMap.parse(tag).toString().split(' ');
+
+    if (tags.length > 1) {
+      return SingleChildScrollView(
+        primary: true,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: tags
+              .map(
+                (e) => TagSearchInfoChild(
+                  tag: e,
+                  controller: controller,
                 ),
+              )
+              .toList(),
+        ),
+      );
+    } else {
+      return SingleChildScrollView(
+        primary: true,
+        child: SearchTagDisplay(tag: tag),
+      );
+    }
+  }
+}
+
+class TagSearchInfoChild extends StatelessWidget {
+  const TagSearchInfoChild({
+    super.key,
+    required this.tag,
+    this.controller,
+  });
+
+  final String tag;
+  final PostsController? controller;
+
+  @override
+  Widget build(BuildContext context) {
+    Widget actions(String tag, bool alignRight) {
+      return SingleChildScrollView(
+        reverse: alignRight,
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          mainAxisAlignment:
+              alignRight ? MainAxisAlignment.end : MainAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (controller != null)
+              TagSearchActions(
+                tag: tag,
+                controller: controller!,
               ),
-              collapsed: const SizedBox.shrink(),
-              expanded: Padding(
-                padding: const EdgeInsets.all(8),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [SearchTagDisplay(tag: tag)],
-                ),
-              ),
+            TagListActions(
+              tag: tag,
             ),
-          ),
+          ],
         ),
       );
     }
 
-    List<String> tags = sortTags(tag).split(' ');
-
-    if (tags.length > 1) {
-      return Column(children: tags.map(tagInfo).toList());
-    } else {
-      return SearchTagDisplay(tag: tag);
-    }
+    bool alignRight =
+        context.findAncestorWidgetOfExactType<TagSearchDialog>() != null;
+    return ExpandableNotifier(
+      child: ExpandableTheme(
+        data: ExpandableThemeData(
+          headerAlignment: ExpandablePanelHeaderAlignment.center,
+          iconColor: Theme.of(context).iconTheme.color,
+          iconPlacement: alignRight ? ExpandablePanelIconPlacement.left : null,
+        ),
+        child: ExpandablePanel(
+          header: Builder(
+            builder: (context) {
+              bool expanded = ExpandableController.of(context)!.expanded;
+              return Row(
+                children: [
+                  Expanded(
+                    child: AnimatedDefaultTextStyle(
+                      duration: const Duration(milliseconds: 200),
+                      style: expanded
+                          ? Theme.of(context).textTheme.titleLarge!
+                          : Theme.of(context).textTheme.titleMedium!,
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Text(tagToName(tag)),
+                      ),
+                    ),
+                  ),
+                  if (expanded && alignRight) actions(tag, alignRight),
+                ],
+              );
+            },
+          ),
+          collapsed: const SizedBox.shrink(),
+          expanded: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (!alignRight) actions(tag, alignRight),
+              const SizedBox(height: 8),
+              Flexible(
+                child: Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: SearchTagDisplay(tag: tag),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
 
@@ -193,10 +276,7 @@ class _SearchTagDisplayState extends State<SearchTagDisplay> {
         showChild: snapshot.connectionState == ConnectionState.done,
         builder: (context) {
           if (snapshot.hasData) {
-            return SingleChildScrollView(
-              primary: true,
-              child: DText(snapshot.data!.body),
-            );
+            return DText(snapshot.data!.body);
           } else if (snapshot.hasError) {
             return const IconMessage(
               title: Text('unable to retrieve wiki entry'),
@@ -204,65 +284,108 @@ class _SearchTagDisplayState extends State<SearchTagDisplay> {
               direction: Axis.horizontal,
             );
           } else {
-            return Center(
-              child: Text(
-                'no wiki entry',
-                style: TextStyle(
-                  color: dimTextColor(context, 0.5),
-                  fontStyle: FontStyle.italic,
+            return Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Text(
+                    'no wiki entry',
+                    style: TextStyle(
+                      color: dimTextColor(context, 0.5),
+                      fontStyle: FontStyle.italic,
+                    ),
+                  ),
                 ),
-              ),
+              ],
             );
           }
         },
-        secondChild: const Center(
-          child: Padding(
-            padding: EdgeInsets.all(12),
-            child: CircularProgressIndicator(),
-          ),
+        secondChild: const Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Padding(
+              padding: EdgeInsets.all(16),
+              child: CircularProgressIndicator(),
+            ),
+          ],
         ),
       ),
     );
   }
 }
 
-void tagSearchDialog({required BuildContext context, required String tag}) {
-  showDialog(
+Future<void> tagSearchDialog({
+  required BuildContext context,
+  required String tag,
+}) {
+  PostsController? controller = context.read<PostsController?>();
+  return showDialog(
     context: context,
-    builder: (context) {
-      return TagSearchDialog(
-        tag: tag,
-      );
-    },
+    builder: (context) => TagSearchDialog(
+      tag: tag,
+      controller: controller,
+    ),
   );
 }
 
 class TagSearchDialog extends StatelessWidget {
-  const TagSearchDialog({required this.tag});
+  const TagSearchDialog({
+    super.key,
+    required this.tag,
+    this.controller,
+  });
 
   final String tag;
+  final PostsController? controller;
 
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) => AlertDialog(
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Flexible(
-              child: Text(
-                tagToName(tag),
-                softWrap: true,
-              ),
+        content: AnimatedSize(
+          duration: const Duration(milliseconds: 200),
+          child: SizedBox(
+            width: 800,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Flexible(
+                      child: Text(
+                        tagToName(tag),
+                        style: Theme.of(context).textTheme.titleLarge,
+                        softWrap: true,
+                      ),
+                    ),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (controller != null)
+                          TagSearchActions(
+                            tag: tag,
+                            controller: controller!,
+                          ),
+                        TagListActions(
+                          tag: tag,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                const Divider(indent: 4, endIndent: 4),
+                Flexible(
+                  child: TagSearchInfo(
+                    tag: tag,
+                    controller: controller,
+                  ),
+                ),
+              ],
             ),
-            TagListActions(tag: tag),
-          ],
-        ),
-        content: ConstrainedBox(
-          constraints: BoxConstraints(
-            maxHeight: constraints.maxHeight * 0.5,
           ),
-          child: SearchTagDisplay(tag: tag),
         ),
       ),
     );

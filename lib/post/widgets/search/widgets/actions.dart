@@ -7,6 +7,50 @@ import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sub/flutter_sub.dart';
 
+class ActionButton extends StatelessWidget {
+  const ActionButton({
+    super.key,
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
+
+  final Widget icon;
+  final Widget label;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialButton(
+      onPressed: onTap,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(4),
+      ),
+      minWidth: 60,
+      height: 60,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+            child: icon,
+          ),
+          DefaultTextStyle(
+            style: Theme.of(context).textTheme.bodyMedium ??
+                TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.grey[700],
+                ),
+            child: label,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class TagListActions extends StatelessWidget {
   const TagListActions({required this.tag});
 
@@ -68,19 +112,25 @@ class TagListActions extends StatelessWidget {
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              IconButton(
-                                onPressed:
-                                    followBookmarkToggle(FollowType.update),
+                              ActionButton(
                                 icon: following
                                     ? const Icon(Icons.person_remove_alt_1)
                                     : const Icon(Icons.person_add_alt_1),
-                                tooltip:
-                                    following ? 'Unfollow tag' : 'Follow tag',
+                                label: following
+                                    ? const Text('Unfollow')
+                                    : const Text('Follow'),
+                                onTap: followBookmarkToggle(FollowType.update),
                               ),
                               CrossFade(
                                 showChild: following,
-                                child: IconButton(
-                                  onPressed: () {
+                                child: ActionButton(
+                                  icon: notifying
+                                      ? const Icon(Icons.notifications_active)
+                                      : const Icon(Icons.notifications_none),
+                                  label: notifying
+                                      ? const Text('Mute')
+                                      : const Text('Notify'),
+                                  onTap: () {
                                     if (notifying) {
                                       follows.replace(follow!.copyWith(
                                         type: FollowType.update,
@@ -91,31 +141,33 @@ class TagListActions extends StatelessWidget {
                                       ));
                                     }
                                   },
-                                  icon: notifying
-                                      ? const Icon(Icons.notifications_active)
-                                      : const Icon(Icons.notifications_none),
-                                  tooltip: notifying
-                                      ? 'Do not notify for tag'
-                                      : 'Notify for tag',
                                 ),
                               ),
-                              IconButton(
-                                onPressed:
-                                    followBookmarkToggle(FollowType.bookmark),
+                              ActionButton(
                                 icon: bookmarked
                                     ? const Icon(Icons.turned_in)
                                     : const Icon(Icons.turned_in_not),
-                                tooltip: bookmarked
-                                    ? 'Unbookmark tag'
-                                    : 'Bookmark tag',
+                                label: bookmarked
+                                    ? const Text('Unbookmark')
+                                    : const Text('Bookmark'),
+                                onTap:
+                                    followBookmarkToggle(FollowType.bookmark),
                               ),
                             ],
                           ),
                         ),
                         CrossFade(
                           showChild: !hasFollow,
-                          child: IconButton(
-                            onPressed: () {
+                          child: ActionButton(
+                            icon: CrossFade(
+                              showChild: denied,
+                              secondChild: const Icon(Icons.block),
+                              child: const Icon(Icons.check),
+                            ),
+                            label: denied
+                                ? const Text('Unblock')
+                                : const Text('Block'),
+                            onTap: () {
                               if (denied) {
                                 denylist.remove(tag);
                               } else {
@@ -125,12 +177,6 @@ class TagListActions extends StatelessWidget {
                                 denylist.add(tag);
                               }
                             },
-                            icon: CrossFade(
-                              showChild: denied,
-                              secondChild: const Icon(Icons.block),
-                              child: const Icon(Icons.check),
-                            ),
-                            tooltip: denied ? 'Unblock tag' : 'Block tag',
                           ),
                         ),
                       ],
@@ -151,10 +197,10 @@ class RemoveTagAction extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return IconButton(
+    return ActionButton(
       icon: const Icon(Icons.search_off),
-      tooltip: 'Remove from search',
-      onPressed: () {
+      label: const Text('Remove'),
+      onTap: () {
         Navigator.of(context).maybePop();
         List<String> result = controller.search.split(' ');
         result.removeWhere((element) => element == tag);
@@ -172,10 +218,10 @@ class AddTagAction extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return IconButton(
+    return ActionButton(
       icon: const Icon(Icons.zoom_in),
-      tooltip: 'Add to search',
-      onPressed: () {
+      label: const Text('Add'),
+      onTap: () {
         Navigator.of(context).maybePop();
         controller.search = sortTags([controller.search, tag].join(' '));
       },
@@ -191,10 +237,10 @@ class SubtractTagAction extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return IconButton(
+    return ActionButton(
       icon: const Icon(Icons.zoom_out),
-      tooltip: 'Subtract from search',
-      onPressed: () {
+      label: const Text('Subtract'),
+      onTap: () {
         Navigator.of(context).maybePop();
         controller.search = sortTags([controller.search, '-$tag'].join(' '));
       },
@@ -225,6 +271,7 @@ class TagSearchActions extends StatelessWidget {
           return RemoveTagAction(controller: controller, tag: tag);
         } else {
           return Row(
+            mainAxisSize: MainAxisSize.min,
             children: [
               AddTagAction(controller: controller, tag: tag),
               SubtractTagAction(controller: controller, tag: tag),

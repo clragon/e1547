@@ -128,7 +128,7 @@ class _PostsSearchPageState extends State<PostsSearchPage> {
                       icon: const Icon(Icons.info_outline),
                       onPressed: pool != null
                           ? () => poolSheet(context, pool!)
-                          : () => tagSearchSheet(
+                          : () => tagSearchPrompt(
                                 context: context,
                                 tag: controller.search,
                               ),

@@ -18,6 +18,7 @@ class SectionWrap extends StatelessWidget {
     return Card(
       color: Theme.of(context).canvasColor,
       child: Stack(
+        fit: StackFit.passthrough,
         children: [
           Padding(
             padding: const EdgeInsets.only(left: 5),

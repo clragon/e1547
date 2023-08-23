@@ -19,7 +19,7 @@ class TagGesture extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    void sheet() => tagSearchSheet(context: context, tag: tag);
+    void sheet() => tagSearchPrompt(context: context, tag: tag);
 
     return InkWell(
       onTap: () async {

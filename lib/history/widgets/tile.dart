@@ -60,7 +60,7 @@ class HistoryTile extends StatelessWidget {
                               PopupMenuTile(
                                 title: 'Wiki',
                                 icon: Icons.info,
-                                value: () => tagSearchSheet(
+                                value: () => tagSearchPrompt(
                                   context: context,
                                   tag: parseLink(entry.link)!.search!,
                                 ),
