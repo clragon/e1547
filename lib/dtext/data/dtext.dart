@@ -52,9 +52,11 @@ InlineSpan parseDText(BuildContext context, String text, TextStateStack state,
     result = entry.value.transform(context, entry.key, state);
     if (result != null) {
       spans.addAll([
-        plainText(context: context, text: entry.key.before, state: state),
+        if (entry.key.before.isNotEmpty)
+          plainText(context: context, text: entry.key.before, state: state),
         result.span,
-        parseDText(context, result.text, result.state),
+        if (entry.key.after.isNotEmpty)
+          parseDText(context, result.text, result.state),
       ]);
       break;
     }
