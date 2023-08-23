@@ -1,5 +1,5 @@
-import 'package:collection/collection.dart';
 import 'package:expandable/expandable.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
 export 'package:expandable/expandable.dart';
@@ -16,7 +16,7 @@ class _Expandables extends InheritedWidget {
 
   @override
   bool updateShouldNotify(covariant _Expandables oldWidget) =>
-      const DeepCollectionEquality().equals(oldWidget.controllers, controllers);
+      oldWidget.get != get || !mapEquals(oldWidget.controllers, controllers);
 }
 
 class Expandables extends StatefulWidget {
