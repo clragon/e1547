@@ -67,14 +67,14 @@ class QueryMap extends MapBase<String, String?> {
   void clear() => _tags.clear();
 
   @override
+  Iterable<MapEntry<String, String?>> get entries =>
+      _tags.map((tag) => MapEntry(tag.name, tag.value));
+
+  @override
   Iterable<String> get keys => _tags.map((tag) => tag.name);
 
   @override
   Iterable<String?> get values => _tags.map((tag) => tag.value);
-
-  @override
-  Iterable<MapEntry<String, String?>> get entries =>
-      _tags.map((tag) => MapEntry(tag.name, tag.value));
 
   @override
   String toString() => _tags.map((tag) => tag.toString()).join(' ');
