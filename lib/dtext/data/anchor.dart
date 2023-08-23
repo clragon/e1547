@@ -5,6 +5,8 @@ import 'package:e1547/wiki/wiki.dart';
 import 'package:flutter/material.dart';
 
 class DTextAnchorParser extends SpanDTextParser {
+  const DTextAnchorParser();
+
   @override
   RegExp get regex =>
       RegExp(r'\[\[(?<anchor>#)?(?<tags>.*?)(\|(?<name>.*?))?\]\]');

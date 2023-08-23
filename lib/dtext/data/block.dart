@@ -3,6 +3,8 @@ import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
 
 class DTextBlockParser extends DTextParser {
+  const DTextBlockParser();
+
   @override
   RegExp get regex => TextTag.toRegex();
 
@@ -99,6 +101,8 @@ class DTextBlockParser extends DTextParser {
 }
 
 class DTextTagParser extends DTextParser {
+  const DTextTagParser();
+
   @override
   RegExp get regex => TextTag.toRegex();
 

@@ -2,6 +2,8 @@ import 'package:e1547/dtext/dtext.dart';
 import 'package:flutter/material.dart';
 
 class DTextCodeParser extends SpanDTextParser {
+  const DTextCodeParser();
+
   @override
   RegExp get regex => RegExp(r'`(?<code>(.|\n)*?)`');
 

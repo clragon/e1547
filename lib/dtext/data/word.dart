@@ -50,6 +50,8 @@ enum LinkWord {
 }
 
 class DTextLinkWordParser extends SpanDTextParser {
+  const DTextLinkWordParser();
+
   @override
   RegExp get regex => RegExp(
         r'((?<word>' +

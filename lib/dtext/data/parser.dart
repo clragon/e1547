@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 
 @immutable
 abstract class DTextParser {
+  const DTextParser();
+
   RegExp get regex;
 
   DTextParserResult? transform(
@@ -13,7 +15,10 @@ abstract class DTextParser {
   );
 }
 
+@immutable
 abstract class SpanDTextParser extends DTextParser {
+  const SpanDTextParser();
+
   @override
   @nonVirtual
   DTextParserResult? transform(

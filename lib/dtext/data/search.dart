@@ -3,6 +3,8 @@ import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
 
 class DTextSearchParser extends SpanDTextParser {
+  const DTextSearchParser();
+
   @override
   RegExp get regex => RegExp(r'{{(?<tags>.*?)(\|(?<name>.*?))?}}');
 

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 InlineSpan parseDText(BuildContext context, String text, TextStateStack state,
     {List<DTextParser>? parsers}) {
-  parsers ??= [
+  parsers ??= const [
     DTextBlockParser(),
     DTextTagParser(),
     DTextCodeParser(),

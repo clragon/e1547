@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:username_generator/username_generator.dart';
 
 class DTextLinkParser extends SpanDTextParser {
+  const DTextLinkParser();
+
   @override
   RegExp get regex => RegExp(
         linkWrap(
@@ -71,7 +73,7 @@ class DTextLinkParser extends SpanDTextParser {
           context,
           display,
           state.push(TextStateLink(onTap)),
-          parsers: [DTextTagParser()],
+          parsers: const [DTextTagParser()],
         ),
       ],
     );
@@ -79,6 +81,8 @@ class DTextLinkParser extends SpanDTextParser {
 }
 
 class DTextLocalLinkParser extends DTextLinkParser {
+  const DTextLocalLinkParser();
+
   @override
   RegExp get regex =>
       RegExp(linkWrap(r'(?<link>[-a-zA-Z0-9()@:%_\+.~#?&//=]*)'));

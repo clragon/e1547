@@ -2,6 +2,8 @@ import 'package:e1547/dtext/dtext.dart';
 import 'package:flutter/material.dart';
 
 class DTextListParser extends SpanDTextParser {
+  const DTextListParser();
+
   @override
   RegExp get regex => RegExp(r'(?<start>^|\n)(?<dots>\*+) ');
 

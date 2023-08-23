@@ -98,7 +98,7 @@ class SourceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (DTextLinkParser().regex.hasMatch(url)) {
+    if (const DTextLinkParser().regex.hasMatch(url)) {
       return Card(
         child: InkWell(
           onTap: () => launch(url),

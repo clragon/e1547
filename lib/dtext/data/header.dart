@@ -2,6 +2,8 @@ import 'package:e1547/dtext/dtext.dart';
 import 'package:flutter/material.dart';
 
 class DTextHeaderParser extends SpanDTextParser {
+  const DTextHeaderParser();
+
   @override
   RegExp get regex =>
       RegExp(r'h(?<size>[1-6])\.\s?(?<name>.*)', caseSensitive: false);
