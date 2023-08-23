@@ -1,20 +1,7 @@
 import 'package:flutter/material.dart';
 
-/*
-
-    @Default(false) bool bold,
-    @Default(false) bool italic,
-    @Default(false) bool strikeout,
-    @Default(false) bool underline,
-    @Default(false) bool overline,
-    @Default(false) bool header,
-    @Default(false) bool link,
-    @Default(false) bool highlight,
-    @Default(false) bool spoiler,
-    VoidCallback? onTap,
- */
-
-abstract class TextState {
+@immutable
+sealed class TextState {
   const TextState();
 }
 
@@ -58,6 +45,7 @@ class TextStateSpoiler extends TextState {
   final String text;
 }
 
+@immutable
 class TextStateStack {
   const TextStateStack([List<TextState>? states])
       : _states = states ?? const [];
@@ -113,8 +101,9 @@ enum TextBlock {
   quote,
 }
 
+@immutable
 class TextTag {
-  TextTag({
+  const TextTag({
     required this.before,
     required this.tag,
     required this.after,
