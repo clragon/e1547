@@ -1,33 +1,40 @@
 import 'package:e1547/dtext/dtext.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-typedef DTextTransformer = DTextParserResult? Function(
-    BuildContext context, RegExpMatch match, TextStateStack state);
+@immutable
+abstract class DTextParser {
+  RegExp get regex;
 
-class DTextParser {
-  factory DTextParser({
-    required RegExp regex,
-    required InlineSpan Function(
-      BuildContext context,
-      RegExpMatch match,
-      TextStateStack state,
-    ) tranformer,
-  }) =>
-      DTextParser.builder(
-        regex: regex,
-        tranformer: (context, match, state) => DTextParserResult(
-          span: tranformer(context, match, state),
-          text: match.after,
-          state: state,
-        ),
-      );
-
-  const DTextParser.builder({required this.regex, required this.tranformer});
-
-  final RegExp regex;
-  final DTextTransformer tranformer;
+  DTextParserResult? transform(
+    BuildContext context,
+    RegExpMatch match,
+    TextStateStack state,
+  );
 }
 
+abstract class SpanDTextParser extends DTextParser {
+  @override
+  @nonVirtual
+  DTextParserResult? transform(
+    BuildContext context,
+    RegExpMatch match,
+    TextStateStack state,
+  ) =>
+      DTextParserResult(
+        span: transformSpan(context, match, state),
+        text: match.after,
+        state: state,
+      );
+
+  InlineSpan transformSpan(
+    BuildContext context,
+    RegExpMatch match,
+    TextStateStack state,
+  );
+}
+
+@immutable
 class DTextParserResult {
   const DTextParserResult({
     required this.span,
@@ -40,7 +47,7 @@ class DTextParserResult {
   final TextStateStack state;
 }
 
-extension Stringing on RegExpMatch {
+extension RegExpMatchExtraction on RegExpMatch {
   String get before => input.substring(0, start);
   String get between => input.substring(start, end);
   String get after => input.substring(end, input.length);

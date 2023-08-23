@@ -2,9 +2,13 @@ import 'package:e1547/dtext/dtext.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
 
-final DTextParser blockParser = DTextParser.builder(
-  regex: TextTag.toRegex(),
-  tranformer: (context, match, state) {
+class DTextBlockParser extends DTextParser {
+  @override
+  RegExp get regex => TextTag.toRegex();
+
+  @override
+  DTextParserResult? transform(
+      BuildContext context, RegExpMatch match, TextStateStack state) {
     TextTag? tag = TextTag.fromMatch(match);
     String after = tag.after;
     TextBlock? block = TextBlock.values.asNameMap()[tag.key];
@@ -91,12 +95,16 @@ final DTextParser blockParser = DTextParser.builder(
     } else {
       return null;
     }
-  },
-);
+  }
+}
 
-final DTextParser tagParser = DTextParser.builder(
-  regex: TextTag.toRegex(),
-  tranformer: (context, match, state) {
+class DTextTagParser extends DTextParser {
+  @override
+  RegExp get regex => TextTag.toRegex();
+
+  @override
+  DTextParserResult? transform(
+      BuildContext context, RegExpMatch match, TextStateStack state) {
     TextTag? tag = TextTag.fromMatch(match);
     String after = tag.after;
     TextStateTag? stateTag = TextStateTag.values.asNameMap()[tag.key];
@@ -163,5 +171,5 @@ final DTextParser tagParser = DTextParser.builder(
     } else {
       return null;
     }
-  },
-);
+  }
+}

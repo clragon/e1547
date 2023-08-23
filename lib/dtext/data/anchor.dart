@@ -4,9 +4,14 @@ import 'package:e1547/tag/tag.dart';
 import 'package:e1547/wiki/wiki.dart';
 import 'package:flutter/material.dart';
 
-final DTextParser anchorParser = DTextParser(
-  regex: RegExp(r'\[\[(?<anchor>#)?(?<tags>.*?)(\|(?<name>.*?))?\]\]'),
-  tranformer: (context, match, state) {
+class DTextAnchorParser extends SpanDTextParser {
+  @override
+  RegExp get regex =>
+      RegExp(r'\[\[(?<anchor>#)?(?<tags>.*?)(\|(?<name>.*?))?\]\]');
+
+  @override
+  InlineSpan transformSpan(
+      BuildContext context, RegExpMatch match, TextStateStack state) {
     bool anchor = match.namedGroup('anchor') != null;
     String tags = match.namedGroup('tags')!;
     String name = match.namedGroup('name') ?? tags;
@@ -36,5 +41,5 @@ final DTextParser anchorParser = DTextParser(
       text: name,
       state: state.push(TextStateLink(onTap)),
     );
-  },
-);
+  }
+}

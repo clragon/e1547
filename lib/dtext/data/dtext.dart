@@ -1,22 +1,20 @@
 import 'package:e1547/dtext/dtext.dart';
 import 'package:flutter/material.dart';
 
-final List<DTextParser> allDtextParsers = [
-  blockParser,
-  tagParser,
-  codeParser,
-  anchorParser,
-  searchParser,
-  listParser,
-  headerParser,
-  linkParser,
-  localLinkParser,
-  ...linkWordParsers,
-];
-
 InlineSpan parseDText(BuildContext context, String text, TextStateStack state,
     {List<DTextParser>? parsers}) {
-  parsers ??= allDtextParsers;
+  parsers ??= [
+    DTextBlockParser(),
+    DTextTagParser(),
+    DTextCodeParser(),
+    DTextAnchorParser(),
+    DTextSearchParser(),
+    DTextListParser(),
+    DTextHeaderParser(),
+    DTextLinkParser(),
+    DTextLocalLinkParser(),
+    DTextLinkWordParser(),
+  ];
 
   if (text.isEmpty) {
     return const TextSpan();
@@ -51,7 +49,7 @@ InlineSpan parseDText(BuildContext context, String text, TextStateStack state,
   DTextParserResult? result;
 
   for (final entry in sorted) {
-    result = entry.value.tranformer(context, entry.key, state);
+    result = entry.value.transform(context, entry.key, state);
     if (result != null) {
       spans.addAll([
         plainText(context: context, text: entry.key.before, state: state),

@@ -49,34 +49,44 @@ enum LinkWord {
   }
 }
 
-final List<DTextParser> linkWordParsers = LinkWord.values
-    .map(
-      (word) => DTextParser(
-        regex: RegExp(RegExp.escape(word.name) + r' #(?<id>\d+)',
-            caseSensitive: false),
-        tranformer: (context, match, state) => parseWord(
-          context: context,
-          word: word,
-          id: int.parse(match.namedGroup('id')!),
-          result: match.between,
-          state: state,
-        ),
-      ),
-    )
-    .toList();
+class DTextLinkWordParser extends SpanDTextParser {
+  @override
+  RegExp get regex => RegExp(
+        r'((?<word>' +
+            LinkWord.values.map((e) => RegExp.escape(e.name)).reduce(
+                  (value, element) => ('$value|$element'),
+                ) +
+            r')' +
+            r' #(?<id>\d+))',
+        caseSensitive: false,
+      );
 
-InlineSpan parseWord({
-  required BuildContext context,
-  required LinkWord word,
-  required int id,
-  required String result,
-  required TextStateStack state,
-}) =>
-    plainText(
+  @override
+  InlineSpan transformSpan(
+      BuildContext context, RegExpMatch match, TextStateStack state) {
+    return parseWord(
       context: context,
-      text: result,
-      state: state.push(
-        TextStateLink(parseLinkOnTap(context, word.toLink(id)) ??
-            () => launch(context.read<Client>().withHost(word.toLink(id)))),
-      ),
+      word:
+          LinkWord.values.asNameMap()[match.namedGroup('word')!.toLowerCase()]!,
+      id: int.parse(match.namedGroup('id')!),
+      result: match.between,
+      state: state,
     );
+  }
+
+  InlineSpan parseWord({
+    required BuildContext context,
+    required LinkWord word,
+    required int id,
+    required String result,
+    required TextStateStack state,
+  }) =>
+      plainText(
+        context: context,
+        text: result,
+        state: state.push(
+          TextStateLink(parseLinkOnTap(context, word.toLink(id)) ??
+              () => launch(context.read<Client>().withHost(word.toLink(id)))),
+        ),
+      );
+}
