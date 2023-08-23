@@ -20,7 +20,7 @@ class SpoilerController extends ChangeNotifier {
   /// Unspoilers a text segment.
   void unspoiler(String text) => _with((value) => value..add(text));
 
-  /// Restoers spoiler on a given text segment.
+  /// Restores spoiler on a given text segment.
   void respoiler(String text) => _with((value) => value..remove(text));
 
   /// Toggles the spoiler status of a text segment.
