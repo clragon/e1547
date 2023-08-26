@@ -1,8 +1,8 @@
 import 'dart:math';
 
 import 'package:collection/collection.dart';
-import 'package:e1547/markup/markup.dart';
 import 'package:e1547/interface/interface.dart';
+import 'package:e1547/markup/markup.dart';
 import 'package:e1547/pool/pool.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/tag/tag.dart';
