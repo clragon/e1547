@@ -65,6 +65,7 @@ dependencies:
   path_provider: ^2.1.0
   path_to_regexp: ^0.4.0
   permission_handler: ^10.4.3
+  petitparser: ^6.0.1
   pub_semver: ^2.1.3
   relative_time: ^4.0.1
   rxdart: ^0.27.7
@@ -96,6 +97,7 @@ dependency_overrides:
     git:
       url: https://github.com/fluttercommunity/flutter_workmanager.git
       ref: 544a80f
+  collection: 1.18.0
 
 dev_dependencies:
   flutter_test:
@@ -114,6 +116,18 @@ flutter:
   uses-material-design: true
   assets:
     - assets/icon/app/round.png
+  fonts:
+    - family: FiraCode
+      fonts:
+        - asset: assets/font/FiraCode-Light.ttf
+          weight: 300
+        - asset: assets/font/FiraCode-Regular.ttf
+        - asset: assets/font/FiraCode-Medium.ttf
+          weight: 500
+        - asset: assets/font/FiraCode-SemiBold.ttf
+          weight: 600
+        - asset: assets/font/FiraCode-Bold.ttf
+          weight: 700
 
 # flutter pub run flutter_launcher_icons:main
 flutter_icons:

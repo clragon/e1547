@@ -8,12 +8,10 @@ import 'package:relative_time/relative_time.dart';
 import 'package:username_generator/username_generator.dart';
 
 class ReplyTile extends StatelessWidget {
-  ReplyTile({required this.reply, required this.topic});
+  const ReplyTile({required this.reply, required this.topic});
 
   final Topic topic;
   final Reply reply;
-
-  final UsernameGenerator generator = UsernameGenerator();
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +29,7 @@ class ReplyTile extends StatelessWidget {
             padding: const EdgeInsets.only(top: 4, bottom: 4),
             child: InkWell(
               child: Text(
-                generator.generate(reply.creatorId),
+                context.watch<UsernameGenerator>().generate(reply.creatorId),
                 style: TextStyle(
                   color: dimTextColor(context),
                 ),
@@ -76,10 +74,7 @@ class ReplyTile extends StatelessWidget {
                     Expanded(
                       child: Padding(
                         padding: const EdgeInsets.only(bottom: 8),
-                        child: UsernameGeneratorData(
-                          generator: generator,
-                          child: DText(reply.body),
-                        ),
+                        child: DText(reply.body),
                       ),
                     ),
                   ],

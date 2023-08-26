@@ -15,59 +15,37 @@ class SectionWrap extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      color: Theme.of(context).canvasColor,
-      child: Stack(
-        fit: StackFit.passthrough,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(left: 5),
-            child: ExpandableNotifier(
-              controller: Expandables.of(context, key!, expanded: expanded),
-              child: ExpandableTheme(
-                data: ExpandableThemeData(
-                  iconColor: Theme.of(context).iconTheme.color,
-                ),
-                child: ExpandablePanel(
-                  header: Padding(
-                    padding: const EdgeInsets.all(8),
-                    child: Text(
-                      title?.replaceAllMapped(RegExp(r'\n'), (_) => '') ?? '',
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontSize: 16,
-                      ),
-                    ),
-                  ),
-                  collapsed: const SizedBox.shrink(),
-                  expanded: Padding(
-                    padding: const EdgeInsets.all(8),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [child],
-                    ),
-                  ),
+    return StripedCard(
+      backgroundColor: Theme.of(context).canvasColor,
+      color: dimTextColor(context),
+      child: ExpandableNotifier(
+        controller: Expandables.of(context, key!, expanded: expanded),
+        child: ExpandableTheme(
+          data: ExpandableThemeData(
+            iconColor: Theme.of(context).iconTheme.color,
+          ),
+          child: ExpandablePanel(
+            header: Padding(
+              padding: const EdgeInsets.all(8),
+              child: Text(
+                title?.replaceAllMapped(RegExp(r'\n'), (_) => '') ?? '',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  fontSize: 16,
                 ),
               ),
             ),
-          ),
-          Positioned(
-            top: 0,
-            bottom: 0,
-            left: 0,
-            child: Container(
-              width: 5,
-              decoration: BoxDecoration(
-                color: dimTextColor(context),
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(4),
-                  bottomLeft: Radius.circular(4),
-                ),
+            collapsed: const SizedBox.shrink(),
+            expanded: Padding(
+              padding: const EdgeInsets.all(8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [child],
               ),
             ),
           ),
-        ],
+        ),
       ),
     );
   }
