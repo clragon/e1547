@@ -45,13 +45,13 @@ class PoolSheet extends StatelessWidget {
             const SizedBox(height: 8),
             Row(
               children: [
-                IconButton(
+                ActionButton(
                   icon: const Icon(Icons.share),
-                  onPressed: () async => Share.share(
+                  label: const Text('share'),
+                  onTap: () async => Share.share(
                     context,
                     context.read<Client>().withHost(pool.link),
                   ),
-                  tooltip: 'Share',
                 ),
                 TagListActions(tag: 'pool:${pool.id}'),
               ],

@@ -42,13 +42,13 @@ class TopicSheet extends StatelessWidget {
                     ),
                   ),
                 ),
-                IconButton(
+                ActionButton(
                   icon: const Icon(Icons.share),
-                  onPressed: () async => Share.share(
+                  onTap: () async => Share.share(
                     context,
                     context.read<Client>().withHost(topic.link),
                   ),
-                  tooltip: 'Share',
+                  label: const Text('Share'),
                 ),
               ],
             ),

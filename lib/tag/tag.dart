@@ -5,6 +5,7 @@ export 'data/map.dart';
 export 'data/regex.dart';
 export 'data/tag.dart';
 // widgets
+export 'widgets/actions.dart';
 export 'widgets/card.dart';
 export 'widgets/drawer.dart';
 export 'widgets/editor.dart';
