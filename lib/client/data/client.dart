@@ -90,13 +90,25 @@ class Client {
 
   bool get hasLogin => credentials != null;
 
-  /// Appends [path] to [host] and returns the result.
-  String withHost(String path) {
-    if (path.startsWith('/')) {
-      path = path.substring(1);
-    }
+  /// Appends [value] to [host] and returns the result.
+  String withHost(String value) {
     Uri uri = Uri.parse(host);
-    return uri.replace(path: '${uri.path}$path').toString();
+    Uri other = Uri.parse(value);
+
+    String path = other.path;
+    if (path.startsWith('/')) path = path.substring(1);
+    Map<String, dynamic>? queryParameters = other.queryParameters;
+    if (queryParameters.isEmpty) queryParameters = null;
+    String? fragment = other.fragment;
+    if (fragment.isEmpty) fragment = null;
+
+    return uri
+        .replace(
+          path: path,
+          queryParameters: queryParameters,
+          fragment: fragment,
+        )
+        .toString();
   }
 
   Future<void> availability() async => _dio.get('');
