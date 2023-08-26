@@ -8,7 +8,7 @@ import 'package:e1547/tag/tag.dart';
 import 'package:e1547/wiki/wiki.dart';
 import 'package:flutter/material.dart';
 
-Future<void> tagSearchPrompt({
+Future<void> showTagSearchPrompt({
   required BuildContext context,
   required String tag,
 }) async {
@@ -19,19 +19,19 @@ Future<void> tagSearchPrompt({
   ].contains(Theme.of(context).platform);
 
   if (isDesktop) {
-    return tagSearchDialog(
+    return showTagSearchDialog(
       context: context,
       tag: tag,
     );
   }
 
-  return tagSearchSheet(
+  return showTagSearchSheet(
     context: context,
     tag: tag,
   );
 }
 
-Future<void> tagSearchSheet({
+Future<void> showTagSearchSheet({
   required BuildContext context,
   required String tag,
 }) async {
@@ -315,7 +315,7 @@ class _SearchTagDisplayState extends State<SearchTagDisplay> {
   }
 }
 
-Future<void> tagSearchDialog({
+Future<void> showTagSearchDialog({
   required BuildContext context,
   required String tag,
 }) {

@@ -14,7 +14,7 @@ class DenyListEditor extends StatelessWidget {
         IconButton(
           icon: const Icon(Icons.help_outline),
           onPressed: () =>
-              tagSearchPrompt(context: context, tag: 'e621:blacklist'),
+              showTagSearchPrompt(context: context, tag: 'e621:blacklist'),
         )
       ],
       content: context.read<DenylistService>().items.join('\n'),

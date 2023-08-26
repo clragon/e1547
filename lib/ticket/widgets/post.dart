@@ -142,7 +142,7 @@ class _PostReportScreenState extends State<PostReportScreen> {
                   ReportFormHeader(
                     title: const Text('Report'),
                     icon: IconButton(
-                      onPressed: () => tagSearchPrompt(
+                      onPressed: () => showTagSearchPrompt(
                         context: context,
                         tag: 'e621:report_post',
                       ),
@@ -261,7 +261,7 @@ class _PostFlagScreenState extends State<PostFlagScreen> {
                   ReportFormHeader(
                     title: const Text('Flag'),
                     icon: IconButton(
-                      onPressed: () => tagSearchPrompt(
+                      onPressed: () => showTagSearchPrompt(
                           context: context, tag: 'e621:flag_for_deletion'),
                       icon: const Icon(Icons.info_outline),
                     ),
