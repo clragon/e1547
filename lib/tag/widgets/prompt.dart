@@ -341,50 +341,48 @@ class TagSearchDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) => AlertDialog(
-        content: AnimatedSize(
-          duration: const Duration(milliseconds: 200),
-          child: SizedBox(
-            width: 800,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Flexible(
-                      child: Text(
-                        tagToName(tag),
-                        style: Theme.of(context).textTheme.titleLarge,
-                        softWrap: true,
-                      ),
+    return AlertDialog(
+      content: AnimatedSize(
+        duration: const Duration(milliseconds: 200),
+        child: SizedBox(
+          width: 800,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Flexible(
+                    child: Text(
+                      tagToName(tag),
+                      style: Theme.of(context).textTheme.titleLarge,
+                      softWrap: true,
                     ),
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        if (controller != null)
-                          TagSearchActions(
-                            tag: tag,
-                            controller: controller!,
-                          ),
-                        TagListActions(
-                          tag: tag,
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-                const Divider(indent: 4, endIndent: 4),
-                Flexible(
-                  child: TagSearchInfo(
-                    tag: tag,
-                    controller: controller,
                   ),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (controller != null)
+                        TagSearchActions(
+                          tag: tag,
+                          controller: controller!,
+                        ),
+                      TagListActions(
+                        tag: tag,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              const Divider(indent: 4, endIndent: 4),
+              Flexible(
+                child: TagSearchInfo(
+                  tag: tag,
+                  controller: controller,
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),

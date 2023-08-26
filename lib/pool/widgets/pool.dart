@@ -56,7 +56,10 @@ class _PoolPageState extends State<PoolPage> {
                 IconButton(
                   icon: const Icon(Icons.info_outline),
                   tooltip: 'Info',
-                  onPressed: () => poolSheet(context, widget.pool),
+                  onPressed: () => showPoolPrompt(
+                    context: context,
+                    pool: widget.pool,
+                  ),
                 ),
                 const ContextDrawerButton(),
               ],

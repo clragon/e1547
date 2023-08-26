@@ -6,7 +6,27 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:sliding_sheet/sliding_sheet.dart';
 
-void topicSheet(BuildContext context, Topic topic) {
+Future<void> showTopicPrompt({
+  required BuildContext context,
+  required Topic topic,
+}) async {
+  bool isDesktop = [
+    TargetPlatform.linux,
+    TargetPlatform.macOS,
+    TargetPlatform.windows,
+  ].contains(Theme.of(context).platform);
+
+  if (isDesktop) {
+    showTopicDialog(context: context, topic: topic);
+  } else {
+    showTopicSheet(context: context, topic: topic);
+  }
+}
+
+void showTopicSheet({
+  required BuildContext context,
+  required Topic topic,
+}) {
   showSlidingBottomSheet(
     context,
     builder: (context) => defaultSlidingSheetDialog(
@@ -133,6 +153,63 @@ class TopicInfo extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+Future<void> showTopicDialog({
+  required BuildContext context,
+  required Topic topic,
+}) async {
+  await showDialog(
+    context: context,
+    builder: (context) => TopicDialog(topic: topic),
+  );
+}
+
+class TopicDialog extends StatelessWidget {
+  const TopicDialog({required this.topic});
+
+  final Topic topic;
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      content: SizedBox(
+        width: 800,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: Text(
+                      tagToRaw(topic.title),
+                      style: Theme.of(context).textTheme.titleLarge,
+                      softWrap: true,
+                    ),
+                  ),
+                ),
+                ActionButton(
+                  icon: const Icon(Icons.share),
+                  onTap: () async => Share.share(
+                    context,
+                    context.read<Client>().withHost(topic.link),
+                  ),
+                  label: const Text('Share'),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            const Divider(),
+            TopicInfo(topic: topic),
+          ],
+        ),
       ),
     );
   }

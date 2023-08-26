@@ -127,7 +127,7 @@ class _PostsSearchPageState extends State<PostsSearchPage> {
                     child: IconButton(
                       icon: const Icon(Icons.info_outline),
                       onPressed: pool != null
-                          ? () => poolSheet(context, pool!)
+                          ? () => showPoolPrompt(context: context, pool: pool!)
                           : () => showTagSearchPrompt(
                                 context: context,
                                 tag: controller.search,

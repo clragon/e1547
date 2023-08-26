@@ -5,6 +5,6 @@ export 'data/topic.dart';
 // widgets
 export 'widgets/drawer.dart';
 export 'widgets/loading.dart';
-export 'widgets/sheet.dart';
+export 'widgets/prompt.dart';
 export 'widgets/tile.dart';
 export 'widgets/topics.dart';

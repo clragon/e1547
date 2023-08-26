@@ -30,7 +30,10 @@ class RepliesPage extends StatelessWidget {
                 IconButton(
                   icon: const Icon(Icons.info_outline),
                   tooltip: 'Info',
-                  onPressed: () => topicSheet(context, topic),
+                  onPressed: () => showTopicPrompt(
+                    context: context,
+                    topic: topic,
+                  ),
                 ),
                 const ContextDrawerButton(),
               ],

@@ -20,7 +20,7 @@ class TopicTile extends StatelessWidget {
       children: [
         InkWell(
           onTap: onPressed,
-          onLongPress: () => topicSheet(context, topic),
+          onLongPress: () => showTopicPrompt(context: context, topic: topic),
           child: IntrinsicHeight(
             child: Row(
               children: [
