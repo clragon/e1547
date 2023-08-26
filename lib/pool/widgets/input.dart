@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:collection/collection.dart';
 import 'package:e1547/app/app.dart';
+import 'package:e1547/client/client.dart';
 import 'package:e1547/history/history.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/pool/pool.dart';
@@ -69,11 +70,13 @@ class _PoolSearchInputState extends State<PoolSearchInput> {
         },
         suggestionsCallback: (value) async {
           HistoriesService service = context.read<HistoriesService>();
+          Client client = context.read<Client>();
           value = value.trim();
           List<_PoolSearchResult?> entries = [];
           entries.addAll(
             (await service
                     .all(
+                      host: client.host,
                       linkRegex: r'/pools' +
                           RegExp.escape(Uri(queryParameters: {
                             r'search[name_matches]': '',
@@ -96,6 +99,7 @@ class _PoolSearchInputState extends State<PoolSearchInput> {
           );
           entries.addAll((await service
                   .all(
+                    host: client.host,
                     linkRegex: r'/pools/.*',
                     titleRegex: r'.*' +
                         RegExp.escape(value.replaceAll(' ', '_')) +
