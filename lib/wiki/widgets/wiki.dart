@@ -1,4 +1,4 @@
-import 'package:e1547/dtext/dtext.dart';
+import 'package:e1547/markup/markup.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:e1547/wiki/wiki.dart';

@@ -1,5 +1,5 @@
 import 'package:collection/collection.dart';
-import 'package:e1547/dtext/dtext.dart';
+import 'package:e1547/markup/markup.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';

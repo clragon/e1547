@@ -1,4 +1,4 @@
-import 'package:e1547/dtext/dtext.dart';
+import 'package:e1547/markup/markup.dart';
 import 'package:flutter/material.dart';
 
 InlineSpan parseDText(BuildContext context, String text, TextStateStack state,
