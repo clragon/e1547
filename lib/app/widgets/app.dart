@@ -23,7 +23,9 @@ class App extends StatelessWidget {
         DenylistProvider(),
         FollowsProvider(),
         HistoriesServiceProvider(),
-        AdaptiveScaffoldScope(),
+        AdaptiveScaffoldScope(
+          isEndDrawerOpen: false,
+        ),
         NavigationProvider(
           destinations: rootDestintations,
           drawerHeader: (context) => UserDrawerHeader(),
