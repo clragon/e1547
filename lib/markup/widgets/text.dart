@@ -340,11 +340,27 @@ class DTextBody extends StatelessWidget {
         ),
       DTextTagLink() => _buildLink(
           context: context,
-          name: [DTextContent(element.name ?? element.tag)],
+          name: [
+            DTextContent((element.name ?? element.tag).replaceAll('\n', ' '))
+          ],
           link: Uri(
             path: '/posts',
             queryParameters: {
-              'tags': element.tag.replaceAll(' ', '_').toLowerCase(),
+              'tags': element.tag
+                  .replaceAll(' ', '_')
+                  .replaceAll('\n', ' ')
+                  .toLowerCase(),
+            },
+          ).toString(),
+          local: true,
+        ),
+      DTextTagSearchLink() => _buildLink(
+          context: context,
+          name: [DTextContent(element.tags.replaceAll('\n', ' '))],
+          link: Uri(
+            path: '/posts',
+            queryParameters: {
+              'tags': element.tags.replaceAll('\n', ' ').toLowerCase(),
             },
           ).toString(),
           local: true,

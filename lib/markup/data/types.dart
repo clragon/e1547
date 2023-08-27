@@ -260,3 +260,12 @@ class DTextTagLink extends DTextElement {
   @override
   String toString() => 'TagLink($name, $tag)';
 }
+
+class DTextTagSearchLink extends DTextElement {
+  const DTextTagSearchLink(this.tags);
+
+  final String tags;
+
+  @override
+  String toString() => 'TagSearchLink($tags)';
+}

@@ -30,31 +30,44 @@ class DTextGrammar extends GrammarDefinition<List<DTextElement>> {
 
   Parser<DTextElement> element() => (ref0(blocks) | ref0(textElement)).cast();
 
-  Parser<DTextElement> blocks() =>
-      (ref0(quote) | ref0(code) | ref0(section)).cast();
+  Parser<DTextElement> blocks() => [
+        ref0(quote),
+        ref0(code),
+        ref0(section),
+      ].toChoiceParser().cast();
 
-  Parser<DTextElement> textElement() =>
-      (ref0(styles) | ref0(links) | ref0(character)).cast();
+  Parser<DTextElement> textElement() => [
+        ref0(styles),
+        ref0(links),
+        ref0(character),
+      ].toChoiceParser().cast();
 
-  Parser<DTextElement> styles() => (ref0(inlineStyles) |
-          ref0(spoiler) |
-          ref0(inlineCode) |
-          ref0(header) |
-          ref0(list))
-      .cast();
+  Parser<DTextElement> styles() => [
+        ref0(inlineStyles),
+        ref0(spoiler),
+        ref0(inlineCode),
+        ref0(header),
+        ref0(list),
+      ].toChoiceParser().cast();
 
-  Parser<DTextElement> inlineStyles() => (ref0(bold) |
-          ref0(italic) |
-          ref0(overline) |
-          ref0(underline) |
-          ref0(strikethrough) |
-          ref0(superscript) |
-          ref0(subscript) |
-          ref0(color))
-      .cast();
+  Parser<DTextElement> inlineStyles() => [
+        ref0(bold),
+        ref0(italic),
+        ref0(overline),
+        ref0(underline),
+        ref0(strikethrough),
+        ref0(superscript),
+        ref0(subscript),
+        ref0(color),
+      ].toChoiceParser().cast();
 
-  Parser<DTextElement> links() =>
-      (ref0(linkWord) | ref0(link) | ref0(localLink) | ref0(tagLink)).cast();
+  Parser<DTextElement> links() => [
+        ref0(linkWord),
+        ref0(link),
+        ref0(localLink),
+        ref0(tagLink),
+        ref0(tagSearchLink),
+      ].toChoiceParser().cast();
 
   Parser<DTextElement> character() => any().map((value) => DTextContent(value));
 
@@ -218,6 +231,14 @@ class DTextGrammar extends GrammarDefinition<List<DTextElement>> {
         string(']]'),
       ].toSequenceParser().map(
             (value) => DTextTagLink(value[2], value[1]),
+          );
+
+  Parser<DTextElement> tagSearchLink() => <Parser>[
+        string('{{'),
+        any().starLazy(string('}}')).flatten(),
+        string('}}'),
+      ].toSequenceParser().map(
+            (value) => DTextTagSearchLink(value[1]),
           );
 }
 
