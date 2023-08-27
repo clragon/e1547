@@ -38,7 +38,7 @@ class TopicTile extends StatelessWidget {
                         ),
                         DimSubtree(
                           child: Text(
-                            topic.updatedAt.relativeTime(context),
+                            topic.createdAt.relativeTime(context),
                             style: const TextStyle(
                               fontSize: 12,
                             ),
@@ -66,7 +66,7 @@ class TopicTile extends StatelessWidget {
                             .isBefore(topic.updatedAt))
                           DimSubtree(
                             child: Text(
-                              topic.createdAt.relativeTime(context),
+                              topic.updatedAt.relativeTime(context),
                               style: const TextStyle(
                                 fontSize: 12,
                               ),
