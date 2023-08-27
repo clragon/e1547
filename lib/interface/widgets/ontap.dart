@@ -6,6 +6,7 @@ class MouseCursorRegion extends StatelessWidget {
     this.child,
     this.onTap,
     this.onLongPress,
+    this.onSecondaryTap,
     this.behavior,
   });
 
@@ -18,12 +19,15 @@ class MouseCursorRegion extends StatelessWidget {
   /// Called when a long press gesture with a primary button has occured.
   final VoidCallback? onLongPress;
 
+  /// Called when a tap with a secondary button has occurred.
+  final VoidCallback? onSecondaryTap;
+
   /// How this gesture detector should behave during hit testing.
   final HitTestBehavior? behavior;
 
   @override
   Widget build(BuildContext context) => MouseRegion(
-        cursor: [onTap, onLongPress].any((e) => e != null)
+        cursor: [onTap, onLongPress, onSecondaryTap].any((e) => e != null)
             ? SystemMouseCursors.click
             : MouseCursor.defer,
         hitTestBehavior: HitTestBehavior.deferToChild,
@@ -31,6 +35,7 @@ class MouseCursorRegion extends StatelessWidget {
           behavior: behavior,
           onTap: onTap,
           onLongPress: onLongPress,
+          onSecondaryTap: onSecondaryTap,
           child: child,
         ),
       );

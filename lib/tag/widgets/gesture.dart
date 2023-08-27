@@ -32,6 +32,7 @@ class TagGesture extends StatelessWidget {
         }
       },
       onLongPress: sheet,
+      onSecondaryTap: sheet,
       child: child,
     );
   }

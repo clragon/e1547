@@ -232,6 +232,7 @@ class SelectionItemOverlay<T> extends StatelessWidget {
                   ? () => layoutData.toggleSelection(item)
                   : null,
               onLongPress: () => layoutData.toggleSelection(item),
+              onSecondaryTap: () => layoutData.toggleSelection(item),
               child: ExcludeFocus(
                 child: IgnorePointer(
                   child: AnimatedOpacity(

@@ -106,6 +106,10 @@ class PoolTile extends StatelessWidget {
                       context: context,
                       pool: pool,
                     ),
+                    onSecondaryTap: () => showPoolPrompt(
+                      context: context,
+                      pool: pool,
+                    ),
                   ),
                 ),
               ),
