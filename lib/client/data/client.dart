@@ -650,7 +650,6 @@ class Client {
 
     Map<String, dynamic> body = {
       'comment[body]': text,
-      'comment[post_id]': postId,
       'commit': 'Submit',
     };
 
