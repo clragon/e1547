@@ -530,7 +530,7 @@ class Client {
       for (final tag in await this.tags(
         1,
         search: QueryMap.from({
-          'search[name_matches]': search,
+          'search[name_matches]': '$search*',
           'search[category]': category,
           'search[order]': 'count',
           'limit': 3,
