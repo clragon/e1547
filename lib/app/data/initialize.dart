@@ -69,7 +69,12 @@ Future<Logs> initializeLogger({
     ]),
   );
   registerFlutterErrorHandler(
-    (error, trace) => Loggy('Flutter').log(logLevelCritical, error, trace),
+    (error, trace) => Loggy('Flutter').log(
+      logLevelCritical,
+      error,
+      error,
+      trace,
+    ),
   );
   return logs;
 }
