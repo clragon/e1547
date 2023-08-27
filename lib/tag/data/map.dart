@@ -22,7 +22,7 @@ class QueryMap extends MapBase<String, String?> {
   factory QueryMap.fromIterable(Iterable<MapEntry<String, Object?>> other) {
     QueryMap result = QueryMap();
     for (final entry in other) {
-      result._tags.add(QueryValue(entry.key, entry.value.toString()));
+      result._tags.add(QueryValue(entry.key, entry.value?.toString()));
     }
     return result;
   }
