@@ -39,9 +39,15 @@ class SectionWrap extends StatelessWidget {
             collapsed: const SizedBox.shrink(),
             expanded: Padding(
               padding: const EdgeInsets.all(8),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [child],
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [child],
+                    ),
+                  ),
+                ],
               ),
             ),
           ),

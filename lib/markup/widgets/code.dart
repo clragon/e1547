@@ -20,9 +20,15 @@ class CodeWrap extends StatelessWidget {
             ),
         child: Padding(
           padding: const EdgeInsets.all(8),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [child],
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [child],
+                ),
+              ),
+            ],
           ),
         ),
       ),
