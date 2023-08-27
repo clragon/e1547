@@ -22,25 +22,44 @@ class PostFullscreen extends StatelessWidget {
             builder: (context) {
               switch (post.type) {
                 case PostType.image:
-                  return PhotoViewGestureDetectorScope(
-                    axis: Axis.horizontal,
-                    child: PhotoView.customChild(
-                      heroAttributes: PhotoViewHeroAttributes(tag: post.link),
-                      backgroundDecoration:
-                          const BoxDecoration(color: Colors.transparent),
-                      childSize: Size(post.file.width.toDouble(),
-                          post.file.height.toDouble()),
-                      initialScale: PhotoViewComputedScale.contained,
-                      minScale: PhotoViewComputedScale.contained,
-                      maxScale: PhotoViewComputedScale.covered * 6,
-                      child: PostImageWidget(
-                        fit: BoxFit.cover,
-                        post: post,
-                        size: PostImageSize.file,
-                        lowResCacheSize: context.watch<ImageCacheSize?>()?.size,
+                  if (Theme.of(context).isDesktop) {
+                    return InteractiveViewer(
+                      maxScale: 6,
+                      child: Center(
+                        child: Hero(
+                          tag: post.link,
+                          child: PostImageWidget(
+                            post: post,
+                            fit: BoxFit.cover,
+                            size: PostImageSize.file,
+                            lowResCacheSize:
+                                context.watch<ImageCacheSize?>()?.size,
+                          ),
+                        ),
                       ),
-                    ),
-                  );
+                    );
+                  } else {
+                    return PhotoViewGestureDetectorScope(
+                      axis: Axis.horizontal,
+                      child: PhotoView.customChild(
+                        heroAttributes: PhotoViewHeroAttributes(tag: post.link),
+                        backgroundDecoration:
+                            const BoxDecoration(color: Colors.transparent),
+                        childSize: Size(post.file.width.toDouble(),
+                            post.file.height.toDouble()),
+                        initialScale: PhotoViewComputedScale.contained,
+                        minScale: PhotoViewComputedScale.contained,
+                        maxScale: PhotoViewComputedScale.covered * 6,
+                        child: PostImageWidget(
+                          fit: BoxFit.cover,
+                          post: post,
+                          size: PostImageSize.file,
+                          lowResCacheSize:
+                              context.watch<ImageCacheSize?>()?.size,
+                        ),
+                      ),
+                    );
+                  }
                 case PostType.video:
                   return Center(
                     child: Hero(

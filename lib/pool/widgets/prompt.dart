@@ -11,13 +11,7 @@ Future<void> showPoolPrompt({
   required BuildContext context,
   required Pool pool,
 }) async {
-  bool isDesktop = [
-    TargetPlatform.windows,
-    TargetPlatform.linux,
-    TargetPlatform.macOS,
-  ].contains(Theme.of(context).platform);
-
-  if (isDesktop) {
+  if (Theme.of(context).isDesktop) {
     return showPoolDialog(context: context, pool: pool);
   } else {
     return showPoolSheet(context: context, pool: pool);

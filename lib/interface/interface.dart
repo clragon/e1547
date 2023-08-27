@@ -3,6 +3,7 @@ export 'package:flutter_sub_provider/flutter_sub_provider.dart';
 // data
 export 'data/action.dart';
 export 'data/controller.dart';
+export 'data/desktop.dart';
 export 'data/dio.dart';
 export 'data/hosts.dart';
 export 'data/share.dart';

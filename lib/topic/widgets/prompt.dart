@@ -10,13 +10,7 @@ Future<void> showTopicPrompt({
   required BuildContext context,
   required Topic topic,
 }) async {
-  bool isDesktop = [
-    TargetPlatform.linux,
-    TargetPlatform.macOS,
-    TargetPlatform.windows,
-  ].contains(Theme.of(context).platform);
-
-  if (isDesktop) {
+  if (Theme.of(context).isDesktop) {
     showTopicDialog(context: context, topic: topic);
   } else {
     showTopicSheet(context: context, topic: topic);

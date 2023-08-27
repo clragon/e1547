@@ -12,13 +12,7 @@ Future<void> showTagSearchPrompt({
   required BuildContext context,
   required String tag,
 }) async {
-  bool isDesktop = [
-    TargetPlatform.windows,
-    TargetPlatform.linux,
-    TargetPlatform.macOS,
-  ].contains(Theme.of(context).platform);
-
-  if (isDesktop) {
+  if (Theme.of(context).isDesktop) {
     return showTagSearchDialog(
       context: context,
       tag: tag,
