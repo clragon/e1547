@@ -5,13 +5,13 @@ import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
 
 class PostsPage extends StatefulWidget {
-  PostsPage({
+  const PostsPage({
     required this.controller,
     required this.appBar,
     this.displayType,
     this.drawerActions,
     this.canSelect = true,
-  }) : super(key: ObjectKey(controller));
+  });
 
   final PostsController controller;
   final PreferredSizeWidget appBar;

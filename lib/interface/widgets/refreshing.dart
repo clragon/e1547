@@ -38,24 +38,27 @@ class RefreshableDataPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SubValue<RefreshController>(
-      create: () => RefreshController(),
-      builder: (context, refreshController) => RefreshablePage(
-        refreshHeader: refreshHeader,
-        drawer: drawer,
-        endDrawer: endDrawer,
-        appBar: appBar,
-        floatingActionButton: floatingActionButton,
-        refreshController: refreshController,
-        refresh: (_) async {
-          await controller.refresh(force: true, background: true);
-          if (controller.error != null) {
-            refreshController.refreshFailed();
-          }
-          refreshController.refreshCompleted();
-        },
-        builder: builder,
-        child: child,
+    return KeyedSubtree(
+      key: ValueKey(controller),
+      child: SubValue<RefreshController>(
+        create: () => RefreshController(),
+        builder: (context, refreshController) => RefreshablePage(
+          refreshHeader: refreshHeader,
+          drawer: drawer,
+          endDrawer: endDrawer,
+          appBar: appBar,
+          floatingActionButton: floatingActionButton,
+          refreshController: refreshController,
+          refresh: (_) async {
+            await controller.refresh(force: true, background: true);
+            if (controller.error != null) {
+              refreshController.refreshFailed();
+            }
+            refreshController.refreshCompleted();
+          },
+          builder: builder,
+          child: child,
+        ),
       ),
     );
   }
