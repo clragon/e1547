@@ -5,16 +5,16 @@ class DTextGrammar extends GrammarDefinition<List<DTextElement>> {
   @override
   Parser<List<DTextElement>> start() => body().end();
 
-  Parser<List<DTextElement>> body([Parser? end]) =>
-      ref2(withText, ref0(element), end);
+  Parser<List<DTextElement>> body([Parser? limit]) =>
+      ref2(withText, ref0(element), limit);
 
   Parser<List<DTextElement>> withText(
-          [Parser<DTextElement>? other, Parser? end]) =>
+          [Parser<DTextElement>? other, Parser? limit]) =>
       condense(
         <Parser>[
           if (other != null) other,
           ref0(character),
-        ].toChoiceParser().cast<DTextElement>().starLazy(end ?? endOfInput()),
+        ].toChoiceParser().cast<DTextElement>().starLazy(limit ?? endOfInput()),
       );
 
   Parser<List<DTextElement>> condense(Parser<List<DTextElement>> parser) =>
@@ -59,47 +59,56 @@ class DTextGrammar extends GrammarDefinition<List<DTextElement>> {
   Parser<DTextElement> character() => any().map((value) => DTextContent(value));
 
   Parser<List<DTextElement>> simpleBlockTag(String tag) =>
-      blockTag(tag, tag).pick(1).cast();
+      ref3(blockTag, tag, tag, null).pick(1).cast();
 
   Parser<List<dynamic>> blockTag(
     String start,
     String end,
-  ) =>
+    Parser<DTextElement>? inner,
+  ) {
+    Parser limit = stringIgnoreCase('[/$end]') | endOfInput();
+    return [
       [
-        [
-          char('['),
-          stringIgnoreCase(start),
-          (char('=') & any().starLazy(char(']')).flatten()).pick(1).optional(),
-          char(']'),
-        ].toSequenceParser().pick(2),
-        [
-          ref1(body, stringIgnoreCase('[/$end]')),
-          stringIgnoreCase('[/$end]'),
-        ].toSequenceParser().pick(0),
-      ].toSequenceParser();
+        char('['),
+        stringIgnoreCase(start),
+        (char('=') & any().starLazy(char(']')).flatten()).pick(1).optional(),
+        char(']'),
+      ].toSequenceParser().pick(2),
+      <Parser>[
+        inner?.starLazy(limit) ?? ref1(body, limit),
+        limit,
+      ].toSequenceParser().pick(0),
+    ].toSequenceParser();
+  }
 
   Parser<DTextElement> quote() =>
       ref1(simpleBlockTag, 'quote').map(DTextQuote.new);
-  Parser<DTextElement> code() => <Parser>[
-        stringIgnoreCase('[code]'),
-        any()
-            .starLazy(stringIgnoreCase('[/code]'))
-            .flatten()
-            .map((e) => [DTextContent(e)]),
-        stringIgnoreCase('[/code]'),
-      ].toSequenceParser().pick(1).castList<DTextElement>().map(DTextCode.new);
+  Parser<DTextElement> code() => ref1(
+        condense,
+        ref3(
+          blockTag,
+          'code',
+          'code',
+          any().map((e) => DTextContent(e)),
+        ).pick(1).castList<DTextElement>(),
+      ).map(DTextCode.new);
 
   Parser<DTextElement> section() => <Parser>[
         position(),
         <Parser>[
-          ref2(blockTag, 'section', 'section').map((e) => [...e, false]),
-          ref2(blockTag, 'section,expanded', 'section').map((e) => [...e, true])
+          ref3(blockTag, 'section', 'section', null).map((e) => [...e, false]),
+          ref3(blockTag, 'section,expanded', 'section', null)
+              .map((e) => [...e, true])
         ].toChoiceParser(),
         position(),
       ]
           .toSequenceParser()
           .map((e) => DTextSection(
-              DTextId(start: e[0], end: e[2]), e[1][0], e[1][2], e[1][1]))
+                DTextId(start: e[0], end: e[2]),
+                e[1][0],
+                e[1][2],
+                e[1][1],
+              ))
           .cast();
 
   Parser<DTextElement> bold() => ref1(simpleBlockTag, 'b').map(DTextBold.new);
@@ -119,7 +128,7 @@ class DTextGrammar extends GrammarDefinition<List<DTextElement>> {
       (position() & ref1(simpleBlockTag, 'spoiler') & position())
           .map((e) => DTextSpoiler(DTextId(start: e[0], end: e[2]), e[1]));
   Parser<DTextElement> color() =>
-      ref2(blockTag, 'color', 'color').map((e) => DTextColor(e[0], e[1]));
+      ref3(blockTag, 'color', 'color', null).map((e) => DTextColor(e[0], e[1]));
 
   Parser<DTextElement> inlineCode() =>
       (char('`') & any().starLazy(char('`')).flatten() & char('`'))
