@@ -19,12 +19,7 @@ class SearchPromptFloationgActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    bool isDesktop = [
-      TargetPlatform.macOS,
-      TargetPlatform.windows,
-      TargetPlatform.linux
-    ].contains(Theme.of(context).platform);
-
+    bool isDesktop = Theme.of(context).isDesktop;
     return SubValue<PromptActionController>(
       create: () =>
           isDesktop ? DialogActionController() : SheetActionController(),
