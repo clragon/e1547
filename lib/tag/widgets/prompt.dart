@@ -373,9 +373,15 @@ class TagSearchDialog extends StatelessWidget {
               ),
               const Divider(indent: 4, endIndent: 4),
               Flexible(
-                child: TagSearchInfo(
-                  tag: tag,
-                  controller: controller,
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TagSearchInfo(
+                        tag: tag,
+                        controller: controller,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],
