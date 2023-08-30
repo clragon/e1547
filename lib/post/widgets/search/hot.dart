@@ -1,5 +1,6 @@
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
+import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
 
 class HotPage extends StatefulWidget {
@@ -13,7 +14,7 @@ class _HotPageState extends State<HotPage> with RouterDrawerEntryWidget {
   @override
   Widget build(BuildContext context) {
     return PostsProvider(
-      search: 'order:rank',
+      search: QueryMap({'tags': 'order:rank'}),
       child: Consumer<PostsController>(
         builder: (context, controller, child) =>
             PostsControllerHistoryConnector(

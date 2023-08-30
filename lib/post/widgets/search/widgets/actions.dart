@@ -158,9 +158,10 @@ class RemoveTagAction extends StatelessWidget {
       label: const Text('Remove'),
       onTap: () {
         Navigator.of(context).maybePop();
-        List<String> result = controller.search.split(' ');
-        result.removeWhere((element) => element == tag);
-        controller.search = sortTags(result.join(' '));
+        QueryMap result = QueryMap(controller.search);
+        result['tags'] =
+            (QueryMap.parse(result['tags'] ?? '')..remove(tag)).toString();
+        controller.search = result;
       },
     );
   }
@@ -179,7 +180,10 @@ class AddTagAction extends StatelessWidget {
       label: const Text('Add'),
       onTap: () {
         Navigator.of(context).maybePop();
-        controller.search = sortTags([controller.search, tag].join(' '));
+        QueryMap result = QueryMap(controller.search);
+        result['tags'] =
+            (QueryMap.parse(result['tags'] ?? '')..add(tag)).toString();
+        controller.search = result;
       },
     );
   }
@@ -198,7 +202,11 @@ class SubtractTagAction extends StatelessWidget {
       label: const Text('Subtract'),
       onTap: () {
         Navigator.of(context).maybePop();
-        controller.search = sortTags([controller.search, '-$tag'].join(' '));
+        // controller.search = sortTags([controller.search, '-$tag'].join(' '));
+        QueryMap result = QueryMap(controller.search);
+        result['tags'] =
+            (QueryMap.parse(result['tags'] ?? '')..add('-$tag')).toString();
+        controller.search = result;
       },
     );
   }
@@ -219,9 +227,8 @@ class TagSearchActions extends StatelessWidget {
           return const SizedBox.shrink();
         }
 
-        bool isSearched = controller.search
-            .split(' ')
-            .any((element) => tagToRaw(element) == tag);
+        bool isSearched =
+            QueryMap.parse(controller.search['tags'] ?? '').containsKey(tag);
 
         if (isSearched) {
           return RemoveTagAction(controller: controller, tag: tag);

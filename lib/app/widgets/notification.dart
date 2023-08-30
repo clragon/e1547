@@ -5,7 +5,7 @@ import 'package:e1547/app/app.dart';
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
-import 'package:e1547/tag/data/regex.dart';
+import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sub/flutter_sub.dart';
 
@@ -96,7 +96,7 @@ class _NotificationHandlerState extends State<NotificationHandler> {
             controller.navigator!.push(
               MaterialPageRoute(
                 builder: (context) => PostsSearchPage(
-                  tags: url.queryParameters['tags'],
+                  search: QueryMap({'tags': tags}),
                   orderPoolsByOldest: false,
                   readerMode: poolRegex().hasMatch(tags),
                 ),

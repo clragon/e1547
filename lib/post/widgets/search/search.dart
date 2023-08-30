@@ -10,12 +10,12 @@ import 'package:flutter_sub/flutter_sub.dart';
 
 class PostsSearchPage extends StatefulWidget {
   const PostsSearchPage({
-    this.tags,
+    this.search,
     this.orderPoolsByOldest = true,
     this.readerMode = false,
   });
 
-  final String? tags;
+  final QueryMap? search;
   final bool orderPoolsByOldest;
   final bool readerMode;
 
@@ -32,12 +32,15 @@ class _PostsSearchPageState extends State<PostsSearchPage> {
   @override
   Widget build(BuildContext context) {
     return PostsProvider(
-      search: widget.tags,
+      search: widget.search,
       orderPools: widget.orderPoolsByOldest,
       child: Consumer3<PostsController, FollowsService, Client>(
         builder: (context, controller, follows, client, child) {
           Future<void> updateFollow() async {
-            follow = await follows.getFollow(client.host, controller.search);
+            follow = await follows.getFollow(
+              client.host,
+              controller.search['tags'] ?? '',
+            );
             if (follow != null) {
               Follow updated = follow!;
               if (controller.items?.isNotEmpty ?? false) {
@@ -61,9 +64,9 @@ class _PostsSearchPageState extends State<PostsSearchPage> {
             setState(() {
               loadingInfo = true;
             });
-            QueryMap input = QueryMap.parse(controller.search);
-            RegExpMatch? match = poolRegex().firstMatch(input.toString());
-            if (input.length == 1 && match != null) {
+            RegExpMatch? match =
+                poolRegex().firstMatch(controller.search['tags'] ?? '');
+            if (match != null) {
               if (match.namedGroup('id')! != pool?.id.toString()) {
                 try {
                   pool = await client.pool(int.parse(match.namedGroup('id')!));
@@ -104,8 +107,9 @@ class _PostsSearchPageState extends State<PostsSearchPage> {
             if (pool != null) {
               return tagToName(pool!.name);
             }
-            if (QueryMap.parse(controller.search).length == 1) {
-              return tagToName(controller.search);
+            QueryMap tags = QueryMap.parse(controller.search['tags'] ?? '');
+            if (tags.length == 1) {
+              return tagToName(tags.toString());
             }
             return 'Search';
           }
@@ -123,14 +127,14 @@ class _PostsSearchPageState extends State<PostsSearchPage> {
                 actions: [
                   CrossFade(
                     showChild: !loadingInfo &&
-                        QueryMap.parse(controller.search).isNotEmpty,
+                        (controller.search['tags']?.isNotEmpty ?? true),
                     child: IconButton(
                       icon: const Icon(Icons.info_outline),
                       onPressed: pool != null
                           ? () => showPoolPrompt(context: context, pool: pool!)
                           : () => showTagSearchPrompt(
                                 context: context,
-                                tag: controller.search,
+                                tag: controller.search['tags'] ?? '',
                               ),
                     ),
                   ),

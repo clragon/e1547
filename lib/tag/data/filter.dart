@@ -179,7 +179,7 @@ class FilterTagState<T extends FilterTag> {
   });
 
   static QueryMap _setOrRemove(QueryMap tags, String key, String? value) {
-    tags = QueryMap.from(tags);
+    tags = QueryMap(tags);
     if (value == null) {
       tags.remove(key);
     } else {

@@ -15,7 +15,7 @@ class TopicsController extends PageClientDataController<Topic> {
   QueryMap get search => _search;
   set search(QueryMap value) {
     if (mapEquals(value, _search)) return;
-    _search = QueryMap.from(value);
+    _search = QueryMap(value);
     refresh();
   }
 

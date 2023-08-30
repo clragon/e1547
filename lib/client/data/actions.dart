@@ -25,3 +25,10 @@ Options forceOptions(bool? force) {
     policy: (force ?? false) ? CachePolicy.refresh : CachePolicy.request,
   ).toOptions();
 }
+
+class NoUserLoginException implements Exception {
+  NoUserLoginException();
+
+  @override
+  String toString() => 'NoUserLoginException';
+}

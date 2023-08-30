@@ -27,7 +27,9 @@ class TagGesture extends StatelessWidget {
           sheet();
         } else {
           Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) => PostsSearchPage(tags: tag),
+            builder: (context) => PostsSearchPage(
+              search: QueryMap({'tags': tag}),
+            ),
           ));
         }
       },

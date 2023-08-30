@@ -121,7 +121,7 @@ class HistoriesService extends HistoriesDatabase with ChangeNotifier {
 
   Future<void> addPostSearch(
     String host,
-    String search, {
+    QueryMap search, {
     List<Post>? posts,
   }) =>
       add(
@@ -130,9 +130,7 @@ class HistoriesService extends HistoriesDatabase with ChangeNotifier {
           visitedAt: DateTime.now(),
           link: Uri(
             path: '/posts',
-            queryParameters: {
-              if (search.isNotEmpty) 'tags': QueryMap.parse(search).toString(),
-            },
+            queryParameters: search.isNotEmpty ? search : null,
           ).toString(),
           thumbnails: _getThumbnails(posts),
         ),

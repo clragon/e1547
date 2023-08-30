@@ -1,6 +1,7 @@
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/settings/settings.dart';
+import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sub/flutter_sub.dart';
 
@@ -15,7 +16,7 @@ class _HomePageState extends State<HomePage> with RouterDrawerEntryWidget {
   @override
   Widget build(BuildContext context) {
     return PostsProvider(
-      search: context.read<Settings>().homeTags.value,
+      search: QueryMap({'tags': context.read<Settings>().homeTags.value}),
       child: Consumer<PostsController>(
         builder: (context, controller, child) =>
             PostsControllerHistoryConnector(
@@ -23,8 +24,8 @@ class _HomePageState extends State<HomePage> with RouterDrawerEntryWidget {
           child: SubListener(
             initialize: true,
             listenable: controller,
-            listener: () =>
-                context.read<Settings>().homeTags.value = controller.search,
+            listener: () => context.read<Settings>().homeTags.value =
+                controller.search['tags'].toString(),
             builder: (context) => PostsPage(
               appBar: const ContextSizedAppBar(
                 title: Text('Home'),

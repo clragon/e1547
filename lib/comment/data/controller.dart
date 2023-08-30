@@ -37,7 +37,7 @@ class CommentsController extends PageClientDataController<Comment> {
   ) =>
       client.comments(
         page,
-        search: QueryMap.from({
+        search: QueryMap({
           'group_by': 'comment',
           'search[post_id]': postId,
           'search[order]': orderByOldest ? 'id_asc' : 'id_desc',

@@ -116,7 +116,7 @@ class Client {
   Future<List<Post>> posts(
     int page, {
     int? limit,
-    String? search,
+    QueryMap? search,
     bool? ordered,
     bool? orderPoolsByOldest,
     bool? orderFavoritesByAdded,
@@ -124,7 +124,8 @@ class Client {
     CancelToken? cancelToken,
   }) async {
     ordered ??= true;
-    if (ordered) {
+    String? tags = search?['tags'];
+    if (ordered && tags != null) {
       Map<RegExp, Future<List<Post>> Function(RegExpMatch match)> redirects = {
         poolRegex(): (match) => poolPosts(
               int.parse(match.namedGroup('id')!),
@@ -139,19 +140,18 @@ class Client {
       };
 
       for (final entry in redirects.entries) {
-        RegExpMatch? match = entry.key.firstMatch(search!.trim());
+        RegExpMatch? match = entry.key.firstMatch(tags);
         if (match != null) {
           return entry.value(match);
         }
       }
     }
 
-    String? tags = search != null ? sortTags(search) : '';
     Map<String, dynamic> body = await _dio
         .get(
           'posts.json',
           queryParameters: {
-            'tags': tags,
+            ...?search,
             'page': page,
             'limit': limit,
           },
@@ -190,7 +190,7 @@ class Client {
       String filter = 'id:${chunk.join(',')}';
       List<Post> part = await posts(
         1,
-        search: filter,
+        search: QueryMap()..['tags'] = filter,
         ordered: false,
         force: force,
         cancelToken: cancelToken,
@@ -225,7 +225,7 @@ class Client {
     String filter = chunk.map((e) => '~$e').join(' ');
     return posts(
       sitePage,
-      search: filter,
+      search: QueryMap()..['tags'] = filter,
       limit: limit,
       ordered: false,
       force: force,
@@ -290,23 +290,43 @@ class Client {
 
   Future<List<Post>> favorites(
     int page, {
+    QueryMap? search,
     int? limit,
     bool? force,
     CancelToken? cancelToken,
   }) async {
-    Map<String, dynamic> body = await _dio
-        .get(
-          'favorites.json',
-          queryParameters: {
-            'page': page,
-            'limit': limit,
-          },
-          options: forceOptions(force),
-          cancelToken: cancelToken,
-        )
-        .then((response) => response.data);
+    if (credentials?.username == null) {
+      throw NoUserLoginException();
+    }
+    String tags = search?['tags'] ?? '';
+    if (tags.isEmpty) {
+      Map<String, dynamic> body = await _dio
+          .get(
+            'favorites.json',
+            queryParameters: {
+              ...?search,
+              'page': page,
+              'limit': limit,
+            },
+            options: forceOptions(force),
+            cancelToken: cancelToken,
+          )
+          .then((response) => response.data);
 
-    return List<Post>.from(body['posts'].map((e) => Post.fromJson(e)));
+      return List<Post>.from(body['posts'].map((e) => Post.fromJson(e)));
+    } else {
+      search = QueryMap({
+        ...?search,
+        'tags': QueryMap.parse(tags)..['fav'] = credentials?.username,
+      });
+      return posts(
+        page,
+        search: search,
+        ordered: false,
+        force: force,
+        cancelToken: cancelToken,
+      );
+    }
   }
 
   Future<void> addFavorite(int postId) async {
@@ -529,7 +549,7 @@ class Client {
       List<TagSuggestion> tags = [];
       for (final tag in await this.tags(
         1,
-        search: QueryMap.from({
+        search: QueryMap({
           'search[name_matches]': '$search*',
           'search[category]': category,
           'search[order]': 'count',

@@ -113,7 +113,7 @@ bool onPostTagsEdit(
       List<Tag> tags = await rateLimit(
         client.tags(
           1,
-          search: QueryMap.from({
+          search: QueryMap({
             'search[name_matches]': tag,
             'limit': 1,
           }),

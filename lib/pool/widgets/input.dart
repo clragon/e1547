@@ -21,7 +21,7 @@ class PoolsPageFloatingActionButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return SearchPromptFloationgActionButton(
       tags: controller.search,
-      onSubmit: (value) => controller.search = QueryMap.from(value),
+      onSubmit: (value) => controller.search = QueryMap(value),
       filters: [
         WrapperFilterConfig(
           wrapper: (value) => 'search[$value]',

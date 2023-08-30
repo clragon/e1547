@@ -27,7 +27,7 @@ class PoolsController extends PageClientDataController<Pool> {
   QueryMap get search => _search;
   set search(QueryMap value) {
     if (mapEquals(_search, value)) return;
-    _search = QueryMap.from(value);
+    _search = QueryMap(value);
     refresh();
   }
 

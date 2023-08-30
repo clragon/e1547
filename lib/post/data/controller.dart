@@ -2,6 +2,7 @@ import 'package:e1547/client/client.dart';
 import 'package:e1547/denylist/denylist.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
+import 'package:e1547/tag/data/map.dart';
 import 'package:flutter/material.dart';
 
 class PostsController extends PageClientDataController<Post>
@@ -9,13 +10,13 @@ class PostsController extends PageClientDataController<Post>
   PostsController({
     required this.client,
     required this.denylist,
-    String? search,
+    QueryMap? search,
     bool orderFavorites = false,
     bool orderPools = true,
     bool denying = true,
     this.canSearch = true,
     this.filterMode = PostFilterMode.filtering,
-  })  : _search = search ?? '',
+  })  : _search = search ?? QueryMap(),
         _orderFavorites = orderFavorites,
         _orderPools = orderPools {
     this.denying = denying;
@@ -26,11 +27,11 @@ class PostsController extends PageClientDataController<Post>
   final Client client;
 
   final bool canSearch;
-  String _search = '';
-  String get search => _search;
-  set search(String value) {
+  QueryMap _search;
+  QueryMap get search => _search;
+  set search(QueryMap value) {
     if (value == _search) return;
-    _search = value;
+    _search = QueryMap(value);
     refresh();
   }
 
@@ -101,7 +102,7 @@ class SinglePostController extends PostsController {
 class PostsProvider extends SubChangeNotifierProvider2<Client, DenylistService,
     PostsController> {
   PostsProvider({
-    String? search,
+    QueryMap? search,
     bool orderFavorites = false,
     bool orderPools = true,
     bool denying = true,

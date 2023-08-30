@@ -71,7 +71,7 @@ class LinkParser {
 
     if (match != null) {
       Map<String, String> arguments = extract(names, match);
-      QueryMap? query = QueryMap.from(uri.queryParameters);
+      QueryMap? query = QueryMap(uri.queryParameters);
       if (query.isEmpty) query = null;
       return transformer(arguments, query);
     }
@@ -203,8 +203,7 @@ VoidCallback? parseLinkOnTap(BuildContext context, String link) {
         if (id != null) {
           return navWrapper((context) => PostLoadingPage(id));
         }
-        return navWrapper(
-            (context) => PostsSearchPage(tags: result.search!['tags']));
+        return navWrapper((context) => PostsSearchPage(search: result.search));
       case LinkType.pool:
         int? id = result.id as int?;
         if (id != null) {

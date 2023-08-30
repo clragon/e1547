@@ -243,7 +243,7 @@ class FollowUpdate with ObjectLoggy {
         if (posts.isNotEmpty) continue;
         String? alias = await rateLimit(client.tagAliases(
           1,
-          search: QueryMap.from({'search[antecedent_name]': follow.tags}),
+          search: QueryMap({'search[antecedent_name]': follow.tags}),
         ));
         if (alias != follow.alias) {
           Follow updated = follow.copyWith(alias: alias);
@@ -278,7 +278,7 @@ class FollowUpdate with ObjectLoggy {
 
     List<Post> posts = await rateLimit(client.posts(
       1,
-      search: follow.tags,
+      search: QueryMap({'tags': follow.tags}),
       limit: refreshAmount,
       ordered: false,
       force: force,

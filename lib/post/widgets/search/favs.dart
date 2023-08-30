@@ -1,3 +1,4 @@
+import 'package:e1547/client/client.dart';
 import 'package:e1547/history/history.dart';
 import 'package:e1547/interface/interface.dart';
 
@@ -55,7 +56,7 @@ class FavPage extends StatelessWidget {
                 drawerActions: [
                   if (controller.client.credentials != null &&
                       favRegex(controller.client.credentials!.username)
-                          .hasMatch(controller.search))
+                          .hasMatch(controller.search['tags'] ?? ''))
                     SwitchListTile(
                       secondary: const Icon(Icons.sort),
                       title: Text(

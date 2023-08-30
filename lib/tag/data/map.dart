@@ -12,20 +12,21 @@ import 'package:flutter/widgets.dart';
 /// When accessing a key, the first value is returned.
 /// To access all values of a key, use [toMapAll].
 class QueryMap extends MapBase<String, String?> {
-  /// Creates an empty query map.
-  QueryMap() : _tags = SplayTreeSet<QueryValue>();
-
-  /// Creates a query map from a map.
-  factory QueryMap.from(Map<String, Object?> other) =>
-      QueryMap.fromIterable(other.entries);
+  /// Creates a query map.
+  /// Optionally, a map can be provided to copy values from.
+  factory QueryMap([Map<String, Object?>? other]) {
+    return QueryMap.fromIterable(other?.entries ?? []);
+  }
 
   factory QueryMap.fromIterable(Iterable<MapEntry<String, Object?>> other) {
-    QueryMap result = QueryMap();
+    QueryMap result = QueryMap._();
     for (final entry in other) {
       result._tags.add(QueryValue(entry.key, entry.value?.toString()));
     }
     return result;
   }
+
+  QueryMap._() : _tags = SplayTreeSet<QueryValue>();
 
   /// Creates a query map from a string.
   ///
@@ -51,6 +52,8 @@ class QueryMap extends MapBase<String, String?> {
     remove(key);
     _tags.add(QueryValue(key, value));
   }
+
+  void add(String key, [String? value]) => this[key] = value;
 
   @override
   String? remove(Object? key) {
@@ -80,7 +83,7 @@ class QueryMap extends MapBase<String, String?> {
   String toString() => _tags.map((tag) => tag.toString()).join(' ');
 
   /// Returns a new QueryMap with the same values.
-  Map<String, String?> toMap() => QueryMap.from(this);
+  Map<String, String?> toMap() => QueryMap(this);
 
   /// Returns a new QueryMap with all values.
   Map<String, List<String?>> toMapAll() {
