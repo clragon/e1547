@@ -3,7 +3,6 @@ import 'package:e1547/history/history.dart';
 import 'package:e1547/interface/interface.dart';
 
 import 'package:e1547/post/post.dart';
-import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
 
 class FavPage extends StatelessWidget {
@@ -54,9 +53,7 @@ class FavPage extends StatelessWidget {
                   actions: [ContextDrawerButton()],
                 ),
                 drawerActions: [
-                  if (controller.client.credentials != null &&
-                      favRegex(controller.client.credentials!.username)
-                          .hasMatch(controller.search['tags'] ?? ''))
+                  if (controller.search['tags']?.isEmpty ?? true)
                     SwitchListTile(
                       secondary: const Icon(Icons.sort),
                       title: Text(

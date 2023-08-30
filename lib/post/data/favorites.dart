@@ -25,6 +25,7 @@ class FavoritePostsController extends PostsController {
     return client.favorites(
       page,
       search: search,
+      orderByAdded: orderFavorites,
       force: force,
       cancelToken: cancelToken,
     );

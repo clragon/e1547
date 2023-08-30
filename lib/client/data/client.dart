@@ -292,6 +292,7 @@ class Client {
   Future<List<Post>> favorites(
     int page, {
     QueryMap? search,
+    bool? orderByAdded,
     int? limit,
     bool? force,
     CancelToken? cancelToken,
@@ -299,8 +300,9 @@ class Client {
     if (credentials?.username == null) {
       throw NoUserLoginException();
     }
+    orderByAdded ??= true;
     String tags = search?['tags'] ?? '';
-    if (tags.isEmpty) {
+    if (tags.isEmpty && orderByAdded) {
       Map<String, dynamic> body = await _dio
           .get(
             'favorites.json',
@@ -314,7 +316,9 @@ class Client {
           )
           .then((response) => response.data);
 
-      return List<Post>.from(body['posts'].map((e) => Post.fromJson(e)));
+      List<Post> result = List.from(body['posts'].map(Post.fromJson));
+      result.removeWhere((e) => e.flags.deleted || e.file.url == null);
+      return result;
     } else {
       search = QueryMap({
         ...?search,
