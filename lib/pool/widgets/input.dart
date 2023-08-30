@@ -129,7 +129,7 @@ class PoolNameFilter extends StatelessWidget {
         onSuggestionSelected: (value) {
           if (value.link != null) {
             Navigator.of(context).pop();
-            executeLink(context, value.link!);
+            const E621LinkParser().open(context, value.link!);
           } else {
             controller.text = '${value.name} ';
             controller.setFocusToEnd();
@@ -157,7 +157,9 @@ class PoolNameFilter extends StatelessWidget {
                     )
                     .first)
                 .map((e) {
-              String? name = parseLink(e.link)?.search?['search[name_matches]'];
+              String? name = const E621LinkParser()
+                  .parse(e.link)
+                  ?.search?['search[name_matches]'];
               if (name != null) {
                 return _PoolSearchResult(time: e.visitedAt, name: name);
               }

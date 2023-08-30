@@ -204,7 +204,8 @@ class DTextBody extends StatelessWidget {
     local ??= false;
     VoidCallback action = () => launch(link);
     if (local) {
-      VoidCallback? linkAction = parseLinkOnTap(context, link);
+      VoidCallback? linkAction =
+          const E621LinkParser().parseOnTap(context, link);
       if (linkAction != null) {
         action = linkAction;
       } else {

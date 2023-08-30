@@ -23,7 +23,8 @@ class HistorySheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    VoidCallback? onTap = parseLinkOnTap(context, entry.link);
+    VoidCallback? onTap =
+        const E621LinkParser().parseOnTap(context, entry.link);
     return DefaultSheetBody(
       title: Padding(
         padding: const EdgeInsets.all(8),

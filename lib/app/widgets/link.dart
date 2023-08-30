@@ -24,7 +24,7 @@ class _AppLinkHandlerState extends State<AppLinkHandler> {
   Future<void> onInitialLink(Uri? url) async {
     RouterDrawerController controller = context.read<RouterDrawerController>();
     if (url != null) {
-      VoidCallback? action = parseLinkOnTap(
+      VoidCallback? action = const E621LinkParser().parseOnTap(
         controller.context!,
         url.toString(),
       );
@@ -39,7 +39,7 @@ class _AppLinkHandlerState extends State<AppLinkHandler> {
 
   Future<void> onLink(Uri? url) async {
     if (url != null) {
-      if (!executeLink(
+      if (!const E621LinkParser().open(
         context.read<RouterDrawerController>().context!,
         url.toString(),
       )) {

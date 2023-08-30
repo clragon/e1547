@@ -19,7 +19,7 @@ class HistoryTile extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.all(4),
           child: InkWell(
-            onTap: parseLinkOnTap(context, entry.link),
+            onTap: const E621LinkParser().parseOnTap(context, entry.link),
             child: SelectionItemOverlay<History>(
               item: entry,
               child: Padding(
@@ -62,7 +62,9 @@ class HistoryTile extends StatelessWidget {
                                 icon: Icons.info,
                                 value: () => showTagSearchPrompt(
                                   context: context,
-                                  tag: parseLink(entry.link)!.search!['tags']!,
+                                  tag: const E621LinkParser()
+                                      .parse(entry.link)!
+                                      .search!['tags']!,
                                 ),
                               ),
                             if (entry.subtitle != null)

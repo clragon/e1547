@@ -28,7 +28,6 @@ Future<void> launch(String url) async {
 }
 
 const String queryDivider = r'[^\s/?&#]';
-const String _queryRegex = r'(' + queryDivider + r'+)';
 const String _showEnding = r':_(s|/show)';
 
 enum LinkType {
@@ -52,8 +51,15 @@ class Link {
   final QueryMap? search;
 }
 
-class LinkParser {
-  LinkParser({
+@immutable
+abstract class LinkParser {
+  const LinkParser();
+
+  Link? parse(String link);
+}
+
+class LeafLinkParser extends LinkParser {
+  const LeafLinkParser({
     required this.path,
     required this.transformer,
   });
@@ -61,6 +67,7 @@ class LinkParser {
   final String path;
   final Link? Function(Map<String, String> args, QueryMap? query) transformer;
 
+  @override
   Link? parse(String link) {
     Uri? uri = Uri.tryParse(link);
     if (uri == null) return null;
@@ -80,170 +87,189 @@ class LinkParser {
   }
 }
 
-final List<LinkParser> allLinkParsers = [
-  LinkParser(
-    path: r'/post' '$_showEnding' r'/:id(\d+)',
-    transformer: (args, query) => Link(
-      type: LinkType.post,
-      id: int.parse(args['id']!),
-      search: query,
-    ),
-  ),
-  LinkParser(
-    path: r'/posts',
-    transformer: (args, query) => Link(
-      type: LinkType.post,
-      search: query,
-    ),
-  ),
-  LinkParser(
-    path: r'/pool' '$_showEnding' r'/:id(\d+)',
-    transformer: (args, query) => Link(
-      type: LinkType.pool,
-      search: query,
-    ),
-  ),
-  LinkParser(
-    path: r'/pools',
-    transformer: (args, query) => Link(
-      type: LinkType.pool,
-      search: query,
-    ),
-  ),
-  LinkParser(
-    path: r'/user'
-        '$_showEnding'
-        r'/:name'
-        '$_queryRegex',
-    transformer: (args, query) => Link(
-      type: LinkType.user,
-      id: int.tryParse(args['name']!) ?? args['name']!,
-      search: query,
-    ),
-  ),
-  LinkParser(
-    path: r'/wiki_pages'
-        r'/:name'
-        '$_queryRegex',
-    transformer: (args, query) => Link(
-      type: LinkType.wiki,
-      id: int.tryParse(args['name']!) ?? args['name']!,
-    ),
-  ),
-  LinkParser(
-    path: r'/wiki_pages',
-    transformer: (args, query) => Link(
-      type: LinkType.wiki,
-      search: query,
-    ),
-  ),
-  LinkParser(
-    path: r'/forum_topics/:id(\d+)',
-    transformer: (args, query) => Link(
-      type: LinkType.topic,
-      id: int.parse(args['id']!),
-      search: query,
-    ),
-  ),
-  LinkParser(
-    path: r'/forum_topics',
-    transformer: (args, query) => Link(
-      type: LinkType.topic,
-      search: query,
-    ),
-  ),
-  LinkParser(
-    path: r'/forum_posts/:id(\d+)',
-    transformer: (args, query) => Link(
-      type: LinkType.reply,
-      id: int.parse(args['id']!),
-    ),
-  ),
-  LinkParser(
-    path: r'/forum_posts',
-    transformer: (args, query) => Link(
-      type: LinkType.reply,
-      search: query,
-    ),
-  ),
-];
+abstract class BranchLinkParser extends LinkParser {
+  const BranchLinkParser();
 
-Link? parseLink(String link) {
-  for (LinkParser parser in allLinkParsers) {
-    Link? result = parser.parse(link);
+  List<LinkParser> get parsers;
+
+  @override
+  Link? parse(String link) {
+    for (LinkParser parser in parsers) {
+      Link? result = parser.parse(link);
+      if (result != null) {
+        return result;
+      }
+    }
+    return null;
+  }
+}
+
+// some day we'll just switch to a navigator with urls
+// and the client interface will just have a single route to route map function.
+class E621LinkParser extends BranchLinkParser {
+  const E621LinkParser();
+
+  @override
+  List<LinkParser> get parsers => [
+        LeafLinkParser(
+          path: r'/post' '$_showEnding' r'/:id(\d+)',
+          transformer: (args, query) => Link(
+            type: LinkType.post,
+            id: int.parse(args['id']!),
+            search: query,
+          ),
+        ),
+        LeafLinkParser(
+          path: r'/posts',
+          transformer: (args, query) => Link(
+            type: LinkType.post,
+            search: query,
+          ),
+        ),
+        LeafLinkParser(
+          path: r'/pool' '$_showEnding' r'/:id(\d+)',
+          transformer: (args, query) => Link(
+            type: LinkType.pool,
+            id: int.parse(args['id']!),
+            search: query,
+          ),
+        ),
+        LeafLinkParser(
+          path: r'/pools',
+          transformer: (args, query) => Link(
+            type: LinkType.pool,
+            search: query,
+          ),
+        ),
+        LeafLinkParser(
+          path: r'/user'
+              '$_showEnding'
+              r'/:name',
+          transformer: (args, query) => Link(
+            type: LinkType.user,
+            id: int.tryParse(args['name']!) ?? args['name']!,
+            search: query,
+          ),
+        ),
+        LeafLinkParser(
+          path: r'/wiki_pages'
+              r'/:name',
+          transformer: (args, query) => Link(
+            type: LinkType.wiki,
+            id: int.tryParse(args['name']!) ?? args['name']!,
+          ),
+        ),
+        LeafLinkParser(
+          path: r'/wiki_pages',
+          transformer: (args, query) => Link(
+            type: LinkType.wiki,
+            search: query,
+          ),
+        ),
+        LeafLinkParser(
+          path: r'/forum_topics/:id(\d+)',
+          transformer: (args, query) => Link(
+            type: LinkType.topic,
+            id: int.parse(args['id']!),
+            search: query,
+          ),
+        ),
+        LeafLinkParser(
+          path: r'/forum_topics',
+          transformer: (args, query) => Link(
+            type: LinkType.topic,
+            search: query,
+          ),
+        ),
+        LeafLinkParser(
+          path: r'/forum_posts/:id(\d+)',
+          transformer: (args, query) => Link(
+            type: LinkType.reply,
+            id: int.parse(args['id']!),
+          ),
+        ),
+        LeafLinkParser(
+          path: r'/forum_posts',
+          transformer: (args, query) => Link(
+            type: LinkType.reply,
+            search: query,
+          ),
+        ),
+      ];
+}
+
+extension LinkOnTapExtension on LinkParser {
+  VoidCallback? parseOnTap(BuildContext context, String link) {
+    final Link? result = this.parse(link);
     if (result != null) {
-      return result;
+      if (!context.read<Settings>().showBeta.value &&
+          [LinkType.topic, LinkType.reply].contains(result.type)) {
+        return null;
+      }
+
+      VoidCallback navWrapper(WidgetBuilder builder, [bool root = false]) {
+        return () {
+          if (root) {
+            Navigator.of(context).popUntil((route) => false);
+          }
+          Navigator.of(context).push(
+            MaterialPageRoute(builder: builder),
+          );
+        };
+      }
+
+      switch (result.type) {
+        case LinkType.post:
+          int? id = result.id as int?;
+          if (id != null) {
+            return navWrapper((context) => PostLoadingPage(id));
+          }
+          return navWrapper(
+              (context) => PostsSearchPage(search: result.search));
+        case LinkType.pool:
+          int? id = result.id as int?;
+          if (id != null) {
+            return navWrapper((context) => PoolLoadingPage(id));
+          }
+          return navWrapper(
+              (context) => PoolsPage(search: result.search), true);
+        case LinkType.user:
+          Object? id = result.id;
+          if (id != null) {
+            return navWrapper((context) => UserLoadingPage(id.toString()));
+          }
+          break;
+        case LinkType.wiki:
+          Object? id = result.id;
+          if (id != null) {
+            return navWrapper((context) => WikiLoadingPage(id.toString()));
+          }
+          break;
+        case LinkType.topic:
+          int? id = result.id as int?;
+          if (id != null) {
+            return navWrapper((context) => TopicLoadingPage(id));
+          }
+          return navWrapper(
+              (context) => TopicsPage(search: result.search), true);
+        case LinkType.reply:
+          int? id = result.id as int?;
+          if (id != null) {
+            return navWrapper((context) => ReplyLoadingPage(id));
+          }
+          return navWrapper(
+              (context) => TopicsPage(search: result.search), true);
+      }
     }
+    return null;
   }
-  return null;
-}
 
-VoidCallback? parseLinkOnTap(BuildContext context, String link) {
-  final Link? result = parseLink(link);
-  if (result != null) {
-    if (!context.read<Settings>().showBeta.value &&
-        [LinkType.topic, LinkType.reply].contains(result.type)) {
-      return null;
+  bool open(BuildContext context, String link) {
+    VoidCallback? callback = parseOnTap(context, link);
+    if (callback != null) {
+      callback();
+      return true;
     }
-
-    VoidCallback navWrapper(WidgetBuilder builder, [bool root = false]) {
-      return () {
-        if (root) {
-          Navigator.of(context).popUntil((route) => false);
-        }
-        Navigator.of(context).push(
-          MaterialPageRoute(builder: builder),
-        );
-      };
-    }
-
-    switch (result.type) {
-      case LinkType.post:
-        int? id = result.id as int?;
-        if (id != null) {
-          return navWrapper((context) => PostLoadingPage(id));
-        }
-        return navWrapper((context) => PostsSearchPage(search: result.search));
-      case LinkType.pool:
-        int? id = result.id as int?;
-        if (id != null) {
-          return navWrapper((context) => PoolLoadingPage(id));
-        }
-        return navWrapper((context) => PoolsPage(search: result.search), true);
-      case LinkType.user:
-        Object? id = result.id;
-        if (id != null) {
-          return navWrapper((context) => UserLoadingPage(id.toString()));
-        }
-        break;
-      case LinkType.wiki:
-        Object? id = result.id;
-        if (id != null) {
-          return navWrapper((context) => WikiLoadingPage(id.toString()));
-        }
-        break;
-      case LinkType.topic:
-        int? id = result.id as int?;
-        if (id != null) {
-          return navWrapper((context) => TopicLoadingPage(id));
-        }
-        return navWrapper((context) => TopicsPage(search: result.search), true);
-      case LinkType.reply:
-        int? id = result.id as int?;
-        if (id != null) {
-          return navWrapper((context) => ReplyLoadingPage(id));
-        }
-        return navWrapper((context) => TopicsPage(search: result.search), true);
-    }
+    return false;
   }
-  return null;
-}
-
-bool executeLink(BuildContext context, String link) {
-  VoidCallback? callback = parseLinkOnTap(context, link);
-  if (callback != null) {
-    callback();
-    return true;
-  }
-  return false;
 }

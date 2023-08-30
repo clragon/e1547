@@ -7,17 +7,17 @@ import 'package:provider/provider.dart';
 
 extension Identification on History {
   bool isItem(LinkType type) {
-    Link? parsed = parseLink(link);
+    Link? parsed = const E621LinkParser().parse(link);
     return type == parsed?.type && parsed?.id != null;
   }
 
   bool isSearch(LinkType type) {
-    Link? parsed = parseLink(link);
+    Link? parsed = const E621LinkParser().parse(link);
     return type == parsed?.type && (parsed?.search?.isNotEmpty ?? false);
   }
 
   String getName(BuildContext context) {
-    Link? parsed = parseLink(link);
+    Link? parsed = const E621LinkParser().parse(link);
     LinkType? type = parsed?.type;
     if (parsed == null || type == null) {
       if (title != null) {
