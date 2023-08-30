@@ -1,4 +1,5 @@
 // data
+export 'data/flag.dart';
 export 'data/post.dart';
 export 'widgets/comment.dart';
 export 'widgets/dropdown.dart';

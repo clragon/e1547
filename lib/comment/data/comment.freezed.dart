@@ -65,7 +65,7 @@ abstract class $CommentCopyWith<$Res> {
       String creatorName,
       String updaterName,
       @JsonKey(includeFromJson: false, includeToJson: false)
-          VoteStatus voteStatus});
+      VoteStatus voteStatus});
 }
 
 /// @nodoc
@@ -191,7 +191,7 @@ abstract class _$$_CommentCopyWith<$Res> implements $CommentCopyWith<$Res> {
       String creatorName,
       String updaterName,
       @JsonKey(includeFromJson: false, includeToJson: false)
-          VoteStatus voteStatus});
+      VoteStatus voteStatus});
 }
 
 /// @nodoc
@@ -310,7 +310,7 @@ class _$_Comment implements _Comment {
       required this.creatorName,
       required this.updaterName,
       @JsonKey(includeFromJson: false, includeToJson: false)
-          this.voteStatus = VoteStatus.unknown});
+      this.voteStatus = VoteStatus.unknown});
 
   factory _$_Comment.fromJson(Map<String, dynamic> json) =>
       _$$_CommentFromJson(json);
@@ -442,7 +442,7 @@ abstract class _Comment implements Comment {
       required final String creatorName,
       required final String updaterName,
       @JsonKey(includeFromJson: false, includeToJson: false)
-          final VoteStatus voteStatus}) = _$_Comment;
+      final VoteStatus voteStatus}) = _$_Comment;
 
   factory _Comment.fromJson(Map<String, dynamic> json) = _$_Comment.fromJson;
 

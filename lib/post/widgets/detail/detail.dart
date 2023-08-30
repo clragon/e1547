@@ -68,6 +68,7 @@ class _PostDetailState extends State<PostDetail> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ArtistDisplay(post: post),
+            DeletionDisplay(post: post),
             DescriptionDisplay(post: post),
           ],
         ),

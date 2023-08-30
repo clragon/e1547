@@ -1,3 +1,8 @@
+/// This should be replaced by a FilterList.
+/// To do that, we need to upgrade FilterList to support required fields.
+// TODO: Replace this with a FilterList
+library;
+
 enum ReportType {
   rating,
   file,

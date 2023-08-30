@@ -1,6 +1,7 @@
 export 'widgets/artist.dart';
 export 'widgets/blacklist.dart';
 export 'widgets/comments.dart';
+export 'widgets/deletion.dart';
 export 'widgets/description.dart';
 export 'widgets/fab.dart';
 export 'widgets/file.dart';

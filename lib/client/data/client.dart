@@ -11,6 +11,7 @@ import 'package:e1547/pool/pool.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/reply/reply.dart';
 import 'package:e1547/tag/tag.dart';
+import 'package:e1547/ticket/ticket.dart';
 import 'package:e1547/topic/topic.dart';
 import 'package:e1547/user/user.dart';
 import 'package:e1547/wiki/wiki.dart';
@@ -342,6 +343,29 @@ class Client {
   Future<void> removeFavorite(int postId) async {
     await cache?.deleteFromPath(RegExp(RegExp.escape('posts/$postId.json')));
     await _dio.delete('favorites/$postId.json');
+  }
+
+  Future<List<PostFlag>> flags(
+    int? page, {
+    int? limit,
+    QueryMap? search,
+    bool? force,
+    CancelToken? cancelToken,
+  }) async {
+    List<dynamic> body = await _dio
+        .get(
+          'post_flags.json',
+          queryParameters: {
+            ...?search,
+            'page': page,
+            'limit': limit,
+          },
+          options: forceOptions(force),
+          cancelToken: cancelToken,
+        )
+        .then((response) => response.data);
+
+    return body.map((e) => PostFlag.fromJson(e)).toList();
   }
 
   Future<List<Pool>> pools(

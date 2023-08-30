@@ -27,9 +27,12 @@ class DescriptionDisplay extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  'Description',
-                  style: TextStyle(fontSize: 16),
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                  child: Text(
+                    'Description',
+                    style: TextStyle(fontSize: 16),
+                  ),
                 ),
                 IconButton(
                   icon: const Icon(Icons.edit),
