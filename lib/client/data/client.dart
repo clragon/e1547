@@ -176,12 +176,12 @@ class Client {
     bool? force,
     CancelToken? cancelToken,
   }) async {
-    limit = max(0, min(limit ?? 80, 100));
+    CurrentUser? user = await currentUser(cancelToken: cancelToken);
+    limit = max(0, min(limit ?? user?.perPage ?? 80, 100));
 
     List<List<int>> chunks = [];
-    while (true) {
-      chunks.add(ids.sublist(chunks.length * limit).take(limit).toList());
-      if (chunks.last.length < limit) break;
+    for (int i = 0; i < ids.length; i += limit) {
+      chunks.add(ids.sublist(i, min(i + limit, ids.length)));
     }
 
     List<Post> result = [];
@@ -190,7 +190,8 @@ class Client {
       String filter = 'id:${chunk.join(',')}';
       List<Post> part = await posts(
         1,
-        search: QueryMap()..['tags'] = filter,
+        search: QueryMap({'tags': filter}),
+        limit: limit,
         ordered: false,
         force: force,
         cancelToken: cancelToken,
@@ -381,19 +382,20 @@ class Client {
   Future<List<Post>> poolPosts(
     int poolId,
     int page, {
+    int? limit,
     bool orderByOldest = true,
     bool? force,
     CancelToken? cancelToken,
   }) async {
-    int limit = 80;
     Pool pool = await this.pool(poolId, force: force, cancelToken: cancelToken);
-    List<int> ids =
-        orderByOldest ? pool.postIds : pool.postIds.reversed.toList();
-    int lower = (page - 1) * limit;
-    if (lower > ids.length) return [];
-    ids = ids.sublist(lower).take(limit).toList();
-    return postsByIds(ids,
-        limit: limit, force: force, cancelToken: cancelToken);
+    List<int> ids = pool.postIds;
+    if (orderByOldest) ids = ids.reversed.toList();
+    return postsByIds(
+      ids,
+      limit: limit,
+      force: force,
+      cancelToken: cancelToken,
+    );
   }
 
   Future<List<Wiki>> wikis(
@@ -464,9 +466,7 @@ class Client {
     bool? force,
     CancelToken? cancelToken,
   }) async {
-    if (!hasLogin) {
-      return null;
-    }
+    if (!hasLogin) return null;
 
     Map<String, dynamic> body = await _dio
         .get(
