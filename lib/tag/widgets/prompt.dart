@@ -62,7 +62,7 @@ class TagSearchSheet extends StatelessWidget {
                       Navigator.of(context).push(
                         MaterialPageRoute(
                           builder: (context) => PostsSearchPage(
-                            search: QueryMap({'tags': tag}),
+                            query: QueryMap({'tags': tag}),
                           ),
                         ),
                       );

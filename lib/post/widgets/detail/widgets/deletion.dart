@@ -23,7 +23,7 @@ class DeletionDisplay extends StatelessWidget {
         List<PostFlag> flags = await context.read<Client>().flags(
               1,
               limit: 1,
-              search: QueryMap({
+              query: QueryMap({
                 'type': 'deletion',
                 'search[post_id]': post.id,
                 'search[is_resolved]': 'false',

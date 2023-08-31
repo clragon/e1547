@@ -166,7 +166,7 @@ class PostsControllerHistoryConnector extends StatelessWidget {
         controller: controller,
         addToHistory: (context, service, data) => service.addPostSearch(
           data.client.host,
-          data.search,
+          data.query,
           posts: data.items,
         ),
         child: child,

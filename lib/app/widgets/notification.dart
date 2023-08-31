@@ -96,7 +96,7 @@ class _NotificationHandlerState extends State<NotificationHandler> {
             controller.navigator!.push(
               MaterialPageRoute(
                 builder: (context) => PostsSearchPage(
-                  search: QueryMap({'tags': tags}),
+                  query: QueryMap({'tags': tags}),
                   orderPoolsByOldest: false,
                   readerMode: poolRegex().hasMatch(tags),
                 ),

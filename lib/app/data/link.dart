@@ -43,12 +43,12 @@ class Link {
   const Link({
     required this.type,
     this.id,
-    this.search,
+    this.query,
   });
 
   final LinkType type;
   final Object? id;
-  final QueryMap? search;
+  final QueryMap? query;
 }
 
 @immutable
@@ -116,14 +116,14 @@ class E621LinkParser extends BranchLinkParser {
           transformer: (args, query) => Link(
             type: LinkType.post,
             id: int.parse(args['id']!),
-            search: query,
+            query: query,
           ),
         ),
         LeafLinkParser(
           path: r'/posts',
           transformer: (args, query) => Link(
             type: LinkType.post,
-            search: query,
+            query: query,
           ),
         ),
         LeafLinkParser(
@@ -131,14 +131,14 @@ class E621LinkParser extends BranchLinkParser {
           transformer: (args, query) => Link(
             type: LinkType.pool,
             id: int.parse(args['id']!),
-            search: query,
+            query: query,
           ),
         ),
         LeafLinkParser(
           path: r'/pools',
           transformer: (args, query) => Link(
             type: LinkType.pool,
-            search: query,
+            query: query,
           ),
         ),
         LeafLinkParser(
@@ -148,7 +148,7 @@ class E621LinkParser extends BranchLinkParser {
           transformer: (args, query) => Link(
             type: LinkType.user,
             id: int.tryParse(args['name']!) ?? args['name']!,
-            search: query,
+            query: query,
           ),
         ),
         LeafLinkParser(
@@ -163,7 +163,7 @@ class E621LinkParser extends BranchLinkParser {
           path: r'/wiki_pages',
           transformer: (args, query) => Link(
             type: LinkType.wiki,
-            search: query,
+            query: query,
           ),
         ),
         LeafLinkParser(
@@ -171,14 +171,14 @@ class E621LinkParser extends BranchLinkParser {
           transformer: (args, query) => Link(
             type: LinkType.topic,
             id: int.parse(args['id']!),
-            search: query,
+            query: query,
           ),
         ),
         LeafLinkParser(
           path: r'/forum_topics',
           transformer: (args, query) => Link(
             type: LinkType.topic,
-            search: query,
+            query: query,
           ),
         ),
         LeafLinkParser(
@@ -192,7 +192,7 @@ class E621LinkParser extends BranchLinkParser {
           path: r'/forum_posts',
           transformer: (args, query) => Link(
             type: LinkType.reply,
-            search: query,
+            query: query,
           ),
         ),
       ];
@@ -224,15 +224,13 @@ extension LinkOnTapExtension on LinkParser {
           if (id != null) {
             return navWrapper((context) => PostLoadingPage(id));
           }
-          return navWrapper(
-              (context) => PostsSearchPage(search: result.search));
+          return navWrapper((context) => PostsSearchPage(query: result.query));
         case LinkType.pool:
           int? id = result.id as int?;
           if (id != null) {
             return navWrapper((context) => PoolLoadingPage(id));
           }
-          return navWrapper(
-              (context) => PoolsPage(search: result.search), true);
+          return navWrapper((context) => PoolsPage(search: result.query), true);
         case LinkType.user:
           Object? id = result.id;
           if (id != null) {
@@ -250,15 +248,13 @@ extension LinkOnTapExtension on LinkParser {
           if (id != null) {
             return navWrapper((context) => TopicLoadingPage(id));
           }
-          return navWrapper(
-              (context) => TopicsPage(search: result.search), true);
+          return navWrapper((context) => TopicsPage(query: result.query), true);
         case LinkType.reply:
           int? id = result.id as int?;
           if (id != null) {
             return navWrapper((context) => ReplyLoadingPage(id));
           }
-          return navWrapper(
-              (context) => TopicsPage(search: result.search), true);
+          return navWrapper((context) => TopicsPage(query: result.query), true);
       }
     }
     return null;

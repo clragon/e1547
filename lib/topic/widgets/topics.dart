@@ -6,21 +6,21 @@ import 'package:e1547/topic/topic.dart';
 import 'package:flutter/material.dart';
 
 class TopicsPage extends StatelessWidget {
-  const TopicsPage({this.search});
+  const TopicsPage({this.query});
 
-  final QueryMap? search;
+  final QueryMap? query;
 
   @override
   Widget build(BuildContext context) {
     return RouterDrawerEntry<TopicsPage>(
       child: TopicsProvider(
-        search: search,
+        query: query,
         child: Consumer<TopicsController>(
           builder: (context, controller, child) => ControllerHistoryConnector(
             controller: controller,
             addToHistory: (context, service, data) => service.addTopicSearch(
               controller.client.host,
-              controller.search,
+              controller.query,
               topics: controller.items!,
             ),
             child: RefreshableDataPage(

@@ -10,13 +10,13 @@ class PostsController extends PageClientDataController<Post>
   PostsController({
     required this.client,
     required this.denylist,
-    QueryMap? search,
+    QueryMap? query,
     bool orderFavorites = false,
     bool orderPools = true,
     bool denying = true,
     this.canSearch = true,
     this.filterMode = PostFilterMode.filtering,
-  })  : _search = search ?? QueryMap(),
+  })  : _query = query ?? QueryMap(),
         _orderFavorites = orderFavorites,
         _orderPools = orderPools {
     this.denying = denying;
@@ -27,11 +27,11 @@ class PostsController extends PageClientDataController<Post>
   final Client client;
 
   final bool canSearch;
-  QueryMap _search;
-  QueryMap get search => _search;
-  set search(QueryMap value) {
-    if (value == _search) return;
-    _search = QueryMap(value);
+  QueryMap _query;
+  QueryMap get query => _query;
+  set query(QueryMap value) {
+    if (value == _query) return;
+    _query = QueryMap(value);
     refresh();
   }
 
@@ -64,7 +64,7 @@ class PostsController extends PageClientDataController<Post>
   @protected
   Future<List<Post>> fetch(int page, bool force) async => client.posts(
         page,
-        search: search,
+        query: query,
         force: force,
         orderPoolsByOldest: orderPools,
         orderFavoritesByAdded: orderFavorites,
@@ -102,7 +102,7 @@ class SinglePostController extends PostsController {
 class PostsProvider extends SubChangeNotifierProvider2<Client, DenylistService,
     PostsController> {
   PostsProvider({
-    QueryMap? search,
+    QueryMap? query,
     bool orderFavorites = false,
     bool orderPools = true,
     bool denying = true,
@@ -114,7 +114,7 @@ class PostsProvider extends SubChangeNotifierProvider2<Client, DenylistService,
           create: (context, client, denylist) => PostsController(
             client: client,
             denylist: denylist,
-            search: search,
+            query: query,
             orderFavorites: orderFavorites,
             orderPools: orderPools,
             denying: denying,

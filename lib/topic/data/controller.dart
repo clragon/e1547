@@ -5,17 +5,17 @@ import 'package:e1547/topic/topic.dart';
 import 'package:flutter/foundation.dart';
 
 class TopicsController extends PageClientDataController<Topic> {
-  TopicsController({required this.client, QueryMap? search})
-      : _search = search ?? QueryMap();
+  TopicsController({required this.client, QueryMap? query})
+      : _query = query ?? QueryMap();
 
   @override
   final Client client;
 
-  QueryMap _search;
-  QueryMap get search => _search;
-  set search(QueryMap value) {
-    if (mapEquals(value, _search)) return;
-    _search = QueryMap(value);
+  QueryMap _query;
+  QueryMap get query => _query;
+  set query(QueryMap value) {
+    if (mapEquals(value, _query)) return;
+    _query = QueryMap(value);
     refresh();
   }
 
@@ -31,7 +31,7 @@ class TopicsController extends PageClientDataController<Topic> {
   @protected
   Future<List<Topic>> fetch(int page, bool force) => client.topics(
         page,
-        search: search,
+        query: query,
         force: force,
         cancelToken: cancelToken,
       );
@@ -48,10 +48,10 @@ class TopicsController extends PageClientDataController<Topic> {
 
 class TopicsProvider
     extends SubChangeNotifierProvider<Client, TopicsController> {
-  TopicsProvider({QueryMap? search, super.child, super.builder})
+  TopicsProvider({QueryMap? query, super.child, super.builder})
       : super(
           create: (context, client) =>
-              TopicsController(client: client, search: search),
-          keys: (context) => [search],
+              TopicsController(client: client, query: query),
+          keys: (context) => [query],
         );
 }

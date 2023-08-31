@@ -364,14 +364,14 @@ class _UserPageProvider
               client: client,
               denylist: denylist,
               // TODO: this should be its own client method
-              search: QueryMap({'fav': user.name}),
+              query: QueryMap({'fav': user.name}),
               canSearch: false,
             ),
             uploadedPosts: PostsController(
               client: client,
               denylist: denylist,
               // TODO: this should be its own client method
-              search: QueryMap({'user': user.name}),
+              query: QueryMap({'user': user.name}),
               canSearch: false,
             ),
             profilePost: user.avatarId != null

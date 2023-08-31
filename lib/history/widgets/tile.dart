@@ -64,7 +64,7 @@ class HistoryTile extends StatelessWidget {
                                   context: context,
                                   tag: const E621LinkParser()
                                       .parse(entry.link)!
-                                      .search!['tags']!,
+                                      .query!['tags']!,
                                 ),
                               ),
                             if (entry.subtitle != null)

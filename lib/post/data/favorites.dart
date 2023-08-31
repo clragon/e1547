@@ -24,7 +24,7 @@ class FavoritePostsController extends PostsController {
   Future<List<Post>> fetch(int page, bool force) async {
     return client.favorites(
       page,
-      search: search,
+      query: query,
       orderByAdded: orderFavorites,
       force: force,
       cancelToken: cancelToken,

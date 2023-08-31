@@ -13,7 +13,7 @@ extension Identification on History {
 
   bool isSearch(LinkType type) {
     Link? parsed = const E621LinkParser().parse(link);
-    return type == parsed?.type && (parsed?.search?.isNotEmpty ?? false);
+    return type == parsed?.type && (parsed?.query?.isNotEmpty ?? false);
   }
 
   String getName(BuildContext context) {
@@ -65,7 +65,7 @@ extension Identification on History {
       }
     }
 
-    QueryMap? search = parsed.search;
+    QueryMap? search = parsed.query;
     if (search != null && search.isNotEmpty) {
       switch (type) {
         case LinkType.post:

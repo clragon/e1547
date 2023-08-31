@@ -10,8 +10,8 @@ class PoolsController extends PageClientDataController<Pool> {
   PoolsController({
     required this.client,
     required this.denylist,
-    QueryMap? search,
-  })  : _search = search ?? QueryMap(),
+    QueryMap? query,
+  })  : _query = query ?? QueryMap(),
         thumbnails = ThumbnailController(
           client: client,
           denylist: denylist,
@@ -23,11 +23,11 @@ class PoolsController extends PageClientDataController<Pool> {
 
   final ThumbnailController thumbnails;
 
-  QueryMap _search;
-  QueryMap get search => _search;
-  set search(QueryMap value) {
-    if (mapEquals(_search, value)) return;
-    _search = QueryMap(value);
+  QueryMap _query;
+  QueryMap get query => _query;
+  set query(QueryMap value) {
+    if (mapEquals(_query, value)) return;
+    _query = QueryMap(value);
     refresh();
   }
 
@@ -43,7 +43,7 @@ class PoolsController extends PageClientDataController<Pool> {
   Future<List<Pool>> fetch(int page, bool force) async {
     List<Pool> pools = await client.pools(
       page,
-      search: search,
+      query: query,
       force: force,
       cancelToken: cancelToken,
     );
@@ -64,7 +64,7 @@ class PoolsProvider extends SubChangeNotifierProvider2<Client, DenylistService,
           create: (context, client, denylist) => PoolsController(
             client: client,
             denylist: denylist,
-            search: search,
+            query: search,
           ),
           keys: (context) => [search],
         );

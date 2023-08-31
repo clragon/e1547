@@ -16,7 +16,7 @@ class _HomePageState extends State<HomePage> with RouterDrawerEntryWidget {
   @override
   Widget build(BuildContext context) {
     return PostsProvider(
-      search: QueryMap({'tags': context.read<Settings>().homeTags.value}),
+      query: QueryMap({'tags': context.read<Settings>().homeTags.value}),
       child: Consumer<PostsController>(
         builder: (context, controller, child) =>
             PostsControllerHistoryConnector(
@@ -25,7 +25,7 @@ class _HomePageState extends State<HomePage> with RouterDrawerEntryWidget {
             initialize: true,
             listenable: controller,
             listener: () => context.read<Settings>().homeTags.value =
-                controller.search['tags'].toString(),
+                controller.query['tags'].toString(),
             builder: (context) => PostsPage(
               appBar: const ContextSizedAppBar(
                 title: Text('Home'),

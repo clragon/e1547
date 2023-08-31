@@ -20,8 +20,8 @@ class PoolsPageFloatingActionButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SearchPromptFloationgActionButton(
-      tags: controller.search,
-      onSubmit: (value) => controller.search = QueryMap(value),
+      tags: controller.query,
+      onSubmit: (value) => controller.query = QueryMap(value),
       filters: [
         WrapperFilterConfig(
           wrapper: (value) => 'search[$value]',
@@ -159,7 +159,7 @@ class PoolNameFilter extends StatelessWidget {
                 .map((e) {
               String? name = const E621LinkParser()
                   .parse(e.link)
-                  ?.search?['search[name_matches]'];
+                  ?.query?['search[name_matches]'];
               if (name != null) {
                 return _PoolSearchResult(time: e.visitedAt, name: name);
               }

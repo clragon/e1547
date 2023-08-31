@@ -22,7 +22,7 @@ class FavPage extends StatelessWidget {
             addToHistory: (context, service, controller) =>
                 service.addPostSearch(
               controller.client.host,
-              controller.search,
+              controller.query,
               posts: controller.items,
             ),
             child: LoadingPage(
@@ -53,7 +53,7 @@ class FavPage extends StatelessWidget {
                   actions: [ContextDrawerButton()],
                 ),
                 drawerActions: [
-                  if (controller.search['tags']?.isEmpty ?? true)
+                  if (controller.query['tags']?.isEmpty ?? true)
                     SwitchListTile(
                       secondary: const Icon(Icons.sort),
                       title: Text(

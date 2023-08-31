@@ -117,7 +117,7 @@ class Client {
   Future<List<Post>> posts(
     int page, {
     int? limit,
-    QueryMap? search,
+    QueryMap? query,
     bool? ordered,
     bool? orderPoolsByOldest,
     bool? orderFavoritesByAdded,
@@ -125,7 +125,7 @@ class Client {
     CancelToken? cancelToken,
   }) async {
     ordered ??= true;
-    String? tags = search?['tags'];
+    String? tags = query?['tags'];
     if (ordered && tags != null) {
       Map<RegExp, Future<List<Post>> Function(RegExpMatch match)> redirects = {
         poolRegex(): (match) => poolPosts(
@@ -152,7 +152,7 @@ class Client {
         .get(
           'posts.json',
           queryParameters: {
-            ...?search,
+            ...?query,
             'page': page,
             'limit': limit,
           },
@@ -191,7 +191,7 @@ class Client {
       String filter = 'id:${chunk.join(',')}';
       List<Post> part = await posts(
         1,
-        search: QueryMap({'tags': filter}),
+        query: QueryMap({'tags': filter}),
         limit: limit,
         ordered: false,
         force: force,
@@ -227,7 +227,7 @@ class Client {
     String filter = chunk.map((e) => '~$e').join(' ');
     return posts(
       sitePage,
-      search: QueryMap()..['tags'] = filter,
+      query: QueryMap()..['tags'] = filter,
       limit: limit,
       ordered: false,
       force: force,
@@ -292,7 +292,7 @@ class Client {
 
   Future<List<Post>> favorites(
     int page, {
-    QueryMap? search,
+    QueryMap? query,
     bool? orderByAdded,
     int? limit,
     bool? force,
@@ -302,13 +302,13 @@ class Client {
       throw NoUserLoginException();
     }
     orderByAdded ??= true;
-    String tags = search?['tags'] ?? '';
+    String tags = query?['tags'] ?? '';
     if (tags.isEmpty && orderByAdded) {
       Map<String, dynamic> body = await _dio
           .get(
             'favorites.json',
             queryParameters: {
-              ...?search,
+              ...?query,
               'page': page,
               'limit': limit,
             },
@@ -321,13 +321,13 @@ class Client {
       result.removeWhere((e) => e.flags.deleted || e.file.url == null);
       return result;
     } else {
-      search = QueryMap({
-        ...?search,
+      query = QueryMap({
+        ...?query,
         'tags': QueryMap.parse(tags)..['fav'] = credentials?.username,
       });
       return posts(
         page,
-        search: search,
+        query: query,
         ordered: false,
         force: force,
         cancelToken: cancelToken,
@@ -348,7 +348,7 @@ class Client {
   Future<List<PostFlag>> flags(
     int? page, {
     int? limit,
-    QueryMap? search,
+    QueryMap? query,
     bool? force,
     CancelToken? cancelToken,
   }) async {
@@ -356,7 +356,7 @@ class Client {
         .get(
           'post_flags.json',
           queryParameters: {
-            ...?search,
+            ...?query,
             'page': page,
             'limit': limit,
           },
@@ -370,7 +370,7 @@ class Client {
 
   Future<List<Pool>> pools(
     int page, {
-    QueryMap? search,
+    QueryMap? query,
     bool? force,
     CancelToken? cancelToken,
   }) async {
@@ -378,7 +378,7 @@ class Client {
         .get(
           'pools.json',
           queryParameters: {
-            ...?search,
+            ...?query,
             'page': page,
           },
           options: forceOptions(force),
@@ -522,7 +522,7 @@ class Client {
 
   Future<List<Tag>> tags(
     int page, {
-    QueryMap? search,
+    QueryMap? query,
     bool? force,
     CancelToken? cancelToken,
   }) async {
@@ -530,7 +530,7 @@ class Client {
         .get(
           'tags.json',
           queryParameters: {
-            ...?search,
+            ...?query,
             'page': page,
           },
           options: forceOptions(force),
@@ -577,7 +577,7 @@ class Client {
       List<TagSuggestion> tags = [];
       for (final tag in await this.tags(
         1,
-        search: QueryMap({
+        query: QueryMap({
           'search[name_matches]': '$search*',
           'search[category]': category,
           'search[order]': 'count',
@@ -601,7 +601,7 @@ class Client {
 
   Future<String?> tagAliases(
     int page, {
-    QueryMap? search,
+    QueryMap? query,
     bool? force,
     CancelToken? cancelToken,
   }) async {
@@ -609,7 +609,7 @@ class Client {
         .get(
           'tag_aliases.json',
           queryParameters: {
-            ...?search,
+            ...?query,
             'page': page,
           },
           options: forceOptions(force),
@@ -628,7 +628,7 @@ class Client {
 
   Future<List<Comment>> comments(
     int page, {
-    QueryMap? search,
+    QueryMap? query,
     bool? force,
     bool? ascending,
     CancelToken? cancelToken,
@@ -637,7 +637,7 @@ class Client {
         .get(
           'comments.json',
           queryParameters: {
-            ...?search,
+            ...?query,
             'page': page,
           },
           options: forceOptions(force),
@@ -730,7 +730,7 @@ class Client {
 
   Future<List<Topic>> topics(
     int page, {
-    QueryMap? search,
+    QueryMap? query,
     bool? force,
     CancelToken? cancelToken,
   }) async {
@@ -738,7 +738,7 @@ class Client {
         .get(
           'forum_topics.json',
           queryParameters: {
-            ...?search,
+            ...?query,
             'page': page,
           },
           options: forceOptions(force),

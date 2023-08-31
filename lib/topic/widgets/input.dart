@@ -13,8 +13,8 @@ class TopicsPageFloatingActionButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SearchPromptFloationgActionButton(
-      tags: controller.search,
-      onSubmit: (value) => controller.search = QueryMap(value),
+      tags: controller.query,
+      onSubmit: (value) => controller.query = QueryMap(value),
       filters: [
         WrapperFilterConfig(
           wrapper: (value) => 'search[$value]',

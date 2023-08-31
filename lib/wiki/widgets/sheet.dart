@@ -34,7 +34,7 @@ class WikiSheet extends StatelessWidget {
                       Navigator.of(context).push(
                         MaterialPageRoute(
                           builder: (context) => PostsSearchPage(
-                              search: QueryMap({'tags': wiki.title})),
+                              query: QueryMap({'tags': wiki.title})),
                         ),
                       );
                     },
