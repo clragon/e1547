@@ -431,6 +431,7 @@ class Client {
 
   Future<List<Wiki>> wikis({
     int? page,
+    int? limit,
     QueryMap? search,
     bool? force,
     CancelToken? cancelToken,
@@ -441,6 +442,7 @@ class Client {
           queryParameters: {
             ...?search,
             'page': page,
+            'limit': limit,
           },
           options: forceOptions(force),
           cancelToken: cancelToken,
@@ -608,6 +610,7 @@ class Client {
 
   Future<String?> tagAliases({
     int? page,
+    int? limit,
     QueryMap? query,
     bool? force,
     CancelToken? cancelToken,
@@ -618,6 +621,7 @@ class Client {
           queryParameters: {
             ...?query,
             'page': page,
+            'limit': limit,
           },
           options: forceOptions(force),
           cancelToken: cancelToken,
@@ -635,6 +639,7 @@ class Client {
 
   Future<List<Comment>> comments({
     int? page,
+    int? limit,
     QueryMap? query,
     bool? force,
     bool? ascending,
@@ -646,6 +651,7 @@ class Client {
           queryParameters: {
             ...?query,
             'page': page,
+            'limit': limit,
           },
           options: forceOptions(force),
           cancelToken: cancelToken,
@@ -751,6 +757,7 @@ class Client {
 
   Future<List<Topic>> topics({
     int? page,
+    int? limit,
     QueryMap? query,
     bool? force,
     CancelToken? cancelToken,
@@ -761,6 +768,7 @@ class Client {
           queryParameters: {
             ...?query,
             'page': page,
+            'limit': limit,
           },
           options: forceOptions(force),
           cancelToken: cancelToken,
@@ -796,6 +804,7 @@ class Client {
   Future<List<Reply>> replies({
     required int id,
     int? page,
+    int? limit,
     bool? ascending,
     bool? force,
     CancelToken? cancelToken,
@@ -807,6 +816,7 @@ class Client {
             'search[topic_id]': id,
             'search[order]': ascending ?? false ? 'id_asc' : 'id_desc',
             'page': page,
+            'limit': limit,
           },
           options: forceOptions(force),
           cancelToken: cancelToken,
