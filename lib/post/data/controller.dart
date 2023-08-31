@@ -3,7 +3,7 @@ import 'package:e1547/denylist/denylist.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/tag/data/map.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 
 class PostsController extends PageClientDataController<Post>
     with PostsActionController, PostFilterableController {
@@ -30,7 +30,7 @@ class PostsController extends PageClientDataController<Post>
   QueryMap _query;
   QueryMap get query => _query;
   set query(QueryMap value) {
-    if (value == _query) return;
+    if (listEquals(_query.tags, value.tags)) return;
     _query = QueryMap(value);
     refresh();
   }

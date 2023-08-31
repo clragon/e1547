@@ -231,7 +231,7 @@ class TagSearchFilter extends StatelessWidget {
     FilterTagThemeData theme = FilterTagTheme.of(context);
     return SubTextValue(
       value: state.value,
-      onChanged: state.onChanged,
+      onChanged: (value) => state.onChanged(QueryMap.parse(value).toString()),
       shouldUpdate: (oldValue, newValue) =>
           QueryMap.parse(oldValue).toString() != newValue,
       builder: (context, controller) => TagInput(

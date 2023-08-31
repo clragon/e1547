@@ -14,7 +14,7 @@ class TopicsController extends PageClientDataController<Topic> {
   QueryMap _query;
   QueryMap get query => _query;
   set query(QueryMap value) {
-    if (mapEquals(value, _query)) return;
+    if (listEquals(_query.tags, value.tags)) return;
     _query = QueryMap(value);
     refresh();
   }

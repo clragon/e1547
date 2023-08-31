@@ -26,7 +26,7 @@ class PoolsController extends PageClientDataController<Pool> {
   QueryMap _query;
   QueryMap get query => _query;
   set query(QueryMap value) {
-    if (mapEquals(_query, value)) return;
+    if (listEquals(_query.tags, value.tags)) return;
     _query = QueryMap(value);
     refresh();
   }
@@ -118,7 +118,7 @@ class PoolController extends PostsController {
 
   @override
   @protected
-  Future<List<Post>> fetch(int page, bool force) async => client.poolPosts(
+  Future<List<Post>> fetch(int page, bool force) async => client.postsByPool(
         id: id,
         page: page,
         orderByOldest: orderPools,

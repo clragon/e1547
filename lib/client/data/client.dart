@@ -128,7 +128,7 @@ class Client {
     String? tags = query?['tags'];
     if (ordered && tags != null) {
       Map<RegExp, Future<List<Post>> Function(RegExpMatch match)> redirects = {
-        poolRegex(): (match) => poolPosts(
+        poolRegex(): (match) => postsByPool(
               id: int.parse(match.namedGroup('id')!),
               page: page,
               orderByOldest: orderPoolsByOldest ?? true,
@@ -177,8 +177,7 @@ class Client {
     bool? force,
     CancelToken? cancelToken,
   }) async {
-    CurrentUser? user = await currentUser(cancelToken: cancelToken);
-    limit = max(0, min(limit ?? user?.perPage ?? 80, 100));
+    limit = max(0, min(limit ?? 80, 100));
 
     List<List<int>> chunks = [];
     for (int i = 0; i < ids.length; i += limit) {
@@ -412,7 +411,7 @@ class Client {
     return Pool.fromJson(body);
   }
 
-  Future<List<Post>> poolPosts({
+  Future<List<Post>> postsByPool({
     required int id,
     int? page,
     int? limit,
@@ -420,9 +419,15 @@ class Client {
     bool? force,
     CancelToken? cancelToken,
   }) async {
+    page ??= 1;
+    CurrentUser? user = await currentUser(cancelToken: cancelToken);
+    int limit = user?.perPage ?? 80;
     Pool pool = await this.pool(id: id, force: force, cancelToken: cancelToken);
     List<int> ids = pool.postIds;
-    if (orderByOldest) ids = ids.reversed.toList();
+    if (!orderByOldest) ids = ids.reversed.toList();
+    int lower = (page - 1) * limit;
+    if (lower > ids.length) return [];
+    ids = ids.sublist(lower).take(limit).toList();
     return postsByIds(
       ids: ids,
       limit: limit,

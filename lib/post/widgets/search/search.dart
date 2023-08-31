@@ -5,6 +5,7 @@ import 'package:e1547/interface/interface.dart';
 import 'package:e1547/pool/pool.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/tag/tag.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sub/flutter_sub.dart';
 
@@ -28,6 +29,7 @@ class _PostsSearchPageState extends State<PostsSearchPage> {
   bool loadingInfo = true;
   Pool? pool;
   Follow? follow;
+  QueryMap? lastQuery;
 
   @override
   Widget build(BuildContext context) {
@@ -87,6 +89,8 @@ class _PostsSearchPageState extends State<PostsSearchPage> {
 
           Future<void> updateSearch() async {
             if (!mounted) return;
+            if (listEquals(lastQuery?.tags, controller.query.tags)) return;
+            lastQuery = controller.query;
             String host = context.read<Client>().host;
             HistoriesService historiesService =
                 context.read<HistoriesService>();

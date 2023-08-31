@@ -5,7 +5,6 @@ import 'package:e1547/pool/pool.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_sub/flutter_sub.dart';
 
 class PoolPage extends StatefulWidget {
   const PoolPage({required this.pool, this.orderByOldest});
@@ -30,24 +29,16 @@ class _PoolPageState extends State<PoolPage> {
         orderByOldest: widget.orderByOldest ?? true,
       ),
       child: Consumer<PostsController>(
-        builder: (context, controller, child) => SubListener(
-          initialize: true,
-          listenable: controller,
-          listener: () async {
-            HistoriesService service = context.read<HistoriesService>();
-            Client client = context.read<Client>();
-            try {
-              await controller.waitForNextPage();
-              await service.addPool(
-                client.host,
-                widget.pool,
-                posts: controller.items,
-              );
-            } on ClientException {
-              return;
-            }
+        builder: (context, controller, child) => ControllerHistoryConnector(
+          controller: controller,
+          addToHistory: (context, service, data) {
+            service.addPool(
+              context.read<Client>().host,
+              widget.pool,
+              posts: controller.items,
+            );
           },
-          builder: (context) => PostsPage(
+          child: PostsPage(
             controller: controller,
             displayType: readerMode ? PostDisplayType.comic : null,
             appBar: DefaultAppBar(
