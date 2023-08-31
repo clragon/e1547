@@ -442,9 +442,9 @@ class Client {
         .get(
           'wiki_pages.json',
           queryParameters: {
-            ...?query,
             'page': page,
             'limit': limit,
+            ...?query,
           },
           options: forceOptions(force),
           cancelToken: cancelToken,
@@ -644,7 +644,6 @@ class Client {
     int? limit,
     QueryMap? query,
     bool? force,
-    bool? ascending,
     CancelToken? cancelToken,
   }) async {
     Object body = await _dio
@@ -668,6 +667,27 @@ class Client {
     }
 
     return comments;
+  }
+
+  Future<List<Comment>> commentsByPost({
+    required int id,
+    int? page,
+    int? limit,
+    bool? ascending,
+    bool? force,
+    CancelToken? cancelToken,
+  }) async {
+    return comments(
+      page: page,
+      limit: limit,
+      query: QueryMap({
+        'group_by': 'comment',
+        'search[post_id]': id,
+        'search[order]': ascending ?? false ? 'id_asc' : 'id_desc',
+      }),
+      force: force,
+      cancelToken: cancelToken,
+    );
   }
 
   Future<Comment> comment({
@@ -807,7 +827,7 @@ class Client {
     required int id,
     int? page,
     int? limit,
-    bool? ascending,
+    QueryMap? query,
     bool? force,
     CancelToken? cancelToken,
   }) async {
@@ -817,8 +837,7 @@ class Client {
           queryParameters: {
             'page': page,
             'limit': limit,
-            'search[topic_id]': id,
-            'search[order]': ascending ?? false ? 'id_asc' : 'id_desc',
+            ...?query,
           },
           options: forceOptions(force),
           cancelToken: cancelToken,
@@ -833,6 +852,27 @@ class Client {
     }
 
     return replies;
+  }
+
+  Future<List<Reply>> repliesByTopic({
+    required int id,
+    int? page,
+    int? limit,
+    bool? ascending,
+    bool? force,
+    CancelToken? cancelToken,
+  }) async {
+    return replies(
+      id: id,
+      page: page,
+      limit: limit,
+      query: QueryMap({
+        'search[topic_id]': id,
+        'search[order]': ascending ?? false ? 'id_asc' : 'id_desc',
+      }),
+      force: force,
+      cancelToken: cancelToken,
+    );
   }
 
   Future<Reply> reply({

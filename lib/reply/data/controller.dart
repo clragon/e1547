@@ -29,7 +29,7 @@ class RepliesController extends PageClientDataController<Reply> {
 
   @override
   @protected
-  Future<List<Reply>> fetch(int page, bool force) => client.replies(
+  Future<List<Reply>> fetch(int page, bool force) => client.repliesByTopic(
         id: topicId,
         page: page,
         ascending: orderByOldest,
