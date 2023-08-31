@@ -63,7 +63,7 @@ class PostsController extends PageClientDataController<Post>
   @override
   @protected
   Future<List<Post>> fetch(int page, bool force) async => client.posts(
-        page,
+        page: page,
         query: query,
         force: force,
         orderPoolsByOldest: orderPools,

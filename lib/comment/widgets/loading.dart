@@ -13,7 +13,7 @@ class CommentLoadingPage extends StatefulWidget {
 }
 
 class _CommentLoadingPageState extends State<CommentLoadingPage> {
-  late Future<Comment> comment = context.read<Client>().comment(widget.id);
+  late Future<Comment> comment = context.read<Client>().comment(id: widget.id);
 
   @override
   Widget build(BuildContext context) {

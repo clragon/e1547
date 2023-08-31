@@ -49,11 +49,15 @@ Future<bool> writeComment({
           if (text.isNotEmpty) {
             try {
               if (comment == null) {
-                await context.read<Client>().postComment(postId, text);
-              } else {
                 await context
                     .read<Client>()
-                    .updateComment(comment.id, postId, text);
+                    .postComment(postId: postId, content: text);
+              } else {
+                await context.read<Client>().updateComment(
+                      id: comment.id,
+                      postId: postId,
+                      content: text,
+                    );
               }
               sent = true;
               navigator.maybePop();

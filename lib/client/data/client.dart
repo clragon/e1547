@@ -114,8 +114,8 @@ class Client {
 
   Future<void> availability() async => _dio.get('');
 
-  Future<List<Post>> posts(
-    int page, {
+  Future<List<Post>> posts({
+    int? page,
     int? limit,
     QueryMap? query,
     bool? ordered,
@@ -129,15 +129,15 @@ class Client {
     if (ordered && tags != null) {
       Map<RegExp, Future<List<Post>> Function(RegExpMatch match)> redirects = {
         poolRegex(): (match) => poolPosts(
-              int.parse(match.namedGroup('id')!),
-              page,
+              id: int.parse(match.namedGroup('id')!),
+              page: page,
               orderByOldest: orderPoolsByOldest ?? true,
               force: force,
               cancelToken: cancelToken,
             ),
         if ((orderFavoritesByAdded ?? false) && credentials?.username != null)
           favRegex(credentials!.username): (match) =>
-              favorites(page, limit: limit, force: force),
+              favorites(page: page, limit: limit, force: force),
       };
 
       for (final entry in redirects.entries) {
@@ -171,8 +171,8 @@ class Client {
     return posts;
   }
 
-  Future<List<Post>> postsByIds(
-    List<int> ids, {
+  Future<List<Post>> postsByIds({
+    required List<int> ids,
     int? limit,
     bool? force,
     CancelToken? cancelToken,
@@ -190,7 +190,6 @@ class Client {
       if (chunk.isEmpty) continue;
       String filter = 'id:${chunk.join(',')}';
       List<Post> part = await posts(
-        1,
         query: QueryMap({'tags': filter}),
         limit: limit,
         ordered: false,
@@ -226,7 +225,7 @@ class Client {
         tags.sublist((tagPage - 1) * chunkSize).take(chunkSize).toList();
     String filter = chunk.map((e) => '~$e').join(' ');
     return posts(
-      sitePage,
+      page: sitePage,
       query: QueryMap()..['tags'] = filter,
       limit: limit,
       ordered: false,
@@ -290,11 +289,11 @@ class Client {
     );
   }
 
-  Future<List<Post>> favorites(
-    int page, {
+  Future<List<Post>> favorites({
+    int? page,
+    int? limit,
     QueryMap? query,
     bool? orderByAdded,
-    int? limit,
     bool? force,
     CancelToken? cancelToken,
   }) async {
@@ -326,7 +325,7 @@ class Client {
         'tags': QueryMap.parse(tags)..['fav'] = credentials?.username,
       });
       return posts(
-        page,
+        page: page,
         query: query,
         ordered: false,
         force: force,
@@ -345,8 +344,8 @@ class Client {
     await _dio.delete('favorites/$postId.json');
   }
 
-  Future<List<PostFlag>> flags(
-    int? page, {
+  Future<List<PostFlag>> flags({
+    int? page,
     int? limit,
     QueryMap? query,
     bool? force,
@@ -368,8 +367,8 @@ class Client {
     return body.map((e) => PostFlag.fromJson(e)).toList();
   }
 
-  Future<List<Pool>> pools(
-    int page, {
+  Future<List<Pool>> pools({
+    int? page,
     QueryMap? query,
     bool? force,
     CancelToken? cancelToken,
@@ -395,10 +394,14 @@ class Client {
     return pools;
   }
 
-  Future<Pool> pool(int poolId, {bool? force, CancelToken? cancelToken}) async {
+  Future<Pool> pool({
+    required int id,
+    bool? force,
+    CancelToken? cancelToken,
+  }) async {
     Map<String, dynamic> body = await _dio
         .get(
-          'pools/$poolId.json',
+          'pools/$id.json',
           options: forceOptions(force),
           cancelToken: cancelToken,
         )
@@ -407,28 +410,28 @@ class Client {
     return Pool.fromJson(body);
   }
 
-  Future<List<Post>> poolPosts(
-    int poolId,
-    int page, {
+  Future<List<Post>> poolPosts({
+    required int id,
+    int? page,
     int? limit,
     bool orderByOldest = true,
     bool? force,
     CancelToken? cancelToken,
   }) async {
-    Pool pool = await this.pool(poolId, force: force, cancelToken: cancelToken);
+    Pool pool = await this.pool(id: id, force: force, cancelToken: cancelToken);
     List<int> ids = pool.postIds;
     if (orderByOldest) ids = ids.reversed.toList();
     return postsByIds(
-      ids,
+      ids: ids,
       limit: limit,
       force: force,
       cancelToken: cancelToken,
     );
   }
 
-  Future<List<Wiki>> wikis(
-    int page, {
-    String? search,
+  Future<List<Wiki>> wikis({
+    int? page,
+    QueryMap? search,
     bool? force,
     CancelToken? cancelToken,
   }) async {
@@ -436,7 +439,7 @@ class Client {
         .get(
           'wiki_pages.json',
           queryParameters: {
-            'search[title]': search,
+            ...?search,
             'page': page,
           },
           options: forceOptions(force),
@@ -447,14 +450,14 @@ class Client {
     return body.map((entry) => Wiki.fromJson(entry)).toList();
   }
 
-  Future<Wiki> wiki(
-    String name, {
+  Future<Wiki> wiki({
+    required String id,
     bool? force,
     CancelToken? cancelToken,
   }) async {
     Map<String, dynamic> body = await _dio
         .get(
-          'wiki_pages/$name.json',
+          'wiki_pages/$id.json',
           options: forceOptions(force),
           cancelToken: cancelToken,
         )
@@ -463,14 +466,14 @@ class Client {
     return Wiki.fromJson(body);
   }
 
-  Future<User> user(
-    String name, {
+  Future<User> user({
+    required String id,
     bool? force,
     CancelToken? cancelToken,
   }) async {
     Map<String, dynamic> body = await _dio
         .get(
-          'users/$name.json',
+          'users/$id.json',
           options: forceOptions(force),
           cancelToken: cancelToken,
         )
@@ -479,12 +482,15 @@ class Client {
     return User.fromJson(body);
   }
 
-  Future<void> reportUser(int userId, String reason) async {
+  Future<void> reportUser({
+    required int id,
+    required String reason,
+  }) async {
     await _dio.post(
       'tickets',
       queryParameters: {
         'ticket[reason]': reason,
-        'ticket[disp_id]': userId,
+        'ticket[disp_id]': id,
         'ticket[qtype]': 'user',
       },
     );
@@ -520,8 +526,9 @@ class Client {
         data: FormData.fromMap(body));
   }
 
-  Future<List<Tag>> tags(
-    int page, {
+  Future<List<Tag>> tags({
+    int? page,
+    int? limit,
     QueryMap? query,
     bool? force,
     CancelToken? cancelToken,
@@ -532,6 +539,7 @@ class Client {
           queryParameters: {
             ...?query,
             'page': page,
+            'limit': limit,
           },
           options: forceOptions(force),
           cancelToken: cancelToken,
@@ -547,8 +555,8 @@ class Client {
     return tags;
   }
 
-  Future<List<TagSuggestion>> autocomplete(
-    String search, {
+  Future<List<TagSuggestion>> autocomplete({
+    required String search,
     int? category,
     bool? force,
     CancelToken? cancelToken,
@@ -576,12 +584,11 @@ class Client {
     } else {
       List<TagSuggestion> tags = [];
       for (final tag in await this.tags(
-        1,
+        limit: 3,
         query: QueryMap({
           'search[name_matches]': '$search*',
           'search[category]': category,
           'search[order]': 'count',
-          'limit': 3,
         }),
         force: force,
       )) {
@@ -599,8 +606,8 @@ class Client {
     }
   }
 
-  Future<String?> tagAliases(
-    int page, {
+  Future<String?> tagAliases({
+    int? page,
     QueryMap? query,
     bool? force,
     CancelToken? cancelToken,
@@ -626,8 +633,8 @@ class Client {
     return null;
   }
 
-  Future<List<Comment>> comments(
-    int page, {
+  Future<List<Comment>> comments({
+    int? page,
     QueryMap? query,
     bool? force,
     bool? ascending,
@@ -655,14 +662,14 @@ class Client {
     return comments;
   }
 
-  Future<Comment> comment(
-    int commentId, {
+  Future<Comment> comment({
+    required int id,
     bool? force,
     CancelToken? cancelToken,
   }) async {
     Map<String, dynamic> body = await _dio
         .get(
-          'comments.json/$commentId.json',
+          'comments.json/$id.json',
           options: forceOptions(force),
           cancelToken: cancelToken,
         )
@@ -671,14 +678,17 @@ class Client {
     return Comment.fromJson(body);
   }
 
-  Future<void> postComment(int postId, String text) async {
+  Future<void> postComment({
+    required int postId,
+    required String content,
+  }) async {
     await cache?.deleteFromPath(
       RegExp(RegExp.escape('comments.json')),
       queryParams: {'search[post_id]': postId.toString()},
     );
 
     Map<String, dynamic> body = {
-      'comment[body]': text,
+      'comment[body]': content,
       'comment[post_id]': postId,
       'commit': 'Submit',
     };
@@ -686,27 +696,35 @@ class Client {
     await _dio.post('comments.json', data: FormData.fromMap(body));
   }
 
-  Future<void> updateComment(int commentId, int postId, String text) async {
+  Future<void> updateComment({
+    required int id,
+    required int postId,
+    required String content,
+  }) async {
     await cache?.deleteFromPath(
       RegExp(RegExp.escape('comments.json')),
       queryParams: {'search[post_id]': postId.toString()},
     );
 
     await cache?.deleteFromPath(
-      RegExp(RegExp.escape('comments/$commentId.json')),
+      RegExp(RegExp.escape('comments/$id.json')),
     );
 
     Map<String, dynamic> body = {
-      'comment[body]': text,
+      'comment[body]': content,
       'commit': 'Submit',
     };
 
-    await _dio.patch('comments/$commentId.json', data: FormData.fromMap(body));
+    await _dio.patch('comments/$id.json', data: FormData.fromMap(body));
   }
 
-  Future<void> voteComment(int commentId, bool upvote, bool replace) async {
+  Future<void> voteComment({
+    required int id,
+    required bool upvote,
+    required bool replace,
+  }) async {
     await _dio.post(
-      'comments/$commentId/votes.json',
+      'comments/$id/votes.json',
       queryParameters: {
         'score': upvote ? 1 : -1,
         'no_unvote': replace,
@@ -714,12 +732,15 @@ class Client {
     );
   }
 
-  Future<void> reportComment(int commentId, String reason) async {
+  Future<void> reportComment({
+    required int id,
+    required String reason,
+  }) async {
     await _dio.post(
       'tickets',
       queryParameters: {
         'ticket[reason]': reason,
-        'ticket[disp_id]': commentId,
+        'ticket[disp_id]': id,
         'ticket[qtype]': 'comment',
       },
       options: Options(
@@ -728,8 +749,8 @@ class Client {
     );
   }
 
-  Future<List<Topic>> topics(
-    int page, {
+  Future<List<Topic>> topics({
+    int? page,
     QueryMap? query,
     bool? force,
     CancelToken? cancelToken,
@@ -756,14 +777,14 @@ class Client {
     return threads;
   }
 
-  Future<Topic> topic(
-    int topicId, {
+  Future<Topic> topic({
+    required int id,
     bool? force,
     CancelToken? cancelToken,
   }) async {
     Map<String, dynamic> body = await _dio
         .get(
-          'forum_topics/$topicId.json',
+          'forum_topics/$id.json',
           options: forceOptions(force),
           cancelToken: cancelToken,
         )
@@ -772,9 +793,9 @@ class Client {
     return Topic.fromJson(body);
   }
 
-  Future<List<Reply>> replies(
-    int topicId,
-    int page, {
+  Future<List<Reply>> replies({
+    required int id,
+    int? page,
     bool? ascending,
     bool? force,
     CancelToken? cancelToken,
@@ -783,7 +804,7 @@ class Client {
         .get(
           'forum_posts.json',
           queryParameters: {
-            'search[topic_id]': topicId,
+            'search[topic_id]': id,
             'search[order]': ascending ?? false ? 'id_asc' : 'id_desc',
             'page': page,
           },
@@ -802,14 +823,14 @@ class Client {
     return replies;
   }
 
-  Future<Reply> reply(
-    int replyId, {
+  Future<Reply> reply({
+    required int id,
     bool? force,
     CancelToken? cancelToken,
   }) async {
     Map<String, dynamic> body = await _dio
         .get(
-          'forum_posts/$replyId.json',
+          'forum_posts/$id.json',
           options: forceOptions(force),
           cancelToken: cancelToken,
         )

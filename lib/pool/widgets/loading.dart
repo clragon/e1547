@@ -14,7 +14,7 @@ class PoolLoadingPage extends StatefulWidget {
 }
 
 class _PoolLoadingPageState extends State<PoolLoadingPage> {
-  late Future<Pool> pool = context.read<Client>().pool(widget.id);
+  late Future<Pool> pool = context.read<Client>().pool(id: widget.id);
 
   @override
   Widget build(BuildContext context) {

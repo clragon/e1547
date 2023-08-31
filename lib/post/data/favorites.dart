@@ -23,7 +23,7 @@ class FavoritePostsController extends PostsController {
   @protected
   Future<List<Post>> fetch(int page, bool force) async {
     return client.favorites(
-      page,
+      page: page,
       query: query,
       orderByAdded: orderFavorites,
       force: force,

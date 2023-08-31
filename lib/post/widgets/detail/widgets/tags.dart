@@ -112,11 +112,9 @@ bool onPostTagsEdit(
     for (String tag in edited) {
       List<Tag> tags = await rateLimit(
         client.tags(
-          1,
-          query: QueryMap({
-            'search[name_matches]': tag,
-            'limit': 1,
-          }),
+          page: 1,
+          limit: 1,
+          query: QueryMap({'search[name_matches]': tag}),
         ),
         const Duration(milliseconds: 200),
       );

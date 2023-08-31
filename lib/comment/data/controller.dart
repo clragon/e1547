@@ -36,7 +36,7 @@ class CommentsController extends PageClientDataController<Comment> {
     bool force,
   ) =>
       client.comments(
-        page,
+        page: page,
         query: QueryMap({
           'group_by': 'comment',
           'search[post_id]': postId,
@@ -102,7 +102,11 @@ class CommentsController extends PageClientDataController<Comment> {
     }
     replaceComment(comment);
     try {
-      await client.voteComment(comment.id, upvote, replace);
+      await client.voteComment(
+        id: comment.id,
+        upvote: upvote,
+        replace: replace,
+      );
       evictCache();
       return true;
     } on ClientException {

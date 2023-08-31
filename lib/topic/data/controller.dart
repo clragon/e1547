@@ -30,7 +30,7 @@ class TopicsController extends PageClientDataController<Topic> {
   @override
   @protected
   Future<List<Topic>> fetch(int page, bool force) => client.topics(
-        page,
+        page: page,
         query: query,
         force: force,
         cancelToken: cancelToken,

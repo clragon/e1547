@@ -15,8 +15,8 @@ class UserReportScreen extends StatelessWidget {
       title: Text('User #${user.id}'),
       onReport: (reason) => validateCall(
         () => context.read<Client>().reportUser(
-              user.id,
-              reason,
+              id: user.id,
+              reason: reason,
             ),
       ),
       onSuccess: 'Reported user #${user.id}',

@@ -21,7 +21,6 @@ class DeletionDisplay extends StatelessWidget {
     return SubFuture<PostFlag>(
       create: () async {
         List<PostFlag> flags = await context.read<Client>().flags(
-              1,
               limit: 1,
               query: QueryMap({
                 'type': 'deletion',

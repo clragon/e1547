@@ -242,7 +242,6 @@ class FollowUpdate with ObjectLoggy {
         List<Post> posts = update.value;
         if (posts.isNotEmpty) continue;
         String? alias = await rateLimit(client.tagAliases(
-          1,
           query: QueryMap({'search[antecedent_name]': follow.tags}),
         ));
         if (alias != follow.alias) {
@@ -277,7 +276,6 @@ class FollowUpdate with ObjectLoggy {
     _assertNoDuplicates([follow.tags]);
 
     List<Post> posts = await rateLimit(client.posts(
-      1,
       query: QueryMap({'tags': follow.tags}),
       limit: refreshAmount,
       ordered: false,
@@ -290,7 +288,7 @@ class FollowUpdate with ObjectLoggy {
       try {
         follow = follow.withPool(
           await client.pool(
-            int.parse(match.namedGroup('id')!),
+            id: int.parse(match.namedGroup('id')!),
             force: force,
           ),
         );

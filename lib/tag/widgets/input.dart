@@ -116,7 +116,7 @@ class TagInput extends StatelessWidget {
             return context
                 .read<Client>()
                 .autocomplete(
-                  tagToRaw(tags[selection]),
+                  search: tagToRaw(tags[selection]),
                   category: category,
                 )
                 .then((value) => value.take(3));
