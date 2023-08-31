@@ -152,9 +152,9 @@ class Client {
         .get(
           'posts.json',
           queryParameters: {
-            ...?query,
             'page': page,
             'limit': limit,
+            ...?query,
           },
           options: forceOptions(force),
           cancelToken: cancelToken,
@@ -307,9 +307,9 @@ class Client {
           .get(
             'favorites.json',
             queryParameters: {
-              ...?query,
               'page': page,
               'limit': limit,
+              ...?query,
             },
             options: forceOptions(force),
             cancelToken: cancelToken,
@@ -355,9 +355,9 @@ class Client {
         .get(
           'post_flags.json',
           queryParameters: {
-            ...?query,
             'page': page,
             'limit': limit,
+            ...?query,
           },
           options: forceOptions(force),
           cancelToken: cancelToken,
@@ -369,6 +369,7 @@ class Client {
 
   Future<List<Pool>> pools({
     int? page,
+    int? limit,
     QueryMap? query,
     bool? force,
     CancelToken? cancelToken,
@@ -377,8 +378,9 @@ class Client {
         .get(
           'pools.json',
           queryParameters: {
-            ...?query,
             'page': page,
+            'limit': limit,
+            ...?query,
           },
           options: forceOptions(force),
           cancelToken: cancelToken,
@@ -432,7 +434,7 @@ class Client {
   Future<List<Wiki>> wikis({
     int? page,
     int? limit,
-    QueryMap? search,
+    QueryMap? query,
     bool? force,
     CancelToken? cancelToken,
   }) async {
@@ -440,7 +442,7 @@ class Client {
         .get(
           'wiki_pages.json',
           queryParameters: {
-            ...?search,
+            ...?query,
             'page': page,
             'limit': limit,
           },
@@ -539,9 +541,9 @@ class Client {
         .get(
           'tags.json',
           queryParameters: {
-            ...?query,
             'page': page,
             'limit': limit,
+            ...?query,
           },
           options: forceOptions(force),
           cancelToken: cancelToken,
@@ -619,9 +621,9 @@ class Client {
         .get(
           'tag_aliases.json',
           queryParameters: {
-            ...?query,
             'page': page,
             'limit': limit,
+            ...?query,
           },
           options: forceOptions(force),
           cancelToken: cancelToken,
@@ -649,9 +651,9 @@ class Client {
         .get(
           'comments.json',
           queryParameters: {
-            ...?query,
             'page': page,
             'limit': limit,
+            ...?query,
           },
           options: forceOptions(force),
           cancelToken: cancelToken,
@@ -766,9 +768,9 @@ class Client {
         .get(
           'forum_topics.json',
           queryParameters: {
-            ...?query,
             'page': page,
             'limit': limit,
+            ...?query,
           },
           options: forceOptions(force),
           cancelToken: cancelToken,
@@ -813,10 +815,10 @@ class Client {
         .get(
           'forum_posts.json',
           queryParameters: {
-            'search[topic_id]': id,
-            'search[order]': ascending ?? false ? 'id_asc' : 'id_desc',
             'page': page,
             'limit': limit,
+            'search[topic_id]': id,
+            'search[order]': ascending ?? false ? 'id_asc' : 'id_desc',
           },
           options: forceOptions(force),
           cancelToken: cancelToken,

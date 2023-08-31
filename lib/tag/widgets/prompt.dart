@@ -245,7 +245,7 @@ class _SearchTagDisplayState extends State<SearchTagDisplay> {
 
   Future<Wiki?> retrieveWiki() async {
     List<Wiki> results = await context.read<Client>().wikis(
-          search: QueryMap({'search[title]': tagToRaw(widget.tag)}),
+          query: QueryMap({'search[title]': tagToRaw(widget.tag)}),
         );
     return results.firstWhereOrNull((e) => e.title == tagToRaw(widget.tag));
   }
