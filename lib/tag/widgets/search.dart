@@ -115,7 +115,7 @@ class _PromptFilterListState extends State<PromptFilterList> {
   }
 }
 
-class SubTextValue extends StatelessWidget {
+class SubTextValue extends StatefulWidget {
   const SubTextValue({
     super.key,
     required this.value,
@@ -131,27 +131,60 @@ class SubTextValue extends StatelessWidget {
   final bool Function(String fromController, String fromValue)? shouldUpdate;
 
   @override
+  State<SubTextValue> createState() => _SubTextValueState();
+}
+
+class _SubTextValueState extends State<SubTextValue> {
+  late TextEditingController controller =
+      TextEditingController(text: widget.value);
+  bool controllerUpdate = false;
+  bool valueUpdate = false;
+  bool isUpdating = false;
+
+  void updateController() {
+    if (controllerUpdate) return;
+    controllerUpdate = true;
+    processUpdate();
+  }
+
+  void updateValue() {
+    if (valueUpdate) return;
+    valueUpdate = true;
+    processUpdate();
+  }
+
+  void processUpdate() {
+    if (isUpdating) return;
+    isUpdating = true;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (controllerUpdate) {
+        if (widget.shouldUpdate == null ||
+            widget.shouldUpdate!(controller.text, widget.value ?? '')) {
+          controller.text = widget.value ?? '';
+        }
+      } else if (valueUpdate) {
+        widget.onChanged?.call(controller.text);
+      }
+
+      controllerUpdate = false;
+      valueUpdate = false;
+      isUpdating = false;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return SubTextEditingController(
-      text: value,
-      builder: (context, controller) => SubEffect(
-        effect: () {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (controller.text == value) return;
-            if (shouldUpdate?.call(controller.text, value ?? '') ?? true) {
-              controller.text = value ?? '';
-            }
-          });
-          return null;
-        },
-        keys: [value],
-        child: SubListener(
-          listenable: controller,
-          listener: () => WidgetsBinding.instance.addPostFrameCallback((_) {
-            onChanged?.call(controller.text);
-          }),
-          builder: (context) => builder(context, controller),
-        ),
+    return SubEffect(
+      effect: () {
+        updateController();
+        return null;
+      },
+      keys: [widget.value],
+      child: SubListener(
+        listenable: controller,
+        listener: () => updateValue(),
+        builder: (context) => widget.builder(context, controller),
       ),
     );
   }
