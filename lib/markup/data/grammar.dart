@@ -6,7 +6,7 @@ class DTextGrammar extends GrammarDefinition<List<DTextElement>> {
   Parser<List<DTextElement>> start() => body().end();
 
   Parser<List<DTextElement>> body([Parser? limit]) =>
-      ref2(withText, ref0(element), limit);
+      ref2(withText, ref1(element, limit), limit);
 
   Parser<List<DTextElement>> withText(
           [Parser<DTextElement>? other, Parser? limit]) =>
@@ -28,7 +28,8 @@ class DTextGrammar extends GrammarDefinition<List<DTextElement>> {
             }
           }).toList());
 
-  Parser<DTextElement> element() => (ref0(blocks) | ref0(textElement)).cast();
+  Parser<DTextElement> element([Parser? limit]) =>
+      (ref0(blocks) | ref1(textElement, limit)).cast();
 
   Parser<DTextElement> blocks() => [
         ref0(quote),
@@ -36,18 +37,18 @@ class DTextGrammar extends GrammarDefinition<List<DTextElement>> {
         ref0(section),
       ].toChoiceParser().cast();
 
-  Parser<DTextElement> textElement() => [
-        ref0(styles),
+  Parser<DTextElement> textElement([Parser? limit]) => [
+        ref1(styles, limit),
         ref0(links),
         ref0(character),
       ].toChoiceParser().cast();
 
-  Parser<DTextElement> styles() => [
+  Parser<DTextElement> styles([Parser? limit]) => [
         ref0(inlineStyles),
         ref0(spoiler),
         ref0(inlineCode),
-        ref0(header),
-        ref0(list),
+        ref1(header, limit),
+        ref1(list, limit),
       ].toChoiceParser().cast();
 
   Parser<DTextElement> inlineStyles() => [
@@ -148,20 +149,21 @@ class DTextGrammar extends GrammarDefinition<List<DTextElement>> {
           .pick(1)
           .map((e) => DTextInlineCode(e));
 
-  Parser<DTextElement> header() => <Parser>[
+  Parser<DTextElement> header([Parser? limit]) => <Parser>[
         startOfLine().map((e) => e != null ? DTextContent(e) : null),
         charIgnoringCase('h'),
         pattern('1-6').map(int.parse),
         char('.'),
         char(' ').optional(),
-        condense(ref0(textElement).starLazy(newline() | endOfInput())),
+        condense(
+            ref0(textElement).starLazy(limit ?? (newline() | endOfInput()))),
       ].toSequenceParser().map((e) => DTextHeader(e[2], e[0], e[5]));
 
-  Parser<DTextElement> list() => <Parser>[
+  Parser<DTextElement> list([Parser? limit]) => <Parser>[
         startOfLine().map((e) => e != null ? DTextContent(e) : null),
         char('*').plus().flatten().map((e) => e.length - 1),
         char(' '),
-        ref1(body, (newline() | endOfInput())),
+        ref1(body, (limit ?? (newline() | endOfInput()))),
       ].toSequenceParser().map((e) => DTextList(e[1], e[0], e[3]));
 
   Parser<DTextElement> linkWord() => LinkWord.values
