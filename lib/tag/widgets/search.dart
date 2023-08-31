@@ -115,6 +115,9 @@ class _PromptFilterListState extends State<PromptFilterList> {
   }
 }
 
+typedef SubTextValueShouldUpdate = bool Function(
+    String fromController, String fromValue);
+
 class SubTextValue extends StatefulWidget {
   const SubTextValue({
     super.key,
@@ -128,7 +131,7 @@ class SubTextValue extends StatefulWidget {
   final ValueSetter<String>? onChanged;
   final Widget Function(BuildContext context, TextEditingController controller)
       builder;
-  final bool Function(String fromController, String fromValue)? shouldUpdate;
+  final SubTextValueShouldUpdate? shouldUpdate;
 
   @override
   State<SubTextValue> createState() => _SubTextValueState();
@@ -158,13 +161,16 @@ class _SubTextValueState extends State<SubTextValue> {
     isUpdating = true;
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      String controllerText = controller.text;
+      String value = widget.value ?? '';
       if (controllerUpdate) {
-        if (widget.shouldUpdate == null ||
-            widget.shouldUpdate!(controller.text, widget.value ?? '')) {
-          controller.text = widget.value ?? '';
+        SubTextValueShouldUpdate? shouldUpdate = widget.shouldUpdate;
+        shouldUpdate ??= (a, b) => a != b;
+        if (shouldUpdate(controllerText, value)) {
+          controllerText = value;
         }
       } else if (valueUpdate) {
-        widget.onChanged?.call(controller.text);
+        widget.onChanged?.call(controllerText);
       }
 
       controllerUpdate = false;
