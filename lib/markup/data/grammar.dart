@@ -6,7 +6,7 @@ class DTextGrammar extends GrammarDefinition<List<DTextElement>> {
   Parser<List<DTextElement>> start() => body().end();
 
   Parser<List<DTextElement>> body([Parser? limit]) =>
-      ref2(withText, ref1(element, limit), limit);
+      ref2(withText, ref0(element), limit);
 
   Parser<List<DTextElement>> withText([
     Parser<DTextElement>? other,
@@ -30,8 +30,7 @@ class DTextGrammar extends GrammarDefinition<List<DTextElement>> {
             }
           }).toList());
 
-  Parser<DTextElement> element([Parser? limit]) =>
-      (ref0(blocks) | ref1(textElement, limit)).cast();
+  Parser<DTextElement> element() => (ref0(blocks) | ref0(textElement)).cast();
 
   Parser<DTextElement> blocks() => [
         ref0(quote),
@@ -39,18 +38,18 @@ class DTextGrammar extends GrammarDefinition<List<DTextElement>> {
         ref0(section),
       ].toChoiceParser().cast();
 
-  Parser<DTextElement> textElement([Parser? limit]) => [
-        ref1(styles, limit),
+  Parser<DTextElement> textElement() => [
+        ref0(styles),
         ref0(links),
         ref0(character),
       ].toChoiceParser().cast();
 
-  Parser<DTextElement> styles([Parser? limit]) => [
+  Parser<DTextElement> styles() => [
         ref0(inlineStyles),
         ref0(spoiler),
         ref0(inlineCode),
-        ref1(header, limit),
-        ref1(list, limit),
+        ref0(header),
+        ref0(list),
       ].toChoiceParser().cast();
 
   Parser<DTextElement> inlineStyles() => [
@@ -151,25 +150,25 @@ class DTextGrammar extends GrammarDefinition<List<DTextElement>> {
           .pick(1)
           .map((e) => DTextInlineCode(e));
 
-  Parser<DTextElement> header([Parser? limit]) => <Parser>[
+  Parser<DTextElement> header() => <Parser>[
         startOfLine().map((e) => e != null ? DTextContent(e) : null),
         charIgnoringCase('h'),
         pattern('1-6').map(int.parse),
         char('.'),
         char(' ').optional(),
         condense(ref0(textElement).starLazy([
-          if (limit != null) limit,
+          blocks(),
           newline(),
           endOfInput(),
         ].toChoiceParser())),
       ].toSequenceParser().map((e) => DTextHeader(e[2], e[0], e[5]));
 
-  Parser<DTextElement> list([Parser? limit]) => <Parser>[
+  Parser<DTextElement> list() => <Parser>[
         startOfLine().map((e) => e != null ? DTextContent(e) : null),
         char('*').plus().flatten().map((e) => e.length - 1),
         char(' '),
         condense(ref0(textElement).starLazy([
-          if (limit != null) limit,
+          blocks(),
           newline(),
           endOfInput(),
         ].toChoiceParser())),
