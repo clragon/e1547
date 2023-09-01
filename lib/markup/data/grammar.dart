@@ -8,8 +8,10 @@ class DTextGrammar extends GrammarDefinition<List<DTextElement>> {
   Parser<List<DTextElement>> body([Parser? limit]) =>
       ref2(withText, ref1(element, limit), limit);
 
-  Parser<List<DTextElement>> withText(
-          [Parser<DTextElement>? other, Parser? limit]) =>
+  Parser<List<DTextElement>> withText([
+    Parser<DTextElement>? other,
+    Parser? limit,
+  ]) =>
       condense(
         <Parser>[
           if (other != null) other,
@@ -155,15 +157,22 @@ class DTextGrammar extends GrammarDefinition<List<DTextElement>> {
         pattern('1-6').map(int.parse),
         char('.'),
         char(' ').optional(),
-        condense(
-            ref0(textElement).starLazy(limit ?? (newline() | endOfInput()))),
+        condense(ref0(textElement).starLazy([
+          if (limit != null) limit,
+          newline(),
+          endOfInput(),
+        ].toChoiceParser())),
       ].toSequenceParser().map((e) => DTextHeader(e[2], e[0], e[5]));
 
   Parser<DTextElement> list([Parser? limit]) => <Parser>[
         startOfLine().map((e) => e != null ? DTextContent(e) : null),
         char('*').plus().flatten().map((e) => e.length - 1),
         char(' '),
-        ref1(body, (limit ?? (newline() | endOfInput()))),
+        condense(ref0(textElement).starLazy([
+          if (limit != null) limit,
+          newline(),
+          endOfInput(),
+        ].toChoiceParser())),
       ].toSequenceParser().map((e) => DTextList(e[1], e[0], e[3]));
 
   Parser<DTextElement> linkWord() => LinkWord.values
