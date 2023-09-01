@@ -167,7 +167,8 @@ class _SubTextValueState extends State<SubTextValue> {
         SubTextValueShouldUpdate? shouldUpdate = widget.shouldUpdate;
         shouldUpdate ??= (a, b) => a != b;
         if (shouldUpdate(controllerText, value)) {
-          controllerText = value;
+          if (controllerText != controller.text) return;
+          controller.text = value;
         }
       } else if (valueUpdate) {
         widget.onChanged?.call(controllerText);
