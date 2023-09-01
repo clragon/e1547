@@ -72,7 +72,21 @@ class QueryMap extends MapBase<String, String> {
     return QueryMap.fromIterable(entries);
   }
 
-  Map<String, dynamic> toJson() => toMapAll();
+  Map<String, dynamic> toJson() {
+    Map<String, dynamic> result = {};
+    for (final tag in _entries) {
+      if (result.containsKey(tag.name)) {
+        if (result[tag.name] is String) {
+          result[tag.name] = [result[tag.name], tag.value];
+        } else {
+          result[tag.name].add(tag.value);
+        }
+      } else {
+        result[tag.name] = tag.value;
+      }
+    }
+    return result;
+  }
 
   final Set<QueryValue> _entries;
 
