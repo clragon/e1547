@@ -16,7 +16,7 @@ class CodeWrap extends StatelessWidget {
       color: dimTextColor(context),
       child: DefaultTextStyle(
         style: DefaultTextStyle.of(context).style.copyWith(
-              fontFamily: 'FiraCode',
+              fontFamily: 'JetBrains Mono',
             ),
         child: Padding(
           padding: const EdgeInsets.all(8),

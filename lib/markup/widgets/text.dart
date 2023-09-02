@@ -299,7 +299,7 @@ class DTextBody extends StatelessWidget {
       DTextInlineCode() => TextSpan(
           text: element.content,
           style: TextStyle(
-            fontFamily: 'FiraCode',
+            fontFamily: 'JetBrains Mono',
             backgroundColor: Theme.of(context).cardColor,
           ),
         ),

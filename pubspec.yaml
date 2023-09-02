@@ -117,16 +117,12 @@ flutter:
   assets:
     - assets/icon/app/round.png
   fonts:
-    - family: FiraCode
+    - family: JetBrains Mono
       fonts:
-        - asset: assets/font/FiraCode-Light.ttf
-          weight: 300
-        - asset: assets/font/FiraCode-Regular.ttf
-        - asset: assets/font/FiraCode-Medium.ttf
-          weight: 500
-        - asset: assets/font/FiraCode-SemiBold.ttf
-          weight: 600
-        - asset: assets/font/FiraCode-Bold.ttf
+        - asset: assets/font/JetBrainsMono-Regular.ttf
+        - asset: assets/font/JetBrainsMono-Italic.ttf
+          style: italic
+        - asset: assets/font/JetBrainsMono-Bold.ttf
           weight: 700
 
 # flutter pub run flutter_launcher_icons:main
