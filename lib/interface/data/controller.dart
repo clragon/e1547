@@ -96,7 +96,7 @@ abstract class DataController<KeyType, ItemType> with ChangeNotifier {
     try {
       _fetching = true;
       _error = null;
-      if (reset && !background) this.reset();
+      onPreRequest(force, reset, background);
       KeyType? key = nextPageKey;
       if (reset) key = firstPageKey;
       if (key == null) return;
@@ -106,7 +106,7 @@ abstract class DataController<KeyType, ItemType> with ChangeNotifier {
         _error = response.error;
         return;
       }
-      if (reset && background) this.reset();
+      onPostRequest(force, reset, background);
       _nextPageKey = response.nextPageKey;
       rawItems = [if (rawItems != null) ...rawItems!, ...response.items!];
     } on Exception catch (e) {
@@ -131,9 +131,28 @@ abstract class DataController<KeyType, ItemType> with ChangeNotifier {
     notifyListeners();
   }
 
+  /// Called before a request is made.
+  ///
+  /// Can be used to reset the controller state.
+  @protected
+  @mustCallSuper
+  void onPreRequest(bool force, bool reset, bool background) {
+    if (reset && !background) this.reset();
+  }
+
+  /// Called after a request is made.
+  ///
+  /// Can be used to reset the controller state.
+  @protected
+  @mustCallSuper
+  void onPostRequest(bool force, bool reset, bool background) {
+    if (reset && background) this.reset();
+  }
+
   /// Resets the controller state.
   ///
   /// Do not call this method directly, use [refresh] instead.
+  /// Override this method to reset custom state.
   @protected
   @mustCallSuper
   void reset() {
