@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 
-class SearchInput<T> extends StatelessWidget {
-  const SearchInput({
+class AutocompleteTextField<T> extends StatelessWidget {
+  const AutocompleteTextField({
     super.key,
     required this.onSuggestionSelected,
     required this.suggestionsCallback,
@@ -35,20 +35,19 @@ class SearchInput<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    bool hasFab = Scaffold.maybeOf(context)?.hasFloatingActionButton ?? false;
     return TypeAheadField<T>(
       direction: direction ?? AxisDirection.up,
       hideOnEmpty: true,
       hideOnError: true,
       hideKeyboard: readOnly,
       keepSuggestionsOnSuggestionSelected: true,
-      // This implementation is very crude and will not react to FAB position changes
-      suggestionsBoxDecoration:
-          (Scaffold.maybeOf(context)?.hasFloatingActionButton ?? false)
-              ? const SuggestionsBoxDecoration(
-                  shape: SearchInputCutout(),
-                  clipBehavior: Clip.antiAlias,
-                )
-              : const SuggestionsBoxDecoration(),
+      suggestionsBoxDecoration: hasFab
+          ? const SuggestionsBoxDecoration(
+              shape: AutocompleteCutout(),
+              clipBehavior: Clip.antiAlias,
+            )
+          : const SuggestionsBoxDecoration(),
       textFieldConfiguration: TextFieldConfiguration(
         controller: controller,
         autofocus: true,
@@ -77,8 +76,12 @@ class SearchInput<T> extends StatelessWidget {
   }
 }
 
-class SearchInputCutout extends ShapeBorder {
-  const SearchInputCutout({this.usePadding = true});
+/// A [ShapeBorder] that cuts out a half circle at the top right corner.
+///
+/// This is used to make space for a [FloatingActionButton].
+/// This is a crude implementation and does not respect different [FloatingActionButton] positions or sizes.
+class AutocompleteCutout extends ShapeBorder {
+  const AutocompleteCutout({this.usePadding = true});
 
   final bool usePadding;
 

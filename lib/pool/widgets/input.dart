@@ -119,7 +119,8 @@ class PoolNameFilter extends StatelessWidget {
     return SubTextValue(
       value: state.value,
       onChanged: state.onChanged,
-      builder: (context, controller) => SearchInput<_PoolSearchResult>(
+      builder: (context, controller) =>
+          AutocompleteTextField<_PoolSearchResult>(
         direction: AxisDirection.up,
         submit: (value) => state.onSubmit?.call(value),
         controller: controller,

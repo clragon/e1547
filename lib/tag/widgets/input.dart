@@ -59,7 +59,7 @@ class TagInput extends StatelessWidget {
           return null;
         },
         keys: [controller],
-        child: SearchInput<TagSuggestion>(
+        child: AutocompleteTextField<TagSuggestion>(
           controller: controller,
           submit: (result) => submit(sortTags(result)),
           direction: direction,
