@@ -233,6 +233,40 @@ class Client {
     );
   }
 
+  Future<List<Post>> postsByFavoriter({
+    required String username,
+    int? page,
+    int? limit,
+    bool? force,
+    CancelToken? cancelToken,
+  }) async {
+    return posts(
+      page: page,
+      query: QueryMap()..['tags'] = 'fav:$username',
+      limit: limit,
+      ordered: false,
+      force: force,
+      cancelToken: cancelToken,
+    );
+  }
+
+  Future<List<Post>> postsByUploader({
+    required String username,
+    int? page,
+    int? limit,
+    bool? force,
+    CancelToken? cancelToken,
+  }) async {
+    return posts(
+      page: page,
+      query: QueryMap()..['tags'] = 'user:$username',
+      limit: limit,
+      ordered: false,
+      force: force,
+      cancelToken: cancelToken,
+    );
+  }
+
   Future<Post> post(int postId, {bool? force, CancelToken? cancelToken}) async {
     Map<String, dynamic> body = await _dio
         .get(

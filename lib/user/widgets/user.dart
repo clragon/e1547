@@ -360,19 +360,15 @@ class _UserPageProvider
   _UserPageProvider({required User user, super.child, super.builder})
       : super(
           create: (context, client, denylist) => _UserPageControllers(
-            favoritePosts: PostsController(
+            favoritePosts: UserFavoritesController(
               client: client,
               denylist: denylist,
-              // TODO: this should be its own client method
-              query: QueryMap({'fav': user.name}),
-              canSearch: false,
+              user: user.name,
             ),
-            uploadedPosts: PostsController(
+            uploadedPosts: UserUploadsController(
               client: client,
               denylist: denylist,
-              // TODO: this should be its own client method
-              query: QueryMap({'user': user.name}),
-              canSearch: false,
+              user: user.name,
             ),
             profilePost: user.avatarId != null
                 ? SinglePostController(

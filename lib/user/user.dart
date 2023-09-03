@@ -1,5 +1,6 @@
 // data
 export 'data/actions.dart';
+export 'data/controller.dart';
 export 'data/current.dart';
 export 'data/user.dart';
 // widgets
