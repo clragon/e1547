@@ -32,7 +32,6 @@ export 'widgets/refreshing.dart';
 export 'widgets/scaffold.dart';
 export 'widgets/selection.dart';
 export 'widgets/snackbar.dart';
-export 'widgets/startup.dart';
 export 'widgets/stripe.dart';
 export 'widgets/text.dart';
 export 'widgets/text_editor.dart';

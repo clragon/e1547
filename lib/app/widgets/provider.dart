@@ -92,6 +92,18 @@ class FollowsProvider extends SubProvider<AppDatabases, FollowsService> {
             builder: (context) =>
                 SubChangeNotifierProvider<FollowsService, FollowsUpdater>(
               create: (context, service) => FollowsUpdater(service: service),
+              builder: (context, child) => SubEffect(
+                effect: () {
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    context.read<FollowsUpdater>().update(
+                          client: context.read<Client>(),
+                          denylist: context.read<DenylistService>().items,
+                        );
+                  });
+                  return null;
+                },
+                child: builder?.call(context, child) ?? child!,
+              ),
               child: child,
             ),
           ),

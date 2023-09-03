@@ -1,7 +1,5 @@
 import 'package:e1547/app/app.dart';
 import 'package:e1547/client/client.dart';
-import 'package:e1547/denylist/denylist.dart';
-import 'package:e1547/follow/follow.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/logs/logs.dart';
 import 'package:e1547/settings/settings.dart';
@@ -64,22 +62,12 @@ class App extends StatelessWidget {
                   ),
                   child: WindowFrame(
                     child: WindowShortcuts(
-                      child: StartupActions(
-                        actions: [
-                          (_) => context.read<FollowsUpdater>().update(
-                                client: context.read<Client>(),
-                                denylist: context.read<DenylistService>().items,
-                              ),
-                        ],
-                        onError: (error) => Loggy('Startup')
-                            .error('Startup action failed', error),
-                        child: ErrorNotifier(
-                          child: LockScreen(
-                            child: ClientAvailabilityCheck(
-                              child: AppLinkHandler(
-                                child: NotificationHandler(
-                                  child: child!,
-                                ),
+                      child: ErrorNotifier(
+                        child: LockScreen(
+                          child: ClientAvailabilityCheck(
+                            child: AppLinkHandler(
+                              child: NotificationHandler(
+                                child: child!,
                               ),
                             ),
                           ),
