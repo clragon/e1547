@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 
 class SizedCircularProgressIndicator extends StatelessWidget {
@@ -161,12 +159,13 @@ class LoadingPage extends StatelessWidget {
   }
 }
 
-class FutureLoadingPage<T> extends StatelessWidget {
-  const FutureLoadingPage({
+class AsyncLoadingPage<T> extends StatelessWidget {
+  const AsyncLoadingPage({
     super.key,
-    required this.future,
+    required this.snapshot,
     required this.builder,
     this.title,
+    this.isEmpty,
     this.isBuilt,
     this.onEmpty,
     this.onError,
@@ -176,6 +175,50 @@ class FutureLoadingPage<T> extends StatelessWidget {
   final Widget? title;
   final Widget? onEmpty;
   final Widget? onError;
+  final bool? isEmpty;
+  final bool? isBuilt;
+  final AsyncSnapshot<T> snapshot;
+
+  @override
+  Widget build(BuildContext context) {
+    return LoadingPage(
+      child: (context) => builder(context, snapshot.data as T),
+      loadingBuilder: (context, child) => Scaffold(
+        appBar: title != null
+            ? AppBar(
+                leading: const CloseButton(),
+                title: title,
+              )
+            : null,
+        body: child(context),
+      ),
+      isLoading: snapshot.connectionState != ConnectionState.done,
+      isError: snapshot.hasError,
+      isEmpty: isEmpty ?? snapshot.connectionState != ConnectionState.done,
+      isBuilt: isBuilt,
+      onEmpty: onEmpty,
+      onError: onError,
+    );
+  }
+}
+
+class FutureLoadingPage<T> extends StatelessWidget {
+  const FutureLoadingPage({
+    super.key,
+    required this.future,
+    required this.builder,
+    this.title,
+    this.isEmpty,
+    this.isBuilt,
+    this.onEmpty,
+    this.onError,
+  });
+
+  final Widget Function(BuildContext context, T value) builder;
+  final Widget? title;
+  final Widget? onEmpty;
+  final Widget? onError;
+  final bool? isEmpty;
   final bool? isBuilt;
   final Future<T> future;
 
@@ -183,23 +226,12 @@ class FutureLoadingPage<T> extends StatelessWidget {
   Widget build(BuildContext context) {
     return FutureBuilder<T>(
       future: future,
-      builder: (context, snapshot) => LoadingPage(
-        child: (context) => builder(context, snapshot.data as T),
-        loadingBuilder: (context, child) => Scaffold(
-          appBar: title != null
-              ? AppBar(
-                  leading: const CloseButton(),
-                  title: title,
-                )
-              : null,
-          body: child(context),
-        ),
-        isLoading: snapshot.connectionState != ConnectionState.done,
-        isError: snapshot.hasError,
-        isEmpty: !snapshot.hasData,
+      builder: (context, snapshot) => AsyncLoadingPage(
+        snapshot: snapshot,
         isBuilt: isBuilt,
         onEmpty: onEmpty,
         onError: onError,
+        builder: builder,
       ),
     );
   }
