@@ -177,7 +177,7 @@ class Client {
     bool? force,
     CancelToken? cancelToken,
   }) async {
-    limit = max(0, min(limit ?? 80, 100));
+    limit = max(0, min(limit ?? 75, 100));
 
     List<List<int>> chunks = [];
     for (int i = 0; i < ids.length; i += limit) {
@@ -455,7 +455,7 @@ class Client {
   }) async {
     page ??= 1;
     CurrentUser? user = await currentUser(cancelToken: cancelToken);
-    int limit = user?.perPage ?? 80;
+    int limit = user?.perPage ?? 75;
     Pool pool = await this.pool(id: id, force: force, cancelToken: cancelToken);
     List<int> ids = pool.postIds;
     if (!orderByOldest) ids = ids.reversed.toList();
