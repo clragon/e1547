@@ -13,12 +13,10 @@ class FollowTimelineController extends PostsController {
   @override
   Future<List<Post>> fetch(int page, bool force) async {
     return client.postsByTags(
-      (await follows.all(
+      await follows.all(
         host: client.host,
         types: [FollowType.update, FollowType.notify],
-      ).first)
-          .map((e) => e.tags)
-          .toList(),
+      ).then((e) => e.map((e) => e.tags).toList()),
       page,
       force: force,
       cancelToken: cancelToken,

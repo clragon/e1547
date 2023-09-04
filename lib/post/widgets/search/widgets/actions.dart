@@ -20,7 +20,7 @@ class TagListActions extends StatelessWidget {
     return Consumer3<FollowsService, Client, DenylistService>(
       builder: (context, follows, client, denylist, child) =>
           SubStream<Follow?>(
-        create: () => follows.watchFollow(client.host, tag),
+        create: () => follows.follow(client.host, tag).stream,
         keys: [follows, client, tag],
         builder: (context, snapshot) {
           return AnimatedSwitcher(

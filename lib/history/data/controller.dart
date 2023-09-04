@@ -32,14 +32,12 @@ class HistoriesController extends DataController<int, History> {
   Future<PageResponse<int, History>> performRequest(
       int page, bool force) async {
     try {
-      List<History> items = await service
-          .page(
-            host: host,
-            page: page,
-            day: search.date,
-            linkRegex: search.buildLinkFilter(),
-          )
-          .first;
+      List<History> items = await service.page(
+        host: host,
+        page: page,
+        day: search.date,
+        linkRegex: search.buildLinkFilter(),
+      );
       if (items.isEmpty) {
         return PageResponse.last(items: items);
       } else {

@@ -2,23 +2,19 @@ import 'dart:async';
 
 import 'package:collection/collection.dart';
 import 'package:e1547/follow/follow.dart';
+import 'package:e1547/interface/interface.dart';
 
 class FollowsService extends FollowsDatabase {
   FollowsService(super.e);
 
-  Future<Follow?> getFollow(String host, String tag) =>
-      watchFollow(host, tag).first;
-
-  Stream<Follow?> watchFollow(String host, String tag) => all(
+  StreamFuture<Follow?> follow(String host, String tag) => all(
         host: host,
         tagRegex: r'^' + RegExp.escape(tag) + r'$',
-      ).map((e) => e.firstOrNull);
+        limit: 1,
+      ).stream.map((e) => e.firstOrNull).future;
 
-  Future<bool> follows(String host, String tag) =>
-      watchFollows(host, tag).first;
-
-  Stream<bool> watchFollows(String host, String tag) =>
-      watchFollow(host, tag).map((e) => e != null);
+  StreamFuture<bool> follows(String host, String tag) =>
+      follow(host, tag).stream.map((e) => e != null).future;
 
   Future<void> addTag(String host, String tag, {FollowType? type}) => add(
         host,
@@ -33,13 +29,13 @@ class FollowsService extends FollowsDatabase {
           await all(
             host: host,
             tagRegex: r'^' + RegExp.escape(tag) + r'$',
-          ).first,
+          ),
         ),
       );
 
   Future<void> edit(String host, List<String> update) async =>
       transaction(() async {
-        List<Follow> follows = await all(host: host).first;
+        List<Follow> follows = await all(host: host);
         List<Follow> removed =
             follows.whereNot((e) => update.contains(e.tags)).toList();
         List<String> tags = follows.map((e) => e.tags).toList();

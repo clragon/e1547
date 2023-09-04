@@ -141,7 +141,7 @@ class FollowUpdate with ObjectLoggy {
           List<Follow> follows = await service.all(
             host: client.host,
             types: [FollowType.notify, FollowType.update],
-          ).first;
+          );
           for (final follow in follows) {
             await service.replace(follow.copyWith(
               updated: null,
@@ -157,12 +157,12 @@ class FollowUpdate with ObjectLoggy {
           host: client.host,
           minAge: refreshRate,
           types: [FollowType.notify, FollowType.update],
-        ).first);
+        ));
 
         follows.addAll(await service.fresh(
           host: client.host,
           types: [FollowType.bookmark],
-        ).first);
+        ));
 
         _remaining.add(follows.length);
 

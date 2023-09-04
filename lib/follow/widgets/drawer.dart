@@ -16,7 +16,7 @@ class FollowMarkReadTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer2<FollowsService, Client>(
       builder: (context, service, client, child) => SubStream<int>(
-        create: () => service.unseen(host: client.host).map(
+        create: () => service.unseen(host: client.host).stream.map(
               (e) => e.fold(0, (a, b) => a + b.unseen!),
             ),
         keys: [service, client.host],

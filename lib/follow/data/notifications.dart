@@ -24,7 +24,7 @@ Future<bool> backgroundUpdateFollows({
   List<Follow> previous = await service.all(
     host: client.host,
     types: [FollowType.notify],
-  ).first;
+  );
 
   await FollowUpdate(
     service: service,
@@ -36,7 +36,7 @@ Future<bool> backgroundUpdateFollows({
   List<Follow> updated = await service.all(
     host: client.host,
     types: [FollowType.notify],
-  ).first;
+  );
 
   loggy.info('Completed follow update');
 

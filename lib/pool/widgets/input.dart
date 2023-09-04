@@ -142,21 +142,19 @@ class PoolNameFilter extends StatelessWidget {
           value = value.trim();
           List<_PoolSearchResult?> entries = [];
           entries.addAll(
-            (await service
-                    .all(
-                      host: client.host,
-                      linkRegex: r'/pools' +
-                          RegExp.escape(Uri(queryParameters: {
-                            r'search[name_matches]': '',
-                          }).toString()) +
-                          r'=' +
-                          queryDivider +
-                          r'*' +
-                          RegExp.escape(Uri.encodeQueryComponent(value)) +
-                          queryDivider +
-                          r'*',
-                    )
-                    .first)
+            (await service.all(
+              host: client.host,
+              linkRegex: r'/pools' +
+                  RegExp.escape(Uri(queryParameters: {
+                    r'search[name_matches]': '',
+                  }).toString()) +
+                  r'=' +
+                  queryDivider +
+                  r'*' +
+                  RegExp.escape(Uri.encodeQueryComponent(value)) +
+                  queryDivider +
+                  r'*',
+            ))
                 .map((e) {
               String? name = const E621LinkParser()
                   .parse(e.link)
@@ -167,15 +165,12 @@ class PoolNameFilter extends StatelessWidget {
               return null;
             }).take(4),
           );
-          entries.addAll((await service
-                  .all(
-                    host: client.host,
-                    linkRegex: r'/pools/.*',
-                    titleRegex: r'.*' +
-                        RegExp.escape(value.replaceAll(' ', '_')) +
-                        r'.*',
-                  )
-                  .first)
+          entries.addAll((await service.all(
+            host: client.host,
+            linkRegex: r'/pools/.*',
+            titleRegex:
+                r'.*' + RegExp.escape(value.replaceAll(' ', '_')) + r'.*',
+          ))
               .map((e) {
             String? name = e.title;
             if (name != null) {

@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:drift/drift.dart';
 import 'package:e1547/follow/follow.dart';
+import 'package:e1547/interface/interface.dart';
 
 part 'database.g.dart';
 
@@ -49,13 +50,13 @@ class FollowsDatabase extends _$FollowsDatabase {
         .map((row) => row.read(count)!);
   }
 
-  Stream<int> length({String? host}) =>
-      _lengthExpression(host: host).watchSingle();
+  StreamFuture<int> length({String? host}) =>
+      _lengthExpression(host: host).watchSingle().future;
 
   Selectable<Follow> _itemExpression(int id) =>
       (select(followsTable)..where((tbl) => tbl.id.equals(id)));
 
-  Stream<Follow> get(int id) => _itemExpression(id).watchSingle();
+  StreamFuture<Follow> get(int id) => _itemExpression(id).watchSingle().future;
 
   SimpleSelectStatement<FollowsTable, Follow> _queryExpression({
     String? host,
@@ -93,7 +94,7 @@ class FollowsDatabase extends _$FollowsDatabase {
     return selectable;
   }
 
-  Stream<List<Follow>> page({
+  StreamFuture<List<Follow>> page({
     required int page,
     int? limit,
     String? host,
@@ -110,10 +111,10 @@ class FollowsDatabase extends _$FollowsDatabase {
       types: types,
       limit: limit,
       offset: offset,
-    ).watch();
+    ).watch().future;
   }
 
-  Stream<List<Follow>> all({
+  StreamFuture<List<Follow>> all({
     String? host,
     String? tagRegex,
     String? titleRegex,
@@ -126,9 +127,9 @@ class FollowsDatabase extends _$FollowsDatabase {
         titleRegex: titleRegex,
         types: types,
         limit: limit,
-      ).watch();
+      ).watch().future;
 
-  Stream<List<Follow>> outdated({
+  StreamFuture<List<Follow>> outdated({
     String? host,
     required Duration minAge,
     List<FollowType>? types,
@@ -138,22 +139,25 @@ class FollowsDatabase extends _$FollowsDatabase {
                 (tbl.updated
                     .isSmallerThanValue(DateTime.now().subtract(minAge))) |
                 tbl.updated.isNull()))
-          .watch();
+          .watch()
+          .future;
 
-  Stream<List<Follow>> fresh({
+  StreamFuture<List<Follow>> fresh({
     String? host,
     List<FollowType>? types,
   }) =>
       (_queryExpression(host: host, types: types)
             ..where((tbl) => tbl.updated.isNull()))
-          .watch();
+          .watch()
+          .future;
 
-  Stream<List<Follow>> unseen({
+  StreamFuture<List<Follow>> unseen({
     String? host,
   }) =>
       (_queryExpression(host: host)
             ..where((tbl) => (tbl.unseen.isBiggerThanValue(0))))
-          .watch();
+          .watch()
+          .future;
 
   Future<void> markAsSeen({String? host}) => (update(followsTable)
         ..where((tbl) => _hostQuery(tbl, host))

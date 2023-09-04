@@ -40,7 +40,7 @@ class _PostsSearchPageState extends State<PostsSearchPage> {
       child: Consumer3<PostsController, FollowsService, Client>(
         builder: (context, controller, follows, client, child) {
           Future<void> updateFollow() async {
-            follow = await follows.getFollow(
+            follow = await follows.follow(
               client.host,
               controller.query['tags'] ?? '',
             );

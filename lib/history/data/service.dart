@@ -74,7 +74,7 @@ class HistoriesService extends HistoriesDatabase with ChangeNotifier {
       return;
     }
     return transaction(() async {
-      if ((await recent(host: host).first).any((e) =>
+      if ((await recent(host: host)).any((e) =>
           e.link == item.link &&
           e.title == item.title &&
           e.subtitle == item.subtitle &&

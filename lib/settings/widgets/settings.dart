@@ -190,7 +190,7 @@ class SettingsPage extends StatelessWidget {
               const ListTileHeader(title: 'Listing'),
               Consumer2<HistoriesService, Client>(
                 builder: (context, service, client, child) => SubStream<int>(
-                  create: () => service.length(host: client.host),
+                  create: () => service.length(host: client.host).stream,
                   keys: [service, client.host],
                   builder: (context, snapshot) => DividerListTile(
                     title: const Text('History'),
@@ -220,7 +220,7 @@ class SettingsPage extends StatelessWidget {
               ),
               Consumer2<FollowsService, Client>(
                 builder: (context, service, client, child) => SubStream<int>(
-                  create: () => service.length(host: client.host),
+                  create: () => service.length(host: client.host).stream,
                   keys: [service, client.host],
                   builder: (context, snapshot) => ListTile(
                     title: const Text('Follows'),

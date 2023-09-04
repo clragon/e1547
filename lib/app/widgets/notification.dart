@@ -119,8 +119,9 @@ class _NotificationHandlerState extends State<NotificationHandler> {
 
   @override
   Widget build(BuildContext context) => SubStream<List<Follow>>(
-        create: () =>
-            context.watch<FollowsService>().all(types: [FollowType.notify]),
+        create: () => context
+            .watch<FollowsService>()
+            .all(types: [FollowType.notify]).stream,
         listener: (event) {
           setupFollowBackground(event);
           sendNotifications(event);

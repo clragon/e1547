@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:drift/drift.dart';
 import 'package:e1547/history/history.dart';
+import 'package:e1547/interface/interface.dart';
 
 part 'database.g.dart';
 
@@ -39,7 +40,7 @@ class HistoriesDatabase extends _$HistoriesDatabase {
         onUpgrade: (m, from, to) async {
           if (from < 2) {
             String linkRegex = r'/posts\?tags=(?<tags>.+)';
-            List<History> entries = await all(linkRegex: linkRegex).first;
+            List<History> entries = await all(linkRegex: linkRegex);
 
             for (final entry in entries) {
               String tags =
@@ -89,10 +90,10 @@ class HistoriesDatabase extends _$HistoriesDatabase {
         .map((row) => row.read(count)!);
   }
 
-  Stream<int> length({String? host}) =>
-      _lengthExpression(host: host).watchSingle();
+  StreamFuture<int> length({String? host}) =>
+      _lengthExpression(host: host).watchSingle().future;
 
-  Stream<List<DateTime>> dates({String? host}) {
+  StreamFuture<List<DateTime>> dates({String? host}) {
     final Expression<DateTime> time = historiesTable.visitedAt;
     final Expression<String> date = historiesTable.visitedAt.date;
     final Expression<bool> hosted = _hostQuery(historiesTable, host);
@@ -103,15 +104,17 @@ class HistoriesDatabase extends _$HistoriesDatabase {
           ..groupBy([date])
           ..addColumns([time]))
         .map((row) {
-      DateTime source = row.read(time)!;
-      return DateTime(source.year, source.month, source.day);
-    }).watch();
+          DateTime source = row.read(time)!;
+          return DateTime(source.year, source.month, source.day);
+        })
+        .watch()
+        .future;
   }
 
   Selectable<History> _itemExpression(int id) =>
       (select(historiesTable)..where((tbl) => tbl.id.equals(id)));
 
-  Stream<History> get(int id) => _itemExpression(id).watchSingle();
+  StreamFuture<History> get(int id) => _itemExpression(id).watchSingle().future;
 
   SimpleSelectStatement<HistoriesTable, History> _queryExpression({
     String? host,
@@ -158,7 +161,7 @@ class HistoriesDatabase extends _$HistoriesDatabase {
     return selectable;
   }
 
-  Stream<List<History>> page({
+  StreamFuture<List<History>> page({
     required int page,
     int? limit,
     String? host,
@@ -177,10 +180,10 @@ class HistoriesDatabase extends _$HistoriesDatabase {
       subtitleRegex: subtitleRegex,
       limit: limit,
       offset: offset,
-    ).watch();
+    ).watch().future;
   }
 
-  Stream<List<History>> all({
+  StreamFuture<List<History>> all({
     String? host,
     DateTime? day,
     String? linkRegex,
@@ -195,9 +198,9 @@ class HistoriesDatabase extends _$HistoriesDatabase {
         titleRegex: titleRegex,
         subtitleRegex: subtitleRegex,
         limit: limit,
-      ).watch();
+      ).watch().future;
 
-  Stream<List<History>> recent({
+  StreamFuture<List<History>> recent({
     String? host,
     int limit = 15,
     Duration maxAge = const Duration(minutes: 10),
@@ -206,7 +209,8 @@ class HistoriesDatabase extends _$HistoriesDatabase {
             ..where((tbl) => (tbl.visitedAt
                 .isBiggerThanValue(DateTime.now().subtract(maxAge))))
             ..limit(limit))
-          .watch();
+          .watch()
+          .future;
 
   Future<void> add(String host, HistoryRequest item) async =>
       into(historiesTable).insert(
@@ -250,9 +254,8 @@ class HistoriesDatabase extends _$HistoriesDatabase {
   }) async =>
       transaction(() async {
         List<int> kept =
-            (await recent(host: host, limit: maxAmount, maxAge: maxAge).first)
-                .map((e) => e.id)
-                .toList();
+            await recent(host: host, limit: maxAmount, maxAge: maxAge)
+                .then((e) => e.map((e) => e.id).toList());
         await (delete(historiesTable)
               ..where((tbl) => tbl.host.equalsNullable(host))
               ..where((tbl) => tbl.id.isNotIn(kept)))
