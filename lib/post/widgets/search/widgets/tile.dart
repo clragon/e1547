@@ -444,6 +444,7 @@ class PostFeedTile extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.all(4),
           child: InkWell(
+            borderRadius: BorderRadius.circular(4),
             onTap: () => defaultPushPostDetail(context, post),
             child: Padding(
               padding: const EdgeInsets.all(8).copyWith(bottom: 0),

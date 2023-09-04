@@ -19,6 +19,7 @@ class HistoryTile extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.all(4),
           child: InkWell(
+            borderRadius: BorderRadius.circular(4),
             onTap: const E621LinkParser().parseOnTap(context, entry.link),
             child: SelectionItemOverlay<History>(
               item: entry,
