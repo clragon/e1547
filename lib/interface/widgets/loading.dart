@@ -228,6 +228,8 @@ class FutureLoadingPage<T> extends StatelessWidget {
       future: future,
       builder: (context, snapshot) => AsyncLoadingPage(
         snapshot: snapshot,
+        title: title,
+        isEmpty: isEmpty,
         isBuilt: isBuilt,
         onEmpty: onEmpty,
         onError: onError,
