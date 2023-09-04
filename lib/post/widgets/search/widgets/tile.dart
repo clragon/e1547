@@ -106,7 +106,7 @@ class PostImageTag extends StatelessWidget {
 }
 
 class PostTileOverlay extends StatelessWidget {
-  const PostTileOverlay({required this.post, required this.child});
+  const PostTileOverlay({super.key, required this.post, required this.child});
 
   final Post post;
   final Widget child;
@@ -136,7 +136,7 @@ class PostTileOverlay extends StatelessWidget {
 }
 
 class PostInfoBar extends StatelessWidget {
-  const PostInfoBar({required this.post});
+  const PostInfoBar({super.key, required this.post});
 
   final Post post;
 
@@ -240,6 +240,7 @@ void defaultPushPostDetail(BuildContext context, Post post) {
 
 class PostTile extends StatelessWidget {
   const PostTile({
+    super.key,
     required this.post,
     this.onTap,
   });

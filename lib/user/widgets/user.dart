@@ -18,6 +18,7 @@ enum UserPageSection {
 
 class UserPage extends StatelessWidget {
   const UserPage({
+    super.key,
     required this.user,
     this.initialPage = UserPageSection.favorites,
   });
@@ -383,7 +384,7 @@ class _UserPageProvider
 }
 
 class UserInfo extends StatelessWidget {
-  const UserInfo({required this.user, this.compact = true});
+  const UserInfo({super.key, required this.user, this.compact = true});
 
   final User user;
   final bool compact;

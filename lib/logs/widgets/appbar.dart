@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 
 class LogSelectionAppBar extends StatelessWidget with AppBarBuilderWidget {
   const LogSelectionAppBar({
+    super.key,
     required this.child,
   });
 

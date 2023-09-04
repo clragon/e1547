@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 class SizedCircularProgressIndicator extends StatelessWidget {
   const SizedCircularProgressIndicator({
+    super.key,
     required this.size,
     this.value,
     this.strokeWidth = 4,
@@ -31,6 +32,7 @@ class SizedCircularProgressIndicator extends StatelessWidget {
 
 class IconMessage extends StatelessWidget {
   const IconMessage({
+    super.key,
     this.direction = Axis.vertical,
     required this.title,
     required this.icon,
@@ -82,6 +84,7 @@ enum LoadingPageState {
 
 class LoadingPage extends StatelessWidget {
   const LoadingPage({
+    super.key,
     required this.child,
     this.isError = false,
     this.isLoading = false,
@@ -160,6 +163,7 @@ class LoadingPage extends StatelessWidget {
 
 class FutureLoadingPage<T> extends StatelessWidget {
   const FutureLoadingPage({
+    super.key,
     required this.future,
     required this.builder,
     this.title,

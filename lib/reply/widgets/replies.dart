@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:username_generator/username_generator.dart';
 
 class RepliesPage extends StatelessWidget {
-  const RepliesPage({required this.topic, this.orderByOldest});
+  const RepliesPage({super.key, required this.topic, this.orderByOldest});
 
   final Topic topic;
   final bool? orderByOldest;

@@ -27,7 +27,7 @@ extension ExtraRatingData on Rating {
 }
 
 class RatingDisplay extends StatelessWidget {
-  const RatingDisplay({required this.post});
+  const RatingDisplay({super.key, required this.post});
 
   final Post post;
 

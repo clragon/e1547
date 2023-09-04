@@ -4,7 +4,7 @@ import 'package:e1547/wiki/wiki.dart';
 import 'package:flutter/material.dart';
 
 class WikiLoadingPage extends StatefulWidget {
-  const WikiLoadingPage(this.id);
+  const WikiLoadingPage(this.id, {super.key});
 
   final String id;
 

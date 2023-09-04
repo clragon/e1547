@@ -124,7 +124,11 @@ class SheetActions extends StatelessWidget {
 }
 
 class ActionBottomSheet extends StatelessWidget {
-  const ActionBottomSheet({required this.controller, required this.child});
+  const ActionBottomSheet({
+    super.key,
+    required this.controller,
+    required this.child,
+  });
 
   final Widget child;
   final SheetActionController controller;
@@ -165,6 +169,7 @@ class ActionBottomSheet extends StatelessWidget {
 
 class PromptFloatingActionButton extends StatelessWidget {
   const PromptFloatingActionButton({
+    super.key,
     required this.controller,
     required this.builder,
     required this.icon,
@@ -198,6 +203,7 @@ class PromptFloatingActionButton extends StatelessWidget {
 
 class SheetFloatingActionButton extends StatelessWidget {
   const SheetFloatingActionButton({
+    super.key,
     required this.builder,
     required this.actionIcon,
     this.controller,
@@ -266,6 +272,7 @@ SlidingSheetDialog defaultSlidingSheetDialog(
 
 class DefaultSheetBody extends StatelessWidget {
   const DefaultSheetBody({
+    super.key,
     this.title,
     required this.body,
   });

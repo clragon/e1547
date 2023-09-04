@@ -9,6 +9,7 @@ import 'package:flutter/services.dart';
 
 class CommentTile extends StatelessWidget {
   const CommentTile({
+    super.key,
     required this.comment,
     this.hasActions = true,
   });

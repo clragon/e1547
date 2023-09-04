@@ -11,6 +11,7 @@ typedef TextEditorBuilder = Widget Function(
 
 class TextEditor extends StatefulWidget {
   const TextEditor({
+    super.key,
     required this.onSubmit,
     this.title,
     this.content,

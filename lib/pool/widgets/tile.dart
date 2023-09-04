@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 
 class PoolTile extends StatelessWidget {
   const PoolTile({
+    super.key,
     required this.pool,
     this.onPressed,
   });

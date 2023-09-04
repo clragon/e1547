@@ -109,7 +109,7 @@ class VideoServiceProvider
 }
 
 class VideoServiceVolumeControl extends StatelessWidget {
-  const VideoServiceVolumeControl();
+  const VideoServiceVolumeControl({super.key});
 
   @override
   Widget build(BuildContext context) {

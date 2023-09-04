@@ -4,7 +4,7 @@ import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
 
 class PostCommentsPage extends StatelessWidget {
-  const PostCommentsPage({required this.postId});
+  const PostCommentsPage({super.key, required this.postId});
 
   final int postId;
 

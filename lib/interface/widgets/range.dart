@@ -193,6 +193,7 @@ enum RangeDialogMode {
 
 class RangeDialog extends StatefulWidget {
   const RangeDialog({
+    super.key,
     this.value,
     required this.onSubmit,
     this.min = 0,

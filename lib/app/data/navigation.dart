@@ -107,7 +107,7 @@ final List<RouterDrawerDestination> rootDestintations = [
   NamedRouterDrawerDestination(
     path: '/about',
     name: 'About',
-    icon: DrawerUpdateIcon(),
+    icon: const DrawerUpdateIcon(),
     builder: (context) => const AboutPage(),
     group: _drawerSettingsGroup,
   ),

@@ -3,7 +3,7 @@ import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
 
 class PostDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const PostDetailAppBar({required this.post});
+  const PostDetailAppBar({super.key, required this.post});
 
   final Post post;
 

@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class RelationshipDisplay extends StatelessWidget {
-  const RelationshipDisplay({required this.post});
+  const RelationshipDisplay({super.key, required this.post});
 
   final Post post;
 
@@ -106,7 +106,7 @@ class RelationshipDisplay extends StatelessWidget {
 }
 
 class ParentEditor extends StatefulWidget {
-  const ParentEditor({required this.editingController});
+  const ParentEditor({super.key, required this.editingController});
 
   final PostEditingController editingController;
 

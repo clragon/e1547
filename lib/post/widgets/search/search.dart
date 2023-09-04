@@ -11,6 +11,7 @@ import 'package:flutter_sub/flutter_sub.dart';
 
 class PostsSearchPage extends StatefulWidget {
   const PostsSearchPage({
+    super.key,
     this.query,
     this.orderPoolsByOldest = true,
     this.readerMode = false,

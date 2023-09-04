@@ -4,7 +4,7 @@ import 'package:e1547/pool/pool.dart';
 import 'package:flutter/material.dart';
 
 class PoolLoadingPage extends StatefulWidget {
-  const PoolLoadingPage(this.id, {this.orderByOldest});
+  const PoolLoadingPage(this.id, {super.key, this.orderByOldest});
 
   final int id;
   final bool? orderByOldest;

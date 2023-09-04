@@ -6,7 +6,7 @@ import 'package:e1547/topic/topic.dart';
 import 'package:flutter/material.dart';
 
 class TopicsPage extends StatelessWidget {
-  const TopicsPage({this.query});
+  const TopicsPage({super.key, this.query});
 
   final QueryMap? query;
 

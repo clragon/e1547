@@ -7,6 +7,7 @@ typedef SubmitString = FutureOr<void> Function(String result);
 
 class ControlledTextWrapper extends StatefulWidget {
   const ControlledTextWrapper({
+    super.key,
     required this.submit,
     required this.actionController,
     required this.builder,
@@ -59,6 +60,7 @@ class _ControlledTextWrapperState extends State<ControlledTextWrapper> {
 
 class ControlledTextField extends StatelessWidget {
   const ControlledTextField({
+    super.key,
     required this.actionController,
     required this.submit,
     this.labelText,

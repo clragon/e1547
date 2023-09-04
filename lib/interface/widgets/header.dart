@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class ListTileHeader extends StatelessWidget {
-  const ListTileHeader({required this.title});
+  const ListTileHeader({super.key, required this.title});
 
   final String title;
 

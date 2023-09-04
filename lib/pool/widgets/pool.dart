@@ -7,7 +7,7 @@ import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
 
 class PoolPage extends StatefulWidget {
-  const PoolPage({required this.pool, this.orderByOldest});
+  const PoolPage({super.key, required this.pool, this.orderByOldest});
 
   final Pool pool;
   final bool? orderByOldest;
@@ -85,6 +85,7 @@ class _PoolPageState extends State<PoolPage> {
 
 class PoolOrderSwitch extends StatelessWidget {
   const PoolOrderSwitch({
+    super.key,
     required this.oldestFirst,
     required this.onChange,
   });

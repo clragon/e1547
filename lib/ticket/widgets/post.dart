@@ -12,6 +12,7 @@ import 'package:keyboard_dismisser/keyboard_dismisser.dart';
 
 class PostReportImage extends StatelessWidget {
   const PostReportImage({
+    super.key,
     required this.post,
     required this.height,
     this.isLoading = false,
@@ -55,7 +56,7 @@ class PostReportImage extends StatelessWidget {
 }
 
 class PostReportScreen extends StatefulWidget {
-  const PostReportScreen({required this.post});
+  const PostReportScreen({super.key, required this.post});
 
   final Post post;
 
@@ -170,7 +171,7 @@ class _PostReportScreenState extends State<PostReportScreen> {
 }
 
 class PostFlagScreen extends StatefulWidget {
-  const PostFlagScreen({required this.post});
+  const PostFlagScreen({super.key, required this.post});
 
   final Post post;
 

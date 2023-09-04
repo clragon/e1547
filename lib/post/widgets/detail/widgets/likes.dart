@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:like_button/like_button.dart';
 
 class LikeDisplay extends StatelessWidget {
-  const LikeDisplay({required this.post});
+  const LikeDisplay({super.key, required this.post});
 
   final Post post;
 
@@ -79,7 +79,7 @@ class LikeDisplay extends StatelessWidget {
 }
 
 class FavoriteButton extends StatelessWidget {
-  const FavoriteButton({required this.post});
+  const FavoriteButton({super.key, required this.post});
 
   final Post post;
 

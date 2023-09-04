@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class CommentReportScreen extends StatelessWidget {
-  const CommentReportScreen({required this.comment});
+  const CommentReportScreen({super.key, required this.comment});
 
   final Comment comment;
 

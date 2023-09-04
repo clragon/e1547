@@ -4,7 +4,7 @@ import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
 
 class PostDetailImage extends StatelessWidget {
-  const PostDetailImage({required this.post});
+  const PostDetailImage({super.key, required this.post});
 
   final Post post;
 
@@ -20,7 +20,7 @@ class PostDetailImage extends StatelessWidget {
 }
 
 class PostDetailVideo extends StatelessWidget {
-  const PostDetailVideo({required this.post});
+  const PostDetailVideo({super.key, required this.post});
 
   final Post post;
 
@@ -53,7 +53,7 @@ class PostDetailVideo extends StatelessWidget {
 }
 
 class PostDetailImageToggle extends StatelessWidget {
-  const PostDetailImageToggle({required this.post});
+  const PostDetailImageToggle({super.key, required this.post});
 
   final Post post;
 
@@ -108,6 +108,7 @@ class PostDetailImageToggle extends StatelessWidget {
 
 class PostDetailImageActions extends StatelessWidget {
   const PostDetailImageActions({
+    super.key,
     required this.post,
     required this.child,
     this.onOpen,
@@ -207,6 +208,7 @@ class PostDetailImageActions extends StatelessWidget {
 
 class PostDetailImageDisplay extends StatelessWidget {
   const PostDetailImageDisplay({
+    super.key,
     required this.post,
     this.onTap,
   });

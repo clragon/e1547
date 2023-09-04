@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 class DenylistTile extends StatelessWidget {
   const DenylistTile({
+    super.key,
     required this.tag,
     this.onEdit,
     this.onDelete,

@@ -7,7 +7,7 @@ import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
 
 class PostLoadingPage extends StatelessWidget {
-  const PostLoadingPage(this.id);
+  const PostLoadingPage(this.id, {super.key});
 
   final int id;
 

@@ -5,7 +5,7 @@ import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
 
 class DrawerDenySwitch extends StatelessWidget {
-  const DrawerDenySwitch({required this.controller});
+  const DrawerDenySwitch({super.key, required this.controller});
 
   final PostsController controller;
 
@@ -25,7 +25,7 @@ class DrawerDenySwitch extends StatelessWidget {
 }
 
 class DrawerMultiDenySwitch extends StatefulWidget {
-  const DrawerMultiDenySwitch({required this.controllers});
+  const DrawerMultiDenySwitch({super.key, required this.controllers});
 
   final List<PostsController> controllers;
 
@@ -82,6 +82,7 @@ class _DrawerMultiDenySwitchState extends State<DrawerMultiDenySwitch> {
 
 class DrawerDenyTile extends StatelessWidget {
   const DrawerDenyTile({
+    super.key,
     required this.entry,
     required this.isAllowed,
     required this.onChanged,
@@ -127,6 +128,7 @@ class DrawerDenyTile extends StatelessWidget {
 
 class DrawerDenySwitchBody extends StatelessWidget {
   const DrawerDenySwitchBody({
+    super.key,
     required this.denying,
     required this.denied,
     required this.allowedList,

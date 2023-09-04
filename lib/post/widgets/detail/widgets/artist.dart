@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class ArtistDisplay extends StatelessWidget {
-  const ArtistDisplay({required this.post});
+  const ArtistDisplay({super.key, required this.post});
 
   final Post post;
 

@@ -2,7 +2,7 @@ import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
 
 class GridSettingsTile extends StatelessWidget {
-  const GridSettingsTile({required this.state, this.onChange});
+  const GridSettingsTile({super.key, required this.state, this.onChange});
 
   final GridQuilt state;
   final void Function(GridQuilt state)? onChange;

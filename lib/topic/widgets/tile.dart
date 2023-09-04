@@ -5,6 +5,7 @@ import 'package:relative_time/relative_time.dart';
 
 class TopicTile extends StatelessWidget {
   const TopicTile({
+    super.key,
     required this.topic,
     this.onPressed,
     this.onCountPressed,

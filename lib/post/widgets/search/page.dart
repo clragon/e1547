@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 
 class PostsPage extends StatefulWidget {
   const PostsPage({
+    super.key,
     required this.controller,
     required this.appBar,
     this.displayType,

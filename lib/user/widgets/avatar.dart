@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_sub/flutter_sub.dart';
 
 class CurrentUserAvatar extends StatelessWidget {
-  const CurrentUserAvatar();
+  const CurrentUserAvatar({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -147,7 +147,7 @@ class PostAvatar extends StatelessWidget {
 }
 
 class Avatar extends StatelessWidget {
-  const Avatar(this.post, {this.onTap});
+  const Avatar(this.post, {super.key, this.onTap});
 
   final Post? post;
   final VoidCallback? onTap;

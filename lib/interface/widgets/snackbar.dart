@@ -113,6 +113,7 @@ Future<void> loadingNotification<T>({
 
 class LoadingNotification extends StatelessWidget {
   const LoadingNotification({
+    super.key,
     required this.messageBuilder,
     required this.progress,
     required this.max,

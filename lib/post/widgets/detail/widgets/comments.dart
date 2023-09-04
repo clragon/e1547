@@ -5,7 +5,7 @@ import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
 
 class CommentDisplay extends StatelessWidget {
-  const CommentDisplay({required this.post});
+  const CommentDisplay({super.key, required this.post});
 
   final Post post;
 

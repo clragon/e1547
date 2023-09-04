@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 typedef LinkCallback = FutureOr<void> Function(Uri? url);
 
 class AppLinkHandler extends StatefulWidget {
-  const AppLinkHandler({required this.child});
+  const AppLinkHandler({super.key, required this.child});
 
   final Widget child;
 

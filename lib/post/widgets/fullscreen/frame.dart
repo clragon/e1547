@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 class PostFullscreenFrame extends StatelessWidget {
   const PostFullscreenFrame({
+    super.key,
     required this.child,
     required this.post,
     this.drawer,

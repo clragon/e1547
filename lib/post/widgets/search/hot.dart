@@ -4,7 +4,7 @@ import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
 
 class HotPage extends StatefulWidget {
-  const HotPage();
+  const HotPage({super.key});
 
   @override
   State<HotPage> createState() => _HotPageState();

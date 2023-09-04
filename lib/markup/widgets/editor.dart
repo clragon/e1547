@@ -5,6 +5,7 @@ import 'package:overflow_view/overflow_view.dart';
 
 class DTextEditor extends StatelessWidget {
   const DTextEditor({
+    super.key,
     this.title,
     required this.onSubmit,
     this.content,
@@ -48,7 +49,7 @@ class DTextEditor extends StatelessWidget {
 }
 
 class DTextEditorBar extends StatefulWidget {
-  const DTextEditorBar({required this.controller});
+  const DTextEditorBar({super.key, required this.controller});
 
   final TextEditingController controller;
 

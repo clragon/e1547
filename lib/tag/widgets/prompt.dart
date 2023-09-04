@@ -40,7 +40,7 @@ Future<void> showTagSearchSheet({
 }
 
 class TagSearchSheet extends StatelessWidget {
-  const TagSearchSheet({required this.tag, this.controller});
+  const TagSearchSheet({super.key, required this.tag, this.controller});
 
   final String tag;
   final PostsController? controller;
@@ -232,7 +232,7 @@ class TagSearchInfoChild extends StatelessWidget {
 }
 
 class SearchTagDisplay extends StatefulWidget {
-  const SearchTagDisplay({required this.tag});
+  const SearchTagDisplay({super.key, required this.tag});
 
   final String tag;
 

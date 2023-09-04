@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 class PopupMenuTile<T> extends PopupMenuItem<T> {
   PopupMenuTile({
+    super.key,
     required T value,
     required this.icon,
     required this.title,
@@ -15,7 +16,7 @@ class PopupMenuTile<T> extends PopupMenuItem<T> {
 }
 
 class ListMenuTile extends StatelessWidget {
-  const ListMenuTile({this.leading, this.title});
+  const ListMenuTile({super.key, this.leading, this.title});
 
   final Widget? leading;
   final Widget? title;

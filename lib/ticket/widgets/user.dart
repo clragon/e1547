@@ -5,7 +5,7 @@ import 'package:e1547/user/user.dart';
 import 'package:flutter/material.dart';
 
 class UserReportScreen extends StatelessWidget {
-  const UserReportScreen({required this.user});
+  const UserReportScreen({super.key, required this.user});
 
   final User user;
 

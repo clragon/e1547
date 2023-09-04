@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_sub/flutter_sub.dart';
 
 class TagListActions extends StatelessWidget {
-  const TagListActions({required this.tag});
+  const TagListActions({super.key, required this.tag});
 
   final String tag;
 
@@ -146,7 +146,11 @@ class TagListActions extends StatelessWidget {
 }
 
 class RemoveTagAction extends StatelessWidget {
-  const RemoveTagAction({required this.controller, required this.tag});
+  const RemoveTagAction({
+    super.key,
+    required this.controller,
+    required this.tag,
+  });
 
   final PostsController controller;
   final String tag;
@@ -168,7 +172,11 @@ class RemoveTagAction extends StatelessWidget {
 }
 
 class AddTagAction extends StatelessWidget {
-  const AddTagAction({required this.controller, required this.tag});
+  const AddTagAction({
+    super.key,
+    required this.controller,
+    required this.tag,
+  });
 
   final PostsController controller;
   final String tag;
@@ -190,7 +198,11 @@ class AddTagAction extends StatelessWidget {
 }
 
 class SubtractTagAction extends StatelessWidget {
-  const SubtractTagAction({required this.controller, required this.tag});
+  const SubtractTagAction({
+    super.key,
+    required this.controller,
+    required this.tag,
+  });
 
   final PostsController controller;
   final String tag;
@@ -213,7 +225,11 @@ class SubtractTagAction extends StatelessWidget {
 }
 
 class TagSearchActions extends StatelessWidget {
-  const TagSearchActions({required this.tag, required this.controller});
+  const TagSearchActions({
+    super.key,
+    required this.tag,
+    required this.controller,
+  });
 
   final String tag;
   final PostsController controller;

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:photo_view/photo_view.dart';
 
 class PostFullscreen extends StatelessWidget {
-  const PostFullscreen({required this.post});
+  const PostFullscreen({super.key, required this.post});
 
   final Post post;
 

@@ -29,7 +29,7 @@ Future<void> showPoolSheet({
 }
 
 class PoolSheet extends StatelessWidget {
-  const PoolSheet({required this.pool});
+  const PoolSheet({super.key, required this.pool});
 
   final Pool pool;
 
@@ -118,7 +118,7 @@ Future<void> showPoolDialog({
 }
 
 class PoolDialog extends StatelessWidget {
-  const PoolDialog({required this.pool});
+  const PoolDialog({super.key, required this.pool});
 
   final Pool pool;
 

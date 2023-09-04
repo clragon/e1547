@@ -4,6 +4,8 @@ import 'package:e1547/user/user.dart';
 import 'package:flutter/material.dart';
 
 class UserDrawerHeader extends StatelessWidget {
+  const UserDrawerHeader({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Consumer<Client>(

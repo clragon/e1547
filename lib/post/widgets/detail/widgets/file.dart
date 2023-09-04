@@ -5,7 +5,7 @@ import 'package:filesize/filesize.dart';
 import 'package:flutter/material.dart';
 
 class FileDisplay extends StatelessWidget {
-  const FileDisplay({required this.post});
+  const FileDisplay({super.key, required this.post});
 
   final Post post;
 

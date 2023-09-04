@@ -5,6 +5,7 @@ import 'package:flutter_sub/flutter_sub.dart';
 
 class PostFullscreenGallery extends StatelessWidget {
   const PostFullscreenGallery({
+    super.key,
     required this.controller,
     this.initialPage,
     this.pageController,

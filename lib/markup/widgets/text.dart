@@ -11,6 +11,7 @@ import 'package:username_generator/username_generator.dart';
 class DText extends StatefulWidget {
   const DText(
     this.data, {
+    super.key,
     this.style,
     this.maxLines,
     this.overflow = TextOverflow.clip,

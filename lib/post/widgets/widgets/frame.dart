@@ -73,7 +73,7 @@ class _ScaffoldFrameData extends InheritedNotifier<ScaffoldFrameController> {
 }
 
 class ScaffoldFrameChild extends StatelessWidget {
-  const ScaffoldFrameChild({required this.child, this.shown});
+  const ScaffoldFrameChild({super.key, required this.child, this.shown});
 
   final bool? shown;
   final Widget child;
@@ -110,7 +110,7 @@ class ScaffoldFrameChild extends StatelessWidget {
 }
 
 class ScaffoldFrameAppBar extends StatelessWidget with AppBarBuilderWidget {
-  const ScaffoldFrameAppBar({required this.child});
+  const ScaffoldFrameAppBar({super.key, required this.child});
 
   @override
   final PreferredSizeWidget child;

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class PoolInfo extends StatelessWidget {
-  const PoolInfo({required this.pool});
+  const PoolInfo({super.key, required this.pool});
 
   final Pool pool;
 

@@ -7,7 +7,7 @@ import 'package:e1547/post/widgets/detail/appbar.dart';
 import 'package:flutter/material.dart';
 
 class PostDetail extends StatefulWidget {
-  const PostDetail({required this.post, this.onTapImage});
+  const PostDetail({super.key, required this.post, this.onTapImage});
 
   final Post post;
   final VoidCallback? onTapImage;

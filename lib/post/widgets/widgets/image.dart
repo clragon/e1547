@@ -10,6 +10,7 @@ class PostImageWidget extends StatelessWidget {
   ///
   /// Provides various preview options while loading.
   const PostImageWidget({
+    super.key,
     required this.post,
     required this.size,
     this.showProgress = true,

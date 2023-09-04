@@ -8,7 +8,7 @@ import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
 
 class PoolsPage extends StatefulWidget {
-  const PoolsPage({this.search});
+  const PoolsPage({super.key, this.search});
 
   final QueryMap? search;
 

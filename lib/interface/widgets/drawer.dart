@@ -2,7 +2,7 @@ import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
 
 class ContextDrawer extends StatelessWidget {
-  const ContextDrawer({this.title, required this.children});
+  const ContextDrawer({super.key, this.title, required this.children});
 
   final Widget? title;
   final List<Widget> children;
@@ -36,7 +36,7 @@ class ContextDrawer extends StatelessWidget {
 }
 
 class ContextDrawerButton extends StatelessWidget {
-  const ContextDrawerButton({this.icon, this.tooltip = 'Filter'});
+  const ContextDrawerButton({super.key, this.icon, this.tooltip = 'Filter'});
 
   final IconData? icon;
   final String? tooltip;

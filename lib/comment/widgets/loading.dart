@@ -4,7 +4,7 @@ import 'package:e1547/interface/interface.dart';
 import 'package:flutter/widgets.dart';
 
 class CommentLoadingPage extends StatefulWidget {
-  const CommentLoadingPage(this.id);
+  const CommentLoadingPage(this.id, {super.key});
 
   final int id;
 

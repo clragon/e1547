@@ -10,7 +10,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:relative_time/relative_time.dart';
 
 class App extends StatelessWidget {
-  const App();
+  const App({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +26,7 @@ class App extends StatelessWidget {
         ),
         NavigationProvider(
           destinations: rootDestintations,
-          drawerHeader: (context) => UserDrawerHeader(),
+          drawerHeader: (context) => const UserDrawerHeader(),
         ),
         CurrentUserAvatarProvider(),
         VideoServiceProvider(),

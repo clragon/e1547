@@ -5,7 +5,7 @@ import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
 
 class DenyListPage extends StatefulWidget {
-  const DenyListPage();
+  const DenyListPage({super.key});
 
   @override
   State<StatefulWidget> createState() {

@@ -129,7 +129,7 @@ class ProxyPagingController<KeyType, ItemType>
 }
 
 class PagedChildBuilderRetryButton extends StatelessWidget {
-  const PagedChildBuilderRetryButton(this.pagingController);
+  const PagedChildBuilderRetryButton(this.pagingController, {super.key});
 
   final PagingController? pagingController;
 

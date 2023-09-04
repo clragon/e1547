@@ -6,6 +6,7 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class RefreshableDataPage extends StatelessWidget {
   RefreshableDataPage({
+    super.key,
     required Widget child,
     required this.controller,
     this.appBar,
@@ -17,6 +18,7 @@ class RefreshableDataPage extends StatelessWidget {
         child = ((context) => child);
 
   const RefreshableDataPage.builder({
+    super.key,
     required this.child,
     required this.controller,
     this.builder,
@@ -66,6 +68,7 @@ class RefreshableDataPage extends StatelessWidget {
 
 class RefreshableLoadingPage extends StatelessWidget {
   const RefreshableLoadingPage({
+    super.key,
     required this.refresh,
     required this.child,
     this.builder,
@@ -136,6 +139,7 @@ class RefreshableLoadingPage extends StatelessWidget {
 
 class RefreshablePage extends StatelessWidget {
   const RefreshablePage({
+    super.key,
     required this.refresh,
     required this.child,
     this.builder,
@@ -200,7 +204,11 @@ class RefreshablePage extends StatelessWidget {
 }
 
 class RefreshablePageDefaultHeader extends StatelessWidget {
-  const RefreshablePageDefaultHeader({this.completeText, this.refreshingText});
+  const RefreshablePageDefaultHeader({
+    super.key,
+    this.completeText,
+    this.refreshingText,
+  });
 
   final String? refreshingText;
   final String? completeText;

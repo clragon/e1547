@@ -108,7 +108,7 @@ class VideoButton extends StatelessWidget {
 }
 
 class VideoBar extends StatefulWidget {
-  const VideoBar({required this.player});
+  const VideoBar({super.key, required this.player});
 
   final VideoPlayer player;
 
@@ -247,7 +247,11 @@ class _VideoBarState extends State<VideoBar> {
 }
 
 class VideoGesture extends StatefulWidget {
-  const VideoGesture({required this.forward, required this.player});
+  const VideoGesture({
+    super.key,
+    required this.forward,
+    required this.player,
+  });
 
   final bool forward;
   final VideoPlayer player;
@@ -351,7 +355,11 @@ class _VideoGestureState extends State<VideoGesture>
 }
 
 class VideoGestures extends StatelessWidget {
-  const VideoGestures({required this.player, required this.child});
+  const VideoGestures({
+    super.key,
+    required this.player,
+    required this.child,
+  });
 
   final Widget child;
   final VideoPlayer player;
@@ -473,7 +481,7 @@ class PostVideoRouteState extends State<PostVideoRoute> with RouteAware {
 }
 
 class PostVideoWidget extends StatelessWidget {
-  const PostVideoWidget({required this.post});
+  const PostVideoWidget({super.key, required this.post});
 
   final Post post;
 

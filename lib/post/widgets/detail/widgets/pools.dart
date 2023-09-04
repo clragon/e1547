@@ -3,7 +3,7 @@ import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
 
 class PoolDisplay extends StatelessWidget {
-  const PoolDisplay({required this.post});
+  const PoolDisplay({super.key, required this.post});
 
   final Post post;
 

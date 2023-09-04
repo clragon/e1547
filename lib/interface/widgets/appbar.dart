@@ -9,7 +9,7 @@ mixin AppBarBuilderWidget implements PreferredSizeWidget {
 }
 
 class AppBarBuilder extends StatelessWidget with AppBarBuilderWidget {
-  const AppBarBuilder({required this.child, required this.builder});
+  const AppBarBuilder({super.key, required this.child, required this.builder});
 
   @override
   final PreferredSizeWidget child;
@@ -96,6 +96,7 @@ class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
   /// - double tap to scroll to the top of the primary scroll controller
   /// - showing drawer and back button at the same time on wide screens
   const DefaultAppBar({
+    super.key,
     this.leading,
     this.actions,
     this.title,
@@ -169,6 +170,7 @@ class AppBarLeadingConfiguration {
 
 class ScrollToTop extends StatelessWidget {
   const ScrollToTop({
+    super.key,
     this.builder,
     this.child,
     this.controller,
@@ -228,6 +230,7 @@ class ScrollToTop extends StatelessWidget {
 
 class TransparentAppBar extends StatelessWidget with AppBarBuilderWidget {
   const TransparentAppBar({
+    super.key,
     this.transparent = true,
     required this.child,
   });
@@ -257,6 +260,7 @@ class TransparentAppBar extends StatelessWidget with AppBarBuilderWidget {
 
 class DefaultSliverAppBar extends StatelessWidget {
   const DefaultSliverAppBar({
+    super.key,
     this.leading,
     this.actions,
     this.title,

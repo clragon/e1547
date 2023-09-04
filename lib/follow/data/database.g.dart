@@ -307,9 +307,7 @@ class FollowCompanion extends UpdateCompanion<Follow> {
 
 class _$FollowInsertable implements Insertable<Follow> {
   Follow _object;
-
   _$FollowInsertable(this._object);
-
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     return FollowCompanion(

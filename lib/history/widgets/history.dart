@@ -8,7 +8,7 @@ import 'package:grouped_list/grouped_list.dart';
 import 'package:intl/intl.dart';
 
 class HistoriesPage extends StatelessWidget {
-  const HistoriesPage();
+  const HistoriesPage({super.key});
 
   @override
   Widget build(BuildContext context) {

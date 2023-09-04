@@ -2,7 +2,7 @@ import 'package:e1547/ticket/widgets/padding.dart';
 import 'package:flutter/material.dart';
 
 class ReportFormHeader extends StatelessWidget {
-  const ReportFormHeader({required this.title, this.icon});
+  const ReportFormHeader({super.key, required this.title, this.icon});
 
   final Widget title;
   final Widget? icon;

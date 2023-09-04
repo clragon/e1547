@@ -8,7 +8,7 @@ import 'package:relative_time/relative_time.dart';
 import 'package:username_generator/username_generator.dart';
 
 class ReplyTile extends StatelessWidget {
-  const ReplyTile({required this.reply, required this.topic});
+  const ReplyTile({super.key, required this.reply, required this.topic});
 
   final Topic topic;
   final Reply reply;

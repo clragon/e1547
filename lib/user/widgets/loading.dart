@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 class UserLoadingPage extends StatefulWidget {
   const UserLoadingPage(
     this.id, {
+    super.key,
     this.initalPage = UserPageSection.favorites,
   });
 

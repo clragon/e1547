@@ -25,6 +25,7 @@ class CrossFade extends StatelessWidget {
   }
 
   const CrossFade.builder({
+    super.key,
     required this.showChild,
     required this.builder,
     this.secondChild,

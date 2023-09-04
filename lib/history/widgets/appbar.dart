@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 class HistorySelectionAppBar extends StatelessWidget with AppBarBuilderWidget {
   const HistorySelectionAppBar({
+    super.key,
     required this.child,
   });
 

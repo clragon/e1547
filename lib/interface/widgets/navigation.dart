@@ -72,6 +72,7 @@ class RouterDrawerController extends ChangeNotifier {
 class NavigationProvider
     extends ChangeNotifierProvider<RouterDrawerController> {
   NavigationProvider({
+    super.key,
     required List<RouterDrawerDestination> destinations,
     WidgetBuilder? drawerHeader,
     super.child,
@@ -85,7 +86,7 @@ class NavigationProvider
 }
 
 class RouterDrawer extends StatelessWidget {
-  const RouterDrawer();
+  const RouterDrawer({super.key});
 
   List<NamedRouterDrawerDestination> getDrawerDestinations(
       List<RouterDrawerDestination> destinations) {

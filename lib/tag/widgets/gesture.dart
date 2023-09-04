@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 
 class TagGesture extends StatelessWidget {
   const TagGesture({
+    super.key,
     required this.child,
     required this.tag,
     this.safe = true,

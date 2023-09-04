@@ -9,6 +9,7 @@ import 'package:intl/intl.dart';
 
 class TagInput extends StatelessWidget {
   const TagInput({
+    super.key,
     required this.submit,
     required this.controller,
     this.multiInput = true,

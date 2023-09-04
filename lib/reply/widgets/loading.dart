@@ -5,7 +5,7 @@ import 'package:e1547/topic/topic.dart';
 import 'package:flutter/material.dart';
 
 class ReplyLoadingPage extends StatefulWidget {
-  const ReplyLoadingPage(this.id, {this.orderByOldest});
+  const ReplyLoadingPage(this.id, {super.key, this.orderByOldest});
 
   final int id;
   final bool? orderByOldest;

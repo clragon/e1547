@@ -2,7 +2,7 @@ import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
 
 class QuoteWrap extends StatelessWidget {
-  const QuoteWrap({required this.child});
+  const QuoteWrap({super.key, required this.child});
 
   final Widget child;
 

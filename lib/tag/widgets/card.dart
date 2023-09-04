@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 class TagCard extends StatelessWidget {
   const TagCard({
+    super.key,
     required this.tag,
     this.category,
     this.stripeColor,
@@ -77,6 +78,7 @@ class TagCard extends StatelessWidget {
 
 class TagCounterCard extends StatelessWidget {
   const TagCounterCard({
+    super.key,
     required this.tag,
     required this.count,
     this.category,
@@ -112,7 +114,7 @@ class TagCounterCard extends StatelessWidget {
 }
 
 class DenyListTagCard extends StatelessWidget {
-  const DenyListTagCard(this.tag);
+  const DenyListTagCard(this.tag, {super.key});
 
   final String tag;
 

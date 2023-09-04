@@ -9,6 +9,7 @@ enum VoteStatus {
 
 class VoteDisplay extends StatelessWidget {
   const VoteDisplay({
+    super.key,
     required this.status,
     required this.score,
     this.onUpvote,

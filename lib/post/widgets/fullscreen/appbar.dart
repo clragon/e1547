@@ -4,7 +4,11 @@ import 'package:flutter/material.dart';
 
 class PostFullscreenAppBar extends StatelessWidget
     implements PreferredSizeWidget {
-  const PostFullscreenAppBar({required this.post, this.isEditing = false});
+  const PostFullscreenAppBar({
+    super.key,
+    required this.post,
+    this.isEditing = false,
+  });
 
   final Post post;
   final bool isEditing;

@@ -5,6 +5,7 @@ import 'package:like_button/like_button.dart';
 
 class PostSelectionAppBar extends StatelessWidget with AppBarBuilderWidget {
   const PostSelectionAppBar({
+    super.key,
     required this.controller,
     required this.child,
   });

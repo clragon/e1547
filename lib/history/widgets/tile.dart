@@ -8,7 +8,7 @@ import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
 
 class HistoryTile extends StatelessWidget {
-  const HistoryTile({required this.entry});
+  const HistoryTile({super.key, required this.entry});
 
   final History entry;
 

@@ -5,6 +5,7 @@ import 'package:flutter_sub/flutter_sub.dart';
 
 class PostDetailGallery extends StatefulWidget {
   const PostDetailGallery({
+    super.key,
     required this.controller,
     this.initialPage,
     this.pageController,

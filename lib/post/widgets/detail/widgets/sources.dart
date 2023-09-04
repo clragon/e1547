@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class SourceDisplay extends StatelessWidget {
-  const SourceDisplay({required this.post});
+  const SourceDisplay({super.key, required this.post});
 
   final Post post;
 
@@ -91,7 +91,7 @@ class SourceDisplay extends StatelessWidget {
 }
 
 class SourceCard extends StatelessWidget {
-  const SourceCard({required this.url});
+  const SourceCard({super.key, required this.url});
 
   final String url;
 

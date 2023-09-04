@@ -9,7 +9,7 @@ import 'package:flutter/services.dart';
 import 'package:keyboard_dismisser/keyboard_dismisser.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage();
+  const LoginPage({super.key});
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -313,6 +313,7 @@ class _LoginPageState extends State<LoginPage> {
 
 class LoginLoadingDialog extends StatefulWidget {
   const LoginLoadingDialog({
+    super.key,
     required this.username,
     required this.password,
     this.onError,

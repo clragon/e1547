@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 class PostEditor extends StatelessWidget {
   const PostEditor({
+    super.key,
     required this.child,
     required this.post,
   });
@@ -43,6 +44,7 @@ class PostEditor extends StatelessWidget {
 
 class PostEditorChild extends StatelessWidget {
   const PostEditorChild({
+    super.key,
     required this.child,
     required this.shown,
   });

@@ -7,7 +7,7 @@ import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
 
 class FollowTile extends StatelessWidget {
-  const FollowTile({required this.follow});
+  const FollowTile({super.key, required this.follow});
 
   final Follow follow;
 

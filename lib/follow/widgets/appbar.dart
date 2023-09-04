@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 class FollowSelectionAppBar extends StatelessWidget with AppBarBuilderWidget {
   const FollowSelectionAppBar({
+    super.key,
     required this.service,
     required this.child,
   });

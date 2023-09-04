@@ -6,6 +6,7 @@ import 'package:flutter_sub/flutter_sub.dart';
 
 class FollowMarkReadTile extends StatelessWidget {
   const FollowMarkReadTile({
+    super.key,
     this.onTap,
   });
 
@@ -46,6 +47,7 @@ class FollowMarkReadTile extends StatelessWidget {
 
 class FollowFilterReadTile extends StatelessWidget {
   const FollowFilterReadTile({
+    super.key,
     required this.filterUnseen,
     required this.onChanged,
   });
@@ -71,7 +73,7 @@ class FollowFilterReadTile extends StatelessWidget {
 }
 
 class FollowEditingTile extends StatelessWidget {
-  const FollowEditingTile();
+  const FollowEditingTile({super.key});
 
   @override
   Widget build(BuildContext context) {

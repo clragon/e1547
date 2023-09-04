@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 class SelectionLayoutData<T> extends InheritedWidget {
   /// Provides selection actions for a [SelectionLayout] to its subtree.
   const SelectionLayoutData({
+    super.key,
     required super.child,
     required this.selections,
     required this.onChanged,
@@ -80,6 +81,7 @@ class SelectionLayoutData<T> extends InheritedWidget {
 class SelectionLayout<T> extends StatefulWidget {
   /// Provides item selection for a subtree.
   const SelectionLayout({
+    super.key,
     required this.child,
     required this.items,
     this.enabled = true,
@@ -154,6 +156,7 @@ class SelectionAppBar<T> extends StatelessWidget with AppBarBuilderWidget {
   /// Provides an appbar for handling the selection of items.
   /// Replaces the normal appbar as soon as a selection starts.
   const SelectionAppBar({
+    super.key,
     required this.child,
     required this.actionBuilder,
     this.titleBuilder,
@@ -203,6 +206,7 @@ class SelectionAppBar<T> extends StatelessWidget with AppBarBuilderWidget {
 class SelectionItemOverlay<T> extends StatelessWidget {
   /// Alows long press actions to start selecting items.
   const SelectionItemOverlay({
+    super.key,
     required this.child,
     required this.item,
     this.padding,

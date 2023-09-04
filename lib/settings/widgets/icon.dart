@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
 
 class AppIcon extends StatelessWidget {
-  const AppIcon({this.radius = 20});
+  const AppIcon({super.key, this.radius = 20});
 
   final double radius;
 

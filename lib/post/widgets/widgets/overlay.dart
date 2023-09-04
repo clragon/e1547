@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 
 class PostImageOverlay extends StatelessWidget {
   const PostImageOverlay({
+    super.key,
     required this.post,
     required this.builder,
   });

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 class ReportFormDropdown<T> extends StatelessWidget {
   const ReportFormDropdown({
+    super.key,
     required this.type,
     required this.types,
     required this.onChanged,

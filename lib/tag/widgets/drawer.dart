@@ -4,7 +4,7 @@ import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
 
 class DrawerTagCounter extends StatelessWidget {
-  const DrawerTagCounter({required this.controller});
+  const DrawerTagCounter({super.key, required this.controller});
 
   final PostsController controller;
 
@@ -21,7 +21,7 @@ class DrawerTagCounter extends StatelessWidget {
 }
 
 class DrawerMultiTagCounter extends StatelessWidget {
-  const DrawerMultiTagCounter({required this.controllers});
+  const DrawerMultiTagCounter({super.key, required this.controllers});
 
   final List<PostsController> controllers;
 
@@ -45,6 +45,7 @@ class DrawerMultiTagCounter extends StatelessWidget {
 
 class DrawerTagCounterBody extends StatelessWidget {
   const DrawerTagCounterBody({
+    super.key,
     required this.posts,
     this.limit = 15,
     this.controller,

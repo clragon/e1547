@@ -89,6 +89,7 @@ class ImageGrid extends StatelessWidget {
 
 class ImageTile extends StatelessWidget {
   const ImageTile({
+    super.key,
     required this.images,
     required this.title,
     this.subtitle,

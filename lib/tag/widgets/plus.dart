@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 
 class TagAddCard extends StatefulWidget {
   const TagAddCard({
+    super.key,
     required this.submit,
     this.category,
   });

@@ -9,7 +9,7 @@ import 'package:flutter_sub/flutter_sub.dart';
 import 'package:local_auth/local_auth.dart';
 
 class LockScreen extends StatefulWidget {
-  const LockScreen({required this.child});
+  const LockScreen({super.key, required this.child});
 
   final Widget child;
 

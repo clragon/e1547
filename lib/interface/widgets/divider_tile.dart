@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 class DividerListTile extends StatelessWidget {
   const DividerListTile({
+    super.key,
     this.title,
     this.subtitle,
     this.leading,

@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 
 class TagEditor extends StatefulWidget {
   const TagEditor({
+    super.key,
     required this.category,
     required this.submit,
     required this.controller,

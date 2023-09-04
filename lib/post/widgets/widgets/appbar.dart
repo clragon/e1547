@@ -95,7 +95,7 @@ List<PopupMenuItem<VoidCallback>> postMenuUserActions(
 class ContextSizedAppBar extends StatelessWidget
     implements PreferredSizeWidget {
   ///  A [DefaultAppBar] that displays a [ContextDrawerButton] inside of its actions depending on available width.
-  const ContextSizedAppBar({this.title});
+  const ContextSizedAppBar({super.key, this.title});
 
   /// Copied from [AppBar.title].
   final Widget? title;

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 class LimitedWidthLayoutData extends InheritedWidget {
   const LimitedWidthLayoutData({
+    super.key,
     required super.child,
     required this.maxWidth,
     required this.space,
@@ -31,6 +32,7 @@ class LimitedWidthLayout extends StatelessWidget {
   }
 
   const LimitedWidthLayout.builder({
+    super.key,
     required this.builder,
     this.maxWidth = 600,
     this.tolerance = 0,
@@ -64,7 +66,7 @@ class LimitedWidthLayout extends StatelessWidget {
 }
 
 class LimitedWidthChild extends StatelessWidget {
-  const LimitedWidthChild({required this.child});
+  const LimitedWidthChild({super.key, required this.child});
 
   final Widget child;
 

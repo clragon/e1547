@@ -242,9 +242,7 @@ class HistoryCompanion extends UpdateCompanion<History> {
 
 class _$HistoryInsertable implements Insertable<History> {
   History _object;
-
   _$HistoryInsertable(this._object);
-
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     return HistoryCompanion(

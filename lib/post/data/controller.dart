@@ -123,6 +123,7 @@ class PostsProvider extends SubChangeNotifierProvider2<Client, DenylistService,
           ),
         );
 
+  // ignore: use_key_in_widget_constructors
   PostsProvider.builder({
     required super.create,
     super.keys,

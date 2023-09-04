@@ -31,7 +31,7 @@ void showTopicSheet({
 }
 
 class TopicSheet extends StatelessWidget {
-  const TopicSheet({required this.topic});
+  const TopicSheet({super.key, required this.topic});
 
   final Topic topic;
 
@@ -80,7 +80,7 @@ class TopicSheet extends StatelessWidget {
 }
 
 class TopicInfo extends StatelessWidget {
-  const TopicInfo({required this.topic});
+  const TopicInfo({super.key, required this.topic});
 
   final Topic topic;
 
@@ -163,7 +163,7 @@ Future<void> showTopicDialog({
 }
 
 class TopicDialog extends StatelessWidget {
-  const TopicDialog({required this.topic});
+  const TopicDialog({super.key, required this.topic});
 
   final Topic topic;
 

@@ -11,6 +11,7 @@ enum GridQuilt {
 
 class TileLayoutData extends InheritedWidget {
   const TileLayoutData({
+    super.key,
     required super.child,
     required this.tileHeightFactor,
     required this.tileSize,
@@ -32,6 +33,7 @@ class TileLayoutData extends InheritedWidget {
 
 class TileLayout extends StatelessWidget {
   const TileLayout({
+    super.key,
     required this.child,
     this.tileHeightFactor = 1.2,
     this.tileSize,

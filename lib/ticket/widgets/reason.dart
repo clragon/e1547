@@ -4,7 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:keyboard_dismisser/keyboard_dismisser.dart';
 
 class ReportFormReason extends StatelessWidget {
-  const ReportFormReason({required this.isLoading, required this.controller});
+  const ReportFormReason({
+    super.key,
+    required this.isLoading,
+    required this.controller,
+  });
 
   final bool isLoading;
   final TextEditingController controller;
@@ -34,6 +38,7 @@ class ReportFormReason extends StatelessWidget {
 
 class ReasonReportScreen extends StatefulWidget {
   const ReasonReportScreen({
+    super.key,
     this.title,
     required this.previewBuilder,
     required this.onReport,

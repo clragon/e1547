@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 class ReportLoadingOverlay extends StatelessWidget {
   const ReportLoadingOverlay({
+    super.key,
     required this.child,
     required this.isLoading,
   });

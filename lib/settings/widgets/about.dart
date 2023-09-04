@@ -8,7 +8,7 @@ import 'package:flutter_sub/flutter_sub.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class AboutPage extends StatefulWidget {
-  const AboutPage();
+  const AboutPage({super.key});
 
   @override
   State<AboutPage> createState() => _AboutPageState();
@@ -269,6 +269,8 @@ class _VersionTile extends StatelessWidget {
 }
 
 class DrawerUpdateIcon extends StatelessWidget {
+  const DrawerUpdateIcon({super.key});
+
   @override
   Widget build(BuildContext context) {
     return SubFuture<List<AppVersion>>(
