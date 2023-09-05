@@ -48,7 +48,16 @@ class VoteDisplay extends StatelessWidget {
         ),
         Padding(
           padding: padding ?? const EdgeInsets.symmetric(horizontal: 8),
-          child: Text(score.toString()),
+          child: Text(
+            score.toString(),
+            style: TextStyle(
+              color: switch (status) {
+                VoteStatus.upvoted => Colors.deepOrange,
+                VoteStatus.downvoted => Colors.blue,
+                VoteStatus.unknown => null,
+              },
+            ),
+          ),
         ),
         InkResponse(
           onTap: () {},
