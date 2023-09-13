@@ -14,6 +14,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Changed
 - faster dtext parsing
 - wiki button ui
+- new video player engine
 
 ### Fixed
 - editing comments
