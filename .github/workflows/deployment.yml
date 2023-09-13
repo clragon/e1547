@@ -31,6 +31,12 @@ jobs:
       - name: setup actions
         uses: actions/checkout@v3
 
+      - name: Setup Java
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt'
+          java-version: '17'
+
       - name: setup flutter
         uses: subosito/flutter-action@v2
         with:
