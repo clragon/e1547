@@ -33,17 +33,34 @@ class FollowsService extends FollowsDatabase {
         ),
       );
 
-  Future<void> edit(String host, List<String> update) async =>
-      transaction(() async {
-        List<Follow> follows = await all(host: host);
-        List<Follow> removed =
-            follows.whereNot((e) => update.contains(e.tags)).toList();
-        List<String> tags = follows.map((e) => e.tags).toList();
-        List<FollowRequest> added = update
-            .whereNot((e) => tags.contains(e))
-            .map((e) => FollowRequest(tags: e))
-            .toList();
-        await removeAll(removed);
-        await addAll(host, added);
-      });
+  Future<void> edit(
+    String host,
+    List<String> notifications,
+    List<String> subscriptions,
+    List<String> bookmarks,
+  ) async {
+    List<Follow> allRemoved = [];
+    List<FollowRequest> allAdded = [];
+
+    Future<void> process(List<String> updateList, FollowType type) async {
+      List<Follow> follows = await all(host: host, types: [type]);
+      List<Follow> removed =
+          follows.whereNot((e) => updateList.contains(e.tags)).toList();
+      List<String> tags = follows.map((e) => e.tags).toList();
+      List<FollowRequest> added = updateList
+          .whereNot((e) => tags.contains(e))
+          .map((e) => FollowRequest(tags: e, type: type))
+          .toList();
+
+      allRemoved.addAll(removed);
+      allAdded.addAll(added);
+    }
+
+    await process(notifications, FollowType.notify);
+    await process(subscriptions, FollowType.update);
+    await process(bookmarks, FollowType.bookmark);
+
+    await removeAll(allRemoved);
+    await addAll(host, allAdded);
+  }
 }

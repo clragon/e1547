@@ -10,7 +10,7 @@ class DenyListEditor extends StatelessWidget {
   Widget build(BuildContext context) {
     return TextEditor(
       title: const Text('Blacklist'),
-      actions: (context, controller) => [
+      actions: [
         IconButton(
           icon: const Icon(Icons.help_outline),
           onPressed: () =>
@@ -18,7 +18,7 @@ class DenyListEditor extends StatelessWidget {
         )
       ],
       content: context.read<DenylistService>().items.join('\n'),
-      onSubmit: (context, value) async {
+      onSubmit: (value) async {
         List<String> tags = value.split('\n');
         tags = tags.trim();
         tags.removeWhere((tag) => tag.isEmpty);

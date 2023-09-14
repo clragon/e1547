@@ -11,26 +11,63 @@ class FollowEditor extends StatefulWidget {
 }
 
 class _FollowEditorState extends State<FollowEditor> {
+  final String notify = FollowType.notify.name;
+  final String subscribe = FollowType.update.name;
+  final String bookmark = FollowType.bookmark.name;
+
   late Client client = context.read<Client>();
   late FollowsService service = context.read<FollowsService>();
-  late Future<List<String>> follows = service
-      .all(host: client.host)
-      .then((value) => value.map((e) => e.tags).toList());
+  late Future<Map<String, String>> follows = Future(
+    () async => {
+      notify: await service.all(
+          host: client.host, types: [FollowType.notify]).then(followString),
+      subscribe: await service.all(
+          host: client.host, types: [FollowType.update]).then(followString),
+      bookmark: await service.all(
+          host: client.host, types: [FollowType.bookmark]).then(followString),
+    },
+  );
+
+  String followString(List<Follow> follows) {
+    return follows.map((e) => e.tags).join('\n');
+  }
 
   @override
   Widget build(BuildContext context) {
     Widget title = const Text('Edit follows');
-    return FutureLoadingPage<List<String>>(
+    return FutureLoadingPage<Map<String, String>>(
       title: title,
       future: follows,
-      builder: (context, value) => TextEditor(
+      builder: (context, value) => MultiTextEditor(
         title: title,
-        content: value.join('\n'),
-        onSubmit: (context, value) async {
-          List<String> tags = value.split('\n').trim();
-          await service.edit(client.host, tags);
+        content: [
+          TextEditorContent(
+            key: notify,
+            title: 'Notify',
+            value: value[notify],
+          ),
+          TextEditorContent(
+            key: subscribe,
+            title: 'Subscribe',
+            value: value[subscribe],
+          ),
+          TextEditorContent(
+            key: bookmark,
+            title: 'Bookmark',
+            value: value[bookmark],
+          ),
+        ],
+        onSubmit: (value) async {
+          await service.edit(
+            client.host,
+            value.firstWhere((e) => e.key == notify).value!.split('\n'),
+            value.firstWhere((e) => e.key == subscribe).value!.split('\n'),
+            value.firstWhere((e) => e.key == bookmark).value!.split('\n'),
+          );
           if (context.mounted) {
-            Navigator.of(context).maybePop();
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              Navigator.of(context).maybePop();
+            });
           }
           return null;
         },

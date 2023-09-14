@@ -45,7 +45,7 @@ class DescriptionDisplay extends StatelessWidget {
                               builder: (context) => DTextEditor(
                                 title: Text('#${post.id} description'),
                                 content: description,
-                                onSubmit: (context, text) {
+                                onSubmit: (text) {
                                   editingController.value =
                                       editingController.value!.copyWith(
                                     description: text,

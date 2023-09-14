@@ -49,7 +49,7 @@ class SourceDisplay extends StatelessWidget {
                                 title: Text('#${post.id} sources'),
                                 content:
                                     editingController.value!.sources.join('\n'),
-                                onSubmit: (context, text) {
+                                onSubmit: (text) {
                                   editingController.value =
                                       editingController.value!.copyWith(
                                     sources: text.trim().split('\n'),

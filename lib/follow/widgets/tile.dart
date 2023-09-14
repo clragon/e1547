@@ -74,11 +74,7 @@ class FollowTile extends StatelessWidget {
       bool bookmarked = follow.type == FollowType.bookmark;
 
       return PopupMenuButton<VoidCallback>(
-        icon: Icon(
-          Icons.more_vert,
-          color: dimTextColor(context, 0.7),
-          size: 18,
-        ),
+        icon: const DimSubtree(child: Icon(Icons.more_vert)),
         onSelected: (value) => value(),
         itemBuilder: (context) => [
           if ((follow.unseen ?? 0) > 0)
@@ -245,15 +241,14 @@ class FollowTile extends StatelessWidget {
                         opacity: 0.7,
                         child: Row(
                           children: [
-                            if (PlatformCapabilities.hasNotifications ||
-                                follow.type != FollowType.notify)
-                              CrossFade(
-                                showChild: follow.type != FollowType.update,
-                                child: Padding(
-                                  padding: const EdgeInsets.only(right: 4),
-                                  child: follow.type.icon,
-                                ),
+                            // if (PlatformCapabilities.hasNotifications || follow.type != FollowType.notify)
+                            CrossFade(
+                              showChild: follow.type != FollowType.update,
+                              child: Padding(
+                                padding: const EdgeInsets.only(right: 4),
+                                child: follow.type.icon,
                               ),
+                            ),
                             Expanded(
                               child: CrossFade(
                                 style: FadeAnimationStyle.stacked,

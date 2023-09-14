@@ -45,7 +45,7 @@ Future<bool> writeComment({
       builder: (context) => DTextEditor(
         title: Text('#$postId comment'),
         content: text ?? (comment?.body),
-        onSubmit: (context, text) async {
+        onSubmit: (text) async {
           NavigatorState navigator = Navigator.of(context);
           if (text.isNotEmpty) {
             try {
