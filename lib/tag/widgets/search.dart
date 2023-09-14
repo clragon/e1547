@@ -54,7 +54,7 @@ class PromptFilterList extends StatefulWidget {
     this.onChanged,
     this.onSubmit,
     required this.filters,
-    required this.controller,
+    this.controller,
     this.showSubmit,
   });
 
@@ -62,7 +62,7 @@ class PromptFilterList extends StatefulWidget {
   final ValueSetter<QueryMap>? onChanged;
   final ValueSetter<QueryMap>? onSubmit;
   final List<FilterConfig> filters;
-  final ActionController controller;
+  final ActionController? controller;
   final bool? showSubmit;
 
   @override
@@ -95,18 +95,15 @@ class _PromptFilterListState extends State<PromptFilterList> {
     return SubEffect(
       effect: () {
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          widget.controller.setAction(() => onSubmit(tags));
+          widget.controller?.setAction(() => onSubmit(tags));
         });
         return null;
       },
-      keys: const [],
+      keys: [widget.controller],
       child: FilterList(
         tags: tags,
         onChanged: onChanged,
-        onSubmit: (tags) {
-          onChanged(tags);
-          widget.controller.action!();
-        },
+        onSubmit: onSubmit,
         submitIcon:
             (widget.showSubmit ?? false) ? const Icon(Icons.search) : null,
         filters: widget.filters,
