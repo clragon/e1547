@@ -91,16 +91,27 @@ class SourceDisplay extends StatelessWidget {
 }
 
 class SourceCard extends StatelessWidget {
-  const SourceCard({super.key, required this.url});
+  const SourceCard({
+    super.key,
+    required this.url,
+  });
 
   final String url;
 
   @override
   Widget build(BuildContext context) {
-    if (RegExp(r'https?://\S+').hasMatch(url)) {
+    String url = this.url;
+    if (RegExp(r'^-?https?://\S+').hasMatch(url)) {
+      bool enabled;
+      if (url.startsWith('-')) {
+        enabled = false;
+        url = url.substring(1);
+      } else {
+        enabled = true;
+      }
       return Card(
         child: InkWell(
-          onTap: () => launch(url),
+          onTap: enabled ? () => launch(url) : null,
           child: IntrinsicHeight(
             child: Row(
               mainAxisSize: MainAxisSize.min,
@@ -124,9 +135,14 @@ class SourceCard extends StatelessWidget {
                     padding: const EdgeInsets.all(6),
                     child: Text(
                       linkToDisplay(url),
-                      style: TextStyle(
-                        color: Colors.blue[400],
-                      ),
+                      style: enabled
+                          ? TextStyle(
+                              color: Colors.blue[400],
+                            )
+                          : const TextStyle(
+                              color: Colors.grey,
+                              decoration: TextDecoration.lineThrough,
+                            ),
                     ),
                   ),
                 ),
