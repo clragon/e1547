@@ -94,7 +94,7 @@ class PostsPageFloatingActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SearchPromptFloationgActionButton(
+    return SearchPromptFloatingActionButton(
       tags: controller.query,
       onSubmit: (value) => controller.query = value,
       filters: [

@@ -3,8 +3,8 @@ import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sub/flutter_sub.dart';
 
-class SearchPromptFloationgActionButton extends StatelessWidget {
-  const SearchPromptFloationgActionButton({
+class SearchPromptFloatingActionButton extends StatelessWidget {
+  const SearchPromptFloatingActionButton({
     super.key,
     required this.tags,
     this.onChanged,
