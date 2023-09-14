@@ -57,7 +57,7 @@ class RatingDisplay extends StatelessWidget {
           title: Text(rating.title),
           leading:
               !post.flags.ratingLocked ? rating.icon : const Icon(Icons.lock),
-          onTap: canEdit
+          onTap: canEdit && !post.flags.ratingLocked
               ? () => showRatingDialog(
                   context: context,
                   onSelected: (value) {
