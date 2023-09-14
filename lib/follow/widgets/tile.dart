@@ -13,37 +13,42 @@ class FollowTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    SheetActionController? sheetController = SheetActions.maybeOf(context);
+    PromptActionController? promptController = PromptActions.maybeOf(context);
     FollowsService follows = context.watch<FollowsService>();
     bool active = follow.latest != null && follow.thumbnail != null;
 
     void editTitle() {
-      sheetController!.show(
+      promptController!.show(
         context,
-        ControlledTextField(
-          labelText: 'Follow title',
-          actionController: sheetController,
-          textController: TextEditingController(text: follow.name),
-          submit: (value) {
-            String? title = value.trim();
-            if (follow.title != value) {
-              if (value.isEmpty) {
-                title = null;
+        ConstrainedBox(
+          constraints: BoxConstraints(
+            minWidth: Theme.of(context).isDesktop ? 600 : 0,
+          ),
+          child: ControlledTextField(
+            labelText: 'Follow title',
+            actionController: promptController,
+            textController: TextEditingController(text: follow.name),
+            submit: (value) {
+              String? title = value.trim();
+              if (follow.title != value) {
+                if (value.isEmpty) {
+                  title = null;
+                }
+                follows.replace(follow.copyWith(
+                  title: title,
+                ));
               }
-              follows.replace(follow.copyWith(
-                title: title,
-              ));
-            }
-          },
+            },
+          ),
         ),
       );
     }
 
     void edit() {
-      sheetController!.show(
+      promptController!.show(
         context,
-        ControlledTextWrapper(
-          submit: (value) {
+        EditTagPrompt(
+          onSubmit: (value) {
             value = value.trim();
             if (value.isNotEmpty) {
               follows.replace(follow.copyWith(
@@ -57,14 +62,9 @@ class FollowTile extends StatelessWidget {
               follows.remove(follow);
             }
           },
-          actionController: sheetController,
-          textController: TextEditingController(text: follow.tags),
-          builder: (context, controller, submit) => TagInput(
-            controller: controller,
-            textInputAction: TextInputAction.done,
-            labelText: 'Edit follow',
-            submit: submit,
-          ),
+          actionController: promptController,
+          tag: follow.tags,
+          title: 'Edit follow',
         ),
       );
     }
@@ -108,13 +108,13 @@ class FollowTile extends StatelessWidget {
               title: bookmarked ? 'Subscribe' : 'Bookmark',
               icon: bookmarked ? Icons.person_add : Icons.bookmark,
             ),
-          if (sheetController != null && follow.tags.split(' ').length > 1)
+          if (promptController != null && follow.tags.split(' ').length > 1)
             PopupMenuTile(
               value: editTitle,
               title: 'Rename',
               icon: Icons.label,
             ),
-          if (sheetController != null)
+          if (promptController != null)
             PopupMenuTile(
               value: edit,
               title: 'Edit',

@@ -27,12 +27,12 @@ class _TagAddCardState extends State<TagAddCard> {
         padding: const EdgeInsets.all(2),
         icon: const Icon(Icons.add, size: 16),
         onPressed: widget.submit != null
-            ? () => SheetActions.of(context).show(
+            ? () => PromptActions.of(context).show(
                   context,
                   TagEditor(
                     category: widget.category,
                     submit: widget.submit!,
-                    controller: SheetActions.of(context),
+                    controller: PromptActions.of(context),
                   ),
                 )
             : null,

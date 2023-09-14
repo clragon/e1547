@@ -1,7 +1,6 @@
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_sub/flutter_sub.dart';
 
 class TagSearchFilterTag extends BuilderFilterTag {
   TagSearchFilterTag({
@@ -41,8 +40,8 @@ class TagSearchFilter extends StatelessWidget {
   }
 }
 
-class EditTagDialog extends StatelessWidget {
-  const EditTagDialog({
+class EditTagPrompt extends StatelessWidget {
+  const EditTagPrompt({
     super.key,
     this.tag,
     required this.onSubmit,
@@ -88,29 +87,25 @@ class AddTagFloatingActionButton extends StatelessWidget {
     this.tag,
     required this.onSubmit,
     this.title,
+    this.controller,
   });
 
   final String? tag;
   final ValueSetter<String> onSubmit;
   final String? title;
+  final PromptActionController? controller;
 
   @override
   Widget build(BuildContext context) {
-    bool isDesktop = Theme.of(context).isDesktop;
-    return SubValue<PromptActionController>(
-      create: () =>
-          isDesktop ? DialogActionController() : SheetActionController(),
-      keys: [isDesktop],
-      builder: (context, actionController) => PromptFloatingActionButton(
-        controller: actionController,
-        builder: (context, actionController) => EditTagDialog(
-          tag: tag,
-          onSubmit: onSubmit,
-          actionController: actionController,
-          title: title,
-        ),
-        icon: const Icon(Icons.add),
+    return PromptFloatingActionButton(
+      controller: controller,
+      builder: (context, actionController) => EditTagPrompt(
+        tag: tag,
+        onSubmit: onSubmit,
+        actionController: actionController,
+        title: title,
       ),
+      icon: const Icon(Icons.add),
     );
   }
 }

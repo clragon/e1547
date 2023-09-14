@@ -54,9 +54,12 @@ class SheetActionController extends PromptActionController {
   @override
   void show(BuildContext context, Widget? child) {
     sheetController = Scaffold.of(context).showBottomSheet(
-      (context) => ActionIndicators(
+      (context) => PromptActions(
         controller: this,
-        child: child,
+        child: ActionIndicators(
+          controller: this,
+          child: child,
+        ),
       ),
     );
     sheetController!.closed.then((_) => reset());
@@ -90,14 +93,18 @@ class DialogActionController extends PromptActionController {
 
   @override
   void show(BuildContext context, Widget? child) {
+    close();
     showDialog(
       context: context,
       builder: (context) {
         _dialog = ModalRoute.of(context);
-        return AlertDialog(
-          content: ActionIndicators(
-            controller: this,
-            child: child,
+        return PromptActions(
+          controller: this,
+          child: AlertDialog(
+            content: ActionIndicators(
+              controller: this,
+              child: child,
+            ),
           ),
         );
       },
@@ -135,32 +142,34 @@ class LoadingDialogActionController extends DialogActionController {
   }
 }
 
-class _SheetActions extends InheritedNotifier<SheetActionController> {
-  const _SheetActions({required super.child, required this.controller})
+class _PromptActions extends InheritedNotifier<PromptActionController> {
+  const _PromptActions({required super.child, required this.controller})
       : super(notifier: controller);
 
-  final SheetActionController controller;
+  final PromptActionController controller;
 }
 
-class SheetActions extends StatelessWidget {
-  const SheetActions({super.key, required this.child, this.controller});
+class PromptActions extends StatelessWidget {
+  const PromptActions({super.key, required this.child, this.controller});
 
   final Widget child;
-  final SheetActionController? controller;
+  final PromptActionController? controller;
 
-  static SheetActionController of(BuildContext context) =>
-      context.dependOnInheritedWidgetOfExactType<_SheetActions>()!.controller;
+  static PromptActionController of(BuildContext context) => maybeOf(context)!;
 
-  static SheetActionController? maybeOf(BuildContext context) =>
-      context.dependOnInheritedWidgetOfExactType<_SheetActions>()?.controller;
+  static PromptActionController? maybeOf(BuildContext context) =>
+      context.dependOnInheritedWidgetOfExactType<_PromptActions>()?.controller;
 
   @override
   Widget build(BuildContext context) {
-    return SubValue<SheetActionController?>(
-      create: () => controller == null ? SheetActionController() : null,
+    return SubDefault<PromptActionController?>(
+      value: controller,
+      create: () => Theme.of(context).isDesktop
+          ? DialogActionController()
+          : SheetActionController(),
       dispose: (value) => value?.dispose(),
-      keys: [controller],
-      builder: (context, controller) => _SheetActions(
+      keys: [controller, Theme.of(context).isDesktop],
+      builder: (context, controller) => _PromptActions(
         controller: this.controller ?? controller!,
         child: child,
       ),
@@ -227,7 +236,7 @@ class ActionIndicators extends StatelessWidget {
 class PromptFloatingActionButton extends StatelessWidget {
   const PromptFloatingActionButton({
     super.key,
-    required this.controller,
+    this.controller,
     required this.builder,
     required this.icon,
     this.confirmIcon,
@@ -235,12 +244,14 @@ class PromptFloatingActionButton extends StatelessWidget {
 
   final Widget icon;
   final Widget? confirmIcon;
-  final PromptActionController controller;
+  final PromptActionController? controller;
   final Widget Function(BuildContext context, ActionController actionController)
       builder;
 
   @override
   Widget build(BuildContext context) {
+    PromptActionController controller =
+        this.controller ?? PromptActions.of(context);
     return AnimatedBuilder(
       animation: controller,
       builder: (context, child) => FloatingActionButton(
@@ -253,37 +264,6 @@ class PromptFloatingActionButton extends StatelessWidget {
         child: controller.isShown
             ? (confirmIcon ?? const Icon(Icons.check))
             : icon,
-      ),
-    );
-  }
-}
-
-class SheetFloatingActionButton extends StatelessWidget {
-  const SheetFloatingActionButton({
-    super.key,
-    required this.builder,
-    required this.actionIcon,
-    this.controller,
-    this.confirmIcon,
-  });
-
-  final IconData actionIcon;
-  final IconData? confirmIcon;
-  final SheetActionController? controller;
-  final Widget Function(BuildContext context, ActionController actionController)
-      builder;
-
-  @override
-  Widget build(BuildContext context) {
-    return SubDefault<SheetActionController>(
-      value: controller ?? SheetActions.maybeOf(context),
-      create: () => SheetActionController(),
-      dispose: (value) => value.dispose(),
-      builder: (context, controller) => PromptFloatingActionButton(
-        controller: controller,
-        builder: builder,
-        confirmIcon: confirmIcon != null ? Icon(confirmIcon) : null,
-        icon: Icon(actionIcon),
       ),
     );
   }

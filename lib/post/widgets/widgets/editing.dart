@@ -21,7 +21,7 @@ class PostEditor extends StatelessWidget {
         PostEditingController controller =
             context.watch<PostEditingController>();
         return WillPopScope(
-          child: SheetActions(
+          child: PromptActions(
             controller: controller,
             child: child!,
           ),

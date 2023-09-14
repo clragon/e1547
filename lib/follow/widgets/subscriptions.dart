@@ -2,7 +2,7 @@ import 'package:e1547/client/client.dart';
 import 'package:e1547/denylist/denylist.dart';
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/interface/interface.dart';
-import 'package:e1547/tag/tag.dart';
+import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_sub/flutter_sub.dart';
@@ -42,7 +42,7 @@ class _FollowsSubscriptionsPageState extends State<FollowsSubscriptionsPage>
             List<Follow>? follows = snapshot.data;
             return SelectionLayout<Follow>(
               items: follows,
-              child: SheetActions(
+              child: PromptActions(
                 child: RefreshableLoadingPage(
                   onEmpty: const Text('No subscriptions'),
                   onError: const Text('Failed to load subscriptions'),
@@ -95,29 +95,18 @@ class _FollowsSubscriptionsPageState extends State<FollowsSubscriptionsPage>
                       ),
                     ],
                   ),
-                  floatingActionButton: SheetFloatingActionButton(
-                    builder: (context, actionController) =>
-                        ControlledTextWrapper(
-                      submit: (value) {
-                        value = value.trim();
-                        if (value.isNotEmpty) {
-                          service.addTag(
-                            client.host,
-                            value,
-                            type: FollowType.update,
-                          );
-                        }
-                      },
-                      actionController: actionController,
-                      builder: (context, controller, submit) => TagInput(
-                        controller: controller,
-                        textInputAction: TextInputAction.done,
-                        labelText: 'Add to subscriptions',
-                        submit: submit,
-                      ),
-                    ),
-                    actionIcon: Icons.add,
-                    confirmIcon: Icons.check,
+                  floatingActionButton: AddTagFloatingActionButton(
+                    title: 'Add to subscriptions',
+                    onSubmit: (value) {
+                      value = value.trim();
+                      if (value.isNotEmpty) {
+                        service.addTag(
+                          client.host,
+                          value,
+                          type: FollowType.update,
+                        );
+                      }
+                    },
                   ),
                 ),
               ),

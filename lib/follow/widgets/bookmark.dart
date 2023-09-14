@@ -35,7 +35,7 @@ class FollowsBookmarkPage extends StatelessWidget {
               List<Follow>? follows = snapshot.data;
               return SelectionLayout<Follow>(
                 items: follows,
-                child: SheetActions(
+                child: PromptActions(
                   child: AdaptiveScaffold(
                     appBar: FollowSelectionAppBar(
                       service: service,
