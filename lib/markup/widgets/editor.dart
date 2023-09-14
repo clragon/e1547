@@ -21,9 +21,8 @@ class DTextEditor extends StatelessWidget {
       onSubmit: onSubmit,
       title: title,
       content: content,
-      bottomSheetBuilder: (context, controller) =>
-          DTextEditorBar(controller: controller),
-      previewBuilder: (context, controller) => Card(
+      toolbar: (context, controller) => DTextEditorBar(controller: controller),
+      preview: (context, controller) => Card(
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: AnimatedBuilder(

@@ -1,4 +1,5 @@
 import 'package:e1547/interface/interface.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sub/flutter_sub.dart';
 import 'package:sliding_sheet/sliding_sheet.dart';
@@ -18,14 +19,20 @@ abstract class PromptActionController extends ActionController {
     });
   }
 
-  void show(BuildContext context, Widget child);
+  void show(BuildContext context, Widget? child);
 
-  void actionOrShow(BuildContext context, Widget child) {
+  void showOrAction(BuildContext context, Widget child) {
     if (action != null) {
       action!();
     } else {
       show(context, child);
     }
+  }
+
+  void showAndAction(BuildContext context, ActionControllerCallback submit) {
+    super.setAction(submit);
+    action!();
+    show(context, null);
   }
 }
 
@@ -45,9 +52,12 @@ class SheetActionController extends PromptActionController {
   }
 
   @override
-  void show(BuildContext context, Widget child) {
+  void show(BuildContext context, Widget? child) {
     sheetController = Scaffold.of(context).showBottomSheet(
-      (context) => ActionBottomSheet(controller: this, child: child),
+      (context) => ActionIndicators(
+        controller: this,
+        child: child,
+      ),
     );
     sheetController!.closed.then((_) => reset());
   }
@@ -79,14 +89,49 @@ class DialogActionController extends PromptActionController {
   }
 
   @override
-  void show(BuildContext context, Widget child) {
+  void show(BuildContext context, Widget? child) {
     showDialog(
       context: context,
       builder: (context) {
         _dialog = ModalRoute.of(context);
-        return AlertDialog(content: child);
+        return AlertDialog(
+          content: ActionIndicators(
+            controller: this,
+            child: child,
+          ),
+        );
       },
     ).then((_) => reset());
+  }
+}
+
+class LoadingDialogActionController extends DialogActionController {
+  @override
+  // ignore: must_call_super
+  void forgive() {
+    // Your crimes are unforgivable.
+  }
+
+  @override
+  void show(BuildContext context, [Widget? child]) {
+    super.show(
+      context,
+      WillPopScope(
+        onWillPop: () => SynchronousFuture(!isLoading),
+        child: ListenableBuilder(
+          listenable: this,
+          builder: (context, child) {
+            if (isLoading) {
+              return const Text('Loading...');
+            } else if (isError) {
+              return Text(error!.message);
+            } else {
+              return const SizedBox();
+            }
+          },
+        ),
+      ),
+    );
   }
 }
 
@@ -123,45 +168,57 @@ class SheetActions extends StatelessWidget {
   }
 }
 
-class ActionBottomSheet extends StatelessWidget {
-  const ActionBottomSheet({
+class ActionIndicators extends StatelessWidget {
+  const ActionIndicators({
     super.key,
     required this.controller,
     required this.child,
   });
 
-  final Widget child;
-  final SheetActionController controller;
+  final ActionController controller;
+  final Widget? child;
 
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
       animation: controller,
       child: child,
-      builder: (context, child) => Padding(
-        padding: const EdgeInsets.all(10).copyWith(top: 0),
-        child: Row(
-          children: [
-            CrossFade(
-              showChild: controller.isLoading,
-              child: const Padding(
-                padding: EdgeInsets.only(right: 10),
-                child: SizedCircularProgressIndicator(size: 16),
-              ),
-            ),
-            CrossFade(
-              showChild: controller.isError && !controller.isForgiven,
-              child: Padding(
-                padding: const EdgeInsets.only(right: 10),
-                child: Icon(
-                  Icons.clear,
-                  color: Theme.of(context).colorScheme.error,
+      builder: (context, child) => Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          AnimatedSize(
+            duration: defaultAnimationDuration,
+            child: AnimatedSwitcher(
+              duration: defaultAnimationDuration,
+              transitionBuilder: (child, animation) => SlideTransition(
+                position: Tween<Offset>(
+                  begin: const Offset(0, 1),
+                  end: Offset.zero,
+                ).animate(animation),
+                child: FadeTransition(
+                  opacity: animation,
+                  child: child,
                 ),
               ),
+              child: controller.isError && !controller.isForgiven
+                  ? Padding(
+                      key: ValueKey(controller.error),
+                      padding: const EdgeInsets.only(right: 10),
+                      child: Icon(
+                        Icons.warning_amber,
+                        color: Theme.of(context).colorScheme.error,
+                      ),
+                    )
+                  : controller.isLoading
+                      ? const Padding(
+                          padding: EdgeInsets.only(right: 10),
+                          child: SizedCircularProgressIndicator(size: 24),
+                        )
+                      : const SizedBox(),
             ),
-            Expanded(child: child!),
-          ],
-        ),
+          ),
+          if (child != null) Expanded(child: child),
+        ],
       ),
     );
   }
@@ -189,7 +246,7 @@ class PromptFloatingActionButton extends StatelessWidget {
       builder: (context, child) => FloatingActionButton(
         onPressed: controller.isLoading
             ? null
-            : () => controller.actionOrShow(
+            : () => controller.showOrAction(
                   context,
                   builder(context, controller),
                 ),

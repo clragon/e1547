@@ -10,7 +10,7 @@ class DenyListEditor extends StatelessWidget {
   Widget build(BuildContext context) {
     return TextEditor(
       title: const Text('Blacklist'),
-      actionBuilder: (context, controller) => [
+      actions: (context, controller) => [
         IconButton(
           icon: const Icon(Icons.help_outline),
           onPressed: () =>
