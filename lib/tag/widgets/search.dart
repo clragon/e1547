@@ -35,7 +35,7 @@ class SearchPromptFloatingActionButton extends StatelessWidget {
               tags: tags,
               onChanged: onChanged,
               onSubmit: onSubmit,
-              showSubmit: isDesktop,
+              submitIcon: isDesktop ? const Icon(Icons.search) : null,
               filters: filters,
               controller: actionController,
             ),
@@ -55,7 +55,7 @@ class PromptFilterList extends StatefulWidget {
     this.onSubmit,
     required this.filters,
     this.controller,
-    this.showSubmit,
+    this.submitIcon,
   });
 
   final QueryMap tags;
@@ -63,7 +63,7 @@ class PromptFilterList extends StatefulWidget {
   final ValueSetter<QueryMap>? onSubmit;
   final List<FilterConfig> filters;
   final ActionController? controller;
-  final bool? showSubmit;
+  final Widget? submitIcon;
 
   @override
   State<PromptFilterList> createState() => _PromptFilterListState();
@@ -103,9 +103,9 @@ class _PromptFilterListState extends State<PromptFilterList> {
       child: FilterList(
         tags: tags,
         onChanged: onChanged,
-        onSubmit: onSubmit,
-        submitIcon:
-            (widget.showSubmit ?? false) ? const Icon(Icons.search) : null,
+        onSubmit: (value) =>
+            widget.controller?.action?.call() ?? onSubmit(value),
+        submitIcon: widget.submitIcon,
         filters: widget.filters,
       ),
     );
