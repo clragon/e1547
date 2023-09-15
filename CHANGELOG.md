@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [17.0.0+89] - 2023-09-15
 ### Added
 - extra about info
 - desktop search ui
@@ -816,7 +816,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Fixed
 - API client bindings
 
-[Unreleased]: https://github.com/clragon/e1547/compare/16.2.8+88...HEAD
+[17.0.0+89]: https://github.com/clragon/e1547/compare/16.2.8+88...17.0.0+89
 [16.2.8+88]: https://github.com/clragon/e1547/compare/16.2.7+87...16.2.8+88
 [16.2.7+87]: https://github.com/clragon/e1547/compare/16.2.6+86...16.2.7+87
 [16.2.6+86]: https://github.com/clragon/e1547/compare/16.2.5+85...16.2.6+86

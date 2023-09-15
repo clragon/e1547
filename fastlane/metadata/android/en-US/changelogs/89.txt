@@ -1,0 +1,15 @@
+### Added
+- extra about info
+- desktop search ui
+- ui search filters
+- desktop mouse zoom
+- new follow edit screen
+- more desktop ui
+
+### Changed
+- faster dtext parsing
+- wiki button ui
+- new video player engine
+
+### Fixed
+- editing comments
