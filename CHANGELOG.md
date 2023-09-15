@@ -10,6 +10,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - desktop search ui
 - ui search filters
 - desktop mouse zoom
+- new follow edit screen
+- more desktop ui
 
 ### Changed
 - faster dtext parsing
