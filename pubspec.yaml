@@ -102,13 +102,14 @@ dependency_overrides:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^2.0.2
-  flutter_launcher_icons: ^0.13.0
-  flutter_native_splash: ^2.3.1
-
   # dart run build_runner build
   build_runner: ^2.4.6
   drift_dev: ^2.11.1
+  flutter_lints: ^2.0.2
+  # dart run flutter_launcher_icons
+  flutter_launcher_icons: ^0.13.0
+  # dart run flutter_native_splash:create
+  flutter_native_splash: ^2.3.1
   freezed: ^2.4.1
   json_serializable: ^6.7.1
 
