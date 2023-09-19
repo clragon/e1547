@@ -81,9 +81,7 @@ class AutocompleteTextField<T> extends StatelessWidget {
 /// This is used to make space for a [FloatingActionButton].
 /// This is a crude implementation and does not respect different [FloatingActionButton] positions or sizes.
 class AutocompleteCutout extends ShapeBorder {
-  const AutocompleteCutout({this.usePadding = true});
-
-  final bool usePadding;
+  const AutocompleteCutout();
 
   @override
   EdgeInsetsGeometry get dimensions => EdgeInsets.zero;
@@ -94,25 +92,26 @@ class AutocompleteCutout extends ShapeBorder {
   @override
   Path getOuterPath(Rect rect, {TextDirection? textDirection}) {
     Size size = rect.size;
-    const double edgeDistance = 3.5;
-    double width = 62;
-    double padding = 4;
-    double start = size.width - (edgeDistance - padding);
+    double edgeDistance = 16;
+    double padding = 2;
+    double offset = 5.5;
+    double width = 56;
+    double radius = width / 2;
 
     return Path.combine(
       PathOperation.difference,
       Path()
         ..lineTo(size.width, 0)
         ..lineTo(size.width, size.height)
-        ..lineTo(start, size.height)
+        ..lineTo(size.width, size.height)
         ..lineTo(0, size.height)
         ..lineTo(0, 0),
       Path()
         ..addOval(
           Rect.fromCircle(
-            center:
-                Offset(start - (width / 2) - edgeDistance, size.height + 5.5),
-            radius: width / 2,
+            center: Offset(
+                size.width - radius - edgeDistance, size.height + offset),
+            radius: radius + padding,
           ),
         )
         ..close(),
