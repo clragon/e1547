@@ -27,8 +27,8 @@ Future<AppInfo> initializeAppInfo() async => AppInfo.fromPlatform(
       allowedHosts: ['e926.net', 'e621.net'],
     );
 
-/// Initializes the databases used by the app with default production values.
-Future<AppStorage> initializeAppdatabases({required AppInfo info}) async {
+/// Initializes the storages used by the app with default production values.
+Future<AppStorage> initializeAppStorage({required AppInfo info}) async {
   final String temporaryFiles = await getTemporaryDirectory()
       .then((value) => join(value.path, info.appName));
   return AppStorage(
