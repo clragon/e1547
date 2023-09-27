@@ -16,9 +16,9 @@ final Loggy _loggy = Loggy('BackgroundTask');
 /// Prepares controller objects necessary to run various tasks in a background isolate.
 Future<ControllerBundle> prepareBackgroundIsolate() async {
   AppInfo appInfo = await initializeAppInfo();
-  AppDatabases databases = await initializeAppdatabases(info: appInfo);
-  await initializeLogger(databases: databases, postfix: 'background');
-  Settings settings = Settings(databases.preferences);
+  AppStorage storage = await initializeAppdatabases(info: appInfo);
+  await initializeLogger(storage: storage, postfix: 'background');
+  Settings settings = Settings(storage.preferences);
   ClientService clients = ClientService(
     userAgent: appInfo.userAgent,
     host: settings.host.value,
@@ -45,7 +45,7 @@ Future<ControllerBundle> prepareBackgroundIsolate() async {
     },
   );
 
-  FollowsService follows = FollowsService(databases.followDb);
+  FollowsService follows = FollowsService(storage.followDb);
 
   return ControllerBundle(
     appInfo: appInfo,

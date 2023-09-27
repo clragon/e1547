@@ -17,25 +17,25 @@ import 'package:flutter/material.dart';
 import 'package:flutter_sub/flutter_sub.dart';
 
 class ClientServiceProvider extends SubChangeNotifierProvider3<AppInfo,
-    Settings, AppDatabases, ClientService> {
+    Settings, AppStorage, ClientService> {
   ClientServiceProvider({super.child, TransitionBuilder? builder})
       : super(
-          create: (context, appInfo, settings, databases) => ClientService(
+          create: (context, appInfo, settings, storage) => ClientService(
             allowedHosts: appInfo.allowedHosts,
             host: settings.host.value,
             customHost: settings.customHost.value,
             credentials: settings.credentials.value,
             userAgent: appInfo.userAgent,
-            cache: databases.httpCache,
-            memoryCache: databases.httpMemoryCache,
-            cookies: databases.cookies.value,
+            cache: storage.httpCache,
+            memoryCache: storage.httpMemoryCache,
+            cookies: storage.cookies.value,
           ),
           builder: (context, child) => SubListener(
             listenable: context.watch<ClientService>(),
             listener: () {
               ClientService service = context.read<ClientService>();
               Settings settings = context.read<Settings>();
-              CookiesService cookies = context.read<AppDatabases>().cookies;
+              CookiesService cookies = context.read<AppStorage>().cookies;
               settings.host.value = service.host;
               settings.customHost.value = service.customHost;
               settings.credentials.value = service.credentials;
@@ -49,14 +49,14 @@ class ClientServiceProvider extends SubChangeNotifierProvider3<AppInfo,
         );
 }
 
-class HistoriesServiceProvider extends SubChangeNotifierProvider2<AppDatabases,
-    Settings, HistoriesService> {
+class HistoriesServiceProvider
+    extends SubChangeNotifierProvider2<AppStorage, Settings, HistoriesService> {
   HistoriesServiceProvider({
     super.child,
     TransitionBuilder? builder,
   }) : super(
-          create: (context, databases, settings) => HistoriesService(
-            database: databases.historyDb,
+          create: (context, storage, settings) => HistoriesService(
+            database: storage.historyDb,
             enabled: settings.writeHistory.value,
             trimming: settings.trimHistory.value,
           ),
@@ -73,13 +73,13 @@ class HistoriesServiceProvider extends SubChangeNotifierProvider2<AppDatabases,
         );
 }
 
-class FollowsProvider extends SubProvider<AppDatabases, FollowsService> {
+class FollowsProvider extends SubProvider<AppStorage, FollowsService> {
   FollowsProvider({
     super.child,
     TransitionBuilder? builder,
   }) : super(
-          create: (context, databases) => FollowsService(
-            databases.followDb,
+          create: (context, storage) => FollowsService(
+            storage.followDb,
           ),
           builder: (context, child) => SubListener(
             listenable: context.watch<ClientService>(),
@@ -135,7 +135,7 @@ class DenylistProvider
         );
 }
 
-class SettingsProvider extends SubProvider<AppDatabases, Settings> {
+class SettingsProvider extends SubProvider<AppStorage, Settings> {
   SettingsProvider({super.child, super.builder})
       : super(
           create: (context, databases) => Settings(

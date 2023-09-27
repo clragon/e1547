@@ -4,8 +4,8 @@ import 'package:e1547/interface/interface.dart';
 import 'package:notified_preferences/notified_preferences.dart';
 
 /// Holds various databases for the app.
-class AppDatabases {
-  const AppDatabases({
+class AppStorage {
+  const AppStorage({
     required this.preferences,
     required this.temporaryFiles,
     required this.httpCache,

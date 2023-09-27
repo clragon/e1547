@@ -15,8 +15,7 @@ class LogFileDialog extends StatelessWidget {
     return AlertDialog(
       title: const Text('Log files'),
       content: SubFuture<List<File>>(
-        create: () async => Directory(
-                context.read<AppDatabases>().temporaryFiles)
+        create: () async => Directory(context.read<AppStorage>().temporaryFiles)
             .list()
             .where((e) =>
                 FileSystemEntity.isFileSync(e.path) && e.path.endsWith('.log'))

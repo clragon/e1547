@@ -9,8 +9,8 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   VideoService.ensureInitialized();
   AppInfo appInfo = await initializeAppInfo();
-  AppDatabases databases = await initializeAppdatabases(info: appInfo);
-  Logs logs = await initializeLogger(databases: databases);
+  AppStorage storage = await initializeAppdatabases(info: appInfo);
+  Logs logs = await initializeLogger(storage: storage);
   WindowManager? windowManager = await initializeWindowManager();
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
   initializeBackgroundTasks();
@@ -18,7 +18,7 @@ Future<void> main() async {
     MultiProvider(
       providers: [
         Provider.value(value: appInfo),
-        Provider.value(value: databases),
+        Provider.value(value: storage),
         Provider.value(value: logs),
         Provider.value(value: windowManager),
       ],

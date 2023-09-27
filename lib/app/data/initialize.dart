@@ -28,10 +28,10 @@ Future<AppInfo> initializeAppInfo() async => AppInfo.fromPlatform(
     );
 
 /// Initializes the databases used by the app with default production values.
-Future<AppDatabases> initializeAppdatabases({required AppInfo info}) async {
+Future<AppStorage> initializeAppdatabases({required AppInfo info}) async {
   final String temporaryFiles = await getTemporaryDirectory()
       .then((value) => join(value.path, info.appName));
-  return AppDatabases(
+  return AppStorage(
     preferences: await SharedPreferences.getInstance(),
     temporaryFiles: temporaryFiles,
     httpCache: DbCacheStore(databasePath: temporaryFiles),
@@ -53,12 +53,12 @@ DatabaseConnection connectDatabase(String name) =>
 
 /// Initializes the logger used by the app with default production values.
 Future<Logs> initializeLogger({
-  required AppDatabases databases,
+  required AppStorage storage,
   String? postfix,
   List<LoggyPrinter>? printers,
 }) async {
   MemoryLogs logs = MemoryLogs();
-  File logFile = File(join(databases.temporaryFiles,
+  File logFile = File(join(storage.temporaryFiles,
       '${logFileDateFormat.format(DateTime.now())}${postfix != null ? '.$postfix' : ''}.log'));
   Loggy.initLoggy(
     logPrinter: MultiLoggyPrinter([

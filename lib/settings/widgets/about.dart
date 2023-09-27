@@ -17,7 +17,7 @@ class AboutPage extends StatefulWidget {
 class _AboutPageState extends State<AboutPage> {
   late Future<List<AppVersion>> versions =
       context.read<AppInfo>().getNewVersions(
-            cache: context.read<AppDatabases>().httpMemoryCache,
+            cache: context.read<AppStorage>().httpMemoryCache,
           );
 
   Widget linkListTile({
@@ -36,8 +36,8 @@ class _AboutPageState extends State<AboutPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer2<AppInfo, AppDatabases>(
-      builder: (context, appInfo, databases, child) => Scaffold(
+    return Consumer2<AppInfo, AppStorage>(
+      builder: (context, appInfo, storage, child) => Scaffold(
         appBar: const DefaultAppBar(
           title: Text('About'),
           leading: BackButton(),
@@ -47,7 +47,7 @@ class _AboutPageState extends State<AboutPage> {
             try {
               setState(() {
                 versions = appInfo.getNewVersions(
-                  cache: databases.httpMemoryCache,
+                  cache: storage.httpMemoryCache,
                   force: true,
                 );
               });
@@ -275,7 +275,7 @@ class DrawerUpdateIcon extends StatelessWidget {
   Widget build(BuildContext context) {
     return SubFuture<List<AppVersion>>(
       create: () => context.read<AppInfo>().getNewVersions(
-            cache: context.read<AppDatabases>().httpMemoryCache,
+            cache: context.read<AppStorage>().httpMemoryCache,
           ),
       keys: [context.watch<AppInfo>()],
       builder: (context, snapshot) {

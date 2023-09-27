@@ -1,10 +1,10 @@
 // data
 export 'data/background.dart';
 export 'data/capabilities.dart';
-export 'data/database.dart';
 export 'data/initialize.dart';
 export 'data/link.dart';
 export 'data/navigation.dart';
+export 'data/storage.dart';
 export 'data/task.dart';
 export 'data/theme.dart';
 // widgets

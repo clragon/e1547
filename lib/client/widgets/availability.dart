@@ -142,7 +142,7 @@ class _CookieCapturePageState extends State<CookieCapturePage> {
     ..loadRequest(Uri.https(context.read<Client>().host));
 
   Future<void> setCookies(BuildContext context) async {
-    CookiesService cookies = context.read<AppDatabases>().cookies;
+    CookiesService cookies = context.read<AppStorage>().cookies;
     ClientService clientService = context.read<ClientService>();
     await cookies.load(Uri.https(clientService.host).toString());
     clientService.cookies = cookies.value;
