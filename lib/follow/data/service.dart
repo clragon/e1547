@@ -2,39 +2,40 @@ import 'dart:async';
 
 import 'package:collection/collection.dart';
 import 'package:e1547/follow/follow.dart';
-import 'package:e1547/interface/interface.dart';
+import 'package:e1547/interface/data/stream.dart';
 
-class FollowsService extends FollowsDatabase {
-  FollowsService(super.e);
+class FollowsService extends FollowsDao {
+  FollowsService({
+    required super.database,
+    required super.identity,
+  });
 
-  StreamFuture<Follow?> follow(String host, String tag) => all(
-        host: host,
-        tagRegex: r'^' + RegExp.escape(tag) + r'$',
+  StreamFuture<Follow?> follow(String tag) => page(
+        page: 1,
         limit: 1,
+        tagRegex: r'^' + RegExp.escape(tag) + r'$',
       ).stream.map((e) => e.firstOrNull).future;
 
-  StreamFuture<bool> follows(String host, String tag) =>
-      follow(host, tag).stream.map((e) => e != null).future;
+  StreamFuture<bool> follows(String tag) =>
+      follow(tag).stream.map((e) => e != null).future;
 
-  Future<void> addTag(String host, String tag, {FollowType? type}) => add(
-        host,
+  Future<void> addTag(String tag, {FollowType? type, int? identity}) => add(
         FollowRequest(
           tags: tag,
           type: type ?? FollowType.update,
         ),
+        identity: identity,
       );
 
-  Future<void> removeTag(String host, String tag) => transaction(
-        () async => removeAll(
-          await all(
-            host: host,
-            tagRegex: r'^' + RegExp.escape(tag) + r'$',
-          ),
-        ),
+  Future<void> removeTag(String tag) => transaction(
+        () async {
+          int? id = (await follow(tag))?.id;
+          if (id == null) return;
+          return remove(id);
+        },
       );
 
   Future<void> edit(
-    String host,
     List<String> notifications,
     List<String> subscriptions,
     List<String> bookmarks,
@@ -43,7 +44,7 @@ class FollowsService extends FollowsDatabase {
     List<FollowRequest> allAdded = [];
 
     Future<void> process(List<String> updateList, FollowType type) async {
-      List<Follow> follows = await all(host: host, types: [type]);
+      List<Follow> follows = await all(types: [type]);
       List<Follow> removed =
           follows.whereNot((e) => updateList.contains(e.tags)).toList();
       List<String> tags = follows.map((e) => e.tags).toList();
@@ -60,7 +61,11 @@ class FollowsService extends FollowsDatabase {
     await process(subscriptions, FollowType.update);
     await process(bookmarks, FollowType.bookmark);
 
-    await removeAll(allRemoved);
-    await addAll(host, allAdded);
+    for (final follow in allRemoved) {
+      await remove(follow.id);
+    }
+    for (final follow in allAdded) {
+      await add(follow);
+    }
   }
 }

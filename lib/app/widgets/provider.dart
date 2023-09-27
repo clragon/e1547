@@ -7,60 +7,92 @@ library;
 
 import 'package:e1547/app/app.dart';
 import 'package:e1547/client/client.dart';
-import 'package:e1547/denylist/denylist.dart';
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/history/history.dart';
+import 'package:e1547/identity/identity.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/settings/settings.dart';
-import 'package:e1547/user/user.dart';
+import 'package:e1547/traits/traits.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_sub/flutter_sub.dart';
 
-class ClientServiceProvider extends SubChangeNotifierProvider3<AppInfo,
-    Settings, AppStorage, ClientService> {
-  ClientServiceProvider({super.child, TransitionBuilder? builder})
-      : super(
-          create: (context, appInfo, settings, storage) => ClientService(
-            allowedHosts: appInfo.allowedHosts,
-            host: settings.host.value,
-            customHost: settings.customHost.value,
-            credentials: settings.credentials.value,
-            userAgent: appInfo.userAgent,
-            cache: storage.httpCache,
-            memoryCache: storage.httpMemoryCache,
-            cookies: storage.cookies.value,
+class IdentitiesServiceProvider extends SubChangeNotifierProvider3<AppStorage,
+    Settings, ClientFactory, IdentitiesService> {
+  IdentitiesServiceProvider({
+    super.child,
+    TransitionBuilder? builder,
+  }) : super(
+          create: (context, storage, settings, factory) => IdentitiesService(
+            database: storage.sqlite,
+            onCreate: factory.createDefaultIdentity,
           ),
-          builder: (context, child) => SubListener(
-            listenable: context.watch<ClientService>(),
-            listener: () {
-              ClientService service = context.read<ClientService>();
-              Settings settings = context.read<Settings>();
-              CookiesService cookies = context.read<AppStorage>().cookies;
-              settings.host.value = service.host;
-              settings.customHost.value = service.customHost;
-              settings.credentials.value = service.credentials;
-              cookies.save(service.cookies);
-            },
-            builder: (context) => ClientProvider(
-              builder: builder,
-              child: child,
+          builder: (context, child) => Consumer2<IdentitiesService, Settings>(
+            builder: (context, service, settings, child) => SubListener(
+              listenable: service,
+              listener: () => settings.identity.value = service.identity.id,
+              builder: (context) => SubFuture<void>(
+                create: () => service.activate(settings.identity.value),
+                keys: [service],
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState != ConnectionState.done) {
+                    return Container(
+                      color: Theme.of(context).colorScheme.background,
+                    );
+                  }
+                  return builder?.call(context, child) ?? child!;
+                },
+              ),
             ),
+            child: child,
           ),
         );
 }
 
-class HistoriesServiceProvider
-    extends SubChangeNotifierProvider2<AppStorage, Settings, HistoriesService> {
+class TraitsServiceProvider extends SubChangeNotifierProvider3<AppStorage,
+    IdentitiesService, ClientFactory, TraitsService> {
+  TraitsServiceProvider({
+    super.child,
+    TransitionBuilder? builder,
+  }) : super(
+          create: (context, storage, identities, factory) => TraitsService(
+            database: storage.sqlite,
+            onCreate: (id) async => factory.createDefaultTraits(
+              await identities.get(id),
+            ),
+          ),
+          builder: (context, child) =>
+              Consumer2<TraitsService, IdentitiesService>(
+            builder: (context, traits, identities, child) => SubFuture<void>(
+              create: () => traits.activate(identities.identity.id),
+              keys: [traits, identities],
+              builder: (context, snapshot) {
+                if (snapshot.connectionState != ConnectionState.done) {
+                  return Container(
+                    color: Theme.of(context).colorScheme.background,
+                  );
+                }
+                return builder?.call(context, child) ?? child!;
+              },
+            ),
+            child: child,
+          ),
+        );
+}
+
+class HistoriesServiceProvider extends SubChangeNotifierProvider3<AppStorage,
+    IdentitiesService, Settings, HistoriesService> {
   HistoriesServiceProvider({
     super.child,
     TransitionBuilder? builder,
   }) : super(
-          create: (context, storage, settings) => HistoriesService(
-            database: storage.historyDb,
+          create: (context, storage, identities, settings) => HistoriesService(
+            database: storage.sqlite,
+            identity: identities.identity.id,
             enabled: settings.writeHistory.value,
             trimming: settings.trimHistory.value,
           ),
+          keys: (context) => [context.watch<IdentitiesService>().identity.id],
           builder: (context, child) => SubListener(
             listenable: context.watch<HistoriesService>(),
             listener: () {
@@ -74,65 +106,31 @@ class HistoriesServiceProvider
         );
 }
 
-class FollowsProvider extends SubProvider<AppStorage, FollowsService> {
+class FollowsProvider
+    extends SubProvider2<AppStorage, IdentitiesService, FollowsService> {
   FollowsProvider({
     super.child,
     TransitionBuilder? builder,
   }) : super(
-          create: (context, storage) => FollowsService(
-            storage.followDb,
+          create: (context, storage, identities) => FollowsService(
+            database: storage.sqlite,
+            identity: identities.identity.id,
           ),
-          builder: (context, child) => SubListener(
-            listenable: context.watch<ClientService>(),
-            listener: () {
-              ClientService service = context.read<ClientService>();
-              Settings settings = context.read<Settings>();
-              settings.host.value = service.host;
-              settings.customHost.value = service.customHost;
-            },
-            builder: (context) =>
-                SubChangeNotifierProvider<FollowsService, FollowsUpdater>(
+          keys: (context) => [context.watch<IdentitiesService>().identity.id],
+          builder: (context, child) {
+            return SubChangeNotifierProvider<FollowsService, FollowsUpdater>(
               create: (context, service) {
                 FollowsUpdater updater = FollowsUpdater(service: service);
                 WidgetsBinding.instance.addPostFrameCallback(
-                  (_) => updater.update(
-                    client: context.read<Client>(),
-                    denylist: context.read<DenylistService>().items,
-                  ),
+                  (_) => updater.update(client: context.read<Client>()),
                 );
                 return updater;
               },
               builder: (context, child) =>
                   builder?.call(context, child) ?? child!,
               child: child,
-            ),
-          ),
-        );
-}
-
-class DenylistProvider
-    extends SubChangeNotifierProvider2<Settings, Client, DenylistService> {
-  DenylistProvider({super.child, super.builder})
-      : super(
-          create: (context, settings, client) => DenylistService(
-            items: settings.denylist.value,
-            pull: () async {
-              CurrentUser? user = await client.currentUser(force: true);
-              if (user == null) return null;
-              return user.blacklistedTags?.split('\n');
-            },
-            push: (value) async {
-              settings.denylist.value = value;
-              if (!client.hasLogin) return;
-              try {
-                await client.updateBlacklist(value);
-              } on ClientException catch (e) {
-                if (!CancelToken.isCancel(e)) {
-                  rethrow;
-                }
-              }
-            },
-          )..pull(),
+            );
+          },
         );
 }
 
@@ -142,6 +140,33 @@ class SettingsProvider extends SubProvider<AppStorage, Settings> {
           create: (context, databases) => Settings(
             databases.preferences,
           ),
+        );
+}
+
+class ClientFactoryProvider extends SubProvider0<ClientFactory> {
+  ClientFactoryProvider({super.child, super.builder})
+      : super(create: (context) => ClientFactory());
+}
+
+class ClientProvider extends SubProvider5<AppStorage, IdentitiesService,
+    TraitsService, AppInfo, ClientFactory, Client> {
+  ClientProvider({super.child, super.builder})
+      : super(
+          create: (context, storage, identities, traits, info, factory) =>
+              factory.create(
+            ClientConfig(
+              identity: identities.identity,
+              traits: traits.notifier,
+              userAgent: info.userAgent,
+              cache: storage.httpCache,
+            ),
+          ),
+          keys: (context) => [
+            context.watch<IdentitiesService>().identity,
+            context.watch<AppStorage>().httpCache,
+            context.watch<AppInfo>().userAgent,
+          ],
+          dispose: (context, client) => client.dispose(),
         );
 }
 

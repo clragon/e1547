@@ -1,11 +1,11 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-part 'current.freezed.dart';
-part 'current.g.dart';
+part 'account.freezed.dart';
+part 'account.g.dart';
 
 @freezed
-class CurrentUser with _$CurrentUser {
-  const factory CurrentUser({
+class Account with _$Account {
+  const factory Account({
     required int wikiPageVersionCount,
     required int artistVersionCount,
     required int poolVersionCount,
@@ -71,7 +71,7 @@ class CurrentUser with _$CurrentUser {
     required int statementTimeout,
     required int favoriteLimit,
     required int tagQueryLimit,
-  }) = _CurrentUser;
+  }) = _Account;
 
-  factory CurrentUser.fromJson(dynamic json) => _$CurrentUserFromJson(json);
+  factory Account.fromJson(dynamic json) => _$AccountFromJson(json);
 }

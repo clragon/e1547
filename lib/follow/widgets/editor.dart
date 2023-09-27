@@ -1,5 +1,4 @@
 import 'package:collection/collection.dart';
-import 'package:e1547/client/client.dart';
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
@@ -16,16 +15,14 @@ class _FollowEditorState extends State<FollowEditor> {
   final String subscribe = FollowType.update.name;
   final String bookmark = FollowType.bookmark.name;
 
-  late Client client = context.read<Client>();
   late FollowsService service = context.read<FollowsService>();
   late Future<Map<String, String>> follows = Future(
     () async => {
-      notify: await service.all(
-          host: client.host, types: [FollowType.notify]).then(followString),
-      subscribe: await service.all(
-          host: client.host, types: [FollowType.update]).then(followString),
-      bookmark: await service.all(
-          host: client.host, types: [FollowType.bookmark]).then(followString),
+      notify: await service.all(types: [FollowType.notify]).then(followString),
+      subscribe:
+          await service.all(types: [FollowType.update]).then(followString),
+      bookmark:
+          await service.all(types: [FollowType.bookmark]).then(followString),
     },
   );
 
@@ -60,7 +57,6 @@ class _FollowEditorState extends State<FollowEditor> {
         ],
         onSubmit: (value) async {
           await service.edit(
-            client.host,
             value
                 .firstWhere((e) => e.key == notify)
                 .value!

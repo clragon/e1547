@@ -10,10 +10,16 @@ class Settings extends NotifiedSettings {
   static Future<Settings> getInstance() async =>
       Settings(await SharedPreferences.getInstance());
 
+  @Deprecated('Credentials are now stored in the identity database')
   late final ValueNotifier<Credentials?> credentials = createJsonSetting(
     key: 'credentials',
     initialValue: null,
     fromJson: Credentials.fromJson,
+  );
+
+  late final ValueNotifier<int> identity = createSetting(
+    key: 'identity',
+    initialValue: 1,
   );
 
   late final ValueNotifier<AppTheme> theme = createEnumSetting(

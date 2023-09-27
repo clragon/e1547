@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:e1547/client/client.dart';
-import 'package:e1547/denylist/denylist.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
@@ -33,15 +32,13 @@ class PostLoadingPage extends StatelessWidget {
 }
 
 class SingleFuturePostsProvider
-    extends SubProvider2<Client, DenylistService, Future<PostsController>> {
+    extends SubProvider<Client, Future<PostsController>> {
   SingleFuturePostsProvider({required int id, super.child, super.builder})
       : super(
-          create: (context, client, denylist) =>
-              Future<PostsController>(() async {
+          create: (context, client) => Future<PostsController>(() async {
             PostsController controller = SinglePostController(
               id: id,
               client: client,
-              denylist: denylist,
             );
             await controller.getNextPage();
             return controller;

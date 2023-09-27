@@ -1,4 +1,4 @@
-import 'package:e1547/denylist/denylist.dart';
+import 'package:e1547/client/client.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +8,7 @@ class DenyListEditor extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Client client = context.read<Client>();
     return TextEditor(
       title: const Text('Blacklist'),
       actions: [
@@ -17,16 +18,14 @@ class DenyListEditor extends StatelessWidget {
               showTagSearchPrompt(context: context, tag: 'e621:blacklist'),
         )
       ],
-      content: context.read<DenylistService>().items.join('\n'),
+      content: client.traits.value.denylist.join('\n'),
       onSubmit: (value) async {
         List<String> tags = value.split('\n');
         tags = tags.trim();
         tags.removeWhere((tag) => tag.isEmpty);
-        try {
-          await context.read<DenylistService>().set(tags);
-        } on DenylistUpdateException {
-          return 'Failed to update blacklist!';
-        }
+        client.traits.value = client.traits.value.copyWith(
+          denylist: tags,
+        );
         if (context.mounted) {
           Navigator.of(context).maybePop();
         }

@@ -1,4 +1,3 @@
-import 'package:e1547/client/client.dart';
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
@@ -14,12 +13,12 @@ class FollowMarkReadTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer2<FollowsService, Client>(
-      builder: (context, service, client, child) => SubStream<int>(
-        create: () => service.unseen(host: client.host).stream.map(
+    return Consumer<FollowsService>(
+      builder: (context, service, child) => SubStream<int>(
+        create: () => service.unseen().stream.map(
               (e) => e.fold(0, (a, b) => a + b.unseen!),
             ),
-        keys: [service, client.host],
+        keys: [service],
         builder: (context, snapshot) => ListTile(
           enabled: (snapshot.data ?? 0) > 0,
           leading: Icon(

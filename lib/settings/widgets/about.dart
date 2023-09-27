@@ -17,7 +17,7 @@ class AboutPage extends StatefulWidget {
 class _AboutPageState extends State<AboutPage> {
   late Future<List<AppVersion>> versions =
       context.read<AppInfo>().getNewVersions(
-            cache: context.read<AppStorage>().httpMemoryCache,
+            cache: context.read<AppStorage>().httpCache,
           );
 
   Widget linkListTile({
@@ -47,7 +47,7 @@ class _AboutPageState extends State<AboutPage> {
             try {
               setState(() {
                 versions = appInfo.getNewVersions(
-                  cache: storage.httpMemoryCache,
+                  cache: storage.httpCache,
                   force: true,
                 );
               });
@@ -275,7 +275,7 @@ class DrawerUpdateIcon extends StatelessWidget {
   Widget build(BuildContext context) {
     return SubFuture<List<AppVersion>>(
       create: () => context.read<AppInfo>().getNewVersions(
-            cache: context.read<AppStorage>().httpMemoryCache,
+            cache: context.read<AppStorage>().httpCache,
           ),
       keys: [context.watch<AppInfo>()],
       builder: (context, snapshot) {

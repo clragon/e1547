@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:collection/collection.dart';
 import 'package:e1547/app/app.dart';
 import 'package:e1547/client/client.dart';
-import 'package:e1547/denylist/denylist.dart';
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/logs/logs.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
@@ -14,7 +13,6 @@ const String followsBackgroundTaskKey = 'net.clynamic.e1547.follows';
 Future<bool> backgroundUpdateFollows({
   required FollowsService service,
   required Client client,
-  required DenylistService denylist,
   required FlutterLocalNotificationsPlugin notifications,
 }) async {
   final Loggy loggy = Loggy('BackgroundFollows');
@@ -22,7 +20,6 @@ Future<bool> backgroundUpdateFollows({
   loggy.info('Starting follow update');
 
   List<Follow> previous = await service.all(
-    host: client.host,
     types: [FollowType.notify],
   );
 
@@ -30,11 +27,9 @@ Future<bool> backgroundUpdateFollows({
     service: service,
     client: client,
     force: true,
-    denylist: denylist.items,
   ).run();
 
   List<Follow> updated = await service.all(
-    host: client.host,
     types: [FollowType.notify],
   );
 

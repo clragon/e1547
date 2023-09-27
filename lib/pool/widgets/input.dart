@@ -1,7 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:collection/collection.dart';
 import 'package:e1547/app/app.dart';
-import 'package:e1547/client/client.dart';
 import 'package:e1547/history/history.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/pool/data/controller.dart';
@@ -139,23 +138,23 @@ class PoolNameFilter extends StatelessWidget {
         },
         suggestionsCallback: (value) async {
           HistoriesService service = context.read<HistoriesService>();
-          Client client = context.read<Client>();
           value = value.trim();
           List<_PoolSearchResult?> entries = [];
           entries.addAll(
-            (await service.all(
-              host: client.host,
-              linkRegex: r'/pools' +
-                  RegExp.escape(Uri(queryParameters: {
-                    r'search[name_matches]': '',
-                  }).toString()) +
-                  r'=' +
-                  queryDivider +
-                  r'*' +
-                  RegExp.escape(Uri.encodeQueryComponent(value)) +
-                  queryDivider +
-                  r'*',
-            ))
+            (await service
+                    .all(
+                      linkRegex: r'/pools' +
+                          RegExp.escape(Uri(queryParameters: {
+                            r'search[name_matches]': '',
+                          }).toString()) +
+                          r'=' +
+                          queryDivider +
+                          r'*' +
+                          RegExp.escape(Uri.encodeQueryComponent(value)) +
+                          queryDivider +
+                          r'*',
+                    )
+                    .first)
                 .map((e) {
               String? name = const E621LinkParser()
                   .parse(e.link)
@@ -166,12 +165,14 @@ class PoolNameFilter extends StatelessWidget {
               return null;
             }).take(4),
           );
-          entries.addAll((await service.all(
-            host: client.host,
-            linkRegex: r'/pools/.*',
-            titleRegex:
-                r'.*' + RegExp.escape(value.replaceAll(' ', '_')) + r'.*',
-          ))
+          entries.addAll((await service
+                  .all(
+                    linkRegex: r'/pools/.*',
+                    titleRegex: r'.*' +
+                        RegExp.escape(value.replaceAll(' ', '_')) +
+                        r'.*',
+                  )
+                  .first)
               .map((e) {
             String? name = e.title;
             if (name != null) {

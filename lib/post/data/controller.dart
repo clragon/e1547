@@ -1,5 +1,4 @@
 import 'package:e1547/client/client.dart';
-import 'package:e1547/denylist/denylist.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/tag/data/map.dart';
@@ -9,7 +8,6 @@ class PostsController extends PageClientDataController<Post>
     with PostsActionController, PostFilterableController {
   PostsController({
     required this.client,
-    required this.denylist,
     QueryMap? query,
     bool orderFavorites = false,
     bool orderPools = true,
@@ -20,7 +18,7 @@ class PostsController extends PageClientDataController<Post>
         _orderFavorites = orderFavorites,
         _orderPools = orderPools {
     this.denying = denying;
-    denylist.addListener(applyFilter);
+    client.traits.addListener(applyFilter);
   }
 
   @override
@@ -37,8 +35,6 @@ class PostsController extends PageClientDataController<Post>
 
   @override
   final PostFilterMode filterMode;
-  @override
-  final DenylistService denylist;
 
   bool _orderFavorites;
 
@@ -73,7 +69,7 @@ class PostsController extends PageClientDataController<Post>
 
   @override
   void dispose() {
-    denylist.removeListener(applyFilter);
+    client.traits.removeListener(applyFilter);
     super.dispose();
   }
 }
@@ -82,7 +78,6 @@ class SinglePostController extends PostsController {
   SinglePostController({
     required this.id,
     required super.client,
-    required super.denylist,
     super.filterMode = PostFilterMode.plain,
   }) : super(canSearch: false);
 
@@ -99,8 +94,7 @@ class SinglePostController extends PostsController {
       ];
 }
 
-class PostsProvider extends SubChangeNotifierProvider2<Client, DenylistService,
-    PostsController> {
+class PostsProvider extends SubChangeNotifierProvider<Client, PostsController> {
   PostsProvider({
     QueryMap? query,
     bool orderFavorites = false,
@@ -111,9 +105,8 @@ class PostsProvider extends SubChangeNotifierProvider2<Client, DenylistService,
     super.child,
     super.builder,
   }) : super(
-          create: (context, client, denylist) => PostsController(
+          create: (context, client) => PostsController(
             client: client,
-            denylist: denylist,
             query: query,
             orderFavorites: orderFavorites,
             orderPools: orderPools,
@@ -139,10 +132,9 @@ class SinglePostProvider extends PostsProvider {
     super.child,
     super.builder,
   }) : super.builder(
-          create: (context, client, denylist) => SinglePostController(
+          create: (context, client) => SinglePostController(
             id: id,
             client: client,
-            denylist: denylist,
             filterMode: filterMode,
           ),
         );

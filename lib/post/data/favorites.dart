@@ -4,10 +4,7 @@ import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
 
 class FavoritePostsController extends PostsController {
-  FavoritePostsController({
-    required super.client,
-    required super.denylist,
-  });
+  FavoritePostsController({required super.client});
 
   @override
   @protected

@@ -1,7 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/comment/comment.dart';
-import 'package:e1547/denylist/denylist.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
 
@@ -9,16 +8,14 @@ class CommentsController extends PageClientDataController<Comment> {
   CommentsController({
     required this.client,
     required this.postId,
-    required this.denylist,
     bool? orderByOldest,
   }) : _orderByOldest = orderByOldest ?? true {
-    denylist.addListener(applyFilter);
+    client.traits.addListener(applyFilter);
   }
 
   @override
   final Client client;
   final int postId;
-  final DenylistService denylist;
 
   bool _orderByOldest;
   bool get orderByOldest => _orderByOldest;
@@ -43,8 +40,10 @@ class CommentsController extends PageClientDataController<Comment> {
       );
 
   @override
-  List<Comment>? filter(List<Comment>? items) => super.filter(
-      items?.whereNot((e) => denylist.denies('user:${e.creatorId}')).toList());
+  List<Comment>? filter(List<Comment>? items) => super.filter(items
+      ?.whereNot(
+          (e) => client.traits.value.denylist.contains('user:${e.creatorId}'))
+      .toList());
 
   void replaceComment(Comment comment) => updateItem(
         items?.indexWhere((e) => e.id == comment.id) ?? -1,
@@ -112,17 +111,17 @@ class CommentsController extends PageClientDataController<Comment> {
 
   @override
   void dispose() {
-    denylist.removeListener(applyFilter);
+    client.traits.removeListener(applyFilter);
     super.dispose();
   }
 }
 
-class CommentsProvider extends SubChangeNotifierProvider2<Client,
-    DenylistService, CommentsController> {
+class CommentsProvider
+    extends SubChangeNotifierProvider<Client, CommentsController> {
   CommentsProvider({required int postId, super.child, super.builder})
       : super(
-          create: (context, client, denylist) => CommentsController(
-              client: client, postId: postId, denylist: denylist),
+          create: (context, client) =>
+              CommentsController(client: client, postId: postId),
           keys: (context) => [postId],
         );
 }

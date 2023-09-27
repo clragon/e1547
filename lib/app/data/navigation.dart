@@ -1,12 +1,12 @@
-import 'package:e1547/client/client.dart';
-import 'package:e1547/denylist/denylist.dart';
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/history/history.dart';
+import 'package:e1547/identity/identity.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/pool/pool.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:e1547/topic/topic.dart';
+import 'package:e1547/traits/traits.dart';
 import 'package:flutter/material.dart';
 
 const String _drawerSearchGroup = 'search';
@@ -113,7 +113,7 @@ final List<RouterDrawerDestination> rootDestintations = [
   ),
   RouterDrawerDestination(
     path: '/login',
-    builder: (context) => const LoginPage(),
+    builder: (context) => const IdentityPage(),
   ),
   RouterDrawerDestination(
     path: '/blacklist',

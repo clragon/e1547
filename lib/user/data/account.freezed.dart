@@ -3,7 +3,7 @@
 // ignore_for_file: type=lint
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
-part of 'current.dart';
+part of 'account.dart';
 
 // **************************************************************************
 // FreezedGenerator
@@ -14,12 +14,12 @@ T _$identity<T>(T value) => value;
 final _privateConstructorUsedError = UnsupportedError(
     'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
 
-CurrentUser _$CurrentUserFromJson(Map<String, dynamic> json) {
-  return _CurrentUser.fromJson(json);
+Account _$AccountFromJson(Map<String, dynamic> json) {
+  return _Account.fromJson(json);
 }
 
 /// @nodoc
-mixin _$CurrentUser {
+mixin _$Account {
   int get wikiPageVersionCount => throw _privateConstructorUsedError;
   int get artistVersionCount => throw _privateConstructorUsedError;
   int get poolVersionCount => throw _privateConstructorUsedError;
@@ -88,15 +88,13 @@ mixin _$CurrentUser {
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
-  $CurrentUserCopyWith<CurrentUser> get copyWith =>
-      throw _privateConstructorUsedError;
+  $AccountCopyWith<Account> get copyWith => throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class $CurrentUserCopyWith<$Res> {
-  factory $CurrentUserCopyWith(
-          CurrentUser value, $Res Function(CurrentUser) then) =
-      _$CurrentUserCopyWithImpl<$Res, CurrentUser>;
+abstract class $AccountCopyWith<$Res> {
+  factory $AccountCopyWith(Account value, $Res Function(Account) then) =
+      _$AccountCopyWithImpl<$Res, Account>;
   @useResult
   $Res call(
       {int wikiPageVersionCount,
@@ -167,9 +165,9 @@ abstract class $CurrentUserCopyWith<$Res> {
 }
 
 /// @nodoc
-class _$CurrentUserCopyWithImpl<$Res, $Val extends CurrentUser>
-    implements $CurrentUserCopyWith<$Res> {
-  _$CurrentUserCopyWithImpl(this._value, this._then);
+class _$AccountCopyWithImpl<$Res, $Val extends Account>
+    implements $AccountCopyWith<$Res> {
+  _$AccountCopyWithImpl(this._value, this._then);
 
   // ignore: unused_field
   final $Val _value;
@@ -511,11 +509,10 @@ class _$CurrentUserCopyWithImpl<$Res, $Val extends CurrentUser>
 }
 
 /// @nodoc
-abstract class _$$CurrentUserImplCopyWith<$Res>
-    implements $CurrentUserCopyWith<$Res> {
-  factory _$$CurrentUserImplCopyWith(
-          _$CurrentUserImpl value, $Res Function(_$CurrentUserImpl) then) =
-      __$$CurrentUserImplCopyWithImpl<$Res>;
+abstract class _$$AccountImplCopyWith<$Res> implements $AccountCopyWith<$Res> {
+  factory _$$AccountImplCopyWith(
+          _$AccountImpl value, $Res Function(_$AccountImpl) then) =
+      __$$AccountImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -587,11 +584,11 @@ abstract class _$$CurrentUserImplCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$CurrentUserImplCopyWithImpl<$Res>
-    extends _$CurrentUserCopyWithImpl<$Res, _$CurrentUserImpl>
-    implements _$$CurrentUserImplCopyWith<$Res> {
-  __$$CurrentUserImplCopyWithImpl(
-      _$CurrentUserImpl _value, $Res Function(_$CurrentUserImpl) _then)
+class __$$AccountImplCopyWithImpl<$Res>
+    extends _$AccountCopyWithImpl<$Res, _$AccountImpl>
+    implements _$$AccountImplCopyWith<$Res> {
+  __$$AccountImplCopyWithImpl(
+      _$AccountImpl _value, $Res Function(_$AccountImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -663,7 +660,7 @@ class __$$CurrentUserImplCopyWithImpl<$Res>
     Object? favoriteLimit = null,
     Object? tagQueryLimit = null,
   }) {
-    return _then(_$CurrentUserImpl(
+    return _then(_$AccountImpl(
       wikiPageVersionCount: null == wikiPageVersionCount
           ? _value.wikiPageVersionCount
           : wikiPageVersionCount // ignore: cast_nullable_to_non_nullable
@@ -930,8 +927,8 @@ class __$$CurrentUserImplCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$CurrentUserImpl implements _CurrentUser {
-  const _$CurrentUserImpl(
+class _$AccountImpl implements _Account {
+  const _$AccountImpl(
       {required this.wikiPageVersionCount,
       required this.artistVersionCount,
       required this.poolVersionCount,
@@ -998,8 +995,8 @@ class _$CurrentUserImpl implements _CurrentUser {
       required this.favoriteLimit,
       required this.tagQueryLimit});
 
-  factory _$CurrentUserImpl.fromJson(Map<String, dynamic> json) =>
-      _$$CurrentUserImplFromJson(json);
+  factory _$AccountImpl.fromJson(Map<String, dynamic> json) =>
+      _$$AccountImplFromJson(json);
 
   @override
   final int wikiPageVersionCount;
@@ -1134,14 +1131,14 @@ class _$CurrentUserImpl implements _CurrentUser {
 
   @override
   String toString() {
-    return 'CurrentUser(wikiPageVersionCount: $wikiPageVersionCount, artistVersionCount: $artistVersionCount, poolVersionCount: $poolVersionCount, forumPostCount: $forumPostCount, commentCount: $commentCount, flagCount: $flagCount, positiveFeedbackCount: $positiveFeedbackCount, neutralFeedbackCount: $neutralFeedbackCount, negativeFeedbackCount: $negativeFeedbackCount, uploadLimit: $uploadLimit, id: $id, createdAt: $createdAt, name: $name, level: $level, baseUploadLimit: $baseUploadLimit, postUploadCount: $postUploadCount, postUpdateCount: $postUpdateCount, noteUpdateCount: $noteUpdateCount, isBanned: $isBanned, canApprovePosts: $canApprovePosts, canUploadFree: $canUploadFree, levelString: $levelString, avatarId: $avatarId, showAvatars: $showAvatars, blacklistAvatars: $blacklistAvatars, blacklistUsers: $blacklistUsers, descriptionCollapsedInitially: $descriptionCollapsedInitially, hideComments: $hideComments, showHiddenComments: $showHiddenComments, showPostStatistics: $showPostStatistics, hasMail: $hasMail, receiveEmailNotifications: $receiveEmailNotifications, enableKeyboardNavigation: $enableKeyboardNavigation, enablePrivacyMode: $enablePrivacyMode, styleUsernames: $styleUsernames, enableAutoComplete: $enableAutoComplete, hasSavedSearches: $hasSavedSearches, disableCroppedThumbnails: $disableCroppedThumbnails, disableMobileGestures: $disableMobileGestures, enableSafeMode: $enableSafeMode, disableResponsiveMode: $disableResponsiveMode, disablePostTooltips: $disablePostTooltips, noFlagging: $noFlagging, noFeedback: $noFeedback, disableUserDmails: $disableUserDmails, enableCompactUploader: $enableCompactUploader, updatedAt: $updatedAt, email: $email, lastLoggedInAt: $lastLoggedInAt, lastForumReadAt: $lastForumReadAt, recentTags: $recentTags, commentThreshold: $commentThreshold, defaultImageSize: $defaultImageSize, favoriteTags: $favoriteTags, blacklistedTags: $blacklistedTags, timeZone: $timeZone, perPage: $perPage, customStyle: $customStyle, favoriteCount: $favoriteCount, apiRegenMultiplier: $apiRegenMultiplier, apiBurstLimit: $apiBurstLimit, remainingApiLimit: $remainingApiLimit, statementTimeout: $statementTimeout, favoriteLimit: $favoriteLimit, tagQueryLimit: $tagQueryLimit)';
+    return 'Account(wikiPageVersionCount: $wikiPageVersionCount, artistVersionCount: $artistVersionCount, poolVersionCount: $poolVersionCount, forumPostCount: $forumPostCount, commentCount: $commentCount, flagCount: $flagCount, positiveFeedbackCount: $positiveFeedbackCount, neutralFeedbackCount: $neutralFeedbackCount, negativeFeedbackCount: $negativeFeedbackCount, uploadLimit: $uploadLimit, id: $id, createdAt: $createdAt, name: $name, level: $level, baseUploadLimit: $baseUploadLimit, postUploadCount: $postUploadCount, postUpdateCount: $postUpdateCount, noteUpdateCount: $noteUpdateCount, isBanned: $isBanned, canApprovePosts: $canApprovePosts, canUploadFree: $canUploadFree, levelString: $levelString, avatarId: $avatarId, showAvatars: $showAvatars, blacklistAvatars: $blacklistAvatars, blacklistUsers: $blacklistUsers, descriptionCollapsedInitially: $descriptionCollapsedInitially, hideComments: $hideComments, showHiddenComments: $showHiddenComments, showPostStatistics: $showPostStatistics, hasMail: $hasMail, receiveEmailNotifications: $receiveEmailNotifications, enableKeyboardNavigation: $enableKeyboardNavigation, enablePrivacyMode: $enablePrivacyMode, styleUsernames: $styleUsernames, enableAutoComplete: $enableAutoComplete, hasSavedSearches: $hasSavedSearches, disableCroppedThumbnails: $disableCroppedThumbnails, disableMobileGestures: $disableMobileGestures, enableSafeMode: $enableSafeMode, disableResponsiveMode: $disableResponsiveMode, disablePostTooltips: $disablePostTooltips, noFlagging: $noFlagging, noFeedback: $noFeedback, disableUserDmails: $disableUserDmails, enableCompactUploader: $enableCompactUploader, updatedAt: $updatedAt, email: $email, lastLoggedInAt: $lastLoggedInAt, lastForumReadAt: $lastForumReadAt, recentTags: $recentTags, commentThreshold: $commentThreshold, defaultImageSize: $defaultImageSize, favoriteTags: $favoriteTags, blacklistedTags: $blacklistedTags, timeZone: $timeZone, perPage: $perPage, customStyle: $customStyle, favoriteCount: $favoriteCount, apiRegenMultiplier: $apiRegenMultiplier, apiBurstLimit: $apiBurstLimit, remainingApiLimit: $remainingApiLimit, statementTimeout: $statementTimeout, favoriteLimit: $favoriteLimit, tagQueryLimit: $tagQueryLimit)';
   }
 
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$CurrentUserImpl &&
+            other is _$AccountImpl &&
             (identical(other.wikiPageVersionCount, wikiPageVersionCount) ||
                 other.wikiPageVersionCount == wikiPageVersionCount) &&
             (identical(other.artistVersionCount, artistVersionCount) ||
@@ -1323,19 +1320,19 @@ class _$CurrentUserImpl implements _CurrentUser {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$CurrentUserImplCopyWith<_$CurrentUserImpl> get copyWith =>
-      __$$CurrentUserImplCopyWithImpl<_$CurrentUserImpl>(this, _$identity);
+  _$$AccountImplCopyWith<_$AccountImpl> get copyWith =>
+      __$$AccountImplCopyWithImpl<_$AccountImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$CurrentUserImplToJson(
+    return _$$AccountImplToJson(
       this,
     );
   }
 }
 
-abstract class _CurrentUser implements CurrentUser {
-  const factory _CurrentUser(
+abstract class _Account implements Account {
+  const factory _Account(
       {required final int wikiPageVersionCount,
       required final int artistVersionCount,
       required final int poolVersionCount,
@@ -1400,10 +1397,9 @@ abstract class _CurrentUser implements CurrentUser {
       required final int remainingApiLimit,
       required final int statementTimeout,
       required final int favoriteLimit,
-      required final int tagQueryLimit}) = _$CurrentUserImpl;
+      required final int tagQueryLimit}) = _$AccountImpl;
 
-  factory _CurrentUser.fromJson(Map<String, dynamic> json) =
-      _$CurrentUserImpl.fromJson;
+  factory _Account.fromJson(Map<String, dynamic> json) = _$AccountImpl.fromJson;
 
   @override
   int get wikiPageVersionCount;
@@ -1537,6 +1533,6 @@ abstract class _CurrentUser implements CurrentUser {
   int get tagQueryLimit;
   @override
   @JsonKey(ignore: true)
-  _$$CurrentUserImplCopyWith<_$CurrentUserImpl> get copyWith =>
+  _$$AccountImplCopyWith<_$AccountImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

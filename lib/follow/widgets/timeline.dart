@@ -15,9 +15,8 @@ class _FollowsTimelinePageState extends State<FollowsTimelinePage> {
   Widget build(BuildContext context) {
     return RouterDrawerEntry<FollowsTimelinePage>(
       child: PostsProvider.builder(
-        create: (context, client, denylist) => FollowTimelineController(
+        create: (context, client) => FollowTimelineController(
           client: client,
-          denylist: denylist,
           follows: context.read<FollowsService>(),
         ),
         keys: (context) => [context.watch<FollowsService>()],

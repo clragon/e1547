@@ -84,7 +84,8 @@ class TagDisplay extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: TagCategory.names
           .where((category) =>
-              tags[category]!.isNotEmpty || (editing && category != 'invalid'))
+              (tags[category]?.isNotEmpty ?? false) ||
+              (editing && category != 'invalid'))
           .map((category) => categoryTile(category))
           .toList(),
     );

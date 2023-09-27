@@ -1,5 +1,4 @@
 import 'package:e1547/client/client.dart';
-import 'package:e1547/denylist/denylist.dart';
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
@@ -23,21 +22,19 @@ class _FollowsSubscriptionsPageState extends State<FollowsSubscriptionsPage>
   Widget build(BuildContext context) {
     void update([bool? force]) => context.read<FollowsUpdater>().update(
           client: context.read<Client>(),
-          denylist: context.read<DenylistService>().items,
           force: force,
         );
 
-    return Consumer2<FollowsService, Client>(
-      builder: (context, service, client, child) => FollowUpdates(
+    return Consumer<FollowsService>(
+      builder: (context, service, child) => FollowUpdates(
         builder: (context, refreshController) => SubStream<List<Follow>>(
           create: () => filterUnseen
-              ? service.unseen(host: client.host).stream
+              ? service.unseen().stream
               : service.all(
-                  host: client.host,
                   types: [FollowType.update, FollowType.notify],
                 ).stream,
           listener: (event) => update(),
-          keys: [client, service, filterUnseen],
+          keys: [service, filterUnseen],
           builder: (context, snapshot) {
             List<Follow>? follows = snapshot.data;
             return SelectionLayout<Follow>(
@@ -101,7 +98,6 @@ class _FollowsSubscriptionsPageState extends State<FollowsSubscriptionsPage>
                       value = value.trim();
                       if (value.isNotEmpty) {
                         service.addTag(
-                          client.host,
                           value,
                           type: FollowType.update,
                         );

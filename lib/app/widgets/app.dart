@@ -3,6 +3,7 @@ import 'package:e1547/client/client.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/logs/logs.dart';
 import 'package:e1547/settings/settings.dart';
+import 'package:e1547/traits/traits.dart';
 import 'package:e1547/user/user.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -17,11 +18,9 @@ class App extends StatelessWidget {
     return MultiProvider(
       providers: [
         CacheManagerProvider(),
+        ClientFactoryProvider(),
         SettingsProvider(),
-        ClientServiceProvider(),
-        DenylistProvider(),
-        FollowsProvider(),
-        HistoriesServiceProvider(),
+        VideoServiceProvider(),
         AdaptiveScaffoldScope(
           isEndDrawerOpen: false,
         ),
@@ -29,8 +28,6 @@ class App extends StatelessWidget {
           destinations: rootDestintations,
           drawerHeader: (context) => const UserDrawerHeader(),
         ),
-        CurrentUserAvatarProvider(),
-        VideoServiceProvider(),
       ],
       child: Consumer3<AppInfo, Settings, RouterDrawerController>(
         builder: (context, appInfo, settings, navigation, child) =>
@@ -63,12 +60,29 @@ class App extends StatelessWidget {
                   ),
                   child: WindowFrame(
                     child: WindowShortcuts(
-                      child: ErrorNotifier(
-                        child: LockScreen(
-                          child: ClientAvailabilityCheck(
-                            child: AppLinkHandler(
-                              child: NotificationHandler(
-                                child: child!,
+                      child: AppLoadingScreen(
+                        child: MultiProvider(
+                          providers: [
+                            const DatabaseMigrationProvider(),
+                            IdentitiesServiceProvider(),
+                            TraitsServiceProvider(),
+                            ClientProvider(),
+                            FollowsProvider(),
+                            HistoriesServiceProvider(),
+                            AccountAvatarProvider(),
+                          ],
+                          child: TraitsSync(
+                            child: AppLoadingScreenEnd(
+                              child: ErrorNotifier(
+                                child: LockScreen(
+                                  child: ClientAvailabilityCheck(
+                                    child: AppLinkHandler(
+                                      child: NotificationHandler(
+                                        child: child!,
+                                      ),
+                                    ),
+                                  ),
+                                ),
                               ),
                             ),
                           ),

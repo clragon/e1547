@@ -132,7 +132,7 @@ class CommentTile extends StatelessWidget {
               icon: const DimSubtree(child: Icon(Icons.more_vert)),
               onSelected: (value) => value(),
               itemBuilder: (context) => [
-                if (context.read<Client>().credentials?.username ==
+                if (context.read<Client>().identity.username ==
                     comment.creatorName)
                   PopupMenuTile(
                     title: 'Edit',

@@ -1,10 +1,10 @@
-import 'package:e1547/denylist/denylist.dart';
 import 'package:e1547/history/history.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/pool/pool.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:e1547/tag/tag.dart';
+import 'package:e1547/traits/traits.dart';
 import 'package:flutter/material.dart';
 
 class PoolsPage extends StatefulWidget {
@@ -26,7 +26,6 @@ class _PoolsPageState extends State<PoolsPage> with RouterDrawerEntryWidget {
           controller: controller,
           addToHistory: (context, service, controller) async =>
               service.addPoolSearch(
-            controller.client.host,
             controller.query,
             pools: controller.items,
           ),

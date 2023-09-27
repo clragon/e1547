@@ -4,7 +4,6 @@ class UserFavoritesController extends PostsController {
   UserFavoritesController({
     required this.user,
     required super.client,
-    required super.denylist,
   });
 
   final String user;
@@ -24,7 +23,6 @@ class UserUploadsController extends PostsController {
   UserUploadsController({
     required this.user,
     required super.client,
-    required super.denylist,
   });
 
   final String user;

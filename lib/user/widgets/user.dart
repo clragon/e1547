@@ -1,11 +1,11 @@
 import 'package:e1547/app/app.dart';
 import 'package:e1547/client/client.dart';
-import 'package:e1547/denylist/denylist.dart';
 import 'package:e1547/history/history.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:e1547/ticket/ticket.dart';
+import 'package:e1547/traits/traits.dart';
 import 'package:e1547/user/user.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -177,7 +177,6 @@ class UserPage extends StatelessWidget {
             return ControllerHistoryConnector<PostsController?>(
               controller: controllers.profilePost,
               addToHistory: (context, service, data) => service.addUser(
-                context.read<Client>().host,
                 user,
                 avatar: data?.items?.first,
               ),
@@ -287,9 +286,9 @@ class _UserProfileActions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    DenylistService? denylist = context.watch<DenylistService?>();
+    ValueNotifier<Traits> traits = context.watch<Client>().traits;
     String userTag = 'user:${user.id}';
-    bool blocked = denylist?.denies(userTag) ?? false;
+    bool blocked = traits.value.denylist.contains(userTag);
     return PopupMenuButton<VoidCallback>(
       icon: const Icon(Icons.more_vert),
       onSelected: (value) => value(),
@@ -318,18 +317,21 @@ class _UserProfileActions extends StatelessWidget {
             error: 'You must be logged in to report users!',
           ),
         ),
-        if (denylist != null)
-          PopupMenuTile(
-            title: blocked ? 'Unblock' : 'Block',
-            icon: blocked ? Icons.check : Icons.block,
-            value: () {
-              if (blocked) {
-                denylist.remove(userTag);
-              } else {
-                denylist.add(userTag);
-              }
-            },
-          ),
+        PopupMenuTile(
+          title: blocked ? 'Unblock' : 'Block',
+          icon: blocked ? Icons.check : Icons.block,
+          value: () {
+            if (blocked) {
+              traits.value = traits.value.copyWith(
+                denylist: traits.value.denylist..remove(userTag),
+              );
+            } else {
+              traits.value = traits.value.copyWith(
+                denylist: traits.value.denylist..add(userTag),
+              );
+            }
+          },
+        ),
       ],
     );
   }
@@ -355,26 +357,22 @@ class _UserPageControllers {
   void dispose() => all.forEach((e) => e.dispose());
 }
 
-class _UserPageProvider
-    extends SubProvider2<Client, DenylistService, _UserPageControllers> {
+class _UserPageProvider extends SubProvider<Client, _UserPageControllers> {
   // ignore: unused_element
   _UserPageProvider({required User user, super.child, super.builder})
       : super(
-          create: (context, client, denylist) => _UserPageControllers(
+          create: (context, client) => _UserPageControllers(
             favoritePosts: UserFavoritesController(
               client: client,
-              denylist: denylist,
               user: user.name,
             ),
             uploadedPosts: UserUploadsController(
               client: client,
-              denylist: denylist,
               user: user.name,
             ),
             profilePost: user.avatarId != null
                 ? SinglePostController(
                     client: client,
-                    denylist: denylist,
                     id: user.avatarId!,
                   )
                 : null,

@@ -2,14 +2,15 @@ import 'dart:math';
 
 import 'package:drift/drift.dart';
 import 'package:e1547/follow/follow.dart';
+import 'package:e1547/identity/data/database.dart';
 import 'package:e1547/interface/interface.dart';
 
-part 'database.g.dart';
+// ignore: always_use_package_imports
+import 'database.drift.dart';
 
 @UseRowClass(Follow, generateInsertable: true)
 class FollowsTable extends Table {
   IntColumn get id => integer().autoIncrement()();
-  TextColumn get host => text()();
   TextColumn get tags => text()();
   TextColumn get title => text().nullable()();
   TextColumn get alias => text().nullable()();
@@ -18,48 +19,61 @@ class FollowsTable extends Table {
   IntColumn get unseen => integer().nullable()();
   TextColumn get thumbnail => text().nullable()();
   DateTimeColumn get updated => dateTime().nullable()();
-
-  @override
-  List<Set<Column<Object>>> get uniqueKeys => [
-        {host, tags}
-      ];
 }
 
-@DriftDatabase(tables: [FollowsTable])
-class FollowsDatabase extends _$FollowsDatabase {
-  FollowsDatabase(super.e);
+@DataClassName('FollowIdentity')
+class FollowsIdentitiesTable extends Table {
+  IntColumn get identity => integer().references(IdentitiesTable, #id,
+      onDelete: KeyAction.noAction, onUpdate: KeyAction.noAction)();
+  IntColumn get follow => integer().references(FollowsTable, #id,
+      onDelete: KeyAction.cascade, onUpdate: KeyAction.cascade)();
 
   @override
-  int get schemaVersion => 1;
+  Set<Column> get primaryKey => {identity, follow};
+}
 
-  T _simplifyHost<T extends String?>(T host) {
-    if (host == null) return null as T;
-    return Uri.parse(host).host as T;
+@DriftAccessor(tables: [
+  FollowsTable,
+  FollowsIdentitiesTable,
+  IdentitiesTable,
+])
+class FollowsDao extends DatabaseAccessor<GeneratedDatabase>
+    with $FollowsDaoMixin {
+  FollowsDao({
+    required GeneratedDatabase database,
+    required this.identity,
+  }) : super(database);
+
+  final int? identity;
+
+  Expression<bool> _identityQuery($FollowsTableTable tbl, int? identity) {
+    final subQuery = followsIdentitiesTable.selectOnly()
+      ..addColumns([followsIdentitiesTable.follow])
+      ..where(Variable(identity).isNull() |
+          followsIdentitiesTable.identity.equalsNullable(identity));
+
+    return tbl.id.isInQuery(subQuery);
   }
 
-  Expression<bool> _hostQuery($FollowsTableTable tbl, String? host) =>
-      Variable(host).isNull() | tbl.host.equalsNullable(_simplifyHost(host));
-
-  Selectable<int> _lengthExpression({String? host}) {
+  StreamFuture<int> length() {
     final Expression<int> count = followsTable.id.count();
-    final Expression<bool> hosted = _hostQuery(followsTable, host);
+    final Expression<bool> identified = _identityQuery(followsTable, identity);
 
     return (selectOnly(followsTable)
-          ..where(hosted)
+          ..where(identified)
           ..addColumns([count]))
-        .map((row) => row.read(count)!);
+        .map((row) => row.read(count)!)
+        .watchSingle()
+        .future;
   }
 
-  StreamFuture<int> length({String? host}) =>
-      _lengthExpression(host: host).watchSingle().future;
-
-  Selectable<Follow> _itemExpression(int id) =>
-      (select(followsTable)..where((tbl) => tbl.id.equals(id)));
-
-  StreamFuture<Follow> get(int id) => _itemExpression(id).watchSingle().future;
+  StreamFuture<Follow> get(int id) {
+    return (select(followsTable)..where((tbl) => tbl.id.equals(id)))
+        .watchSingle()
+        .future;
+  }
 
   SimpleSelectStatement<FollowsTable, Follow> _queryExpression({
-    String? host,
     String? tagRegex,
     String? titleRegex,
     List<FollowType>? types,
@@ -72,7 +86,7 @@ class FollowsDatabase extends _$FollowsDatabase {
         (t) => OrderingTerm(
             expression: coalesce([t.title, t.tags]), mode: OrderingMode.desc)
       ])
-      ..where((tbl) => _hostQuery(tbl, host));
+      ..where((tbl) => _identityQuery(tbl, identity));
     if (tagRegex != null) {
       selectable
           .where((tbl) => tbl.tags.regexp(tagRegex, caseSensitive: false));
@@ -97,7 +111,6 @@ class FollowsDatabase extends _$FollowsDatabase {
   StreamFuture<List<Follow>> page({
     required int page,
     int? limit,
-    String? host,
     String? tagRegex,
     String? titleRegex,
     List<FollowType>? types,
@@ -105,7 +118,6 @@ class FollowsDatabase extends _$FollowsDatabase {
     limit ??= 80;
     int offset = (max(1, page) - 1) * limit;
     return _queryExpression(
-      host: host,
       tagRegex: tagRegex,
       titleRegex: titleRegex,
       types: types,
@@ -115,14 +127,12 @@ class FollowsDatabase extends _$FollowsDatabase {
   }
 
   StreamFuture<List<Follow>> all({
-    String? host,
     String? tagRegex,
     String? titleRegex,
     List<FollowType>? types,
     int? limit,
   }) =>
       _queryExpression(
-        host: host,
         tagRegex: tagRegex,
         titleRegex: titleRegex,
         types: types,
@@ -130,11 +140,10 @@ class FollowsDatabase extends _$FollowsDatabase {
       ).watch().future;
 
   StreamFuture<List<Follow>> outdated({
-    String? host,
     required Duration minAge,
     List<FollowType>? types,
   }) =>
-      (_queryExpression(host: host, types: types)
+      (_queryExpression(types: types)
             ..where((tbl) =>
                 (tbl.updated
                     .isSmallerThanValue(DateTime.now().subtract(minAge))) |
@@ -143,63 +152,47 @@ class FollowsDatabase extends _$FollowsDatabase {
           .future;
 
   StreamFuture<List<Follow>> fresh({
-    String? host,
     List<FollowType>? types,
   }) =>
-      (_queryExpression(host: host, types: types)
-            ..where((tbl) => tbl.updated.isNull()))
+      (_queryExpression(types: types)..where((tbl) => tbl.updated.isNull()))
           .watch()
           .future;
 
-  StreamFuture<List<Follow>> unseen({
-    String? host,
-  }) =>
-      (_queryExpression(host: host)
-            ..where((tbl) => (tbl.unseen.isBiggerThanValue(0))))
+  StreamFuture<List<Follow>> unseen() =>
+      (_queryExpression()..where((tbl) => (tbl.unseen.isBiggerThanValue(0))))
           .watch()
           .future;
 
-  Future<void> markAsSeen({String? host}) => (update(followsTable)
-        ..where((tbl) => _hostQuery(tbl, host))
+  Future<void> markAsSeen() => (update(followsTable)
+        ..where((tbl) => _identityQuery(tbl, identity))
         ..where((tbl) => (tbl.unseen.isBiggerThanValue(0))))
       .write(const FollowCompanion(unseen: Value(0)));
 
-  Future<void> add(String host, FollowRequest item) =>
-      into(followsTable).insert(
-        FollowCompanion(
-          host: Value(_simplifyHost(host)),
-          tags: Value(item.tags),
-          title: Value(item.title),
-          alias: Value(item.alias),
-          type: Value(item.type),
-        ),
-        mode: InsertMode.insertOrIgnore,
-      );
-
-  Future<void> addAll(String host, List<FollowRequest> items) => batch(
-        (batch) => batch.insertAll(
-          followsTable,
-          items.map(
-            (item) => FollowCompanion(
-              host: Value(_simplifyHost(host)),
-              tags: Value(item.tags),
-              title: Value(item.title),
-              alias: Value(item.alias),
-              type: Value(item.type),
-            ),
-          ),
-          mode: InsertMode.insertOrIgnore,
-        ),
-      );
+  Future<void> add(FollowRequest item, {int? identity}) async {
+    if (this.identity == null && identity == null) {
+      throw ArgumentError('Cannot add follow without identity!');
+    }
+    Follow follow = await into(followsTable).insertReturning(
+      FollowCompanion(
+        tags: Value(item.tags),
+        title: Value(item.title),
+        alias: Value(item.alias),
+        type: Value(item.type),
+      ),
+      mode: InsertMode.insertOrIgnore,
+    );
+    await into(followsIdentitiesTable).insert(
+      FollowIdentityCompanion(
+        identity: Value(this.identity ?? identity!),
+        follow: Value(follow.id),
+      ),
+    );
+  }
 
   Future<void> replace(Follow item) =>
       ((update(followsTable))..where((tbl) => tbl.id.equals(item.id)))
           .write(item.toInsertable());
 
-  Future<void> remove(Follow item) =>
-      (delete(followsTable)..where((tbl) => tbl.id.equals(item.id))).go();
-
-  Future<void> removeAll(List<Follow> items) => (delete(followsTable)
-        ..where((tbl) => tbl.id.isIn(items.map((e) => e.id))))
-      .go();
+  Future<void> remove(int id) =>
+      (delete(followsTable)..where((tbl) => tbl.id.equals(id))).go();
 }

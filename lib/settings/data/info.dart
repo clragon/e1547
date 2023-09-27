@@ -19,7 +19,6 @@ class AppInfo extends PackageInfo {
     required this.website,
     required this.kofi,
     required this.email,
-    required this.allowedHosts,
     required this.source,
     required super.appName,
     required super.packageName,
@@ -36,7 +35,6 @@ class AppInfo extends PackageInfo {
     required String? website,
     required String? kofi,
     required String? email,
-    required List<String> allowedHosts,
   }) async {
     PackageInfo info = await PackageInfo.fromPlatform();
     Source source = await Future(() {
@@ -52,7 +50,6 @@ class AppInfo extends PackageInfo {
       website: website,
       kofi: kofi,
       email: email,
-      allowedHosts: allowedHosts,
       source: source,
       appName: info.appName,
       packageName: info.packageName,
@@ -82,10 +79,6 @@ class AppInfo extends PackageInfo {
 
   /// Source of installation.
   final Source source;
-
-  /// List of allow hosts for the app.
-  /// The first entry is used as default.
-  final List<String> allowedHosts;
 
   String get userAgent => '$appName/$version ($developer)';
 

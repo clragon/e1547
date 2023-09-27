@@ -1,11 +1,12 @@
 import 'dart:io';
 
-import 'package:e1547/app/app.dart';
 import 'package:e1547/client/client.dart';
+import 'package:e1547/identity/identity.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/logs/logs.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sub/flutter_sub.dart';
+import 'package:webview_cookie_manager/webview_cookie_manager.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class ClientAvailabilityCheck extends StatelessWidget {
@@ -142,10 +143,34 @@ class _CookieCapturePageState extends State<CookieCapturePage> {
     ..loadRequest(Uri.https(context.read<Client>().host));
 
   Future<void> setCookies(BuildContext context) async {
-    CookiesService cookies = context.read<AppStorage>().cookies;
-    ClientService clientService = context.read<ClientService>();
-    await cookies.load(Uri.https(clientService.host).toString());
-    clientService.cookies = cookies.value;
+    IdentitiesService service = context.read<IdentitiesService>();
+    WebviewCookieManager cookieManager = WebviewCookieManager();
+    List<Cookie> cookies =
+        await cookieManager.getCookies(service.identity.host);
+    Map<String, String> headers = service.identity.headers ?? {};
+    String? cookieHeader = headers['Cookie'];
+    if (cookieHeader != null) {
+      cookieHeader.split('; ').forEach((String cookie) {
+        List<String> splitCookie = cookie.split('=');
+        if (splitCookie.length == 2) {
+          headers[splitCookie[0]] = splitCookie[1];
+        }
+      });
+    }
+    for (final cookie in cookies) {
+      headers[cookie.name] = cookie.value;
+    }
+    List<String> cookieList = [];
+    for (final cookie in headers.entries) {
+      cookieList.add('${cookie.key}=${cookie.value}');
+    }
+    String newCookieHeader = cookieList.join('; ');
+    headers[HttpHeaders.cookieHeader] = newCookieHeader;
+    service.replace(
+      service.identity.copyWith(
+        headers: headers,
+      ),
+    );
   }
 
   @override

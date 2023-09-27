@@ -4,8 +4,6 @@ import 'package:dio_cache_interceptor_db_store/dio_cache_interceptor_db_store.da
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:e1547/app/app.dart';
-import 'package:e1547/client/client.dart';
-import 'package:e1547/interface/interface.dart';
 import 'package:e1547/logs/logs.dart';
 import 'package:flutter/widgets.dart';
 import 'package:notified_preferences/notified_preferences.dart';
@@ -24,7 +22,6 @@ Future<AppInfo> initializeAppInfo() async => AppInfo.fromPlatform(
       website: 'e1547.clynamic.net',
       kofi: 'binaryfloof',
       email: 'support@clynamic.net',
-      allowedHosts: ['e926.net', 'e621.net'],
     );
 
 /// Initializes the storages used by the app with default production values.
@@ -35,10 +32,7 @@ Future<AppStorage> initializeAppStorage({required AppInfo info}) async {
     preferences: await SharedPreferences.getInstance(),
     temporaryFiles: temporaryFiles,
     httpCache: DbCacheStore(databasePath: temporaryFiles),
-    httpMemoryCache: MemCacheStore(),
-    cookies: await initializeCookiesService(info.allowedHosts),
-    followDb: connectDatabase('follows.sqlite'),
-    historyDb: connectDatabase('history.sqlite'),
+    sqlite: AppDatabase(connectDatabase('app.db')),
   );
 }
 
@@ -53,12 +47,12 @@ DatabaseConnection connectDatabase(String name) =>
 
 /// Initializes the logger used by the app with default production values.
 Future<Logs> initializeLogger({
-  required AppStorage storage,
+  required String path,
   String? postfix,
   List<LoggyPrinter>? printers,
 }) async {
   MemoryLogs logs = MemoryLogs();
-  File logFile = File(join(storage.temporaryFiles,
+  File logFile = File(join(path,
       '${logFileDateFormat.format(DateTime.now())}${postfix != null ? '.$postfix' : ''}.log'));
   Loggy.initLoggy(
     logPrinter: MultiLoggyPrinter([

@@ -1,12 +1,10 @@
 import 'dart:io';
 
 import 'package:e1547/app/app.dart';
-import 'package:e1547/client/client.dart';
-import 'package:e1547/denylist/denylist.dart';
 import 'package:e1547/follow/follow.dart';
+import 'package:e1547/identity/identity.dart';
 import 'package:e1547/logs/logs.dart';
 import 'package:e1547/settings/settings.dart';
-import 'package:e1547/user/user.dart';
 import 'package:workmanager/workmanager.dart';
 
 export 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -17,42 +15,17 @@ final Loggy _loggy = Loggy('BackgroundTask');
 Future<ControllerBundle> prepareBackgroundIsolate() async {
   AppInfo appInfo = await initializeAppInfo();
   AppStorage storage = await initializeAppStorage(info: appInfo);
-  await initializeLogger(storage: storage, postfix: 'background');
+  await initializeLogger(path: storage.temporaryFiles, postfix: 'background');
   Settings settings = Settings(storage.preferences);
-  ClientService clients = ClientService(
-    userAgent: appInfo.userAgent,
-    host: settings.host.value,
-    customHost: settings.host.value,
-    credentials: settings.credentials.value,
-    allowedHosts: appInfo.allowedHosts,
-  );
-  Client client = Client(
-    host: clients.host,
-    credentials: clients.credentials,
-    userAgent: clients.userAgent,
-    cache: clients.cache,
-  );
-  DenylistService denylist = DenylistService(
-    items: settings.denylist.value,
-    pull: () async {
-      CurrentUser? user = await client.currentUser(force: true);
-      if (user == null) return null;
-      return user.blacklistedTags?.split('\n');
-    },
-    push: (value) async {
-      settings.denylist.value = value;
-      await client.updateBlacklist(value);
-    },
-  );
 
-  FollowsService follows = FollowsService(storage.followDb);
+  IdentitiesService identities = IdentitiesService(database: storage.sqlite);
+  await identities.activate(settings.identity.value);
 
   return ControllerBundle(
     appInfo: appInfo,
+    databases: storage,
     settings: settings,
-    clients: clients,
-    denylist: denylist,
-    follows: follows,
+    identities: identities,
   );
 }
 
@@ -62,26 +35,22 @@ class ControllerBundle {
   /// Useful for isolates or tests.
   const ControllerBundle({
     required this.appInfo,
+    required this.databases,
     required this.settings,
-    required this.clients,
-    required this.denylist,
-    required this.follows,
+    required this.identities,
   });
 
   /// Application information.
   final AppInfo appInfo;
 
+  /// Application databases.
+  final AppStorage databases;
+
   /// Application settings.
   final Settings settings;
 
-  /// Service of api clients.
-  final ClientService clients;
-
-  /// Service of blacklisted tags.
-  final DenylistService denylist;
-
-  /// Service of followed tags.
-  final FollowsService follows;
+  /// Service of identities.
+  final IdentitiesService identities;
 }
 
 /// Registers background tasks for the app.

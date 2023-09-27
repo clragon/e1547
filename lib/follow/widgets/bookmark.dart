@@ -1,5 +1,4 @@
 import 'package:e1547/client/client.dart';
-import 'package:e1547/denylist/denylist.dart';
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
@@ -13,13 +12,12 @@ class FollowsBookmarkPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return RouterDrawerEntry<FollowsBookmarkPage>(
-      child: Consumer2<FollowsService, Client>(
-        builder: (context, service, client, child) => SubEffect(
+      child: Consumer<FollowsService>(
+        builder: (context, service, child) => SubEffect(
           effect: () {
             WidgetsBinding.instance.addPostFrameCallback(
               (_) => context.read<FollowsUpdater>().update(
                     client: context.read<Client>(),
-                    denylist: context.read<DenylistService>().items,
                   ),
             );
             return null;
@@ -27,10 +25,9 @@ class FollowsBookmarkPage extends StatelessWidget {
           keys: const [],
           child: SubStream<List<Follow>>(
             create: () => service.all(
-              host: client.host,
               types: [FollowType.bookmark],
             ).stream,
-            keys: [client, service],
+            keys: [service],
             builder: (context, snapshot) {
               List<Follow>? follows = snapshot.data;
               return SelectionLayout<Follow>(
@@ -50,7 +47,6 @@ class FollowsBookmarkPage extends StatelessWidget {
                         value = value.trim();
                         if (value.isNotEmpty) {
                           service.addTag(
-                            client.host,
                             value,
                             type: FollowType.bookmark,
                           );

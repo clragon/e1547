@@ -22,7 +22,6 @@ class RepliesPage extends StatelessWidget {
           child: ControllerHistoryConnector(
             controller: controller,
             addToHistory: (context, service, data) => service.addTopic(
-              controller.client.host,
               topic,
               replies: controller.items!,
             ),

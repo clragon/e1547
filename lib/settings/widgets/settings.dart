@@ -1,8 +1,8 @@
 import 'package:e1547/app/app.dart';
 import 'package:e1547/client/client.dart';
-import 'package:e1547/denylist/denylist.dart';
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/history/history.dart';
+import 'package:e1547/identity/identity.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/logs/logs.dart';
 import 'package:e1547/settings/settings.dart';
@@ -27,63 +27,20 @@ class SettingsPage extends StatelessWidget {
             padding: defaultActionListPadding
                 .add(LimitedWidthLayout.of(context).padding),
             children: [
-              const ListTileHeader(title: 'Server'),
-              Consumer<ClientService>(
-                builder: (context, service, child) => MouseCursorRegion(
-                  behavior: HitTestBehavior.translucent,
-                  onLongPress: () => setCustomHost(context),
-                  child: SwitchListTile(
-                    title: const Text('Host'),
-                    subtitle: Text(linkToDisplay(service.host)),
-                    secondary: const Icon(Icons.storage),
-                    value: service.isCustomHost,
-                    onChanged: (value) async {
-                      if (!service.hasCustomHost) {
-                        await setCustomHost(context);
-                      }
-                      service.useCustomHost(value);
-                    },
-                  ),
-                ),
-              ),
-              Consumer<Client>(
-                builder: (context, client, child) => SubFuture<CurrentUser?>(
-                  create: () => client.currentUser(),
-                  keys: [client],
-                  builder: (context, snapshot) => CrossFade.builder(
-                    duration: const Duration(milliseconds: 200),
-                    showChild: client.credentials != null,
-                    builder: (context) => DividerListTile(
-                      title: Text(client.credentials!.username),
-                      subtitle: snapshot.data?.levelString != null
-                          ? Text(snapshot.data!.levelString.toLowerCase())
-                          : const Text('user'),
-                      leading: const IgnorePointer(
-                        child: CurrentUserAvatar(),
-                      ),
-                      separated: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 12),
-                        child: IgnorePointer(
-                          child: IconButton(
-                            icon: const Icon(Icons.exit_to_app),
-                            onPressed: () => logout(context),
-                          ),
-                        ),
-                      ),
-                      onTap: () => Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              UserLoadingPage(client.credentials!.username),
-                        ),
-                      ),
-                      onTapSeparated: () => logout(context),
-                    ),
-                    secondChild: ListTile(
-                      title: const Text('Login'),
-                      leading: const Icon(Icons.person_add),
-                      onTap: () => Navigator.pushNamed(context, '/login'),
+              const ListTileHeader(title: 'Identity'),
+              Consumer<IdentitiesService>(
+                builder: (context, service, child) => IdentityTile(
+                  identity: service.identity,
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const IdentitiesPage(),
                     ),
                   ),
+                  leading: const IgnorePointer(
+                    child: AccountAvatar(),
+                  ),
+                  trailing: const Icon(Icons.swap_horiz),
                 ),
               ),
               const Divider(),
@@ -188,10 +145,10 @@ class SettingsPage extends StatelessWidget {
               ),
               const Divider(),
               const ListTileHeader(title: 'Listing'),
-              Consumer2<HistoriesService, Client>(
-                builder: (context, service, client, child) => SubStream<int>(
-                  create: () => service.length(host: client.host).stream,
-                  keys: [service, client.host],
+              Consumer<HistoriesService>(
+                builder: (context, service, child) => SubStream<int>(
+                  create: () => service.length(),
+                  keys: [service],
                   builder: (context, snapshot) => DividerListTile(
                     title: const Text('History'),
                     subtitle: service.enabled && snapshot.data != null
@@ -207,21 +164,24 @@ class SettingsPage extends StatelessWidget {
                   ),
                 ),
               ),
-              Consumer<DenylistService>(
-                builder: (context, denylist, child) => ListTile(
-                  title: const Text('Blacklist'),
-                  leading: const Icon(Icons.block),
-                  subtitle: denylist.items.isNotEmpty
-                      ? Text(
-                          '${denylist.items.join(' ').split(' ').trim().where((e) => e[0] != '-').length} tags blocked')
-                      : null,
-                  onTap: () => Navigator.pushNamed(context, '/blacklist'),
+              Consumer<Client>(
+                builder: (context, client, child) => ValueListenableBuilder(
+                  valueListenable: client.traits,
+                  builder: (context, traits, child) => ListTile(
+                    title: const Text('Blacklist'),
+                    leading: const Icon(Icons.block),
+                    subtitle: traits.denylist.isNotEmpty
+                        ? Text(
+                            '${traits.denylist.join(' ').split(' ').trim().where((e) => e[0] != '-').length} tags blocked')
+                        : null,
+                    onTap: () => Navigator.pushNamed(context, '/blacklist'),
+                  ),
                 ),
               ),
-              Consumer2<FollowsService, Client>(
-                builder: (context, service, client, child) => SubStream<int>(
-                  create: () => service.length(host: client.host).stream,
-                  keys: [service, client.host],
+              Consumer<FollowsService>(
+                builder: (context, service, child) => SubStream<int>(
+                  create: () => service.length().stream,
+                  keys: [service],
                   builder: (context, snapshot) => ListTile(
                     title: const Text('Follows'),
                     subtitle: snapshot.data != null && snapshot.data != 0

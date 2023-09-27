@@ -85,7 +85,7 @@ class ArtistName extends StatelessWidget {
         context.select<PostEditingController?, Map<String, List<String>>>(
             (value) => value?.value?.tags ?? post.tags);
 
-    List<String> artists = filterArtists((tags)['artist']!);
+    List<String> artists = filterArtists((tags)['artist'] ?? []);
     if (artists.isNotEmpty) {
       List<InlineSpan> spans = [];
       for (String artist in artists) {

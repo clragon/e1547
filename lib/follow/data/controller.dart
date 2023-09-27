@@ -4,7 +4,6 @@ import 'package:e1547/post/post.dart';
 class FollowTimelineController extends PostsController {
   FollowTimelineController({
     required super.client,
-    required super.denylist,
     required this.follows,
   }) : super(canSearch: false);
 
@@ -13,10 +12,9 @@ class FollowTimelineController extends PostsController {
   @override
   Future<List<Post>> fetch(int page, bool force) async {
     return client.postsByTags(
-      await follows.all(
-        host: client.host,
+      await (follows.all(
         types: [FollowType.update, FollowType.notify],
-      ).then((e) => e.map((e) => e.tags).toList()),
+      ).then((e) => e.map((e) => e.tags).toList())),
       page,
       force: force,
       cancelToken: cancelToken,

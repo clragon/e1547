@@ -69,7 +69,7 @@ extension Identification on History {
     if (search != null && search.isNotEmpty) {
       switch (type) {
         case LinkType.post:
-          String? username = context.read<Client>().credentials?.username;
+          String? username = context.read<Client>().identity.username;
           if (username != null &&
               favRegex(username).hasMatch(search['tags'] ?? '')) {
             return 'Favorites';

@@ -45,7 +45,7 @@ class HistoriesPage extends StatelessWidget {
 
                 // awaiting this here means the UI might not react immediately
                 List<DateTime> dates =
-                    await controller.service.dates(host: controller.host);
+                    await controller.service.dates(host: controller.host).first;
                 if (dates.isEmpty) {
                   dates.add(DateTime.now());
                 }
@@ -86,9 +86,8 @@ class HistoriesPage extends StatelessWidget {
               title: const Text('History'),
               children: [
                 SubStream<int>(
-                  create: () =>
-                      controller.service.length(host: controller.host).stream,
-                  keys: [controller.service, controller.host],
+                  create: () => controller.service.length(),
+                  keys: [controller.service],
                   builder: (context, snapshot) => SwitchListTile(
                     title: const Text('Enabled'),
                     subtitle: Text('${snapshot.data ?? 0} pages visited'),

@@ -79,6 +79,10 @@ String linkToDisplay(String link) {
   parameters.removeWhere((key, value) => !allowed.contains(key));
   Uri newUrl = Uri(
     host: url.host,
+    port: switch (url.port) {
+      0 || 80 || 443 => null,
+      _ => url.port,
+    },
     path: url.path,
     queryParameters: parameters.isNotEmpty ? parameters : null,
   );

@@ -6,7 +6,9 @@ export 'data/controller.dart';
 export 'data/desktop.dart';
 export 'data/dio.dart';
 export 'data/hosts.dart';
+export 'data/listenable.dart';
 export 'data/share.dart';
+export 'data/sql.dart';
 export 'data/stream.dart';
 export 'data/text.dart';
 // widgets

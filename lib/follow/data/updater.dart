@@ -25,12 +25,12 @@ class FollowsUpdater extends ValueNotifier<FollowUpdate?> {
   set value(FollowUpdate? value) {
     List<Object?> previous = [
       this.value?.client,
-      this.value?.denylist,
+      this.value?.client.traits.value,
       this.value?.force,
     ];
     List<Object?> current = [
       value?.client,
-      value?.denylist,
+      value?.client.traits.value,
       value?.force,
     ];
     bool noneRunning = this.value?.completed ?? true;
@@ -54,13 +54,11 @@ class FollowsUpdater extends ValueNotifier<FollowUpdate?> {
 
   void update({
     required Client client,
-    required List<String> denylist,
     bool? force,
   }) =>
       value = FollowUpdate(
         service: service,
         client: client,
-        denylist: denylist,
         force: force,
       );
 
@@ -78,7 +76,6 @@ class FollowUpdate with ObjectLoggy {
   FollowUpdate({
     required this.service,
     required this.client,
-    required this.denylist,
     this.force,
     this.refreshAmount = 5,
     this.refreshRate = const Duration(hours: 1),
@@ -89,7 +86,6 @@ class FollowUpdate with ObjectLoggy {
 
   final FollowsService service;
   final Client client;
-  final List<String> denylist;
   final bool? force;
 
   bool _running = false;
@@ -139,7 +135,6 @@ class FollowUpdate with ObjectLoggy {
         loggy.debug('Force refreshing follows...');
         await service.transaction(() async {
           List<Follow> follows = await service.all(
-            host: client.host,
             types: [FollowType.notify, FollowType.update],
           );
           for (final follow in follows) {
@@ -154,13 +149,11 @@ class FollowUpdate with ObjectLoggy {
         List<Follow> follows = [];
 
         follows.addAll(await service.outdated(
-          host: client.host,
           minAge: refreshRate,
           types: [FollowType.notify, FollowType.update],
         ));
 
         follows.addAll(await service.fresh(
-          host: client.host,
           types: [FollowType.bookmark],
         ));
 
@@ -264,7 +257,7 @@ class FollowUpdate with ObjectLoggy {
       bool latestReached = posts.any((e) => e.id == follow.latest);
       bool depleted = allPosts.length < limit;
       if ([limitReached, latestReached, depleted].any((e) => e)) {
-        posts.removeWhere((e) => e.isDeniedBy(denylist));
+        posts.removeWhere((e) => e.isDeniedBy(client.traits.value.denylist));
         result.add(follow.withUnseen(posts));
       }
     }
@@ -281,7 +274,7 @@ class FollowUpdate with ObjectLoggy {
       ordered: false,
       force: force,
     ));
-    posts.removeWhere((e) => e.isDeniedBy(denylist));
+    posts.removeWhere((e) => e.isDeniedBy(client.traits.value.denylist));
     follow = follow.withUnseen(posts);
     RegExpMatch? match = poolRegex().firstMatch(follow.tags);
     if (follow.title == null && match != null) {

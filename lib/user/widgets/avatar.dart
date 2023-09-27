@@ -1,18 +1,17 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:e1547/client/client.dart';
-import 'package:e1547/denylist/denylist.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_sub/flutter_sub.dart';
 
-class CurrentUserAvatar extends StatelessWidget {
-  const CurrentUserAvatar({super.key});
+class AccountAvatar extends StatelessWidget {
+  const AccountAvatar({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<CurrentUserAvatarController>(
+    return Consumer<AccountAvatarController>(
       builder: (context, controller, child) {
         if (controller.error != null) {
           return CircleAvatar(
@@ -30,16 +29,15 @@ class CurrentUserAvatar extends StatelessWidget {
   }
 }
 
-class CurrentUserAvatarController extends PostsController {
-  CurrentUserAvatarController({
+class AccountAvatarController extends PostsController {
+  AccountAvatarController({
     required super.client,
-    required super.denylist,
   }) : super(filterMode: PostFilterMode.unavailable);
 
   @override
   Future<List<Post>> fetch(int page, bool force) async {
     if (page != firstPageKey) return [];
-    int? id = (await client.currentUser())?.avatarId;
+    int? id = (await client.account())?.avatarId;
     if (id == null) return [];
     return [
       await client.post(
@@ -51,19 +49,17 @@ class CurrentUserAvatarController extends PostsController {
   }
 }
 
-class CurrentUserAvatarProvider extends SubChangeNotifierProvider2<Client,
-    DenylistService, CurrentUserAvatarController> {
-  CurrentUserAvatarProvider({super.child, TransitionBuilder? builder})
+class AccountAvatarProvider
+    extends SubChangeNotifierProvider<Client, AccountAvatarController> {
+  AccountAvatarProvider({super.child, TransitionBuilder? builder})
       : super(
-          create: (context, client, denylist) => CurrentUserAvatarController(
-            client: client,
-            denylist: denylist,
-          )..getNextPage(),
+          create: (context, client) =>
+              AccountAvatarController(client: client)..getNextPage(),
           builder: (context, child) => SubEffect(
             effect: () {
               Future(() async {
                 PostsController? controller =
-                    context.read<CurrentUserAvatarController>();
+                    context.read<AccountAvatarController>();
                 await controller.waitForNextPage();
                 Post? avatar = controller.items?.firstOrNull;
                 if (avatar?.sample.url != null && context.mounted) {
@@ -76,7 +72,7 @@ class CurrentUserAvatarProvider extends SubChangeNotifierProvider2<Client,
               });
               return null;
             },
-            keys: [context.watch<CurrentUserAvatarController>()],
+            keys: [context.watch<AccountAvatarController>()],
             child: builder?.call(context, child) ?? child!,
           ),
         );

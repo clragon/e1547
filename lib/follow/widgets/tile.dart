@@ -60,7 +60,7 @@ class FollowTile extends StatelessWidget {
                 latest: null,
               ));
             } else {
-              follows.remove(follow);
+              follows.remove(follow.id);
             }
           },
           actionController: promptController,
@@ -122,7 +122,7 @@ class FollowTile extends StatelessWidget {
               icon: Icons.edit,
             ),
           PopupMenuTile(
-            value: () => follows.remove(follow),
+            value: () => follows.remove(follow.id),
             title: 'Unfollow',
             icon: Icons.person_remove,
           ),

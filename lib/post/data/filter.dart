@@ -1,11 +1,11 @@
 import 'package:collection/collection.dart';
-import 'package:e1547/denylist/denylist.dart';
+import 'package:e1547/client/client.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:flutter/foundation.dart';
 
 mixin PostFilterableController<KeyType> on DataController<KeyType, Post> {
-  DenylistService get denylist;
+  Client get client;
   PostFilterMode get filterMode;
 
   Map<Post, List<String>>? _deniedPosts;
@@ -63,7 +63,8 @@ mixin PostFilterableController<KeyType> on DataController<KeyType, Post> {
   List<Post>? filter(List<Post>? items) {
     List<String> denylist = [];
     if (denying && filterMode != PostFilterMode.unavailable) {
-      denylist = this.denylist.items.whereNot(_allowedTags.contains).toList();
+      denylist =
+          client.traits.value.denylist.whereNot(_allowedTags.contains).toList();
     }
 
     _deniedPosts = {};

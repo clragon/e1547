@@ -1,4 +1,3 @@
-import 'package:e1547/client/client.dart';
 import 'package:e1547/history/history.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/pool/pool.dart';
@@ -22,9 +21,8 @@ class _PoolPageState extends State<PoolPage> {
   @override
   Widget build(BuildContext context) {
     return PostsProvider.builder(
-      create: (context, client, denylist) => PoolController(
+      create: (context, client) => PoolController(
         client: client,
-        denylist: denylist,
         id: widget.pool.id,
         orderByOldest: widget.orderByOldest ?? true,
       ),
@@ -33,7 +31,6 @@ class _PoolPageState extends State<PoolPage> {
           controller: controller,
           addToHistory: (context, service, data) {
             service.addPool(
-              context.read<Client>().host,
               widget.pool,
               posts: controller.items,
             );

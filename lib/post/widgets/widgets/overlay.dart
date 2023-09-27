@@ -1,5 +1,4 @@
 import 'package:e1547/app/app.dart';
-import 'package:e1547/client/client.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
@@ -38,33 +37,8 @@ class PostImageOverlay extends StatelessWidget {
           padding: const EdgeInsets.all(4),
           child: TextButton(
             onPressed: () async {
-              NavigatorState navigator = Navigator.of(context);
-              ClientService service = context.read<ClientService>();
-              if (!service.hasCustomHost) {
-                await setCustomHost(context);
-              }
-              if (service.hasCustomHost) {
-                ClientService otherService = ClientService(
-                  userAgent: service.userAgent,
-                  allowedHosts: service.allowedHosts,
-                  host: service.customHost,
-                  customHost: service.customHost,
-                  cache: service.cache,
-                  credentials: service.credentials,
-                  cookies: service.cookies,
-                );
-                navigator.pushReplacement(
-                  MaterialPageRoute(
-                    builder: (context) =>
-                        ChangeNotifierProvider<ClientService>.value(
-                      value: otherService,
-                      child: ClientProvider(
-                        child: PostLoadingPage(post.id),
-                      ),
-                    ),
-                  ),
-                );
-              }
+              // TODO: Implement safe mode toggle
+              throw UnimplementedError();
             },
             child: const Text('Open'),
           ),

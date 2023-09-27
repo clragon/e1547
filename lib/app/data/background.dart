@@ -1,6 +1,8 @@
 import 'package:e1547/app/app.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/follow/follow.dart';
+import 'package:e1547/identity/identity.dart';
+import 'package:e1547/traits/traits.dart';
 import 'package:workmanager/workmanager.dart';
 
 /// Handles all background tasks that the app registered.
@@ -13,24 +15,33 @@ void executeBackgroundTasks() => Workmanager().executeTask(
             FlutterLocalNotificationsPlugin notifications =
                 await initializeNotifications();
             // this ensures continued scheduling on iOS.
-            bundle.follows
+            FollowsService allFollows = FollowsService(
+                database: bundle.databases.sqlite, identity: null);
+            allFollows
                 .all(types: [FollowType.notify])
                 .stream
                 .listen(registerFollowBackgroundTask);
-            return backgroundUpdateFollows(
-              service: bundle.follows,
-              // We only update the current host as of right now
-              // If we ever support hosts which arent partial mirrors of each other,
-              // We will have to switch to updating all hosts.
-              client: Client(
-                host: bundle.clients.host,
-                credentials: bundle.clients.credentials,
-                userAgent: bundle.clients.userAgent,
-                cache: bundle.clients.cache,
-              ),
-              denylist: bundle.denylist,
-              notifications: notifications,
-            );
+            List<Identity> identities = await bundle.identities.all();
+            List<bool> result = [];
+            for (Identity identity in identities) {
+              FollowsService follows = FollowsService(
+                  database: bundle.databases.sqlite, identity: identity.id);
+              TraitsService settings =
+                  TraitsService(database: bundle.databases.sqlite);
+              await settings.activate(identity.id);
+              Client client = Client(
+                identity: identity,
+                traits: settings.notifier,
+                userAgent: bundle.appInfo.userAgent,
+                cache: bundle.databases.httpCache,
+              );
+              result.add(await backgroundUpdateFollows(
+                service: follows,
+                client: client,
+                notifications: notifications,
+              ));
+            }
+            return result.every((e) => e);
           default:
             throw StateError('Background task $task is unknown!');
         }

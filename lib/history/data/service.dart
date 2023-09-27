@@ -1,5 +1,4 @@
 import 'package:collection/collection.dart';
-import 'package:drift/drift.dart';
 import 'package:e1547/history/history.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/pool/pool.dart';
@@ -11,9 +10,10 @@ import 'package:e1547/user/user.dart';
 import 'package:e1547/wiki/wiki.dart';
 import 'package:flutter/material.dart';
 
-class HistoriesService extends HistoriesDatabase with ChangeNotifier {
+class HistoriesService extends HistoriesDao with ChangeNotifier {
   HistoriesService({
-    required DatabaseConnection database,
+    required super.database,
+    required super.identity,
     bool enabled = true,
     bool trimming = false,
     int trimAmount = 5000,
@@ -21,8 +21,7 @@ class HistoriesService extends HistoriesDatabase with ChangeNotifier {
   })  : _enabled = enabled,
         _trimming = trimming,
         _trimAmount = trimAmount,
-        _trimAge = trimAge,
-        super(database);
+        _trimAge = trimAge;
 
   bool _enabled;
 
@@ -69,12 +68,12 @@ class HistoriesService extends HistoriesDatabase with ChangeNotifier {
   }
 
   @override
-  Future<void> add(String host, HistoryRequest item) async {
+  Future<void> add(HistoryRequest item, {int? identity}) async {
     if (!enabled) {
       return;
     }
     return transaction(() async {
-      if ((await recent(host: host)).any((e) =>
+      if ((await recent().first).any((e) =>
           e.link == item.link &&
           e.title == item.title &&
           e.subtitle == item.subtitle &&
@@ -85,7 +84,7 @@ class HistoriesService extends HistoriesDatabase with ChangeNotifier {
       if (trimming) {
         await trim();
       }
-      return super.add(host, item);
+      return super.add(item);
     });
   }
 
@@ -105,12 +104,10 @@ class HistoriesService extends HistoriesDatabase with ChangeNotifier {
       .join('\n');
 
   Future<void> addPost(
-    String host,
     Post post, {
     List<String>? denylist,
   }) =>
       add(
-        host,
         HistoryRequest(
           visitedAt: DateTime.now(),
           link: post.link,
@@ -120,12 +117,10 @@ class HistoriesService extends HistoriesDatabase with ChangeNotifier {
       );
 
   Future<void> addPostSearch(
-    String host,
     QueryMap search, {
     List<Post>? posts,
   }) =>
       add(
-        host,
         HistoryRequest(
           visitedAt: DateTime.now(),
           link: Uri(
@@ -137,12 +132,10 @@ class HistoriesService extends HistoriesDatabase with ChangeNotifier {
       );
 
   Future<void> addPool(
-    String host,
     Pool pool, {
     List<Post>? posts,
   }) =>
       add(
-        host,
         HistoryRequest(
           visitedAt: DateTime.now(),
           link: pool.link,
@@ -153,12 +146,10 @@ class HistoriesService extends HistoriesDatabase with ChangeNotifier {
       );
 
   Future<void> addPoolSearch(
-    String host,
     QueryMap search, {
     List<Pool>? pools,
   }) =>
       add(
-        host,
         HistoryRequest(
           visitedAt: DateTime.now(),
           link: Uri(
@@ -174,12 +165,10 @@ class HistoriesService extends HistoriesDatabase with ChangeNotifier {
       );
 
   Future<void> addTopic(
-    String host,
     Topic topic, {
     List<Reply>? replies,
   }) =>
       add(
-        host,
         HistoryRequest(
           visitedAt: DateTime.now(),
           link: '/forum_topics/${topic.id}',
@@ -189,12 +178,10 @@ class HistoriesService extends HistoriesDatabase with ChangeNotifier {
       );
 
   Future<void> addTopicSearch(
-    String host,
     QueryMap search, {
     List<Topic>? topics,
   }) =>
       add(
-        host,
         HistoryRequest(
           visitedAt: DateTime.now(),
           link: Uri(
@@ -209,8 +196,7 @@ class HistoriesService extends HistoriesDatabase with ChangeNotifier {
         ),
       );
 
-  Future<void> addUser(String host, User user, {Post? avatar}) => add(
-        host,
+  Future<void> addUser(User user, {Post? avatar}) => add(
         HistoryRequest(
           visitedAt: DateTime.now(),
           link: '/users/${user.name}',
@@ -218,8 +204,7 @@ class HistoriesService extends HistoriesDatabase with ChangeNotifier {
         ),
       );
 
-  Future<void> addWiki(String host, Wiki wiki) => add(
-        host,
+  Future<void> addWiki(Wiki wiki) => add(
         HistoryRequest(
           visitedAt: DateTime.now(),
           link: '/wiki_pages/${wiki.title}',
@@ -228,12 +213,10 @@ class HistoriesService extends HistoriesDatabase with ChangeNotifier {
       );
 
   Future<void> addWikiSearch(
-    String host,
     String search, {
     List<Wiki>? wikis,
   }) =>
       add(
-        host,
         HistoryRequest(
           visitedAt: DateTime.now(),
           link: Uri(

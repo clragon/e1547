@@ -1,6 +1,5 @@
 import 'package:collection/collection.dart';
 import 'package:e1547/client/client.dart';
-import 'package:e1547/denylist/denylist.dart';
 import 'package:e1547/history/history.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
@@ -142,9 +141,8 @@ class PostHistoryConnector extends StatelessWidget {
   Widget build(BuildContext context) => ItemHistoryConnector<Post>(
         item: post,
         addToHistory: (context, service, item) => service.addPost(
-          context.read<Client>().host,
           post,
-          denylist: context.read<DenylistService>().items,
+          denylist: context.read<Client>().traits.value.denylist,
         ),
         child: child,
       );
@@ -165,7 +163,6 @@ class PostsControllerHistoryConnector extends StatelessWidget {
       ControllerHistoryConnector<PostsController>(
         controller: controller,
         addToHistory: (context, service, data) => service.addPostSearch(
-          data.client.host,
           data.query,
           posts: data.items,
         ),

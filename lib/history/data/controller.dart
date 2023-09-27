@@ -32,12 +32,13 @@ class HistoriesController extends DataController<int, History> {
   Future<PageResponse<int, History>> performRequest(
       int page, bool force) async {
     try {
-      List<History> items = await service.page(
-        host: host,
-        page: page,
-        day: search.date,
-        linkRegex: search.buildLinkFilter(),
-      );
+      List<History> items = await service
+          .page(
+            page: page,
+            day: search.date,
+            linkRegex: search.buildLinkFilter(),
+          )
+          .first;
       if (items.isEmpty) {
         return PageResponse.last(items: items);
       } else {
@@ -52,7 +53,7 @@ class HistoriesController extends DataController<int, History> {
 
   Future<void> remove(History item) async {
     assertOwnsItem(item);
-    await service.remove(item);
+    await service.remove(item.id);
     rawItems = rawItems!.toList()..remove(item);
   }
 
@@ -60,7 +61,7 @@ class HistoriesController extends DataController<int, History> {
     for (final item in items) {
       assertOwnsItem(item);
     }
-    await service.removeAll(items);
+    await service.removeAll(items.map((e) => e.id).toList());
     rawItems = rawItems!.toList()..removeWhere(items.contains);
   }
 }

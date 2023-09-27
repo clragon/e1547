@@ -1,5 +1,4 @@
 import 'package:e1547/client/client.dart';
-import 'package:e1547/denylist/denylist.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/pool/pool.dart';
 import 'package:e1547/post/post.dart';
@@ -9,17 +8,12 @@ import 'package:flutter/foundation.dart';
 class PoolsController extends PageClientDataController<Pool> {
   PoolsController({
     required this.client,
-    required this.denylist,
     QueryMap? query,
   })  : _query = query ?? QueryMap(),
-        thumbnails = ThumbnailController(
-          client: client,
-          denylist: denylist,
-        );
+        thumbnails = ThumbnailController(client: client);
 
   @override
   final Client client;
-  final DenylistService denylist;
 
   final ThumbnailController thumbnails;
 
@@ -56,13 +50,11 @@ class PoolsController extends PageClientDataController<Pool> {
   }
 }
 
-class PoolsProvider extends SubChangeNotifierProvider2<Client, DenylistService,
-    PoolsController> {
+class PoolsProvider extends SubChangeNotifierProvider<Client, PoolsController> {
   PoolsProvider({QueryMap? search, super.child, super.builder})
       : super(
-          create: (context, client, denylist) => PoolsController(
+          create: (context, client) => PoolsController(
             client: client,
-            denylist: denylist,
             query: search,
           ),
           keys: (context) => [search],
@@ -70,10 +62,7 @@ class PoolsProvider extends SubChangeNotifierProvider2<Client, DenylistService,
 }
 
 class ThumbnailController extends PostsController {
-  ThumbnailController({
-    required super.client,
-    required super.denylist,
-  });
+  ThumbnailController({required super.client});
 
   Map<int, List<int>> _ids = {};
 
@@ -105,7 +94,6 @@ class ThumbnailController extends PostsController {
 class PoolController extends PostsController {
   PoolController({
     required super.client,
-    required super.denylist,
     required this.id,
     bool orderByOldest = true,
   }) : super(

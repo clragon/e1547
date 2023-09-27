@@ -5,6 +5,7 @@ import 'dart:math';
 import 'package:dio/dio.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/comment/comment.dart';
+import 'package:e1547/identity/identity.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/logs/logs.dart';
 import 'package:e1547/pool/pool.dart';
@@ -13,30 +14,26 @@ import 'package:e1547/reply/reply.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:e1547/ticket/ticket.dart';
 import 'package:e1547/topic/topic.dart';
+import 'package:e1547/traits/traits.dart';
 import 'package:e1547/user/user.dart';
 import 'package:e1547/wiki/wiki.dart';
+import 'package:flutter/foundation.dart';
 
 export 'package:dio/dio.dart' show CancelToken;
 
 class Client {
   Client({
-    required this.host,
+    required this.identity,
+    required this.traits,
     required this.userAgent,
     this.cache,
-    this.memoryCache,
-    this.credentials,
-    this.cookies,
-  }) {
+  }) : status = ValueNotifier(const ClientSyncStatus()) {
     _dio = Dio(
       BaseOptions(
-        baseUrl: host,
+        baseUrl: _host,
         headers: {
           HttpHeaders.userAgentHeader: userAgent,
-          HttpHeaders.cookieHeader: cookies
-              ?.map((cookie) => '${cookie.name}=${cookie.value}')
-              .join('; '),
-          if (credentials != null)
-            HttpHeaders.authorizationHeader: credentials!.basicAuth,
+          ...?identity.headers,
         },
         sendTimeout: const Duration(seconds: 30),
         connectTimeout: const Duration(seconds: 30),
@@ -60,46 +57,46 @@ class Client {
     }
   }
 
-  /// The host of this client.
-  /// Must be a fully qualified URL that ends in a slash.
-  final String host;
+  void dispose() {
+    _dio.close();
+  }
 
   /// The user agent of this client.
   /// Format: `appname/version (developer)`
   final String userAgent;
 
+  /// The user identity of this client.
+  final Identity identity;
+
+  /// The settings for this identity.
+  final ValueNotifier<Traits> traits;
+
+  /// The sync status of this client.
+  final ValueNotifier<ClientSyncStatus> status;
+
   /// The cache to use for this client.
   final CacheStore? cache;
 
-  /// The memory cache to use for this client.
-  /// This is used to cache the current user.
-  final CacheStore? memoryCache;
-
-  /// The credentials to use for this client.
-  final Credentials? credentials;
-
-  /// The cookies to use for this client.
-  ///
-  /// This is used to get past the Cloudflare bot check.
-  final List<Cookie>? cookies;
-
   late Dio _dio;
 
-  void close({bool force = false}) {
-    _dio.close(force: force);
-  }
+  late final String _host = normalizeHostUrl(identity.host);
 
-  bool get hasLogin => credentials != null;
+  String get host => identity.host;
+
+  bool get hasLogin => identity.username != null;
 
   /// Appends [value] to [host] and returns the result.
   String withHost(String value) {
-    Uri uri = Uri.parse(host);
+    Uri uri = Uri.parse(_host);
     Uri other = Uri.parse(value);
 
     String path = other.path;
-    if (path.startsWith('/')) path = path.substring(1);
+    if (!path.startsWith('/')) path = '/$path';
+    path = '${uri.path}$path';
+
     Map<String, dynamic>? queryParameters = other.queryParameters;
     if (queryParameters.isEmpty) queryParameters = null;
+
     String? fragment = other.fragment;
     if (fragment.isEmpty) fragment = null;
 
@@ -135,8 +132,8 @@ class Client {
               force: force,
               cancelToken: cancelToken,
             ),
-        if ((orderFavoritesByAdded ?? false) && credentials?.username != null)
-          favRegex(credentials!.username): (match) =>
+        if ((orderFavoritesByAdded ?? false) && identity.username != null)
+          favRegex(identity.username!): (match) =>
               favorites(page: page, limit: limit, force: force),
       };
 
@@ -150,7 +147,7 @@ class Client {
 
     Map<String, dynamic> body = await _dio
         .get(
-          'posts.json',
+          '/posts.json',
           queryParameters: {
             'page': page,
             'limit': limit,
@@ -270,7 +267,7 @@ class Client {
   Future<Post> post(int postId, {bool? force, CancelToken? cancelToken}) async {
     Map<String, dynamic> body = await _dio
         .get(
-          'posts/$postId.json',
+          '/posts/$postId.json',
           options: forceOptions(force),
           cancelToken: cancelToken,
         )
@@ -281,15 +278,15 @@ class Client {
 
   Future<void> updatePost(int postId, Map<String, String?> body) async {
     await cache?.deleteFromPath(
-      RegExp(RegExp.escape('posts/$postId.json')),
+      RegExp(RegExp.escape('/posts/$postId.json')),
     );
 
-    await _dio.put('posts/$postId.json', data: FormData.fromMap(body));
+    await _dio.put('/posts/$postId.json', data: FormData.fromMap(body));
   }
 
   Future<void> votePost(int postId, bool upvote, bool replace) async {
-    await cache?.deleteFromPath(RegExp(RegExp.escape('posts/$postId.json')));
-    await _dio.post('posts/$postId/votes.json', queryParameters: {
+    await cache?.deleteFromPath(RegExp(RegExp.escape('/posts/$postId.json')));
+    await _dio.post('/posts/$postId/votes.json', queryParameters: {
       'score': upvote ? 1 : -1,
       'no_unvote': replace,
     });
@@ -297,7 +294,7 @@ class Client {
 
   Future<void> reportPost(int postId, int reportId, String reason) async {
     await _dio.post(
-      'tickets',
+      '/tickets',
       queryParameters: {
         'ticket[reason]': reason,
         'ticket[report_reason]': reportId,
@@ -312,7 +309,7 @@ class Client {
 
   Future<void> flagPost(int postId, String flag, {int? parent}) async {
     await _dio.post(
-      'post_flags.json',
+      '/post_flags.json',
       queryParameters: {
         'post_flag[post_id]': postId,
         'post_flag[reason_name]': flag,
@@ -330,7 +327,7 @@ class Client {
     bool? force,
     CancelToken? cancelToken,
   }) async {
-    if (credentials?.username == null) {
+    if (identity.username == null) {
       throw NoUserLoginException();
     }
     orderByAdded ??= true;
@@ -338,7 +335,7 @@ class Client {
     if (tags.isEmpty && orderByAdded) {
       Map<String, dynamic> body = await _dio
           .get(
-            'favorites.json',
+            '/favorites.json',
             queryParameters: {
               'page': page,
               'limit': limit,
@@ -355,7 +352,7 @@ class Client {
     } else {
       query = QueryMap({
         ...?query,
-        'tags': QueryMap.parse(tags)..['fav'] = credentials?.username,
+        'tags': QueryMap.parse(tags)..['fav'] = identity.username,
       });
       return posts(
         page: page,
@@ -368,13 +365,13 @@ class Client {
   }
 
   Future<void> addFavorite(int postId) async {
-    await cache?.deleteFromPath(RegExp(RegExp.escape('posts/$postId.json')));
-    await _dio.post('favorites.json', queryParameters: {'post_id': postId});
+    await cache?.deleteFromPath(RegExp(RegExp.escape('/posts/$postId.json')));
+    await _dio.post('/favorites.json', queryParameters: {'post_id': postId});
   }
 
   Future<void> removeFavorite(int postId) async {
-    await cache?.deleteFromPath(RegExp(RegExp.escape('posts/$postId.json')));
-    await _dio.delete('favorites/$postId.json');
+    await cache?.deleteFromPath(RegExp(RegExp.escape('/posts/$postId.json')));
+    await _dio.delete('/favorites/$postId.json');
   }
 
   Future<List<PostFlag>> flags({
@@ -386,7 +383,7 @@ class Client {
   }) async {
     List<dynamic> body = await _dio
         .get(
-          'post_flags.json',
+          '/post_flags.json',
           queryParameters: {
             'page': page,
             'limit': limit,
@@ -409,7 +406,7 @@ class Client {
   }) async {
     List<dynamic> body = await _dio
         .get(
-          'pools.json',
+          '/pools.json',
           queryParameters: {
             'page': page,
             'limit': limit,
@@ -436,7 +433,7 @@ class Client {
   }) async {
     Map<String, dynamic> body = await _dio
         .get(
-          'pools/$id.json',
+          '/pools/$id.json',
           options: forceOptions(force),
           cancelToken: cancelToken,
         )
@@ -454,7 +451,7 @@ class Client {
     CancelToken? cancelToken,
   }) async {
     page ??= 1;
-    CurrentUser? user = await currentUser(cancelToken: cancelToken);
+    Account? user = await account(cancelToken: cancelToken);
     int limit = user?.perPage ?? 75;
     Pool pool = await this.pool(id: id, force: force, cancelToken: cancelToken);
     List<int> ids = pool.postIds;
@@ -479,7 +476,7 @@ class Client {
   }) async {
     List<dynamic> body = await _dio
         .get(
-          'wiki_pages.json',
+          '/wiki_pages.json',
           queryParameters: {
             'page': page,
             'limit': limit,
@@ -500,7 +497,7 @@ class Client {
   }) async {
     Map<String, dynamic> body = await _dio
         .get(
-          'wiki_pages/$id.json',
+          '/wiki_pages/$id.json',
           options: forceOptions(force),
           cancelToken: cancelToken,
         )
@@ -516,7 +513,7 @@ class Client {
   }) async {
     Map<String, dynamic> body = await _dio
         .get(
-          'users/$id.json',
+          '/users/$id.json',
           options: forceOptions(force),
           cancelToken: cancelToken,
         )
@@ -530,7 +527,7 @@ class Client {
     required String reason,
   }) async {
     await _dio.post(
-      'tickets',
+      '/tickets',
       queryParameters: {
         'ticket[reason]': reason,
         'ticket[disp_id]': id,
@@ -539,7 +536,9 @@ class Client {
     );
   }
 
-  Future<CurrentUser?> currentUser({
+  final CacheStore _userMemoryCache = MemCacheStore();
+
+  Future<Account?> account({
     bool? force,
     CancelToken? cancelToken,
   }) async {
@@ -547,9 +546,12 @@ class Client {
 
     Map<String, dynamic> body = await _dio
         .get(
-          'users/${credentials!.username}.json',
+          '/users/${identity.username}.json',
           options: ClientCacheConfig(
-            store: memoryCache,
+            store: BackupCacheStore(
+              primary: _userMemoryCache,
+              secondary: cache ?? _userMemoryCache,
+            ),
             policy:
                 (force ?? false) ? CachePolicy.refresh : CachePolicy.request,
           ).toOptions(),
@@ -557,16 +559,44 @@ class Client {
         )
         .then((response) => response.data);
 
-    return CurrentUser.fromJson(body);
+    Account result = Account.fromJson(body);
+
+    traits.value = traits.value.copyWith(
+      denylist: result.blacklistedTags?.split('\n') ?? [],
+    );
+
+    return result;
   }
 
-  Future<void> updateBlacklist(List<String> denylist) async {
-    Map<String, dynamic> body = {
-      'user[blacklisted_tags]': denylist.join('\n'),
-    };
+  Future<void> updateTraits({
+    required Traits traits,
+    CancelToken? cancelToken,
+  }) async {
+    Traits previous = this.traits.value;
+    try {
+      this.traits.value = traits;
+      if (!listEquals(traits.denylist, this.traits.value.denylist)) {
+        Map<String, dynamic> body = {
+          'user[blacklisted_tags]': traits.denylist.join('\n'),
+        };
 
-    await _dio.put('users/${credentials!.username}.json',
-        data: FormData.fromMap(body));
+        await _dio.put(
+          '/users/${identity.username}.json',
+          data: FormData.fromMap(body),
+          cancelToken: cancelToken,
+        );
+      }
+    } on DioException {
+      this.traits.value = previous;
+      rethrow;
+    }
+  }
+
+  Future<void> syncTraits({bool? force, CancelToken? cancelToken}) async {
+    await account(
+      force: force,
+      cancelToken: cancelToken,
+    );
   }
 
   Future<List<Tag>> tags({
@@ -578,7 +608,7 @@ class Client {
   }) async {
     Object body = await _dio
         .get(
-          'tags.json',
+          '/tags.json',
           queryParameters: {
             'page': page,
             'limit': limit,
@@ -609,7 +639,7 @@ class Client {
       if (search.length < 3) return [];
       Object body = await _dio
           .get(
-            'tags/autocomplete.json',
+            '/tags/autocomplete.json',
             queryParameters: {
               'search[name_matches]': search,
             },
@@ -658,7 +688,7 @@ class Client {
   }) async {
     Object body = await _dio
         .get(
-          'tag_aliases.json',
+          '/tag_aliases.json',
           queryParameters: {
             'page': page,
             'limit': limit,
@@ -687,7 +717,7 @@ class Client {
   }) async {
     Object body = await _dio
         .get(
-          'comments.json',
+          '/comments.json',
           queryParameters: {
             'page': page,
             'limit': limit,
@@ -736,7 +766,7 @@ class Client {
   }) async {
     Map<String, dynamic> body = await _dio
         .get(
-          'comments.json/$id.json',
+          '/comments.json/$id.json',
           options: forceOptions(force),
           cancelToken: cancelToken,
         )
@@ -750,7 +780,7 @@ class Client {
     required String content,
   }) async {
     await cache?.deleteFromPath(
-      RegExp(RegExp.escape('comments.json')),
+      RegExp(RegExp.escape('/comments.json')),
       queryParams: {'search[post_id]': postId.toString()},
     );
 
@@ -760,7 +790,7 @@ class Client {
       'commit': 'Submit',
     };
 
-    await _dio.post('comments.json', data: FormData.fromMap(body));
+    await _dio.post('/comments.json', data: FormData.fromMap(body));
   }
 
   Future<void> updateComment({
@@ -769,12 +799,12 @@ class Client {
     required String content,
   }) async {
     await cache?.deleteFromPath(
-      RegExp(RegExp.escape('comments.json')),
+      RegExp(RegExp.escape('/comments.json')),
       queryParams: {'search[post_id]': postId.toString()},
     );
 
     await cache?.deleteFromPath(
-      RegExp(RegExp.escape('comments/$id.json')),
+      RegExp(RegExp.escape('/comments/$id.json')),
     );
 
     Map<String, dynamic> body = {
@@ -782,7 +812,7 @@ class Client {
       'commit': 'Submit',
     };
 
-    await _dio.patch('comments/$id.json', data: FormData.fromMap(body));
+    await _dio.patch('/comments/$id.json', data: FormData.fromMap(body));
   }
 
   Future<void> voteComment({
@@ -791,7 +821,7 @@ class Client {
     required bool replace,
   }) async {
     await _dio.post(
-      'comments/$id/votes.json',
+      '/comments/$id/votes.json',
       queryParameters: {
         'score': upvote ? 1 : -1,
         'no_unvote': replace,
@@ -804,7 +834,7 @@ class Client {
     required String reason,
   }) async {
     await _dio.post(
-      'tickets',
+      '/tickets',
       queryParameters: {
         'ticket[reason]': reason,
         'ticket[disp_id]': id,
@@ -825,7 +855,7 @@ class Client {
   }) async {
     Object body = await _dio
         .get(
-          'forum_topics.json',
+          '/forum_topics.json',
           queryParameters: {
             'page': page,
             'limit': limit,
@@ -853,7 +883,7 @@ class Client {
   }) async {
     Map<String, dynamic> body = await _dio
         .get(
-          'forum_topics/$id.json',
+          '/forum_topics/$id.json',
           options: forceOptions(force),
           cancelToken: cancelToken,
         )
@@ -872,7 +902,7 @@ class Client {
   }) async {
     Object body = await _dio
         .get(
-          'forum_posts.json',
+          '/forum_posts.json',
           queryParameters: {
             'page': page,
             'limit': limit,
@@ -921,7 +951,7 @@ class Client {
   }) async {
     Map<String, dynamic> body = await _dio
         .get(
-          'forum_posts/$id.json',
+          '/forum_posts/$id.json',
           options: forceOptions(force),
           cancelToken: cancelToken,
         )

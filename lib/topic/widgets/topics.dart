@@ -19,7 +19,6 @@ class TopicsPage extends StatelessWidget {
           builder: (context, controller, child) => ControllerHistoryConnector(
             controller: controller,
             addToHistory: (context, service, data) => service.addTopicSearch(
-              controller.client.host,
               controller.query,
               topics: controller.items!,
             ),

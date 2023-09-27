@@ -12,16 +12,12 @@ class FavPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return RouterDrawerEntry<FavPage>(
       child: PostsProvider.builder(
-        create: (context, client, denylist) => FavoritePostsController(
-          client: client,
-          denylist: denylist,
-        ),
+        create: (context, client) => FavoritePostsController(client: client),
         child: Consumer<PostsController>(
           builder: (context, controller, child) => ControllerHistoryConnector(
             controller: controller,
             addToHistory: (context, service, controller) =>
                 service.addPostSearch(
-              controller.client.host,
               controller.query,
               posts: controller.items,
             ),

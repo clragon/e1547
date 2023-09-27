@@ -1,6 +1,7 @@
-import 'package:e1547/denylist/denylist.dart';
+import 'package:e1547/client/client.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/tag/tag.dart';
+import 'package:e1547/traits/traits.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -24,7 +25,8 @@ class TagGesture extends StatelessWidget {
 
     return InkWell(
       onTap: () async {
-        if (wiki || (safe && context.read<DenylistService>().denies(tag))) {
+        Traits traits = context.read<Client>().traits.value;
+        if (wiki || (safe && traits.denylist.contains(tag))) {
           sheet();
         } else {
           Navigator.of(context).push(MaterialPageRoute(

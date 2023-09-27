@@ -41,7 +41,6 @@ class _PostsSearchPageState extends State<PostsSearchPage> {
         builder: (context, controller, follows, client, child) {
           Future<void> updateFollow() async {
             follow = await follows.follow(
-              client.host,
               controller.query['tags'] ?? '',
             );
             if (follow != null) {
@@ -92,7 +91,6 @@ class _PostsSearchPageState extends State<PostsSearchPage> {
             if (!mounted) return;
             if (listEquals(lastQuery?.tags, controller.query.tags)) return;
             lastQuery = controller.query;
-            String host = context.read<Client>().host;
             HistoriesService historiesService =
                 context.read<HistoriesService>();
             await updatePool();
@@ -100,9 +98,9 @@ class _PostsSearchPageState extends State<PostsSearchPage> {
             if (controller.error != null) return;
             await updateFollow();
             if (pool != null) {
-              historiesService.addPool(host, pool!, posts: controller.items);
+              historiesService.addPool(pool!, posts: controller.items);
             } else {
-              historiesService.addPostSearch(host, controller.query,
+              historiesService.addPostSearch(controller.query,
                   posts: controller.items);
             }
           }

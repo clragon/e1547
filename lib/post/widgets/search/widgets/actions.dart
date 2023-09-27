@@ -1,5 +1,5 @@
+import 'package:collection/collection.dart';
 import 'package:e1547/client/client.dart';
-import 'package:e1547/denylist/denylist.dart';
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
@@ -17,129 +17,139 @@ class TagListActions extends StatelessWidget {
     if (wikiMetaTags.any((prefix) => tag.startsWith(prefix))) {
       return const SizedBox.shrink();
     }
-    return Consumer3<FollowsService, Client, DenylistService>(
-      builder: (context, follows, client, denylist, child) =>
-          SubStream<Follow?>(
-        create: () => follows.follow(client.host, tag).stream,
-        keys: [follows, client, tag],
-        builder: (context, snapshot) {
-          return AnimatedSwitcher(
+    return Consumer2<FollowsService, Client>(
+      builder: (context, follows, client, child) => SubStream<Follow?>(
+        create: () => follows.follow(tag).stream,
+        keys: [follows, tag],
+        builder: (context, snapshot) => ValueListenableBuilder(
+          valueListenable: client.traits,
+          builder: (context, traits, child) => AnimatedSwitcher(
             duration: defaultAnimationDuration,
             child: [ConnectionState.none, ConnectionState.waiting]
                     .contains(snapshot.connectionState)
                 ? const SizedBox.shrink()
-                : Builder(builder: (context) {
-                    Follow? follow = snapshot.data;
-                    bool hasFollow = follow != null;
+                : Builder(
+                    builder: (context) {
+                      Follow? follow = snapshot.data;
+                      bool hasFollow = follow != null;
 
-                    bool following = [FollowType.update, FollowType.notify]
-                        .contains(follow?.type);
+                      bool following = [FollowType.update, FollowType.notify]
+                          .contains(follow?.type);
 
-                    bool notifying = follow?.type == FollowType.notify;
-                    bool bookmarked = follow?.type == FollowType.bookmark;
-                    bool denied = denylist.denies(tag);
+                      bool notifying = follow?.type == FollowType.notify;
+                      bool bookmarked = follow?.type == FollowType.bookmark;
+                      bool denied = traits.denylist.contains(tag);
 
-                    VoidCallback followBookmarkToggle(FollowType type) {
-                      return () {
-                        if (hasFollow) {
-                          if (follow.type == type) {
-                            follows.removeTag(client.host, tag);
-                          }
-                          if (follow.type == FollowType.notify &&
-                              type == FollowType.update) {
-                            follows.removeTag(client.host, tag);
+                      VoidCallback followBookmarkToggle(FollowType type) {
+                        return () {
+                          if (hasFollow) {
+                            if (follow.type == type) {
+                              follows.removeTag(tag);
+                            }
+                            if (follow.type == FollowType.notify &&
+                                type == FollowType.update) {
+                              follows.removeTag(tag);
+                            } else {
+                              follows.replace(follow.copyWith(type: type));
+                            }
                           } else {
-                            follows.replace(follow.copyWith(type: type));
+                            follows.addTag(tag, type: type);
+                            if (denied) {
+                              client.traits.value = traits.copyWith(
+                                denylist: traits.denylist..remove(tag),
+                              );
+                            }
                           }
-                        } else {
-                          follows.addTag(client.host, tag, type: type);
-                          if (denied) {
-                            denylist.remove(tag);
-                          }
-                        }
-                      };
-                    }
+                        };
+                      }
 
-                    return Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        CrossFade(
-                          showChild: !denied,
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              ActionButton(
-                                icon: following
-                                    ? const Icon(Icons.person_remove_alt_1)
-                                    : const Icon(Icons.person_add_alt_1),
-                                label: following
-                                    ? const Text('Unfollow')
-                                    : const Text('Follow'),
-                                onTap: followBookmarkToggle(FollowType.update),
-                              ),
-                              CrossFade(
-                                showChild: following,
-                                child: ActionButton(
-                                  icon: notifying
-                                      ? const Icon(Icons.notifications_active)
-                                      : const Icon(Icons.notifications_none),
-                                  label: notifying
-                                      ? const Text('Mute')
-                                      : const Text('Notify'),
-                                  onTap: () {
-                                    if (notifying) {
-                                      follows.replace(follow!.copyWith(
-                                        type: FollowType.update,
-                                      ));
-                                    } else {
-                                      follows.replace(follow!.copyWith(
-                                        type: FollowType.notify,
-                                      ));
-                                    }
-                                  },
+                      return Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          CrossFade(
+                            showChild: !denied,
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                ActionButton(
+                                  icon: following
+                                      ? const Icon(Icons.person_remove_alt_1)
+                                      : const Icon(Icons.person_add_alt_1),
+                                  label: following
+                                      ? const Text('Unfollow')
+                                      : const Text('Follow'),
+                                  onTap:
+                                      followBookmarkToggle(FollowType.update),
                                 ),
-                              ),
-                              ActionButton(
-                                icon: bookmarked
-                                    ? const Icon(Icons.turned_in)
-                                    : const Icon(Icons.turned_in_not),
-                                label: bookmarked
-                                    ? const Text('Unbookmark')
-                                    : const Text('Bookmark'),
-                                onTap:
-                                    followBookmarkToggle(FollowType.bookmark),
-                              ),
-                            ],
-                          ),
-                        ),
-                        CrossFade(
-                          showChild: !hasFollow,
-                          child: ActionButton(
-                            icon: CrossFade(
-                              showChild: denied,
-                              secondChild: const Icon(Icons.block),
-                              child: const Icon(Icons.check),
+                                CrossFade(
+                                  showChild: following,
+                                  child: ActionButton(
+                                    icon: notifying
+                                        ? const Icon(Icons.notifications_active)
+                                        : const Icon(Icons.notifications_none),
+                                    label: notifying
+                                        ? const Text('Mute')
+                                        : const Text('Notify'),
+                                    onTap: () {
+                                      if (notifying) {
+                                        follows.replace(follow!.copyWith(
+                                          type: FollowType.update,
+                                        ));
+                                      } else {
+                                        follows.replace(follow!.copyWith(
+                                          type: FollowType.notify,
+                                        ));
+                                      }
+                                    },
+                                  ),
+                                ),
+                                ActionButton(
+                                  icon: bookmarked
+                                      ? const Icon(Icons.turned_in)
+                                      : const Icon(Icons.turned_in_not),
+                                  label: bookmarked
+                                      ? const Text('Unbookmark')
+                                      : const Text('Bookmark'),
+                                  onTap:
+                                      followBookmarkToggle(FollowType.bookmark),
+                                ),
+                              ],
                             ),
-                            label: denied
-                                ? const Text('Unblock')
-                                : const Text('Block'),
-                            onTap: () {
-                              if (denied) {
-                                denylist.remove(tag);
-                              } else {
-                                if (hasFollow) {
-                                  follows.removeTag(client.host, tag);
-                                }
-                                denylist.add(tag);
-                              }
-                            },
                           ),
-                        ),
-                      ],
-                    );
-                  }),
-          );
-        },
+                          CrossFade(
+                            showChild: !hasFollow,
+                            child: ActionButton(
+                              icon: CrossFade(
+                                showChild: denied,
+                                secondChild: const Icon(Icons.block),
+                                child: const Icon(Icons.check),
+                              ),
+                              label: denied
+                                  ? const Text('Unblock')
+                                  : const Text('Block'),
+                              onTap: () {
+                                if (denied) {
+                                  client.traits.value = traits.copyWith(
+                                      denylist: traits.denylist
+                                          .whereNot((element) => element == tag)
+                                          .toList());
+                                } else {
+                                  if (hasFollow) {
+                                    follows.removeTag(tag);
+                                  }
+                                  client.traits.value = traits.copyWith(
+                                    denylist: [...traits.denylist, tag],
+                                  );
+                                }
+                              },
+                            ),
+                          ),
+                        ],
+                      );
+                    },
+                  ),
+          ),
+        ),
       ),
     );
   }

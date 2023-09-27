@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:e1547/app/widgets/lock.dart';
+import 'package:e1547/app/app.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
@@ -128,6 +128,36 @@ class AdvancedSettingsPage extends StatelessWidget {
                   value: value,
                   onChanged: (value) => settings.showBeta.value = value,
                 ),
+              ),
+              ListTile(
+                title: const Text('Restart migration'),
+                subtitle: const Text('restart the migration process'),
+                leading: const Icon(Icons.refresh),
+                onTap: () async {
+                  await showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: const Text('Restart migration?'),
+                      content: const Text(
+                          'This will delete all your identities and restart the migration process. '),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.of(context).maybePop(),
+                          child: const Text('Cancel'),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(context).maybePop();
+                            DatabaseMigrationProvider.of(context)
+                                // ignore: deprecated_member_use_from_same_package
+                                .restartMigration();
+                          },
+                          child: const Text('OK'),
+                        ),
+                      ],
+                    ),
+                  );
+                },
               ),
             ],
           ),
