@@ -49,18 +49,16 @@ class TagInput extends StatelessWidget {
     return SubDefault<TextEditingController>(
       value: controller,
       create: TextEditingController.new,
-      builder: (context, controller) => SubEffect(
-        effect: () {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            controller.text = sortTags(controller.text);
-            if (controller.text.isNotEmpty) {
-              controller.text += ' ';
-            }
-          });
-          return null;
+      builder: (context, controller) => SubValue(
+        create: () {
+          controller.text = sortTags(controller.text);
+          if (controller.text.isNotEmpty) {
+            controller.text += ' ';
+          }
+          return controller;
         },
         keys: [controller],
-        child: AutocompleteTextField<TagSuggestion>(
+        builder: (context, controller) => AutocompleteTextField<TagSuggestion>(
           controller: controller,
           submit: (result) => submit(sortTags(result)),
           direction: direction,
