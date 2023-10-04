@@ -37,10 +37,15 @@ jobs:
           distribution: 'adopt'
           java-version: '17'
 
+      - name: parse flutter version
+        run: |
+          export FLUTTER_VERSION=$(grep "^  flutter:" pubspec.yaml | awk -F"'" '{print $2}')
+          echo "FLUTTER_VERSION=$FLUTTER_VERSION" >> $GITHUB_ENV
+
       - name: setup flutter
         uses: subosito/flutter-action@v2
         with:
-          channel: stable
+          flutter-version: ${{ env.FLUTTER_VERSION }}
           cache: true
 
       - name: cache flutter dependencies
@@ -97,10 +102,15 @@ jobs:
       - name: setup actions
         uses: actions/checkout@v3
 
+      - name: parse flutter version
+        run: |
+          export FLUTTER_VERSION=$(grep "^  flutter:" pubspec.yaml | awk -F"'" '{print $2}')
+          echo "FLUTTER_VERSION=$FLUTTER_VERSION" >> $GITHUB_ENV
+
       - name: setup flutter
         uses: subosito/flutter-action@v2
         with:
-          channel: stable
+          flutter-version: ${{ env.FLUTTER_VERSION }}
           cache: true
 
       - name: cache flutter dependencies
@@ -150,10 +160,16 @@ jobs:
           ruby-version: '3.0'
           bundler-cache: true
 
+      - name: parse flutter version
+        run: |
+          export FLUTTER_VERSION=$(grep "^  flutter:" pubspec.yaml | awk -F"'" '{print $2}')
+          echo "FLUTTER_VERSION=$FLUTTER_VERSION" >> $GITHUB_ENV
+
       - name: setup flutter
         uses: subosito/flutter-action@v2
         with:
-          channel: stable
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
 
       - name: setup cider
         run: dart pub global activate cider
