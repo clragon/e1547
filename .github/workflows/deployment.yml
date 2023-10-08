@@ -39,7 +39,7 @@ jobs:
 
       - name: parse flutter version
         run: |
-          export FLUTTER_VERSION=$(grep "^  flutter:" pubspec.yaml | awk -F"'" '{print $2}')
+          export FLUTTER_VERSION=$(./.github/workflows/get_flutter_version.sh)
           echo "FLUTTER_VERSION=$FLUTTER_VERSION" >> $GITHUB_ENV
 
       - name: setup flutter
@@ -104,7 +104,7 @@ jobs:
 
       - name: parse flutter version
         run: |
-          export FLUTTER_VERSION=$(grep "^  flutter:" pubspec.yaml | awk -F"'" '{print $2}')
+          export FLUTTER_VERSION=$(./.github/workflows/get_flutter_version.sh)
           echo "FLUTTER_VERSION=$FLUTTER_VERSION" >> $GITHUB_ENV
 
       - name: setup flutter
@@ -162,7 +162,7 @@ jobs:
 
       - name: parse flutter version
         run: |
-          export FLUTTER_VERSION=$(grep "^  flutter:" pubspec.yaml | awk -F"'" '{print $2}')
+          export FLUTTER_VERSION=$(./.github/workflows/get_flutter_version.sh)
           echo "FLUTTER_VERSION=$FLUTTER_VERSION" >> $GITHUB_ENV
 
       - name: setup flutter
