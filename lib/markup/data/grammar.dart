@@ -13,10 +13,10 @@ class DTextGrammar extends GrammarDefinition<List<DTextElement>> {
     Parser? limit,
   ]) =>
       condense(
-        <Parser>[
+        [
           if (other != null) other,
           ref0(character),
-        ].toChoiceParser().cast<DTextElement>().starLazy(limit ?? endOfInput()),
+        ].toChoiceParser().starLazy(limit ?? endOfInput()),
       );
 
   Parser<List<DTextElement>> condense(Parser<List<DTextElement>> parser) =>
@@ -30,20 +30,22 @@ class DTextGrammar extends GrammarDefinition<List<DTextElement>> {
             }
           }).toList());
 
-  Parser<DTextElement> element([Parser? limit]) =>
-      (ref0(blocks) | ref1(textElement, limit)).cast();
+  Parser<DTextElement> element([Parser? limit]) => [
+        ref0(blocks),
+        ref1(textElement, limit),
+      ].toChoiceParser();
 
   Parser<DTextElement> blocks() => [
         ref0(quote),
         ref0(code),
         ref0(section),
-      ].toChoiceParser().cast();
+      ].toChoiceParser();
 
   Parser<DTextElement> textElement([Parser? limit]) => [
         ref1(styles, limit),
         ref0(links),
         ref0(character),
-      ].toChoiceParser().cast();
+      ].toChoiceParser();
 
   Parser<DTextElement> styles([Parser? limit]) => [
         ref0(inlineStyles),
@@ -51,7 +53,7 @@ class DTextGrammar extends GrammarDefinition<List<DTextElement>> {
         ref0(inlineCode),
         ref1(header, limit),
         ref1(list, limit),
-      ].toChoiceParser().cast();
+      ].toChoiceParser();
 
   Parser<DTextElement> inlineStyles() => [
         ref0(bold),
@@ -62,7 +64,7 @@ class DTextGrammar extends GrammarDefinition<List<DTextElement>> {
         ref0(superscript),
         ref0(subscript),
         ref0(color),
-      ].toChoiceParser().cast();
+      ].toChoiceParser();
 
   Parser<DTextElement> links() => [
         ref0(linkWord),
@@ -70,31 +72,31 @@ class DTextGrammar extends GrammarDefinition<List<DTextElement>> {
         ref0(localLink),
         ref0(tagLink),
         ref0(tagSearchLink),
-      ].toChoiceParser().cast();
+      ].toChoiceParser();
 
   Parser<DTextElement> character() => any().map((value) => DTextContent(value));
 
   Parser<List<DTextElement>> simpleBlockTag(String tag) =>
-      ref3(blockTag, tag, tag, null).pick(1).cast();
+      ref3(blockTag, tag, tag, null).map((e) => e.$2);
 
-  Parser<List<dynamic>> blockTag(
+  Parser<(String, List<DTextElement>)> blockTag(
     String start,
     String end,
     Parser<DTextElement>? inner,
   ) {
     Parser limit = stringIgnoreCase('[/$end]') | endOfInput();
-    return [
-      [
+    return (
+      (
         char('['),
         stringIgnoreCase(start),
         (char('=') & any().starLazy(char(']')).flatten()).pick(1).optional(),
         char(']'),
-      ].toSequenceParser().pick(2),
-      <Parser>[
+      ).toSequenceParser().map((e) => e.$2),
+      (
         inner?.starLazy(limit) ?? ref1(body, limit),
         limit,
-      ].toSequenceParser().pick(0),
-    ].toSequenceParser();
+      ).toSequenceParser().map((e) => e.$1),
+    ).toSequenceParser();
   }
 
   Parser<DTextElement> quote() =>
@@ -106,26 +108,28 @@ class DTextGrammar extends GrammarDefinition<List<DTextElement>> {
           'code',
           'code',
           any().map((e) => DTextContent(e)),
-        ).pick(1).castList<DTextElement>(),
+        ).map((e) => e.$2),
       ).map(DTextCode.new);
 
-  Parser<DTextElement> section() => <Parser>[
+  Parser<DTextElement> section() => (
         position(),
-        <Parser>[
-          ref3(blockTag, 'section', 'section', null).map((e) => [...e, false]),
+        [
+          ref3(blockTag, 'section', 'section', null)
+              .map((e) => (e.$1, e.$2, false)),
           ref3(blockTag, 'section,expanded', 'section', null)
-              .map((e) => [...e, true])
+              .map((e) => (e.$1, e.$2, true))
         ].toChoiceParser(),
         position(),
-      ]
-          .toSequenceParser()
-          .map((e) => DTextSection(
-                DTextId(start: e[0], end: e[2]),
-                e[1][0],
-                e[1][2],
-                e[1][1],
-              ))
-          .cast();
+      ).toSequenceParser().map((e) {
+        final (start, content, end) = e;
+        final (tag, children, expanded) = content;
+        return DTextSection(
+          DTextId(start: start, end: end),
+          tag,
+          expanded,
+          children,
+        );
+      });
 
   Parser<DTextElement> bold() => ref1(simpleBlockTag, 'b').map(DTextBold.new);
   Parser<DTextElement> italic() =>
@@ -144,114 +148,118 @@ class DTextGrammar extends GrammarDefinition<List<DTextElement>> {
       (position() & ref1(simpleBlockTag, 'spoiler') & position())
           .map((e) => DTextSpoiler(DTextId(start: e[0], end: e[2]), e[1]));
   Parser<DTextElement> color() =>
-      ref3(blockTag, 'color', 'color', null).map((e) => DTextColor(e[0], e[1]));
+      ref3(blockTag, 'color', 'color', null).map((e) => DTextColor(e.$1, e.$2));
 
   Parser<DTextElement> inlineCode() =>
       (char('`') & any().starLazy(char('`')).flatten() & char('`'))
           .pick(1)
           .map((e) => DTextInlineCode(e));
 
-  Parser<DTextElement> header([Parser? limit]) => <Parser>[
+  Parser<DTextElement> header([Parser? limit]) => (
         startOfLine().map((e) => e != null ? DTextContent(e) : null),
-        charIgnoringCase('h'),
-        pattern('1-6').map(int.parse),
-        char('.'),
-        char(' ').optional(),
+        (
+          charIgnoringCase('h'),
+          pattern('1-6').map(int.parse),
+          char('.'),
+          char(' ').optional(),
+        ).toSequenceParser().map((e) => e.$2),
         condense(ref0(textElement).starLazy([
           if (limit != null) limit,
           blocks(),
           newline(),
           endOfInput(),
         ].toChoiceParser())),
-      ].toSequenceParser().map((e) => DTextHeader(e[2], e[0], e[5]));
+      ).toSequenceParser().map((e) => DTextHeader(e.$2, e.$1, e.$3));
 
-  Parser<DTextElement> list([Parser? limit]) => <Parser>[
+  Parser<DTextElement> list([Parser? limit]) => (
         startOfLine().map((e) => e != null ? DTextContent(e) : null),
-        char('*').plus().flatten().map((e) => e.length - 1),
-        char(' '),
+        (
+          char('*').plus().flatten().map((e) => e.length - 1),
+          char(' '),
+        ).toSequenceParser().map((e) => e.$1),
         condense(ref0(textElement).starLazy([
           if (limit != null) limit,
           blocks(),
           newline(),
           endOfInput(),
         ].toChoiceParser())),
-      ].toSequenceParser().map((e) => DTextList(e[1], e[0], e[3]));
+      ).toSequenceParser().map((e) => DTextList(e.$2, e.$1, e.$3));
 
   Parser<DTextElement> linkWord() => LinkWord.values
       .map((e) => e.name)
       .map(
-        (e) => <Parser>[
+        (e) => (
           stringIgnoreCase(e),
           stringIgnoreCase(' #'),
           digit().plus().flatten().map(int.parse),
-        ].toSequenceParser(),
+        ).toSequenceParser(),
       )
       .toChoiceParser()
       .map(
         (value) => DTextLinkWord(
-          LinkWord.values.asNameMap()[value[0].toLowerCase()]!,
-          value[2] as int,
+          LinkWord.values.asNameMap()[value.$1.toLowerCase()]!,
+          value.$3,
         ),
       );
 
   Parser<void> linkEnd() =>
       pattern('.,;:!?")').optional() &
-      <Parser>[
+      [
         whitespace(),
         newline(),
         endOfInput(),
       ].toChoiceParser();
 
-  Parser<DTextElement> link() => <Parser>[
-        <Parser>[
+  Parser<DTextElement> link() => (
+        (
           char('"'),
           ref2(withText, ref0(inlineStyles), char('"')),
           char('"'),
           char(':'),
-        ].toSequenceParser().pick(1).optional(),
-        <Parser>[
+        ).toSequenceParser().map((e) => e.$2).optional(),
+        (
           stringIgnoreCase('http'),
           stringIgnoreCase('s').optional(),
           stringIgnoreCase('://'),
           any().starLazy(ref0(linkEnd)).flatten(),
-        ].toSequenceParser().flatten(),
-      ].toSequenceParser().map(
-            (value) => DTextLink(value[0], value[1]),
+        ).toSequenceParser().flatten(),
+      ).toSequenceParser().map(
+            (value) => DTextLink(value.$1, value.$2),
           );
 
-  Parser<DTextElement> localLink() => <Parser>[
-        <Parser>[
+  Parser<DTextElement> localLink() => (
+        (
           char('"'),
           ref2(withText, ref0(inlineStyles), char('"')),
           char('"'),
           char(':'),
-        ].toSequenceParser().pick(1),
-        <Parser>[
+        ).toSequenceParser().map((e) => e.$2),
+        (
           char('/'),
           any().starLazy(ref0(linkEnd)).flatten(),
-        ].toSequenceParser().flatten(),
-      ].toSequenceParser().map(
-            (value) => DTextLocalLink(value[0], value[1]),
+        ).toSequenceParser().flatten(),
+      ).toSequenceParser().map(
+            (value) => DTextLocalLink(value.$1, value.$2),
           );
 
-  Parser<DTextElement> tagLink() => <Parser>[
+  Parser<DTextElement> tagLink() => (
         string('[['),
         any().starLazy(char('|').and() | string(']]')).flatten(),
-        [
+        (
           char('|'),
           any().starLazy(string(']]')).flatten(),
-        ].toSequenceParser().pick(1).optional(),
+        ).toSequenceParser().map((e) => e.$2).optional(),
         string(']]'),
-      ].toSequenceParser().map(
-            (value) => DTextTagLink(value[2], value[1]),
+      ).toSequenceParser().map(
+            (value) => DTextTagLink(value.$3, value.$2),
           );
 
-  Parser<DTextElement> tagSearchLink() => <Parser>[
+  Parser<DTextElement> tagSearchLink() => (
         string('{{'),
         any().starLazy(string('}}')).flatten(),
         string('}}'),
-      ].toSequenceParser().map(
-            (value) => DTextTagSearchLink(value[1]),
+      ).toSequenceParser().map(
+            (value) => DTextTagSearchLink(value.$2),
           );
 }
 
@@ -271,4 +279,7 @@ class StartOfInputParser extends Parser<void> {
 
 Parser<void> startOfInput() => StartOfInputParser();
 
-Parser<String?> startOfLine() => (startOfInput() | newline()).cast();
+Parser<String?> startOfLine() => [
+      startOfInput().map((_) => null),
+      newline(),
+    ].toChoiceParser();
