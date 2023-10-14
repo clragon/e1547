@@ -89,9 +89,12 @@ class DTextGrammar extends GrammarDefinition<List<DTextElement>> {
       (
         char('['),
         stringIgnoreCase(start),
-        (char('=') & any().starLazy(char(']')).flatten()).pick(1).optional(),
+        (
+          char('='),
+          any().starLazy(char(']')).flatten(),
+        ).toSequenceParser().optional().map((e) => e?.$2 ?? ''),
         char(']'),
-      ).toSequenceParser().map((e) => e.$2),
+      ).toSequenceParser().map((e) => e.$3),
       (
         inner?.starLazy(limit) ?? ref1(body, limit),
         limit,
