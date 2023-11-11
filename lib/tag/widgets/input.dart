@@ -71,7 +71,7 @@ class TagInput extends StatelessWidget {
           ],
           textInputAction: textInputAction,
           focusNode: focusNode,
-          onSuggestionSelected: (suggestion) {
+          onSelected: (suggestion) {
             List<String> tags = controller.text.split(' ');
             int selection = findTag(tags, controller.selection.extent.offset);
             String tag = tags[selection];
@@ -118,7 +118,7 @@ class TagInput extends StatelessWidget {
                   search: tagToRaw(tags[selection]),
                   category: category,
                 )
-                .then((value) => value.take(3));
+                .then((value) => value.take(3).toList());
           },
         ),
       ),

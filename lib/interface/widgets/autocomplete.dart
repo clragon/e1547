@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -6,7 +8,7 @@ import 'package:flutter_typeahead/flutter_typeahead.dart';
 class AutocompleteTextField<T> extends StatelessWidget {
   const AutocompleteTextField({
     super.key,
-    required this.onSuggestionSelected,
+    required this.onSelected,
     required this.suggestionsCallback,
     required this.itemBuilder,
     required this.submit,
@@ -29,39 +31,45 @@ class AutocompleteTextField<T> extends StatelessWidget {
   final TextInputAction? textInputAction;
   final FocusNode? focusNode;
   final List<TextInputFormatter>? inputFormatters;
-  final SuggestionSelectionCallback<T> onSuggestionSelected;
-  final ItemBuilder<T> itemBuilder;
-  final SuggestionsCallback<T> suggestionsCallback;
+  final ValueSetter<T> onSelected;
+  final Widget Function(BuildContext context, T value) itemBuilder;
+  final FutureOr<List<T>> Function(String search) suggestionsCallback;
 
   @override
   Widget build(BuildContext context) {
     bool hasFab = Scaffold.maybeOf(context)?.hasFloatingActionButton ?? false;
     return TypeAheadField<T>(
-      direction: direction ?? AxisDirection.up,
       hideOnEmpty: true,
-      hideOnError: true,
-      hideKeyboard: readOnly,
-      keepSuggestionsOnSuggestionSelected: true,
-      suggestionsBoxDecoration: hasFab
-          ? const SuggestionsBoxDecoration(
-              shape: AutocompleteCutout(),
-              clipBehavior: Clip.antiAlias,
-            )
-          : const SuggestionsBoxDecoration(),
-      textFieldConfiguration: TextFieldConfiguration(
-        controller: controller,
-        autofocus: true,
-        focusNode: focusNode,
-        inputFormatters: inputFormatters,
-        decoration: decoration?.copyWith(
-              labelText: labelText,
-            ) ??
-            InputDecoration(labelText: labelText),
-        onSubmitted: submit,
-        textInputAction: textInputAction ?? TextInputAction.search,
-      ),
-      loadingBuilder: (context) => const SizedBox(),
-      noItemsFoundBuilder: (context) => const ListTile(
+      hideOnSelect: false,
+      builder: (context, controller, focusNode) {
+        return TextField(
+          controller: controller,
+          autofocus: true,
+          focusNode: focusNode,
+          inputFormatters: inputFormatters,
+          decoration: decoration?.copyWith(
+                labelText: labelText,
+              ) ??
+              InputDecoration(labelText: labelText),
+          onSubmitted: submit,
+          textInputAction: textInputAction ?? TextInputAction.search,
+          readOnly: readOnly,
+        );
+      },
+      decorationBuilder: (context, child) {
+        if (hasFab) {
+          return const ClipRect(
+            clipBehavior: Clip.antiAlias,
+            child: DecoratedBox(
+              decoration: ShapeDecoration(
+                shape: AutocompleteCutout(),
+              ),
+            ),
+          );
+        }
+        return child;
+      },
+      loadingBuilder: (context) => const ListTile(
         title: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -69,7 +77,16 @@ class AutocompleteTextField<T> extends StatelessWidget {
           ],
         ),
       ),
-      onSuggestionSelected: onSuggestionSelected,
+      errorBuilder: (context, error) => const Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          IconMessage(
+            icon: Icon(Icons.error),
+            title: Text('Failed to load suggestions'),
+          ),
+        ],
+      ),
+      onSelected: onSelected,
       itemBuilder: itemBuilder,
       suggestionsCallback: suggestionsCallback,
     );
