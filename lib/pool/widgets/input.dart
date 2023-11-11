@@ -127,7 +127,7 @@ class PoolNameFilter extends StatelessWidget {
         labelText: 'Pool title',
         decoration: theme.decoration,
         focusNode: theme.focusNode,
-        onSuggestionSelected: (value) {
+        onSelected: (value) {
           if (value.link != null) {
             Navigator.of(context).pop();
             const E621LinkParser().open(context, value.link!);
@@ -197,8 +197,8 @@ class PoolNameFilter extends StatelessWidget {
           }
           return results.values
               .sorted((a, b) => b.time.compareTo(a.time))
-              .toList()
-              .take(4);
+              .take(4)
+              .toList();
         },
         itemBuilder: (context, value) => ListTile(
           title: Text(value.name),
