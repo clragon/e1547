@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/interface/interface.dart';
@@ -60,9 +61,24 @@ class _FollowEditorState extends State<FollowEditor> {
         onSubmit: (value) async {
           await service.edit(
             client.host,
-            value.firstWhere((e) => e.key == notify).value!.split('\n'),
-            value.firstWhere((e) => e.key == subscribe).value!.split('\n'),
-            value.firstWhere((e) => e.key == bookmark).value!.split('\n'),
+            value
+                .firstWhere((e) => e.key == notify)
+                .value!
+                .split('\n')
+                .whereNot((e) => e.isEmpty)
+                .toList(),
+            value
+                .firstWhere((e) => e.key == subscribe)
+                .value!
+                .split('\n')
+                .whereNot((e) => e.isEmpty)
+                .toList(),
+            value
+                .firstWhere((e) => e.key == bookmark)
+                .value!
+                .split('\n')
+                .whereNot((e) => e.isEmpty)
+                .toList(),
           );
           if (context.mounted) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
