@@ -36,6 +36,7 @@ enum AppTheme {
               cardColor: Colors.white,
               backgroundColor: Colors.grey[50],
             ),
+            useMaterial3: false,
           ),
         ).copyWith(
           floatingActionButtonTheme: const FloatingActionButtonThemeData(
@@ -52,6 +53,7 @@ enum AppTheme {
               backgroundColor: const Color.fromARGB(255, 20, 20, 20),
               brightness: Brightness.dark,
             ),
+            useMaterial3: false,
           ),
         );
       case AppTheme.amoled:
@@ -64,6 +66,7 @@ enum AppTheme {
               backgroundColor: Colors.black,
               brightness: Brightness.dark,
             ),
+            useMaterial3: false,
           ),
         );
       case AppTheme.blue:
@@ -76,6 +79,7 @@ enum AppTheme {
               backgroundColor: const Color.fromARGB(255, 15, 33, 60),
               brightness: Brightness.dark,
             ),
+            useMaterial3: false,
           ),
         );
     }

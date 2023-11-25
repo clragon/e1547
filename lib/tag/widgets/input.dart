@@ -26,7 +26,7 @@ class TagInput extends StatelessWidget {
   final TextEditingController? controller;
   final bool multiInput;
   final int? category;
-  final AxisDirection? direction;
+  final VerticalDirection? direction;
   final bool readOnly;
   final String? labelText;
   final InputDecoration? decoration;

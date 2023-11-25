@@ -29,7 +29,7 @@ class TagSearchFilter extends StatelessWidget {
           QueryMap.parse(oldValue).toString() != newValue,
       builder: (context, controller) => TagInput(
         textInputAction: TextInputAction.search,
-        direction: AxisDirection.up,
+        direction: VerticalDirection.up,
         labelText: state.filter.name,
         decoration: theme.decoration,
         focusNode: theme.focusNode,

@@ -24,7 +24,7 @@ class AutocompleteTextField<T> extends StatelessWidget {
 
   final SubmitString submit;
   final TextEditingController? controller;
-  final AxisDirection? direction;
+  final VerticalDirection? direction;
   final bool readOnly;
   final String? labelText;
   final InputDecoration? decoration;
@@ -39,6 +39,8 @@ class AutocompleteTextField<T> extends StatelessWidget {
   Widget build(BuildContext context) {
     bool hasFab = Scaffold.maybeOf(context)?.hasFloatingActionButton ?? false;
     return TypeAheadField<T>(
+      controller: controller,
+      direction: direction,
       hideOnEmpty: true,
       hideOnSelect: false,
       builder: (context, controller, focusNode) {
@@ -56,19 +58,26 @@ class AutocompleteTextField<T> extends StatelessWidget {
           readOnly: readOnly,
         );
       },
-      decorationBuilder: (context, child) {
-        if (hasFab) {
-          return const ClipRect(
-            clipBehavior: Clip.antiAlias,
-            child: DecoratedBox(
-              decoration: ShapeDecoration(
-                shape: AutocompleteCutout(),
-              ),
-            ),
-          );
-        }
-        return child;
-      },
+      decorationBuilder: (context, child) => Card(
+        margin: EdgeInsets.zero,
+        color: Theme.of(context).colorScheme.background,
+        child: Builder(
+          builder: (context) {
+            if (hasFab) {
+              return ClipRect(
+                clipBehavior: Clip.antiAlias,
+                child: DecoratedBox(
+                  decoration: const ShapeDecoration(
+                    shape: AutocompleteCutout(),
+                  ),
+                  child: child,
+                ),
+              );
+            }
+            return child;
+          },
+        ),
+      ),
       loadingBuilder: (context) => const ListTile(
         title: Row(
           mainAxisAlignment: MainAxisAlignment.center,

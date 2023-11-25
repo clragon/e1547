@@ -121,7 +121,7 @@ class PoolNameFilter extends StatelessWidget {
       onChanged: state.onChanged,
       builder: (context, controller) =>
           AutocompleteTextField<_PoolSearchResult>(
-        direction: AxisDirection.up,
+        direction: VerticalDirection.up,
         submit: (value) => state.onSubmit?.call(value),
         controller: controller,
         labelText: 'Pool title',
