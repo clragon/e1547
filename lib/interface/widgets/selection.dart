@@ -133,14 +133,10 @@ class _SelectionLayoutState<T> extends State<SelectionLayout<T>> {
   Widget build(BuildContext context) {
     if (!widget.enabled) return widget.child;
 
-    return WillPopScope(
-      onWillPop: () async {
-        if (selections.isNotEmpty) {
-          onSelectionChanged({});
-          return false;
-        } else {
-          return true;
-        }
+    return PopScope(
+      canPop: selections.isNotEmpty,
+      onPopInvoked: (didPop) {
+        if (!didPop) onSelectionChanged({});
       },
       child: SelectionLayoutData<T>(
         items: widget.items ?? [],

@@ -20,21 +20,15 @@ class PostEditor extends StatelessWidget {
       builder: (context, child) {
         PostEditingController controller =
             context.watch<PostEditingController>();
-        return WillPopScope(
+        return PopScope(
+          canPop: controller.isShown || !controller.editing,
+          onPopInvoked: (didPop) {
+            if (!didPop) controller.stopEditing();
+          },
           child: PromptActions(
             controller: controller,
             child: child!,
           ),
-          onWillPop: () async {
-            if (controller.isShown) {
-              return true;
-            }
-            if (controller.editing) {
-              controller.stopEditing();
-              return false;
-            }
-            return true;
-          },
         );
       },
       child: child,

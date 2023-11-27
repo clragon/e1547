@@ -166,7 +166,9 @@ class DTextBody extends StatelessWidget {
 
   Widget _buildInner(BuildContext context, List<DTextElement> elements) {
     return MediaQuery(
-      data: MediaQuery.of(context).copyWith(textScaleFactor: 1),
+      data: MediaQuery.of(context).copyWith(
+        textScaler: TextScaler.noScaling,
+      ),
       child: DTextBody(
         elements: elements,
         style: style,

@@ -1,5 +1,4 @@
 import 'package:e1547/interface/interface.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sub/flutter_sub.dart';
 import 'package:sliding_sheet/sliding_sheet.dart';
@@ -123,8 +122,8 @@ class LoadingDialogActionController extends DialogActionController {
   void show(BuildContext context, [Widget? child]) {
     super.show(
       context,
-      WillPopScope(
-        onWillPop: () => SynchronousFuture(!isLoading),
+      PopScope(
+        canPop: !isLoading,
         child: ListenableBuilder(
           listenable: this,
           builder: (context, child) {
