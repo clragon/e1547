@@ -3,7 +3,6 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:e1547/post/post.dart';
-import 'package:e1547/settings/settings.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
@@ -14,8 +13,10 @@ import 'package:shared_storage/shared_storage.dart';
 
 extension PostDownloading on Post {
   Future<void> download({
-    required Settings settings,
-    required AppInfo appInfo,
+    required String path,
+    required void Function(String value) onPathChanged,
+    required String folder,
+    required BaseCacheManager cache,
   }) async {
     try {
       File download = await DefaultCacheManager().getSingleFile(file.url!);
@@ -25,25 +26,25 @@ extension PostDownloading on Post {
           lookupMimeType(download.path),
           'Could not determine MIME of download!',
         );
-        Uri target = Uri.parse(settings.downloadPath.value);
+        Uri target = Uri.parse(path);
         if (!await isPersistedUri(target)) {
           target = await _throwOnNull(
             openDocumentTree(initialUri: target),
             'No download folder was chosen!',
           );
-          settings.downloadPath.value = target.toString();
+          onPathChanged(target.path);
         }
         DocumentFile dir = await _throwOnNull(
           target.toDocumentFile(),
           'Could not open download folder!',
         );
         if (dir.name == 'Pictures' && (await dir.parentFile()) == null) {
-          DocumentFile? appDir = await _getFolderChild(dir, appInfo.appName);
+          DocumentFile? appDir = await _getFolderChild(dir, folder);
           if (appDir != null) {
             dir = appDir;
           } else {
             dir = await _throwOnNull(
-              dir.createDirectory(appInfo.appName),
+              dir.createDirectory(folder),
               'Could not create App download folder!',
             );
           }

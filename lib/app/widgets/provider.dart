@@ -14,6 +14,7 @@ import 'package:e1547/interface/interface.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:e1547/user/user.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_sub/flutter_sub.dart';
 
 class ClientServiceProvider extends SubChangeNotifierProvider3<AppInfo,
@@ -140,6 +141,18 @@ class SettingsProvider extends SubProvider<AppStorage, Settings> {
       : super(
           create: (context, databases) => Settings(
             databases.preferences,
+          ),
+        );
+}
+
+class CacheManagerProvider extends Provider<BaseCacheManager> {
+  CacheManagerProvider({super.key, super.child, super.builder})
+      : super(
+          create: (context) => CacheManager(
+            Config(
+              DefaultCacheManager.key,
+              stalePeriod: const Duration(days: 3),
+            ),
           ),
         );
 }

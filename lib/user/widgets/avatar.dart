@@ -5,6 +5,7 @@ import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_sub/flutter_sub.dart';
 
 class CurrentUserAvatar extends StatelessWidget {
@@ -162,8 +163,15 @@ class Avatar extends StatelessWidget {
           post: post!,
           child: Hero(
             tag: post!.link,
-            child: CircleAvatar(
-              foregroundImage: CachedNetworkImageProvider(post!.sample.url!),
+            child: AspectRatio(
+              aspectRatio: 1,
+              child: ClipOval(
+                child: CachedNetworkImage(
+                  imageUrl: post!.sample.url!,
+                  fit: BoxFit.cover,
+                  cacheManager: context.read<BaseCacheManager>(),
+                ),
+              ),
             ),
           ),
         ),

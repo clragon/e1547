@@ -3,11 +3,15 @@ import 'package:e1547/logs/logs.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
 Future<void> postDownloadingNotification(
   BuildContext context,
   Set<Post> items,
 ) async {
+  Settings settings = context.read<Settings>();
+  AppInfo appInfo = context.read<AppInfo>();
+  BaseCacheManager cache = context.read<BaseCacheManager>();
   final loggy = Loggy('Post Downloader');
   return loadingNotification<Post>(
     context: context,
@@ -16,8 +20,10 @@ Future<void> postDownloadingNotification(
     process: (item) async {
       try {
         await item.download(
-          settings: context.read<Settings>(),
-          appInfo: context.read<AppInfo>(),
+          path: settings.downloadPath.value,
+          onPathChanged: (path) => settings.downloadPath.value = path,
+          folder: appInfo.appName,
+          cache: cache,
         );
         return true;
       } on PostDownloadException catch (exception, stacktrace) {

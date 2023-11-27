@@ -5,6 +5,7 @@ import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
 class FollowTile extends StatelessWidget {
   const FollowTile({super.key, required this.follow});
@@ -170,6 +171,7 @@ class FollowTile extends StatelessWidget {
                               imageUrl: follow.thumbnail!,
                               errorWidget: defaultErrorBuilder,
                               fit: BoxFit.cover,
+                              cacheManager: context.read<BaseCacheManager>(),
                             ),
                           ),
                         ),

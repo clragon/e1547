@@ -1,6 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
 class ImageGrid extends StatelessWidget {
   const ImageGrid({super.key, this.images});
@@ -71,6 +73,7 @@ class ImageGrid extends StatelessWidget {
                       imageUrl: images![index],
                       errorWidget: defaultErrorBuilder,
                       fit: BoxFit.cover,
+                      cacheManager: context.read<BaseCacheManager>(),
                     ),
                   ),
                 );

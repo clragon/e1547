@@ -8,6 +8,7 @@ import 'package:e1547/pool/data/controller.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
 class PoolsPageFloatingActionButton extends StatelessWidget {
   const PoolsPageFloatingActionButton({
@@ -213,6 +214,7 @@ class PoolNameFilter extends StatelessWidget {
                         imageUrl: value.thumbnail!,
                         errorWidget: defaultErrorBuilder,
                         fit: BoxFit.cover,
+                        cacheManager: context.read<BaseCacheManager>(),
                       ),
                     ),
                   ),

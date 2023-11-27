@@ -16,6 +16,7 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        CacheManagerProvider(),
         SettingsProvider(),
         ClientServiceProvider(),
         DenylistProvider(),
