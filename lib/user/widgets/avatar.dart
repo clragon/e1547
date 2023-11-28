@@ -149,9 +149,15 @@ class PostAvatar extends StatelessWidget {
 }
 
 class Avatar extends StatelessWidget {
-  const Avatar(this.post, {super.key, this.onTap});
+  const Avatar(
+    this.post, {
+    super.key,
+    this.onTap,
+    this.radius = 20,
+  });
 
   final Post? post;
+  final double radius;
   final VoidCallback? onTap;
 
   @override
@@ -163,14 +169,15 @@ class Avatar extends StatelessWidget {
           post: post!,
           child: Hero(
             tag: post!.link,
-            child: AspectRatio(
-              aspectRatio: 1,
-              child: ClipOval(
-                child: CachedNetworkImage(
-                  imageUrl: post!.sample.url!,
-                  fit: BoxFit.cover,
-                  cacheManager: context.read<BaseCacheManager>(),
-                ),
+            child: Container(
+              decoration: const BoxDecoration(shape: BoxShape.circle),
+              clipBehavior: Clip.antiAlias,
+              width: radius * 2,
+              height: radius * 2,
+              child: CachedNetworkImage(
+                imageUrl: post!.sample.url!,
+                fit: BoxFit.cover,
+                cacheManager: context.read<BaseCacheManager>(),
               ),
             ),
           ),
