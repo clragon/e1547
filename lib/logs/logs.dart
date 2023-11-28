@@ -7,7 +7,6 @@ export 'data/routes.dart';
 // widgets
 export 'widgets/appbar.dart';
 export 'widgets/card.dart';
-export 'widgets/dialog.dart';
 export 'widgets/drawer.dart';
 export 'widgets/error.dart';
 export 'widgets/expandable.dart';

@@ -7,14 +7,7 @@ class RouteLoggerObserver extends NavigatorObserver {
   void logRoute(Route<dynamic>? route, String action) {
     if (route == null) return;
     String? name = route.settings.name;
-    if (name == null) {
-      if (route is PageRoute) {
-        name = 'A page';
-      } else if (route is ModalRoute) {
-        name = 'A modal';
-      }
-    }
-    name ??= 'A route';
+    if (name == null) return;
     loggy.debug('$name $action');
   }
 
