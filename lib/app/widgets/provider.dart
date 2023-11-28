@@ -151,7 +151,7 @@ class CacheManagerProvider extends Provider<BaseCacheManager> {
           create: (context) => CacheManager(
             Config(
               DefaultCacheManager.key,
-              stalePeriod: const Duration(days: 3),
+              stalePeriod: const Duration(days: 1),
             ),
           ),
         );
