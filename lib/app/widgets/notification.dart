@@ -56,7 +56,7 @@ class _NotificationHandlerState extends State<NotificationHandler> {
       result = await (await notifications)
           .resolvePlatformSpecificImplementation<
               AndroidFlutterLocalNotificationsPlugin>()
-          ?.requestPermission();
+          ?.requestNotificationsPermission();
       if (!(result ?? true)) return;
     }
     registerFollowBackgroundTask(follows);
