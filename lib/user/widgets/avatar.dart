@@ -177,6 +177,10 @@ class Avatar extends StatelessWidget {
                 imageUrl: post!.sample.url!,
                 fit: BoxFit.cover,
                 cacheManager: context.read<BaseCacheManager>(),
+                placeholder: (context, url) => const EmptyAvatar(),
+                errorWidget: (context, url, error) => const Center(
+                  child: Icon(Icons.warning_amber),
+                ),
               ),
             ),
           ),
