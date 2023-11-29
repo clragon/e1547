@@ -1,4 +1,3 @@
-import 'package:e1547/denylist/denylist.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/tag/tag.dart';
@@ -196,37 +195,6 @@ class DrawerDenySwitchBody extends StatelessWidget {
                     updateAllowedList(allowed);
                   },
                 ),
-              ),
-            ],
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(top: 8),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Consumer<DenylistService>(
-                builder: (context, denylist, child) {
-                  int count = denylist.items.length;
-                  if (denying) {
-                    count -= denied.keys.length;
-                    count -= allowedList.length;
-                  }
-                  return CrossFade(
-                    showChild: 0 < count,
-                    child: TweenAnimationBuilder<int>(
-                      tween: IntTween(begin: 0, end: count),
-                      duration: defaultAnimationDuration,
-                      builder: (context, value, child) => Text(
-                        '$value inactive entries',
-                        style: TextStyle(
-                          fontStyle: FontStyle.italic,
-                          color: dimTextColor(context),
-                        ),
-                      ),
-                    ),
-                  );
-                },
               ),
             ],
           ),
