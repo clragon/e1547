@@ -53,11 +53,16 @@ class _TextEditorState extends State<TextEditor> {
       listenable: actionController,
       builder: (context, child) {
         Widget scrollView(Widget child) {
-          return SingleChildScrollView(
-            padding: defaultActionListPadding.add(const EdgeInsets.all(8)),
-            child: Row(
-              children: [Expanded(child: child)],
-            ),
+          return CustomScrollView(
+            slivers: [
+              SliverPadding(
+                padding: defaultActionListPadding.add(const EdgeInsets.all(8)),
+                sliver: SliverFillRemaining(
+                  hasScrollBody: false,
+                  child: child,
+                ),
+              ),
+            ],
           );
         }
 
