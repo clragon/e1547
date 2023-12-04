@@ -131,9 +131,10 @@ class _$PoolCopyWithImpl<$Res, $Val extends Pool>
 }
 
 /// @nodoc
-abstract class _$$_PoolCopyWith<$Res> implements $PoolCopyWith<$Res> {
-  factory _$$_PoolCopyWith(_$_Pool value, $Res Function(_$_Pool) then) =
-      __$$_PoolCopyWithImpl<$Res>;
+abstract class _$$PoolImplCopyWith<$Res> implements $PoolCopyWith<$Res> {
+  factory _$$PoolImplCopyWith(
+          _$PoolImpl value, $Res Function(_$PoolImpl) then) =
+      __$$PoolImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -151,9 +152,10 @@ abstract class _$$_PoolCopyWith<$Res> implements $PoolCopyWith<$Res> {
 }
 
 /// @nodoc
-class __$$_PoolCopyWithImpl<$Res> extends _$PoolCopyWithImpl<$Res, _$_Pool>
-    implements _$$_PoolCopyWith<$Res> {
-  __$$_PoolCopyWithImpl(_$_Pool _value, $Res Function(_$_Pool) _then)
+class __$$PoolImplCopyWithImpl<$Res>
+    extends _$PoolCopyWithImpl<$Res, _$PoolImpl>
+    implements _$$PoolImplCopyWith<$Res> {
+  __$$PoolImplCopyWithImpl(_$PoolImpl _value, $Res Function(_$PoolImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -171,7 +173,7 @@ class __$$_PoolCopyWithImpl<$Res> extends _$PoolCopyWithImpl<$Res, _$_Pool>
     Object? creatorName = null,
     Object? postCount = null,
   }) {
-    return _then(_$_Pool(
+    return _then(_$PoolImpl(
       id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
@@ -222,8 +224,8 @@ class __$$_PoolCopyWithImpl<$Res> extends _$PoolCopyWithImpl<$Res, _$_Pool>
 
 /// @nodoc
 @JsonSerializable()
-class _$_Pool implements _Pool {
-  const _$_Pool(
+class _$PoolImpl implements _Pool {
+  const _$PoolImpl(
       {required this.id,
       required this.name,
       required this.createdAt,
@@ -237,7 +239,8 @@ class _$_Pool implements _Pool {
       required this.postCount})
       : _postIds = postIds;
 
-  factory _$_Pool.fromJson(Map<String, dynamic> json) => _$$_PoolFromJson(json);
+  factory _$PoolImpl.fromJson(Map<String, dynamic> json) =>
+      _$$PoolImplFromJson(json);
 
   @override
   final int id;
@@ -277,7 +280,7 @@ class _$_Pool implements _Pool {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_Pool &&
+            other is _$PoolImpl &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.name, name) || other.name == name) &&
             (identical(other.createdAt, createdAt) ||
@@ -318,12 +321,12 @@ class _$_Pool implements _Pool {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_PoolCopyWith<_$_Pool> get copyWith =>
-      __$$_PoolCopyWithImpl<_$_Pool>(this, _$identity);
+  _$$PoolImplCopyWith<_$PoolImpl> get copyWith =>
+      __$$PoolImplCopyWithImpl<_$PoolImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_PoolToJson(
+    return _$$PoolImplToJson(
       this,
     );
   }
@@ -341,9 +344,9 @@ abstract class _Pool implements Pool {
       required final Category category,
       required final List<int> postIds,
       required final String creatorName,
-      required final int postCount}) = _$_Pool;
+      required final int postCount}) = _$PoolImpl;
 
-  factory _Pool.fromJson(Map<String, dynamic> json) = _$_Pool.fromJson;
+  factory _Pool.fromJson(Map<String, dynamic> json) = _$PoolImpl.fromJson;
 
   @override
   int get id;
@@ -369,5 +372,6 @@ abstract class _Pool implements Pool {
   int get postCount;
   @override
   @JsonKey(ignore: true)
-  _$$_PoolCopyWith<_$_Pool> get copyWith => throw _privateConstructorUsedError;
+  _$$PoolImplCopyWith<_$PoolImpl> get copyWith =>
+      throw _privateConstructorUsedError;
 }

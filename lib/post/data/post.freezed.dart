@@ -280,9 +280,10 @@ class _$PostCopyWithImpl<$Res, $Val extends Post>
 }
 
 /// @nodoc
-abstract class _$$_PostCopyWith<$Res> implements $PostCopyWith<$Res> {
-  factory _$$_PostCopyWith(_$_Post value, $Res Function(_$_Post) then) =
-      __$$_PostCopyWithImpl<$Res>;
+abstract class _$$PostImplCopyWith<$Res> implements $PostCopyWith<$Res> {
+  factory _$$PostImplCopyWith(
+          _$PostImpl value, $Res Function(_$PostImpl) then) =
+      __$$PostImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -327,9 +328,10 @@ abstract class _$$_PostCopyWith<$Res> implements $PostCopyWith<$Res> {
 }
 
 /// @nodoc
-class __$$_PostCopyWithImpl<$Res> extends _$PostCopyWithImpl<$Res, _$_Post>
-    implements _$$_PostCopyWith<$Res> {
-  __$$_PostCopyWithImpl(_$_Post _value, $Res Function(_$_Post) _then)
+class __$$PostImplCopyWithImpl<$Res>
+    extends _$PostCopyWithImpl<$Res, _$PostImpl>
+    implements _$$PostImplCopyWith<$Res> {
+  __$$PostImplCopyWithImpl(_$PostImpl _value, $Res Function(_$PostImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -360,7 +362,7 @@ class __$$_PostCopyWithImpl<$Res> extends _$PostCopyWithImpl<$Res, _$_Post>
     Object? duration = freezed,
     Object? voteStatus = null,
   }) {
-    return _then(_$_Post(
+    return _then(_$PostImpl(
       id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
@@ -463,8 +465,8 @@ class __$$_PostCopyWithImpl<$Res> extends _$PostCopyWithImpl<$Res, _$_Post>
 
 /// @nodoc
 @JsonSerializable()
-class _$_Post extends _Post {
-  const _$_Post(
+class _$PostImpl extends _Post {
+  const _$PostImpl(
       {required this.id,
       required this.createdAt,
       required this.updatedAt,
@@ -496,7 +498,8 @@ class _$_Post extends _Post {
         _pools = pools,
         super._();
 
-  factory _$_Post.fromJson(Map<String, dynamic> json) => _$$_PostFromJson(json);
+  factory _$PostImpl.fromJson(Map<String, dynamic> json) =>
+      _$$PostImplFromJson(json);
 
   @override
   final int id;
@@ -584,7 +587,7 @@ class _$_Post extends _Post {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_Post &&
+            other is _$PostImpl &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt) &&
@@ -658,12 +661,12 @@ class _$_Post extends _Post {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_PostCopyWith<_$_Post> get copyWith =>
-      __$$_PostCopyWithImpl<_$_Post>(this, _$identity);
+  _$$PostImplCopyWith<_$PostImpl> get copyWith =>
+      __$$PostImplCopyWithImpl<_$PostImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_PostToJson(
+    return _$$PostImplToJson(
       this,
     );
   }
@@ -695,10 +698,10 @@ abstract class _Post extends Post {
       required final bool hasNotes,
       required final double? duration,
       @JsonKey(includeFromJson: false, includeToJson: false)
-      final VoteStatus voteStatus}) = _$_Post;
+      final VoteStatus voteStatus}) = _$PostImpl;
   const _Post._() : super._();
 
-  factory _Post.fromJson(Map<String, dynamic> json) = _$_Post.fromJson;
+  factory _Post.fromJson(Map<String, dynamic> json) = _$PostImpl.fromJson;
 
   @override
   int get id;
@@ -752,7 +755,8 @@ abstract class _Post extends Post {
   VoteStatus get voteStatus;
   @override
   @JsonKey(ignore: true)
-  _$$_PostCopyWith<_$_Post> get copyWith => throw _privateConstructorUsedError;
+  _$$PostImplCopyWith<_$PostImpl> get copyWith =>
+      throw _privateConstructorUsedError;
 }
 
 PostPreviewFile _$PostPreviewFileFromJson(Map<String, dynamic> json) {
@@ -815,22 +819,22 @@ class _$PostPreviewFileCopyWithImpl<$Res, $Val extends PostPreviewFile>
 }
 
 /// @nodoc
-abstract class _$$_PostPreviewFileCopyWith<$Res>
+abstract class _$$PostPreviewFileImplCopyWith<$Res>
     implements $PostPreviewFileCopyWith<$Res> {
-  factory _$$_PostPreviewFileCopyWith(
-          _$_PostPreviewFile value, $Res Function(_$_PostPreviewFile) then) =
-      __$$_PostPreviewFileCopyWithImpl<$Res>;
+  factory _$$PostPreviewFileImplCopyWith(_$PostPreviewFileImpl value,
+          $Res Function(_$PostPreviewFileImpl) then) =
+      __$$PostPreviewFileImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({int width, int height, String? url});
 }
 
 /// @nodoc
-class __$$_PostPreviewFileCopyWithImpl<$Res>
-    extends _$PostPreviewFileCopyWithImpl<$Res, _$_PostPreviewFile>
-    implements _$$_PostPreviewFileCopyWith<$Res> {
-  __$$_PostPreviewFileCopyWithImpl(
-      _$_PostPreviewFile _value, $Res Function(_$_PostPreviewFile) _then)
+class __$$PostPreviewFileImplCopyWithImpl<$Res>
+    extends _$PostPreviewFileCopyWithImpl<$Res, _$PostPreviewFileImpl>
+    implements _$$PostPreviewFileImplCopyWith<$Res> {
+  __$$PostPreviewFileImplCopyWithImpl(
+      _$PostPreviewFileImpl _value, $Res Function(_$PostPreviewFileImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -840,7 +844,7 @@ class __$$_PostPreviewFileCopyWithImpl<$Res>
     Object? height = null,
     Object? url = freezed,
   }) {
-    return _then(_$_PostPreviewFile(
+    return _then(_$PostPreviewFileImpl(
       width: null == width
           ? _value.width
           : width // ignore: cast_nullable_to_non_nullable
@@ -859,12 +863,12 @@ class __$$_PostPreviewFileCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$_PostPreviewFile implements _PostPreviewFile {
-  const _$_PostPreviewFile(
+class _$PostPreviewFileImpl implements _PostPreviewFile {
+  const _$PostPreviewFileImpl(
       {required this.width, required this.height, required this.url});
 
-  factory _$_PostPreviewFile.fromJson(Map<String, dynamic> json) =>
-      _$$_PostPreviewFileFromJson(json);
+  factory _$PostPreviewFileImpl.fromJson(Map<String, dynamic> json) =>
+      _$$PostPreviewFileImplFromJson(json);
 
   @override
   final int width;
@@ -882,7 +886,7 @@ class _$_PostPreviewFile implements _PostPreviewFile {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_PostPreviewFile &&
+            other is _$PostPreviewFileImpl &&
             (identical(other.width, width) || other.width == width) &&
             (identical(other.height, height) || other.height == height) &&
             (identical(other.url, url) || other.url == url));
@@ -895,12 +899,13 @@ class _$_PostPreviewFile implements _PostPreviewFile {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_PostPreviewFileCopyWith<_$_PostPreviewFile> get copyWith =>
-      __$$_PostPreviewFileCopyWithImpl<_$_PostPreviewFile>(this, _$identity);
+  _$$PostPreviewFileImplCopyWith<_$PostPreviewFileImpl> get copyWith =>
+      __$$PostPreviewFileImplCopyWithImpl<_$PostPreviewFileImpl>(
+          this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_PostPreviewFileToJson(
+    return _$$PostPreviewFileImplToJson(
       this,
     );
   }
@@ -910,10 +915,10 @@ abstract class _PostPreviewFile implements PostPreviewFile {
   const factory _PostPreviewFile(
       {required final int width,
       required final int height,
-      required final String? url}) = _$_PostPreviewFile;
+      required final String? url}) = _$PostPreviewFileImpl;
 
   factory _PostPreviewFile.fromJson(Map<String, dynamic> json) =
-      _$_PostPreviewFile.fromJson;
+      _$PostPreviewFileImpl.fromJson;
 
   @override
   int get width;
@@ -923,7 +928,7 @@ abstract class _PostPreviewFile implements PostPreviewFile {
   String? get url;
   @override
   @JsonKey(ignore: true)
-  _$$_PostPreviewFileCopyWith<_$_PostPreviewFile> get copyWith =>
+  _$$PostPreviewFileImplCopyWith<_$PostPreviewFileImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
@@ -993,22 +998,22 @@ class _$PostSampleFileCopyWithImpl<$Res, $Val extends PostSampleFile>
 }
 
 /// @nodoc
-abstract class _$$_PostSampleFileCopyWith<$Res>
+abstract class _$$PostSampleFileImplCopyWith<$Res>
     implements $PostSampleFileCopyWith<$Res> {
-  factory _$$_PostSampleFileCopyWith(
-          _$_PostSampleFile value, $Res Function(_$_PostSampleFile) then) =
-      __$$_PostSampleFileCopyWithImpl<$Res>;
+  factory _$$PostSampleFileImplCopyWith(_$PostSampleFileImpl value,
+          $Res Function(_$PostSampleFileImpl) then) =
+      __$$PostSampleFileImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({bool has, int height, int width, String? url});
 }
 
 /// @nodoc
-class __$$_PostSampleFileCopyWithImpl<$Res>
-    extends _$PostSampleFileCopyWithImpl<$Res, _$_PostSampleFile>
-    implements _$$_PostSampleFileCopyWith<$Res> {
-  __$$_PostSampleFileCopyWithImpl(
-      _$_PostSampleFile _value, $Res Function(_$_PostSampleFile) _then)
+class __$$PostSampleFileImplCopyWithImpl<$Res>
+    extends _$PostSampleFileCopyWithImpl<$Res, _$PostSampleFileImpl>
+    implements _$$PostSampleFileImplCopyWith<$Res> {
+  __$$PostSampleFileImplCopyWithImpl(
+      _$PostSampleFileImpl _value, $Res Function(_$PostSampleFileImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -1019,7 +1024,7 @@ class __$$_PostSampleFileCopyWithImpl<$Res>
     Object? width = null,
     Object? url = freezed,
   }) {
-    return _then(_$_PostSampleFile(
+    return _then(_$PostSampleFileImpl(
       has: null == has
           ? _value.has
           : has // ignore: cast_nullable_to_non_nullable
@@ -1042,15 +1047,15 @@ class __$$_PostSampleFileCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$_PostSampleFile implements _PostSampleFile {
-  const _$_PostSampleFile(
+class _$PostSampleFileImpl implements _PostSampleFile {
+  const _$PostSampleFileImpl(
       {required this.has,
       required this.height,
       required this.width,
       required this.url});
 
-  factory _$_PostSampleFile.fromJson(Map<String, dynamic> json) =>
-      _$$_PostSampleFileFromJson(json);
+  factory _$PostSampleFileImpl.fromJson(Map<String, dynamic> json) =>
+      _$$PostSampleFileImplFromJson(json);
 
   @override
   final bool has;
@@ -1070,7 +1075,7 @@ class _$_PostSampleFile implements _PostSampleFile {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_PostSampleFile &&
+            other is _$PostSampleFileImpl &&
             (identical(other.has, has) || other.has == has) &&
             (identical(other.height, height) || other.height == height) &&
             (identical(other.width, width) || other.width == width) &&
@@ -1084,12 +1089,13 @@ class _$_PostSampleFile implements _PostSampleFile {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_PostSampleFileCopyWith<_$_PostSampleFile> get copyWith =>
-      __$$_PostSampleFileCopyWithImpl<_$_PostSampleFile>(this, _$identity);
+  _$$PostSampleFileImplCopyWith<_$PostSampleFileImpl> get copyWith =>
+      __$$PostSampleFileImplCopyWithImpl<_$PostSampleFileImpl>(
+          this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_PostSampleFileToJson(
+    return _$$PostSampleFileImplToJson(
       this,
     );
   }
@@ -1100,10 +1106,10 @@ abstract class _PostSampleFile implements PostSampleFile {
       {required final bool has,
       required final int height,
       required final int width,
-      required final String? url}) = _$_PostSampleFile;
+      required final String? url}) = _$PostSampleFileImpl;
 
   factory _PostSampleFile.fromJson(Map<String, dynamic> json) =
-      _$_PostSampleFile.fromJson;
+      _$PostSampleFileImpl.fromJson;
 
   @override
   bool get has;
@@ -1115,7 +1121,7 @@ abstract class _PostSampleFile implements PostSampleFile {
   String? get url;
   @override
   @JsonKey(ignore: true)
-  _$$_PostSampleFileCopyWith<_$_PostSampleFile> get copyWith =>
+  _$$PostSampleFileImplCopyWith<_$PostSampleFileImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
@@ -1198,11 +1204,11 @@ class _$PostSourceFileCopyWithImpl<$Res, $Val extends PostSourceFile>
 }
 
 /// @nodoc
-abstract class _$$_PostSourceFileCopyWith<$Res>
+abstract class _$$PostSourceFileImplCopyWith<$Res>
     implements $PostSourceFileCopyWith<$Res> {
-  factory _$$_PostSourceFileCopyWith(
-          _$_PostSourceFile value, $Res Function(_$_PostSourceFile) then) =
-      __$$_PostSourceFileCopyWithImpl<$Res>;
+  factory _$$PostSourceFileImplCopyWith(_$PostSourceFileImpl value,
+          $Res Function(_$PostSourceFileImpl) then) =
+      __$$PostSourceFileImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -1210,11 +1216,11 @@ abstract class _$$_PostSourceFileCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$_PostSourceFileCopyWithImpl<$Res>
-    extends _$PostSourceFileCopyWithImpl<$Res, _$_PostSourceFile>
-    implements _$$_PostSourceFileCopyWith<$Res> {
-  __$$_PostSourceFileCopyWithImpl(
-      _$_PostSourceFile _value, $Res Function(_$_PostSourceFile) _then)
+class __$$PostSourceFileImplCopyWithImpl<$Res>
+    extends _$PostSourceFileCopyWithImpl<$Res, _$PostSourceFileImpl>
+    implements _$$PostSourceFileImplCopyWith<$Res> {
+  __$$PostSourceFileImplCopyWithImpl(
+      _$PostSourceFileImpl _value, $Res Function(_$PostSourceFileImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -1227,7 +1233,7 @@ class __$$_PostSourceFileCopyWithImpl<$Res>
     Object? md5 = null,
     Object? url = freezed,
   }) {
-    return _then(_$_PostSourceFile(
+    return _then(_$PostSourceFileImpl(
       width: null == width
           ? _value.width
           : width // ignore: cast_nullable_to_non_nullable
@@ -1258,8 +1264,8 @@ class __$$_PostSourceFileCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$_PostSourceFile implements _PostSourceFile {
-  const _$_PostSourceFile(
+class _$PostSourceFileImpl implements _PostSourceFile {
+  const _$PostSourceFileImpl(
       {required this.width,
       required this.height,
       required this.ext,
@@ -1267,8 +1273,8 @@ class _$_PostSourceFile implements _PostSourceFile {
       required this.md5,
       required this.url});
 
-  factory _$_PostSourceFile.fromJson(Map<String, dynamic> json) =>
-      _$$_PostSourceFileFromJson(json);
+  factory _$PostSourceFileImpl.fromJson(Map<String, dynamic> json) =>
+      _$$PostSourceFileImplFromJson(json);
 
   @override
   final int width;
@@ -1292,7 +1298,7 @@ class _$_PostSourceFile implements _PostSourceFile {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_PostSourceFile &&
+            other is _$PostSourceFileImpl &&
             (identical(other.width, width) || other.width == width) &&
             (identical(other.height, height) || other.height == height) &&
             (identical(other.ext, ext) || other.ext == ext) &&
@@ -1309,12 +1315,13 @@ class _$_PostSourceFile implements _PostSourceFile {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_PostSourceFileCopyWith<_$_PostSourceFile> get copyWith =>
-      __$$_PostSourceFileCopyWithImpl<_$_PostSourceFile>(this, _$identity);
+  _$$PostSourceFileImplCopyWith<_$PostSourceFileImpl> get copyWith =>
+      __$$PostSourceFileImplCopyWithImpl<_$PostSourceFileImpl>(
+          this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_PostSourceFileToJson(
+    return _$$PostSourceFileImplToJson(
       this,
     );
   }
@@ -1327,10 +1334,10 @@ abstract class _PostSourceFile implements PostSourceFile {
       required final String ext,
       required final int size,
       required final String md5,
-      required final String? url}) = _$_PostSourceFile;
+      required final String? url}) = _$PostSourceFileImpl;
 
   factory _PostSourceFile.fromJson(Map<String, dynamic> json) =
-      _$_PostSourceFile.fromJson;
+      _$PostSourceFileImpl.fromJson;
 
   @override
   int get width;
@@ -1346,7 +1353,7 @@ abstract class _PostSourceFile implements PostSourceFile {
   String? get url;
   @override
   @JsonKey(ignore: true)
-  _$$_PostSourceFileCopyWith<_$_PostSourceFile> get copyWith =>
+  _$$PostSourceFileImplCopyWith<_$PostSourceFileImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
@@ -1432,9 +1439,10 @@ class _$FlagsCopyWithImpl<$Res, $Val extends Flags>
 }
 
 /// @nodoc
-abstract class _$$_FlagsCopyWith<$Res> implements $FlagsCopyWith<$Res> {
-  factory _$$_FlagsCopyWith(_$_Flags value, $Res Function(_$_Flags) then) =
-      __$$_FlagsCopyWithImpl<$Res>;
+abstract class _$$FlagsImplCopyWith<$Res> implements $FlagsCopyWith<$Res> {
+  factory _$$FlagsImplCopyWith(
+          _$FlagsImpl value, $Res Function(_$FlagsImpl) then) =
+      __$$FlagsImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -1447,9 +1455,11 @@ abstract class _$$_FlagsCopyWith<$Res> implements $FlagsCopyWith<$Res> {
 }
 
 /// @nodoc
-class __$$_FlagsCopyWithImpl<$Res> extends _$FlagsCopyWithImpl<$Res, _$_Flags>
-    implements _$$_FlagsCopyWith<$Res> {
-  __$$_FlagsCopyWithImpl(_$_Flags _value, $Res Function(_$_Flags) _then)
+class __$$FlagsImplCopyWithImpl<$Res>
+    extends _$FlagsCopyWithImpl<$Res, _$FlagsImpl>
+    implements _$$FlagsImplCopyWith<$Res> {
+  __$$FlagsImplCopyWithImpl(
+      _$FlagsImpl _value, $Res Function(_$FlagsImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -1462,7 +1472,7 @@ class __$$_FlagsCopyWithImpl<$Res> extends _$FlagsCopyWithImpl<$Res, _$_Flags>
     Object? ratingLocked = null,
     Object? deleted = null,
   }) {
-    return _then(_$_Flags(
+    return _then(_$FlagsImpl(
       pending: null == pending
           ? _value.pending
           : pending // ignore: cast_nullable_to_non_nullable
@@ -1493,8 +1503,8 @@ class __$$_FlagsCopyWithImpl<$Res> extends _$FlagsCopyWithImpl<$Res, _$_Flags>
 
 /// @nodoc
 @JsonSerializable()
-class _$_Flags implements _Flags {
-  const _$_Flags(
+class _$FlagsImpl implements _Flags {
+  const _$FlagsImpl(
       {required this.pending,
       required this.flagged,
       required this.noteLocked,
@@ -1502,8 +1512,8 @@ class _$_Flags implements _Flags {
       required this.ratingLocked,
       required this.deleted});
 
-  factory _$_Flags.fromJson(Map<String, dynamic> json) =>
-      _$$_FlagsFromJson(json);
+  factory _$FlagsImpl.fromJson(Map<String, dynamic> json) =>
+      _$$FlagsImplFromJson(json);
 
   @override
   final bool pending;
@@ -1527,7 +1537,7 @@ class _$_Flags implements _Flags {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_Flags &&
+            other is _$FlagsImpl &&
             (identical(other.pending, pending) || other.pending == pending) &&
             (identical(other.flagged, flagged) || other.flagged == flagged) &&
             (identical(other.noteLocked, noteLocked) ||
@@ -1547,12 +1557,12 @@ class _$_Flags implements _Flags {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_FlagsCopyWith<_$_Flags> get copyWith =>
-      __$$_FlagsCopyWithImpl<_$_Flags>(this, _$identity);
+  _$$FlagsImplCopyWith<_$FlagsImpl> get copyWith =>
+      __$$FlagsImplCopyWithImpl<_$FlagsImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_FlagsToJson(
+    return _$$FlagsImplToJson(
       this,
     );
   }
@@ -1565,9 +1575,9 @@ abstract class _Flags implements Flags {
       required final bool noteLocked,
       required final bool statusLocked,
       required final bool ratingLocked,
-      required final bool deleted}) = _$_Flags;
+      required final bool deleted}) = _$FlagsImpl;
 
-  factory _Flags.fromJson(Map<String, dynamic> json) = _$_Flags.fromJson;
+  factory _Flags.fromJson(Map<String, dynamic> json) = _$FlagsImpl.fromJson;
 
   @override
   bool get pending;
@@ -1583,7 +1593,7 @@ abstract class _Flags implements Flags {
   bool get deleted;
   @override
   @JsonKey(ignore: true)
-  _$$_FlagsCopyWith<_$_Flags> get copyWith =>
+  _$$FlagsImplCopyWith<_$FlagsImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
@@ -1657,11 +1667,11 @@ class _$RelationshipsCopyWithImpl<$Res, $Val extends Relationships>
 }
 
 /// @nodoc
-abstract class _$$_RelationshipsCopyWith<$Res>
+abstract class _$$RelationshipsImplCopyWith<$Res>
     implements $RelationshipsCopyWith<$Res> {
-  factory _$$_RelationshipsCopyWith(
-          _$_Relationships value, $Res Function(_$_Relationships) then) =
-      __$$_RelationshipsCopyWithImpl<$Res>;
+  factory _$$RelationshipsImplCopyWith(
+          _$RelationshipsImpl value, $Res Function(_$RelationshipsImpl) then) =
+      __$$RelationshipsImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -1672,11 +1682,11 @@ abstract class _$$_RelationshipsCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$_RelationshipsCopyWithImpl<$Res>
-    extends _$RelationshipsCopyWithImpl<$Res, _$_Relationships>
-    implements _$$_RelationshipsCopyWith<$Res> {
-  __$$_RelationshipsCopyWithImpl(
-      _$_Relationships _value, $Res Function(_$_Relationships) _then)
+class __$$RelationshipsImplCopyWithImpl<$Res>
+    extends _$RelationshipsCopyWithImpl<$Res, _$RelationshipsImpl>
+    implements _$$RelationshipsImplCopyWith<$Res> {
+  __$$RelationshipsImplCopyWithImpl(
+      _$RelationshipsImpl _value, $Res Function(_$RelationshipsImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -1687,7 +1697,7 @@ class __$$_RelationshipsCopyWithImpl<$Res>
     Object? hasActiveChildren = null,
     Object? children = null,
   }) {
-    return _then(_$_Relationships(
+    return _then(_$RelationshipsImpl(
       parentId: freezed == parentId
           ? _value.parentId
           : parentId // ignore: cast_nullable_to_non_nullable
@@ -1710,16 +1720,16 @@ class __$$_RelationshipsCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$_Relationships implements _Relationships {
-  const _$_Relationships(
+class _$RelationshipsImpl implements _Relationships {
+  const _$RelationshipsImpl(
       {required this.parentId,
       required this.hasChildren,
       required this.hasActiveChildren,
       required final List<int> children})
       : _children = children;
 
-  factory _$_Relationships.fromJson(Map<String, dynamic> json) =>
-      _$$_RelationshipsFromJson(json);
+  factory _$RelationshipsImpl.fromJson(Map<String, dynamic> json) =>
+      _$$RelationshipsImplFromJson(json);
 
   @override
   final int? parentId;
@@ -1744,7 +1754,7 @@ class _$_Relationships implements _Relationships {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_Relationships &&
+            other is _$RelationshipsImpl &&
             (identical(other.parentId, parentId) ||
                 other.parentId == parentId) &&
             (identical(other.hasChildren, hasChildren) ||
@@ -1762,12 +1772,12 @@ class _$_Relationships implements _Relationships {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_RelationshipsCopyWith<_$_Relationships> get copyWith =>
-      __$$_RelationshipsCopyWithImpl<_$_Relationships>(this, _$identity);
+  _$$RelationshipsImplCopyWith<_$RelationshipsImpl> get copyWith =>
+      __$$RelationshipsImplCopyWithImpl<_$RelationshipsImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_RelationshipsToJson(
+    return _$$RelationshipsImplToJson(
       this,
     );
   }
@@ -1778,10 +1788,10 @@ abstract class _Relationships implements Relationships {
       {required final int? parentId,
       required final bool hasChildren,
       required final bool hasActiveChildren,
-      required final List<int> children}) = _$_Relationships;
+      required final List<int> children}) = _$RelationshipsImpl;
 
   factory _Relationships.fromJson(Map<String, dynamic> json) =
-      _$_Relationships.fromJson;
+      _$RelationshipsImpl.fromJson;
 
   @override
   int? get parentId;
@@ -1793,7 +1803,7 @@ abstract class _Relationships implements Relationships {
   List<int> get children;
   @override
   @JsonKey(ignore: true)
-  _$$_RelationshipsCopyWith<_$_Relationships> get copyWith =>
+  _$$RelationshipsImplCopyWith<_$RelationshipsImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
@@ -1855,18 +1865,21 @@ class _$ScoreCopyWithImpl<$Res, $Val extends Score>
 }
 
 /// @nodoc
-abstract class _$$_ScoreCopyWith<$Res> implements $ScoreCopyWith<$Res> {
-  factory _$$_ScoreCopyWith(_$_Score value, $Res Function(_$_Score) then) =
-      __$$_ScoreCopyWithImpl<$Res>;
+abstract class _$$ScoreImplCopyWith<$Res> implements $ScoreCopyWith<$Res> {
+  factory _$$ScoreImplCopyWith(
+          _$ScoreImpl value, $Res Function(_$ScoreImpl) then) =
+      __$$ScoreImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({int up, int down, int total});
 }
 
 /// @nodoc
-class __$$_ScoreCopyWithImpl<$Res> extends _$ScoreCopyWithImpl<$Res, _$_Score>
-    implements _$$_ScoreCopyWith<$Res> {
-  __$$_ScoreCopyWithImpl(_$_Score _value, $Res Function(_$_Score) _then)
+class __$$ScoreImplCopyWithImpl<$Res>
+    extends _$ScoreCopyWithImpl<$Res, _$ScoreImpl>
+    implements _$$ScoreImplCopyWith<$Res> {
+  __$$ScoreImplCopyWithImpl(
+      _$ScoreImpl _value, $Res Function(_$ScoreImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -1876,7 +1889,7 @@ class __$$_ScoreCopyWithImpl<$Res> extends _$ScoreCopyWithImpl<$Res, _$_Score>
     Object? down = null,
     Object? total = null,
   }) {
-    return _then(_$_Score(
+    return _then(_$ScoreImpl(
       up: null == up
           ? _value.up
           : up // ignore: cast_nullable_to_non_nullable
@@ -1895,11 +1908,12 @@ class __$$_ScoreCopyWithImpl<$Res> extends _$ScoreCopyWithImpl<$Res, _$_Score>
 
 /// @nodoc
 @JsonSerializable()
-class _$_Score implements _Score {
-  const _$_Score({required this.up, required this.down, required this.total});
+class _$ScoreImpl implements _Score {
+  const _$ScoreImpl(
+      {required this.up, required this.down, required this.total});
 
-  factory _$_Score.fromJson(Map<String, dynamic> json) =>
-      _$$_ScoreFromJson(json);
+  factory _$ScoreImpl.fromJson(Map<String, dynamic> json) =>
+      _$$ScoreImplFromJson(json);
 
   @override
   final int up;
@@ -1917,7 +1931,7 @@ class _$_Score implements _Score {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_Score &&
+            other is _$ScoreImpl &&
             (identical(other.up, up) || other.up == up) &&
             (identical(other.down, down) || other.down == down) &&
             (identical(other.total, total) || other.total == total));
@@ -1930,12 +1944,12 @@ class _$_Score implements _Score {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_ScoreCopyWith<_$_Score> get copyWith =>
-      __$$_ScoreCopyWithImpl<_$_Score>(this, _$identity);
+  _$$ScoreImplCopyWith<_$ScoreImpl> get copyWith =>
+      __$$ScoreImplCopyWithImpl<_$ScoreImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_ScoreToJson(
+    return _$$ScoreImplToJson(
       this,
     );
   }
@@ -1945,9 +1959,9 @@ abstract class _Score implements Score {
   const factory _Score(
       {required final int up,
       required final int down,
-      required final int total}) = _$_Score;
+      required final int total}) = _$ScoreImpl;
 
-  factory _Score.fromJson(Map<String, dynamic> json) = _$_Score.fromJson;
+  factory _Score.fromJson(Map<String, dynamic> json) = _$ScoreImpl.fromJson;
 
   @override
   int get up;
@@ -1957,6 +1971,6 @@ abstract class _Score implements Score {
   int get total;
   @override
   @JsonKey(ignore: true)
-  _$$_ScoreCopyWith<_$_Score> get copyWith =>
+  _$$ScoreImplCopyWith<_$ScoreImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

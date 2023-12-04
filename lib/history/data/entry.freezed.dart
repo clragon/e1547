@@ -96,10 +96,10 @@ class _$HistoryCopyWithImpl<$Res, $Val extends History>
 }
 
 /// @nodoc
-abstract class _$$_HistoryCopyWith<$Res> implements $HistoryCopyWith<$Res> {
-  factory _$$_HistoryCopyWith(
-          _$_History value, $Res Function(_$_History) then) =
-      __$$_HistoryCopyWithImpl<$Res>;
+abstract class _$$HistoryImplCopyWith<$Res> implements $HistoryCopyWith<$Res> {
+  factory _$$HistoryImplCopyWith(
+          _$HistoryImpl value, $Res Function(_$HistoryImpl) then) =
+      __$$HistoryImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -112,10 +112,11 @@ abstract class _$$_HistoryCopyWith<$Res> implements $HistoryCopyWith<$Res> {
 }
 
 /// @nodoc
-class __$$_HistoryCopyWithImpl<$Res>
-    extends _$HistoryCopyWithImpl<$Res, _$_History>
-    implements _$$_HistoryCopyWith<$Res> {
-  __$$_HistoryCopyWithImpl(_$_History _value, $Res Function(_$_History) _then)
+class __$$HistoryImplCopyWithImpl<$Res>
+    extends _$HistoryCopyWithImpl<$Res, _$HistoryImpl>
+    implements _$$HistoryImplCopyWith<$Res> {
+  __$$HistoryImplCopyWithImpl(
+      _$HistoryImpl _value, $Res Function(_$HistoryImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -128,7 +129,7 @@ class __$$_HistoryCopyWithImpl<$Res>
     Object? title = freezed,
     Object? subtitle = freezed,
   }) {
-    return _then(_$_History(
+    return _then(_$HistoryImpl(
       id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
@@ -159,8 +160,8 @@ class __$$_HistoryCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$_History implements _History {
-  const _$_History(
+class _$HistoryImpl implements _History {
+  const _$HistoryImpl(
       {required this.id,
       required this.visitedAt,
       required this.link,
@@ -169,8 +170,8 @@ class _$_History implements _History {
       required this.subtitle})
       : _thumbnails = thumbnails;
 
-  factory _$_History.fromJson(Map<String, dynamic> json) =>
-      _$$_HistoryFromJson(json);
+  factory _$HistoryImpl.fromJson(Map<String, dynamic> json) =>
+      _$$HistoryImplFromJson(json);
 
   @override
   final int id;
@@ -200,7 +201,7 @@ class _$_History implements _History {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_History &&
+            other is _$HistoryImpl &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.visitedAt, visitedAt) ||
                 other.visitedAt == visitedAt) &&
@@ -220,12 +221,12 @@ class _$_History implements _History {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_HistoryCopyWith<_$_History> get copyWith =>
-      __$$_HistoryCopyWithImpl<_$_History>(this, _$identity);
+  _$$HistoryImplCopyWith<_$HistoryImpl> get copyWith =>
+      __$$HistoryImplCopyWithImpl<_$HistoryImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_HistoryToJson(
+    return _$$HistoryImplToJson(
       this,
     );
   }
@@ -238,9 +239,9 @@ abstract class _History implements History {
       required final String link,
       required final List<String> thumbnails,
       required final String? title,
-      required final String? subtitle}) = _$_History;
+      required final String? subtitle}) = _$HistoryImpl;
 
-  factory _History.fromJson(Map<String, dynamic> json) = _$_History.fromJson;
+  factory _History.fromJson(Map<String, dynamic> json) = _$HistoryImpl.fromJson;
 
   @override
   int get id;
@@ -256,7 +257,7 @@ abstract class _History implements History {
   String? get subtitle;
   @override
   @JsonKey(ignore: true)
-  _$$_HistoryCopyWith<_$_History> get copyWith =>
+  _$$HistoryImplCopyWith<_$HistoryImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
@@ -337,11 +338,11 @@ class _$HistoryRequestCopyWithImpl<$Res, $Val extends HistoryRequest>
 }
 
 /// @nodoc
-abstract class _$$_HistoryRequestCopyWith<$Res>
+abstract class _$$HistoryRequestImplCopyWith<$Res>
     implements $HistoryRequestCopyWith<$Res> {
-  factory _$$_HistoryRequestCopyWith(
-          _$_HistoryRequest value, $Res Function(_$_HistoryRequest) then) =
-      __$$_HistoryRequestCopyWithImpl<$Res>;
+  factory _$$HistoryRequestImplCopyWith(_$HistoryRequestImpl value,
+          $Res Function(_$HistoryRequestImpl) then) =
+      __$$HistoryRequestImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -353,11 +354,11 @@ abstract class _$$_HistoryRequestCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$_HistoryRequestCopyWithImpl<$Res>
-    extends _$HistoryRequestCopyWithImpl<$Res, _$_HistoryRequest>
-    implements _$$_HistoryRequestCopyWith<$Res> {
-  __$$_HistoryRequestCopyWithImpl(
-      _$_HistoryRequest _value, $Res Function(_$_HistoryRequest) _then)
+class __$$HistoryRequestImplCopyWithImpl<$Res>
+    extends _$HistoryRequestCopyWithImpl<$Res, _$HistoryRequestImpl>
+    implements _$$HistoryRequestImplCopyWith<$Res> {
+  __$$HistoryRequestImplCopyWithImpl(
+      _$HistoryRequestImpl _value, $Res Function(_$HistoryRequestImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -369,7 +370,7 @@ class __$$_HistoryRequestCopyWithImpl<$Res>
     Object? title = freezed,
     Object? subtitle = freezed,
   }) {
-    return _then(_$_HistoryRequest(
+    return _then(_$HistoryRequestImpl(
       visitedAt: null == visitedAt
           ? _value.visitedAt
           : visitedAt // ignore: cast_nullable_to_non_nullable
@@ -396,8 +397,8 @@ class __$$_HistoryRequestCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$_HistoryRequest implements _HistoryRequest {
-  const _$_HistoryRequest(
+class _$HistoryRequestImpl implements _HistoryRequest {
+  const _$HistoryRequestImpl(
       {required this.visitedAt,
       required this.link,
       final List<String> thumbnails = const [],
@@ -405,8 +406,8 @@ class _$_HistoryRequest implements _HistoryRequest {
       this.subtitle})
       : _thumbnails = thumbnails;
 
-  factory _$_HistoryRequest.fromJson(Map<String, dynamic> json) =>
-      _$$_HistoryRequestFromJson(json);
+  factory _$HistoryRequestImpl.fromJson(Map<String, dynamic> json) =>
+      _$$HistoryRequestImplFromJson(json);
 
   @override
   final DateTime visitedAt;
@@ -435,7 +436,7 @@ class _$_HistoryRequest implements _HistoryRequest {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_HistoryRequest &&
+            other is _$HistoryRequestImpl &&
             (identical(other.visitedAt, visitedAt) ||
                 other.visitedAt == visitedAt) &&
             (identical(other.link, link) || other.link == link) &&
@@ -454,12 +455,13 @@ class _$_HistoryRequest implements _HistoryRequest {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_HistoryRequestCopyWith<_$_HistoryRequest> get copyWith =>
-      __$$_HistoryRequestCopyWithImpl<_$_HistoryRequest>(this, _$identity);
+  _$$HistoryRequestImplCopyWith<_$HistoryRequestImpl> get copyWith =>
+      __$$HistoryRequestImplCopyWithImpl<_$HistoryRequestImpl>(
+          this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_HistoryRequestToJson(
+    return _$$HistoryRequestImplToJson(
       this,
     );
   }
@@ -471,10 +473,10 @@ abstract class _HistoryRequest implements HistoryRequest {
       required final String link,
       final List<String> thumbnails,
       final String? title,
-      final String? subtitle}) = _$_HistoryRequest;
+      final String? subtitle}) = _$HistoryRequestImpl;
 
   factory _HistoryRequest.fromJson(Map<String, dynamic> json) =
-      _$_HistoryRequest.fromJson;
+      _$HistoryRequestImpl.fromJson;
 
   @override
   DateTime get visitedAt;
@@ -488,6 +490,6 @@ abstract class _HistoryRequest implements HistoryRequest {
   String? get subtitle;
   @override
   @JsonKey(ignore: true)
-  _$$_HistoryRequestCopyWith<_$_HistoryRequest> get copyWith =>
+  _$$HistoryRequestImplCopyWith<_$HistoryRequestImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

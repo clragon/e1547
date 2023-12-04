@@ -6,8 +6,8 @@ part of 'current.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$_CurrentUser _$$_CurrentUserFromJson(Map<String, dynamic> json) =>
-    _$_CurrentUser(
+_$CurrentUserImpl _$$CurrentUserImplFromJson(Map<String, dynamic> json) =>
+    _$CurrentUserImpl(
       wikiPageVersionCount: json['wiki_page_version_count'] as int,
       artistVersionCount: json['artist_version_count'] as int,
       poolVersionCount: json['pool_version_count'] as int,
@@ -78,7 +78,7 @@ _$_CurrentUser _$$_CurrentUserFromJson(Map<String, dynamic> json) =>
       tagQueryLimit: json['tag_query_limit'] as int,
     );
 
-Map<String, dynamic> _$$_CurrentUserToJson(_$_CurrentUser instance) =>
+Map<String, dynamic> _$$CurrentUserImplToJson(_$CurrentUserImpl instance) =>
     <String, dynamic>{
       'wiki_page_version_count': instance.wikiPageVersionCount,
       'artist_version_count': instance.artistVersionCount,

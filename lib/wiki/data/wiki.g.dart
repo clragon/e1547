@@ -6,7 +6,7 @@ part of 'wiki.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$_Wiki _$$_WikiFromJson(Map<String, dynamic> json) => _$_Wiki(
+_$WikiImpl _$$WikiImplFromJson(Map<String, dynamic> json) => _$WikiImpl(
       id: json['id'] as int,
       createdAt: DateTime.parse(json['created_at'] as String),
       updatedAt: json['updated_at'] == null
@@ -25,7 +25,8 @@ _$_Wiki _$$_WikiFromJson(Map<String, dynamic> json) => _$_Wiki(
       categoryId: json['category_id'] as int,
     );
 
-Map<String, dynamic> _$$_WikiToJson(_$_Wiki instance) => <String, dynamic>{
+Map<String, dynamic> _$$WikiImplToJson(_$WikiImpl instance) =>
+    <String, dynamic>{
       'id': instance.id,
       'created_at': instance.createdAt.toIso8601String(),
       'updated_at': instance.updatedAt?.toIso8601String(),

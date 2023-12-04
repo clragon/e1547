@@ -70,9 +70,10 @@ class $FollowsTableTable extends FollowsTable
   List<GeneratedColumn> get $columns =>
       [id, host, tags, title, alias, type, latest, unseen, thumbnail, updated];
   @override
-  String get aliasedName => _alias ?? 'follows_table';
+  String get aliasedName => _alias ?? actualTableName;
   @override
-  String get actualTableName => 'follows_table';
+  String get actualTableName => $name;
+  static const String $name = 'follows_table';
   @override
   VerificationContext validateIntegrity(Insertable<Follow> instance,
       {bool isInserting = false}) {
@@ -270,6 +271,7 @@ class FollowCompanion extends UpdateCompanion<Follow> {
     }
     if (type.present) {
       final converter = $FollowsTableTable.$convertertype;
+
       map['type'] = Variable<String>(converter.toSql(type.value));
     }
     if (latest.present) {

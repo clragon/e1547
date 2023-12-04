@@ -117,9 +117,10 @@ class _$FollowCopyWithImpl<$Res, $Val extends Follow>
 }
 
 /// @nodoc
-abstract class _$$_FollowCopyWith<$Res> implements $FollowCopyWith<$Res> {
-  factory _$$_FollowCopyWith(_$_Follow value, $Res Function(_$_Follow) then) =
-      __$$_FollowCopyWithImpl<$Res>;
+abstract class _$$FollowImplCopyWith<$Res> implements $FollowCopyWith<$Res> {
+  factory _$$FollowImplCopyWith(
+          _$FollowImpl value, $Res Function(_$FollowImpl) then) =
+      __$$FollowImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -135,10 +136,11 @@ abstract class _$$_FollowCopyWith<$Res> implements $FollowCopyWith<$Res> {
 }
 
 /// @nodoc
-class __$$_FollowCopyWithImpl<$Res>
-    extends _$FollowCopyWithImpl<$Res, _$_Follow>
-    implements _$$_FollowCopyWith<$Res> {
-  __$$_FollowCopyWithImpl(_$_Follow _value, $Res Function(_$_Follow) _then)
+class __$$FollowImplCopyWithImpl<$Res>
+    extends _$FollowCopyWithImpl<$Res, _$FollowImpl>
+    implements _$$FollowImplCopyWith<$Res> {
+  __$$FollowImplCopyWithImpl(
+      _$FollowImpl _value, $Res Function(_$FollowImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -154,7 +156,7 @@ class __$$_FollowCopyWithImpl<$Res>
     Object? thumbnail = freezed,
     Object? updated = freezed,
   }) {
-    return _then(_$_Follow(
+    return _then(_$FollowImpl(
       id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
@@ -197,8 +199,8 @@ class __$$_FollowCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$_Follow implements _Follow {
-  const _$_Follow(
+class _$FollowImpl implements _Follow {
+  const _$FollowImpl(
       {required this.id,
       required this.tags,
       required this.title,
@@ -209,8 +211,8 @@ class _$_Follow implements _Follow {
       required this.thumbnail,
       required this.updated});
 
-  factory _$_Follow.fromJson(Map<String, dynamic> json) =>
-      _$$_FollowFromJson(json);
+  factory _$FollowImpl.fromJson(Map<String, dynamic> json) =>
+      _$$FollowImplFromJson(json);
 
   @override
   final int id;
@@ -240,7 +242,7 @@ class _$_Follow implements _Follow {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_Follow &&
+            other is _$FollowImpl &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.tags, tags) || other.tags == tags) &&
             (identical(other.title, title) || other.title == title) &&
@@ -261,12 +263,12 @@ class _$_Follow implements _Follow {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_FollowCopyWith<_$_Follow> get copyWith =>
-      __$$_FollowCopyWithImpl<_$_Follow>(this, _$identity);
+  _$$FollowImplCopyWith<_$FollowImpl> get copyWith =>
+      __$$FollowImplCopyWithImpl<_$FollowImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_FollowToJson(
+    return _$$FollowImplToJson(
       this,
     );
   }
@@ -282,9 +284,9 @@ abstract class _Follow implements Follow {
       required final int? latest,
       required final int? unseen,
       required final String? thumbnail,
-      required final DateTime? updated}) = _$_Follow;
+      required final DateTime? updated}) = _$FollowImpl;
 
-  factory _Follow.fromJson(Map<String, dynamic> json) = _$_Follow.fromJson;
+  factory _Follow.fromJson(Map<String, dynamic> json) = _$FollowImpl.fromJson;
 
   @override
   int get id;
@@ -306,7 +308,7 @@ abstract class _Follow implements Follow {
   DateTime? get updated;
   @override
   @JsonKey(ignore: true)
-  _$$_FollowCopyWith<_$_Follow> get copyWith =>
+  _$$FollowImplCopyWith<_$FollowImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
@@ -376,22 +378,22 @@ class _$FollowRequestCopyWithImpl<$Res, $Val extends FollowRequest>
 }
 
 /// @nodoc
-abstract class _$$_FollowRequestCopyWith<$Res>
+abstract class _$$FollowRequestImplCopyWith<$Res>
     implements $FollowRequestCopyWith<$Res> {
-  factory _$$_FollowRequestCopyWith(
-          _$_FollowRequest value, $Res Function(_$_FollowRequest) then) =
-      __$$_FollowRequestCopyWithImpl<$Res>;
+  factory _$$FollowRequestImplCopyWith(
+          _$FollowRequestImpl value, $Res Function(_$FollowRequestImpl) then) =
+      __$$FollowRequestImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({String tags, String? title, String? alias, FollowType type});
 }
 
 /// @nodoc
-class __$$_FollowRequestCopyWithImpl<$Res>
-    extends _$FollowRequestCopyWithImpl<$Res, _$_FollowRequest>
-    implements _$$_FollowRequestCopyWith<$Res> {
-  __$$_FollowRequestCopyWithImpl(
-      _$_FollowRequest _value, $Res Function(_$_FollowRequest) _then)
+class __$$FollowRequestImplCopyWithImpl<$Res>
+    extends _$FollowRequestCopyWithImpl<$Res, _$FollowRequestImpl>
+    implements _$$FollowRequestImplCopyWith<$Res> {
+  __$$FollowRequestImplCopyWithImpl(
+      _$FollowRequestImpl _value, $Res Function(_$FollowRequestImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -402,7 +404,7 @@ class __$$_FollowRequestCopyWithImpl<$Res>
     Object? alias = freezed,
     Object? type = null,
   }) {
-    return _then(_$_FollowRequest(
+    return _then(_$FollowRequestImpl(
       tags: null == tags
           ? _value.tags
           : tags // ignore: cast_nullable_to_non_nullable
@@ -425,15 +427,15 @@ class __$$_FollowRequestCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$_FollowRequest implements _FollowRequest {
-  const _$_FollowRequest(
+class _$FollowRequestImpl implements _FollowRequest {
+  const _$FollowRequestImpl(
       {required this.tags,
       this.title,
       this.alias,
       this.type = FollowType.update});
 
-  factory _$_FollowRequest.fromJson(Map<String, dynamic> json) =>
-      _$$_FollowRequestFromJson(json);
+  factory _$FollowRequestImpl.fromJson(Map<String, dynamic> json) =>
+      _$$FollowRequestImplFromJson(json);
 
   @override
   final String tags;
@@ -454,7 +456,7 @@ class _$_FollowRequest implements _FollowRequest {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_FollowRequest &&
+            other is _$FollowRequestImpl &&
             (identical(other.tags, tags) || other.tags == tags) &&
             (identical(other.title, title) || other.title == title) &&
             (identical(other.alias, alias) || other.alias == alias) &&
@@ -468,12 +470,12 @@ class _$_FollowRequest implements _FollowRequest {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_FollowRequestCopyWith<_$_FollowRequest> get copyWith =>
-      __$$_FollowRequestCopyWithImpl<_$_FollowRequest>(this, _$identity);
+  _$$FollowRequestImplCopyWith<_$FollowRequestImpl> get copyWith =>
+      __$$FollowRequestImplCopyWithImpl<_$FollowRequestImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_FollowRequestToJson(
+    return _$$FollowRequestImplToJson(
       this,
     );
   }
@@ -484,10 +486,10 @@ abstract class _FollowRequest implements FollowRequest {
       {required final String tags,
       final String? title,
       final String? alias,
-      final FollowType type}) = _$_FollowRequest;
+      final FollowType type}) = _$FollowRequestImpl;
 
   factory _FollowRequest.fromJson(Map<String, dynamic> json) =
-      _$_FollowRequest.fromJson;
+      _$FollowRequestImpl.fromJson;
 
   @override
   String get tags;
@@ -499,6 +501,6 @@ abstract class _FollowRequest implements FollowRequest {
   FollowType get type;
   @override
   @JsonKey(ignore: true)
-  _$$_FollowRequestCopyWith<_$_FollowRequest> get copyWith =>
+  _$$FollowRequestImplCopyWith<_$FollowRequestImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

@@ -6,7 +6,7 @@ part of 'topic.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$_Topic _$$_TopicFromJson(Map<String, dynamic> json) => _$_Topic(
+_$TopicImpl _$$TopicImplFromJson(Map<String, dynamic> json) => _$TopicImpl(
       id: json['id'] as int,
       creatorId: json['creator_id'] as int,
       updaterId: json['updater_id'] as int,
@@ -20,7 +20,8 @@ _$_Topic _$$_TopicFromJson(Map<String, dynamic> json) => _$_Topic(
       categoryId: json['category_id'] as int,
     );
 
-Map<String, dynamic> _$$_TopicToJson(_$_Topic instance) => <String, dynamic>{
+Map<String, dynamic> _$$TopicImplToJson(_$TopicImpl instance) =>
+    <String, dynamic>{
       'id': instance.id,
       'creator_id': instance.creatorId,
       'updater_id': instance.updaterId,

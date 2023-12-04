@@ -78,11 +78,11 @@ class _$HistoriesSearchCopyWithImpl<$Res, $Val extends HistoriesSearch>
 }
 
 /// @nodoc
-abstract class _$$_HistoriesSearchCopyWith<$Res>
+abstract class _$$HistoriesSearchImplCopyWith<$Res>
     implements $HistoriesSearchCopyWith<$Res> {
-  factory _$$_HistoriesSearchCopyWith(
-          _$_HistoriesSearch value, $Res Function(_$_HistoriesSearch) then) =
-      __$$_HistoriesSearchCopyWithImpl<$Res>;
+  factory _$$HistoriesSearchImplCopyWith(_$HistoriesSearchImpl value,
+          $Res Function(_$HistoriesSearchImpl) then) =
+      __$$HistoriesSearchImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -92,11 +92,11 @@ abstract class _$$_HistoriesSearchCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$_HistoriesSearchCopyWithImpl<$Res>
-    extends _$HistoriesSearchCopyWithImpl<$Res, _$_HistoriesSearch>
-    implements _$$_HistoriesSearchCopyWith<$Res> {
-  __$$_HistoriesSearchCopyWithImpl(
-      _$_HistoriesSearch _value, $Res Function(_$_HistoriesSearch) _then)
+class __$$HistoriesSearchImplCopyWithImpl<$Res>
+    extends _$HistoriesSearchCopyWithImpl<$Res, _$HistoriesSearchImpl>
+    implements _$$HistoriesSearchImplCopyWith<$Res> {
+  __$$HistoriesSearchImplCopyWithImpl(
+      _$HistoriesSearchImpl _value, $Res Function(_$HistoriesSearchImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -106,7 +106,7 @@ class __$$_HistoriesSearchCopyWithImpl<$Res>
     Object? searchFilters = null,
     Object? typeFilters = null,
   }) {
-    return _then(_$_HistoriesSearch(
+    return _then(_$HistoriesSearchImpl(
       date: freezed == date
           ? _value.date
           : date // ignore: cast_nullable_to_non_nullable
@@ -125,8 +125,8 @@ class __$$_HistoriesSearchCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$_HistoriesSearch extends _HistoriesSearch {
-  const _$_HistoriesSearch(
+class _$HistoriesSearchImpl extends _HistoriesSearch {
+  const _$HistoriesSearchImpl(
       {this.date,
       required final Set<HistorySearchFilter> searchFilters,
       required final Set<HistoryTypeFilter> typeFilters})
@@ -134,8 +134,8 @@ class _$_HistoriesSearch extends _HistoriesSearch {
         _typeFilters = typeFilters,
         super._();
 
-  factory _$_HistoriesSearch.fromJson(Map<String, dynamic> json) =>
-      _$$_HistoriesSearchFromJson(json);
+  factory _$HistoriesSearchImpl.fromJson(Map<String, dynamic> json) =>
+      _$$HistoriesSearchImplFromJson(json);
 
   @override
   final DateTime? date;
@@ -164,7 +164,7 @@ class _$_HistoriesSearch extends _HistoriesSearch {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_HistoriesSearch &&
+            other is _$HistoriesSearchImpl &&
             (identical(other.date, date) || other.date == date) &&
             const DeepCollectionEquality()
                 .equals(other._searchFilters, _searchFilters) &&
@@ -183,12 +183,13 @@ class _$_HistoriesSearch extends _HistoriesSearch {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_HistoriesSearchCopyWith<_$_HistoriesSearch> get copyWith =>
-      __$$_HistoriesSearchCopyWithImpl<_$_HistoriesSearch>(this, _$identity);
+  _$$HistoriesSearchImplCopyWith<_$HistoriesSearchImpl> get copyWith =>
+      __$$HistoriesSearchImplCopyWithImpl<_$HistoriesSearchImpl>(
+          this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_HistoriesSearchToJson(
+    return _$$HistoriesSearchImplToJson(
       this,
     );
   }
@@ -196,13 +197,14 @@ class _$_HistoriesSearch extends _HistoriesSearch {
 
 abstract class _HistoriesSearch extends HistoriesSearch {
   const factory _HistoriesSearch(
-      {final DateTime? date,
-      required final Set<HistorySearchFilter> searchFilters,
-      required final Set<HistoryTypeFilter> typeFilters}) = _$_HistoriesSearch;
+          {final DateTime? date,
+          required final Set<HistorySearchFilter> searchFilters,
+          required final Set<HistoryTypeFilter> typeFilters}) =
+      _$HistoriesSearchImpl;
   const _HistoriesSearch._() : super._();
 
   factory _HistoriesSearch.fromJson(Map<String, dynamic> json) =
-      _$_HistoriesSearch.fromJson;
+      _$HistoriesSearchImpl.fromJson;
 
   @override
   DateTime? get date;
@@ -212,6 +214,6 @@ abstract class _HistoriesSearch extends HistoriesSearch {
   Set<HistoryTypeFilter> get typeFilters;
   @override
   @JsonKey(ignore: true)
-  _$$_HistoriesSearchCopyWith<_$_HistoriesSearch> get copyWith =>
+  _$$HistoriesSearchImplCopyWith<_$HistoriesSearchImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

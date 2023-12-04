@@ -57,9 +57,10 @@ class $HistoriesTableTable extends HistoriesTable
   List<GeneratedColumn> get $columns =>
       [id, host, visitedAt, link, thumbnails, title, subtitle];
   @override
-  String get aliasedName => _alias ?? 'histories_table';
+  String get aliasedName => _alias ?? actualTableName;
   @override
-  String get actualTableName => 'histories_table';
+  String get actualTableName => $name;
+  static const String $name = 'histories_table';
   @override
   VerificationContext validateIntegrity(Insertable<History> instance,
       {bool isInserting = false}) {
@@ -214,6 +215,7 @@ class HistoryCompanion extends UpdateCompanion<History> {
     }
     if (thumbnails.present) {
       final converter = $HistoriesTableTable.$converterthumbnails;
+
       map['thumbnails'] = Variable<String>(converter.toSql(thumbnails.value));
     }
     if (title.present) {

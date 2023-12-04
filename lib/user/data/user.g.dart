@@ -6,7 +6,7 @@ part of 'user.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$_User _$$_UserFromJson(Map<String, dynamic> json) => _$_User(
+_$UserImpl _$$UserImplFromJson(Map<String, dynamic> json) => _$UserImpl(
       wikiPageVersionCount: json['wiki_page_version_count'] as int,
       artistVersionCount: json['artist_version_count'] as int,
       poolVersionCount: json['pool_version_count'] as int,
@@ -33,7 +33,8 @@ _$_User _$$_UserFromJson(Map<String, dynamic> json) => _$_User(
       avatarId: json['avatar_id'] as int?,
     );
 
-Map<String, dynamic> _$$_UserToJson(_$_User instance) => <String, dynamic>{
+Map<String, dynamic> _$$UserImplToJson(_$UserImpl instance) =>
+    <String, dynamic>{
       'wiki_page_version_count': instance.wikiPageVersionCount,
       'artist_version_count': instance.artistVersionCount,
       'pool_version_count': instance.poolVersionCount,

@@ -6,13 +6,13 @@ part of 'credentials.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$_Credentials _$$_CredentialsFromJson(Map<String, dynamic> json) =>
-    _$_Credentials(
+_$CredentialsImpl _$$CredentialsImplFromJson(Map<String, dynamic> json) =>
+    _$CredentialsImpl(
       username: json['username'] as String,
       password: json['apikey'] as String,
     );
 
-Map<String, dynamic> _$$_CredentialsToJson(_$_Credentials instance) =>
+Map<String, dynamic> _$$CredentialsImplToJson(_$CredentialsImpl instance) =>
     <String, dynamic>{
       'username': instance.username,
       'apikey': instance.password,

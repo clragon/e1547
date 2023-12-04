@@ -6,7 +6,7 @@ part of 'follow.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$_Follow _$$_FollowFromJson(Map<String, dynamic> json) => _$_Follow(
+_$FollowImpl _$$FollowImplFromJson(Map<String, dynamic> json) => _$FollowImpl(
       id: json['id'] as int,
       tags: json['tags'] as String,
       title: json['title'] as String?,
@@ -20,7 +20,8 @@ _$_Follow _$$_FollowFromJson(Map<String, dynamic> json) => _$_Follow(
           : DateTime.parse(json['updated'] as String),
     );
 
-Map<String, dynamic> _$$_FollowToJson(_$_Follow instance) => <String, dynamic>{
+Map<String, dynamic> _$$FollowImplToJson(_$FollowImpl instance) =>
+    <String, dynamic>{
       'id': instance.id,
       'tags': instance.tags,
       'title': instance.title,
@@ -38,8 +39,8 @@ const _$FollowTypeEnumMap = {
   FollowType.bookmark: 'bookmark',
 };
 
-_$_FollowRequest _$$_FollowRequestFromJson(Map<String, dynamic> json) =>
-    _$_FollowRequest(
+_$FollowRequestImpl _$$FollowRequestImplFromJson(Map<String, dynamic> json) =>
+    _$FollowRequestImpl(
       tags: json['tags'] as String,
       title: json['title'] as String?,
       alias: json['alias'] as String?,
@@ -47,7 +48,7 @@ _$_FollowRequest _$$_FollowRequestFromJson(Map<String, dynamic> json) =>
           FollowType.update,
     );
 
-Map<String, dynamic> _$$_FollowRequestToJson(_$_FollowRequest instance) =>
+Map<String, dynamic> _$$FollowRequestImplToJson(_$FollowRequestImpl instance) =>
     <String, dynamic>{
       'tags': instance.tags,
       'title': instance.title,

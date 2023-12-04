@@ -6,7 +6,7 @@ part of 'tag.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$_Tag _$$_TagFromJson(Map<String, dynamic> json) => _$_Tag(
+_$TagImpl _$$TagImplFromJson(Map<String, dynamic> json) => _$TagImpl(
       id: json['id'] as int,
       name: json['name'] as String,
       postCount: json['post_count'] as int,
@@ -19,7 +19,7 @@ _$_Tag _$$_TagFromJson(Map<String, dynamic> json) => _$_Tag(
       updatedAt: DateTime.parse(json['updated_at'] as String),
     );
 
-Map<String, dynamic> _$$_TagToJson(_$_Tag instance) => <String, dynamic>{
+Map<String, dynamic> _$$TagImplToJson(_$TagImpl instance) => <String, dynamic>{
       'id': instance.id,
       'name': instance.name,
       'post_count': instance.postCount,
@@ -32,8 +32,8 @@ Map<String, dynamic> _$$_TagToJson(_$_Tag instance) => <String, dynamic>{
       'updated_at': instance.updatedAt.toIso8601String(),
     };
 
-_$_TagSuggestion _$$_TagSuggestionFromJson(Map<String, dynamic> json) =>
-    _$_TagSuggestion(
+_$TagSuggestionImpl _$$TagSuggestionImplFromJson(Map<String, dynamic> json) =>
+    _$TagSuggestionImpl(
       id: json['id'] as int,
       name: json['name'] as String,
       postCount: json['post_count'] as int,
@@ -41,7 +41,7 @@ _$_TagSuggestion _$$_TagSuggestionFromJson(Map<String, dynamic> json) =>
       antecedentName: json['antecedent_name'] as String?,
     );
 
-Map<String, dynamic> _$$_TagSuggestionToJson(_$_TagSuggestion instance) =>
+Map<String, dynamic> _$$TagSuggestionImplToJson(_$TagSuggestionImpl instance) =>
     <String, dynamic>{
       'id': instance.id,
       'name': instance.name,

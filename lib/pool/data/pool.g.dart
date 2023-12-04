@@ -6,7 +6,7 @@ part of 'pool.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$_Pool _$$_PoolFromJson(Map<String, dynamic> json) => _$_Pool(
+_$PoolImpl _$$PoolImplFromJson(Map<String, dynamic> json) => _$PoolImpl(
       id: json['id'] as int,
       name: json['name'] as String,
       createdAt: DateTime.parse(json['created_at'] as String),
@@ -21,7 +21,8 @@ _$_Pool _$$_PoolFromJson(Map<String, dynamic> json) => _$_Pool(
       postCount: json['post_count'] as int,
     );
 
-Map<String, dynamic> _$$_PoolToJson(_$_Pool instance) => <String, dynamic>{
+Map<String, dynamic> _$$PoolImplToJson(_$PoolImpl instance) =>
+    <String, dynamic>{
       'id': instance.id,
       'name': instance.name,
       'created_at': instance.createdAt.toIso8601String(),

@@ -6,7 +6,7 @@ part of 'post.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$_Post _$$_PostFromJson(Map<String, dynamic> json) => _$_Post(
+_$PostImpl _$$PostImplFromJson(Map<String, dynamic> json) => _$PostImpl(
       id: json['id'] as int,
       createdAt: DateTime.parse(json['created_at'] as String),
       updatedAt: json['updated_at'] == null
@@ -40,7 +40,8 @@ _$_Post _$$_PostFromJson(Map<String, dynamic> json) => _$_Post(
       duration: (json['duration'] as num?)?.toDouble(),
     );
 
-Map<String, dynamic> _$$_PostToJson(_$_Post instance) => <String, dynamic>{
+Map<String, dynamic> _$$PostImplToJson(_$PostImpl instance) =>
+    <String, dynamic>{
       'id': instance.id,
       'created_at': instance.createdAt.toIso8601String(),
       'updated_at': instance.updatedAt?.toIso8601String(),
@@ -72,29 +73,32 @@ const _$RatingEnumMap = {
   Rating.e: 'e',
 };
 
-_$_PostPreviewFile _$$_PostPreviewFileFromJson(Map<String, dynamic> json) =>
-    _$_PostPreviewFile(
+_$PostPreviewFileImpl _$$PostPreviewFileImplFromJson(
+        Map<String, dynamic> json) =>
+    _$PostPreviewFileImpl(
       width: json['width'] as int,
       height: json['height'] as int,
       url: json['url'] as String?,
     );
 
-Map<String, dynamic> _$$_PostPreviewFileToJson(_$_PostPreviewFile instance) =>
+Map<String, dynamic> _$$PostPreviewFileImplToJson(
+        _$PostPreviewFileImpl instance) =>
     <String, dynamic>{
       'width': instance.width,
       'height': instance.height,
       'url': instance.url,
     };
 
-_$_PostSampleFile _$$_PostSampleFileFromJson(Map<String, dynamic> json) =>
-    _$_PostSampleFile(
+_$PostSampleFileImpl _$$PostSampleFileImplFromJson(Map<String, dynamic> json) =>
+    _$PostSampleFileImpl(
       has: json['has'] as bool,
       height: json['height'] as int,
       width: json['width'] as int,
       url: json['url'] as String?,
     );
 
-Map<String, dynamic> _$$_PostSampleFileToJson(_$_PostSampleFile instance) =>
+Map<String, dynamic> _$$PostSampleFileImplToJson(
+        _$PostSampleFileImpl instance) =>
     <String, dynamic>{
       'has': instance.has,
       'height': instance.height,
@@ -102,8 +106,8 @@ Map<String, dynamic> _$$_PostSampleFileToJson(_$_PostSampleFile instance) =>
       'url': instance.url,
     };
 
-_$_PostSourceFile _$$_PostSourceFileFromJson(Map<String, dynamic> json) =>
-    _$_PostSourceFile(
+_$PostSourceFileImpl _$$PostSourceFileImplFromJson(Map<String, dynamic> json) =>
+    _$PostSourceFileImpl(
       width: json['width'] as int,
       height: json['height'] as int,
       ext: json['ext'] as String,
@@ -112,7 +116,8 @@ _$_PostSourceFile _$$_PostSourceFileFromJson(Map<String, dynamic> json) =>
       url: json['url'] as String?,
     );
 
-Map<String, dynamic> _$$_PostSourceFileToJson(_$_PostSourceFile instance) =>
+Map<String, dynamic> _$$PostSourceFileImplToJson(
+        _$PostSourceFileImpl instance) =>
     <String, dynamic>{
       'width': instance.width,
       'height': instance.height,
@@ -122,7 +127,7 @@ Map<String, dynamic> _$$_PostSourceFileToJson(_$_PostSourceFile instance) =>
       'url': instance.url,
     };
 
-_$_Flags _$$_FlagsFromJson(Map<String, dynamic> json) => _$_Flags(
+_$FlagsImpl _$$FlagsImplFromJson(Map<String, dynamic> json) => _$FlagsImpl(
       pending: json['pending'] as bool,
       flagged: json['flagged'] as bool,
       noteLocked: json['note_locked'] as bool,
@@ -131,7 +136,8 @@ _$_Flags _$$_FlagsFromJson(Map<String, dynamic> json) => _$_Flags(
       deleted: json['deleted'] as bool,
     );
 
-Map<String, dynamic> _$$_FlagsToJson(_$_Flags instance) => <String, dynamic>{
+Map<String, dynamic> _$$FlagsImplToJson(_$FlagsImpl instance) =>
+    <String, dynamic>{
       'pending': instance.pending,
       'flagged': instance.flagged,
       'note_locked': instance.noteLocked,
@@ -140,8 +146,8 @@ Map<String, dynamic> _$$_FlagsToJson(_$_Flags instance) => <String, dynamic>{
       'deleted': instance.deleted,
     };
 
-_$_Relationships _$$_RelationshipsFromJson(Map<String, dynamic> json) =>
-    _$_Relationships(
+_$RelationshipsImpl _$$RelationshipsImplFromJson(Map<String, dynamic> json) =>
+    _$RelationshipsImpl(
       parentId: json['parent_id'] as int?,
       hasChildren: json['has_children'] as bool,
       hasActiveChildren: json['has_active_children'] as bool,
@@ -149,7 +155,7 @@ _$_Relationships _$$_RelationshipsFromJson(Map<String, dynamic> json) =>
           (json['children'] as List<dynamic>).map((e) => e as int).toList(),
     );
 
-Map<String, dynamic> _$$_RelationshipsToJson(_$_Relationships instance) =>
+Map<String, dynamic> _$$RelationshipsImplToJson(_$RelationshipsImpl instance) =>
     <String, dynamic>{
       'parent_id': instance.parentId,
       'has_children': instance.hasChildren,
@@ -157,13 +163,14 @@ Map<String, dynamic> _$$_RelationshipsToJson(_$_Relationships instance) =>
       'children': instance.children,
     };
 
-_$_Score _$$_ScoreFromJson(Map<String, dynamic> json) => _$_Score(
+_$ScoreImpl _$$ScoreImplFromJson(Map<String, dynamic> json) => _$ScoreImpl(
       up: json['up'] as int,
       down: json['down'] as int,
       total: json['total'] as int,
     );
 
-Map<String, dynamic> _$$_ScoreToJson(_$_Score instance) => <String, dynamic>{
+Map<String, dynamic> _$$ScoreImplToJson(_$ScoreImpl instance) =>
+    <String, dynamic>{
       'up': instance.up,
       'down': instance.down,
       'total': instance.total,

@@ -138,9 +138,10 @@ class _$WikiCopyWithImpl<$Res, $Val extends Wiki>
 }
 
 /// @nodoc
-abstract class _$$_WikiCopyWith<$Res> implements $WikiCopyWith<$Res> {
-  factory _$$_WikiCopyWith(_$_Wiki value, $Res Function(_$_Wiki) then) =
-      __$$_WikiCopyWithImpl<$Res>;
+abstract class _$$WikiImplCopyWith<$Res> implements $WikiCopyWith<$Res> {
+  factory _$$WikiImplCopyWith(
+          _$WikiImpl value, $Res Function(_$WikiImpl) then) =
+      __$$WikiImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -159,9 +160,10 @@ abstract class _$$_WikiCopyWith<$Res> implements $WikiCopyWith<$Res> {
 }
 
 /// @nodoc
-class __$$_WikiCopyWithImpl<$Res> extends _$WikiCopyWithImpl<$Res, _$_Wiki>
-    implements _$$_WikiCopyWith<$Res> {
-  __$$_WikiCopyWithImpl(_$_Wiki _value, $Res Function(_$_Wiki) _then)
+class __$$WikiImplCopyWithImpl<$Res>
+    extends _$WikiCopyWithImpl<$Res, _$WikiImpl>
+    implements _$$WikiImplCopyWith<$Res> {
+  __$$WikiImplCopyWithImpl(_$WikiImpl _value, $Res Function(_$WikiImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -180,7 +182,7 @@ class __$$_WikiCopyWithImpl<$Res> extends _$WikiCopyWithImpl<$Res, _$_Wiki>
     Object? creatorName = null,
     Object? categoryId = null,
   }) {
-    return _then(_$_Wiki(
+    return _then(_$WikiImpl(
       id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
@@ -235,8 +237,8 @@ class __$$_WikiCopyWithImpl<$Res> extends _$WikiCopyWithImpl<$Res, _$_Wiki>
 
 /// @nodoc
 @JsonSerializable()
-class _$_Wiki implements _Wiki {
-  const _$_Wiki(
+class _$WikiImpl implements _Wiki {
+  const _$WikiImpl(
       {required this.id,
       required this.createdAt,
       required this.updatedAt,
@@ -251,7 +253,8 @@ class _$_Wiki implements _Wiki {
       required this.categoryId})
       : _otherNames = otherNames;
 
-  factory _$_Wiki.fromJson(Map<String, dynamic> json) => _$$_WikiFromJson(json);
+  factory _$WikiImpl.fromJson(Map<String, dynamic> json) =>
+      _$$WikiImplFromJson(json);
 
   @override
   final int id;
@@ -293,7 +296,7 @@ class _$_Wiki implements _Wiki {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_Wiki &&
+            other is _$WikiImpl &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt) &&
@@ -337,12 +340,12 @@ class _$_Wiki implements _Wiki {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_WikiCopyWith<_$_Wiki> get copyWith =>
-      __$$_WikiCopyWithImpl<_$_Wiki>(this, _$identity);
+  _$$WikiImplCopyWith<_$WikiImpl> get copyWith =>
+      __$$WikiImplCopyWithImpl<_$WikiImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_WikiToJson(
+    return _$$WikiImplToJson(
       this,
     );
   }
@@ -361,9 +364,9 @@ abstract class _Wiki implements Wiki {
       required final bool isDeleted,
       required final List<String> otherNames,
       required final String creatorName,
-      required final int categoryId}) = _$_Wiki;
+      required final int categoryId}) = _$WikiImpl;
 
-  factory _Wiki.fromJson(Map<String, dynamic> json) = _$_Wiki.fromJson;
+  factory _Wiki.fromJson(Map<String, dynamic> json) = _$WikiImpl.fromJson;
 
   @override
   int get id;
@@ -391,5 +394,6 @@ abstract class _Wiki implements Wiki {
   int get categoryId;
   @override
   @JsonKey(ignore: true)
-  _$$_WikiCopyWith<_$_Wiki> get copyWith => throw _privateConstructorUsedError;
+  _$$WikiImplCopyWith<_$WikiImpl> get copyWith =>
+      throw _privateConstructorUsedError;
 }

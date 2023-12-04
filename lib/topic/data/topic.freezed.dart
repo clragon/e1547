@@ -131,9 +131,10 @@ class _$TopicCopyWithImpl<$Res, $Val extends Topic>
 }
 
 /// @nodoc
-abstract class _$$_TopicCopyWith<$Res> implements $TopicCopyWith<$Res> {
-  factory _$$_TopicCopyWith(_$_Topic value, $Res Function(_$_Topic) then) =
-      __$$_TopicCopyWithImpl<$Res>;
+abstract class _$$TopicImplCopyWith<$Res> implements $TopicCopyWith<$Res> {
+  factory _$$TopicImplCopyWith(
+          _$TopicImpl value, $Res Function(_$TopicImpl) then) =
+      __$$TopicImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -151,9 +152,11 @@ abstract class _$$_TopicCopyWith<$Res> implements $TopicCopyWith<$Res> {
 }
 
 /// @nodoc
-class __$$_TopicCopyWithImpl<$Res> extends _$TopicCopyWithImpl<$Res, _$_Topic>
-    implements _$$_TopicCopyWith<$Res> {
-  __$$_TopicCopyWithImpl(_$_Topic _value, $Res Function(_$_Topic) _then)
+class __$$TopicImplCopyWithImpl<$Res>
+    extends _$TopicCopyWithImpl<$Res, _$TopicImpl>
+    implements _$$TopicImplCopyWith<$Res> {
+  __$$TopicImplCopyWithImpl(
+      _$TopicImpl _value, $Res Function(_$TopicImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -171,7 +174,7 @@ class __$$_TopicCopyWithImpl<$Res> extends _$TopicCopyWithImpl<$Res, _$_Topic>
     Object? updatedAt = null,
     Object? categoryId = null,
   }) {
-    return _then(_$_Topic(
+    return _then(_$TopicImpl(
       id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
@@ -222,8 +225,8 @@ class __$$_TopicCopyWithImpl<$Res> extends _$TopicCopyWithImpl<$Res, _$_Topic>
 
 /// @nodoc
 @JsonSerializable()
-class _$_Topic implements _Topic {
-  const _$_Topic(
+class _$TopicImpl implements _Topic {
+  const _$TopicImpl(
       {required this.id,
       required this.creatorId,
       required this.updaterId,
@@ -236,8 +239,8 @@ class _$_Topic implements _Topic {
       required this.updatedAt,
       required this.categoryId});
 
-  factory _$_Topic.fromJson(Map<String, dynamic> json) =>
-      _$$_TopicFromJson(json);
+  factory _$TopicImpl.fromJson(Map<String, dynamic> json) =>
+      _$$TopicImplFromJson(json);
 
   @override
   final int id;
@@ -271,7 +274,7 @@ class _$_Topic implements _Topic {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_Topic &&
+            other is _$TopicImpl &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.creatorId, creatorId) ||
                 other.creatorId == creatorId) &&
@@ -313,12 +316,12 @@ class _$_Topic implements _Topic {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_TopicCopyWith<_$_Topic> get copyWith =>
-      __$$_TopicCopyWithImpl<_$_Topic>(this, _$identity);
+  _$$TopicImplCopyWith<_$TopicImpl> get copyWith =>
+      __$$TopicImplCopyWithImpl<_$TopicImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_TopicToJson(
+    return _$$TopicImplToJson(
       this,
     );
   }
@@ -336,9 +339,9 @@ abstract class _Topic implements Topic {
       required final bool isHidden,
       required final DateTime createdAt,
       required final DateTime updatedAt,
-      required final int categoryId}) = _$_Topic;
+      required final int categoryId}) = _$TopicImpl;
 
-  factory _Topic.fromJson(Map<String, dynamic> json) = _$_Topic.fromJson;
+  factory _Topic.fromJson(Map<String, dynamic> json) = _$TopicImpl.fromJson;
 
   @override
   int get id;
@@ -364,6 +367,6 @@ abstract class _Topic implements Topic {
   int get categoryId;
   @override
   @JsonKey(ignore: true)
-  _$$_TopicCopyWith<_$_Topic> get copyWith =>
+  _$$TopicImplCopyWith<_$TopicImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

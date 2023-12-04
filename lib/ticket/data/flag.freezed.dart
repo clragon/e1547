@@ -118,10 +118,11 @@ class _$PostFlagCopyWithImpl<$Res, $Val extends PostFlag>
 }
 
 /// @nodoc
-abstract class _$$_PostFlagCopyWith<$Res> implements $PostFlagCopyWith<$Res> {
-  factory _$$_PostFlagCopyWith(
-          _$_PostFlag value, $Res Function(_$_PostFlag) then) =
-      __$$_PostFlagCopyWithImpl<$Res>;
+abstract class _$$PostFlagImplCopyWith<$Res>
+    implements $PostFlagCopyWith<$Res> {
+  factory _$$PostFlagImplCopyWith(
+          _$PostFlagImpl value, $Res Function(_$PostFlagImpl) then) =
+      __$$PostFlagImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -137,11 +138,11 @@ abstract class _$$_PostFlagCopyWith<$Res> implements $PostFlagCopyWith<$Res> {
 }
 
 /// @nodoc
-class __$$_PostFlagCopyWithImpl<$Res>
-    extends _$PostFlagCopyWithImpl<$Res, _$_PostFlag>
-    implements _$$_PostFlagCopyWith<$Res> {
-  __$$_PostFlagCopyWithImpl(
-      _$_PostFlag _value, $Res Function(_$_PostFlag) _then)
+class __$$PostFlagImplCopyWithImpl<$Res>
+    extends _$PostFlagCopyWithImpl<$Res, _$PostFlagImpl>
+    implements _$$PostFlagImplCopyWith<$Res> {
+  __$$PostFlagImplCopyWithImpl(
+      _$PostFlagImpl _value, $Res Function(_$PostFlagImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -157,7 +158,7 @@ class __$$_PostFlagCopyWithImpl<$Res>
     Object? isDeletion = null,
     Object? type = null,
   }) {
-    return _then(_$_PostFlag(
+    return _then(_$PostFlagImpl(
       id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
@@ -200,8 +201,8 @@ class __$$_PostFlagCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$_PostFlag implements _PostFlag {
-  const _$_PostFlag(
+class _$PostFlagImpl implements _PostFlag {
+  const _$PostFlagImpl(
       {required this.id,
       required this.createdAt,
       required this.postId,
@@ -212,8 +213,8 @@ class _$_PostFlag implements _PostFlag {
       required this.isDeletion,
       required this.type});
 
-  factory _$_PostFlag.fromJson(Map<String, dynamic> json) =>
-      _$$_PostFlagFromJson(json);
+  factory _$PostFlagImpl.fromJson(Map<String, dynamic> json) =>
+      _$$PostFlagImplFromJson(json);
 
   @override
   final int id;
@@ -243,7 +244,7 @@ class _$_PostFlag implements _PostFlag {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_PostFlag &&
+            other is _$PostFlagImpl &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt) &&
@@ -268,12 +269,12 @@ class _$_PostFlag implements _PostFlag {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_PostFlagCopyWith<_$_PostFlag> get copyWith =>
-      __$$_PostFlagCopyWithImpl<_$_PostFlag>(this, _$identity);
+  _$$PostFlagImplCopyWith<_$PostFlagImpl> get copyWith =>
+      __$$PostFlagImplCopyWithImpl<_$PostFlagImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_PostFlagToJson(
+    return _$$PostFlagImplToJson(
       this,
     );
   }
@@ -289,9 +290,10 @@ abstract class _PostFlag implements PostFlag {
       required final bool isResolved,
       required final DateTime updatedAt,
       required final bool isDeletion,
-      required final PostFlagType type}) = _$_PostFlag;
+      required final PostFlagType type}) = _$PostFlagImpl;
 
-  factory _PostFlag.fromJson(Map<String, dynamic> json) = _$_PostFlag.fromJson;
+  factory _PostFlag.fromJson(Map<String, dynamic> json) =
+      _$PostFlagImpl.fromJson;
 
   @override
   int get id;
@@ -313,6 +315,6 @@ abstract class _PostFlag implements PostFlag {
   PostFlagType get type;
   @override
   @JsonKey(ignore: true)
-  _$$_PostFlagCopyWith<_$_PostFlag> get copyWith =>
+  _$$PostFlagImplCopyWith<_$PostFlagImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

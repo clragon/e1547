@@ -116,9 +116,9 @@ class _$TagCopyWithImpl<$Res, $Val extends Tag> implements $TagCopyWith<$Res> {
 }
 
 /// @nodoc
-abstract class _$$_TagCopyWith<$Res> implements $TagCopyWith<$Res> {
-  factory _$$_TagCopyWith(_$_Tag value, $Res Function(_$_Tag) then) =
-      __$$_TagCopyWithImpl<$Res>;
+abstract class _$$TagImplCopyWith<$Res> implements $TagCopyWith<$Res> {
+  factory _$$TagImplCopyWith(_$TagImpl value, $Res Function(_$TagImpl) then) =
+      __$$TagImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -134,9 +134,9 @@ abstract class _$$_TagCopyWith<$Res> implements $TagCopyWith<$Res> {
 }
 
 /// @nodoc
-class __$$_TagCopyWithImpl<$Res> extends _$TagCopyWithImpl<$Res, _$_Tag>
-    implements _$$_TagCopyWith<$Res> {
-  __$$_TagCopyWithImpl(_$_Tag _value, $Res Function(_$_Tag) _then)
+class __$$TagImplCopyWithImpl<$Res> extends _$TagCopyWithImpl<$Res, _$TagImpl>
+    implements _$$TagImplCopyWith<$Res> {
+  __$$TagImplCopyWithImpl(_$TagImpl _value, $Res Function(_$TagImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -152,7 +152,7 @@ class __$$_TagCopyWithImpl<$Res> extends _$TagCopyWithImpl<$Res, _$_Tag>
     Object? createdAt = null,
     Object? updatedAt = null,
   }) {
-    return _then(_$_Tag(
+    return _then(_$TagImpl(
       id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
@@ -195,8 +195,8 @@ class __$$_TagCopyWithImpl<$Res> extends _$TagCopyWithImpl<$Res, _$_Tag>
 
 /// @nodoc
 @JsonSerializable()
-class _$_Tag implements _Tag {
-  const _$_Tag(
+class _$TagImpl implements _Tag {
+  const _$TagImpl(
       {required this.id,
       required this.name,
       required this.postCount,
@@ -207,7 +207,8 @@ class _$_Tag implements _Tag {
       required this.createdAt,
       required this.updatedAt});
 
-  factory _$_Tag.fromJson(Map<String, dynamic> json) => _$$_TagFromJson(json);
+  factory _$TagImpl.fromJson(Map<String, dynamic> json) =>
+      _$$TagImplFromJson(json);
 
   @override
   final int id;
@@ -237,7 +238,7 @@ class _$_Tag implements _Tag {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_Tag &&
+            other is _$TagImpl &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.name, name) || other.name == name) &&
             (identical(other.postCount, postCount) ||
@@ -264,12 +265,12 @@ class _$_Tag implements _Tag {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_TagCopyWith<_$_Tag> get copyWith =>
-      __$$_TagCopyWithImpl<_$_Tag>(this, _$identity);
+  _$$TagImplCopyWith<_$TagImpl> get copyWith =>
+      __$$TagImplCopyWithImpl<_$TagImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_TagToJson(
+    return _$$TagImplToJson(
       this,
     );
   }
@@ -285,9 +286,9 @@ abstract class _Tag implements Tag {
       required final int category,
       required final bool isLocked,
       required final DateTime createdAt,
-      required final DateTime updatedAt}) = _$_Tag;
+      required final DateTime updatedAt}) = _$TagImpl;
 
-  factory _Tag.fromJson(Map<String, dynamic> json) = _$_Tag.fromJson;
+  factory _Tag.fromJson(Map<String, dynamic> json) = _$TagImpl.fromJson;
 
   @override
   int get id;
@@ -309,7 +310,8 @@ abstract class _Tag implements Tag {
   DateTime get updatedAt;
   @override
   @JsonKey(ignore: true)
-  _$$_TagCopyWith<_$_Tag> get copyWith => throw _privateConstructorUsedError;
+  _$$TagImplCopyWith<_$TagImpl> get copyWith =>
+      throw _privateConstructorUsedError;
 }
 
 TagSuggestion _$TagSuggestionFromJson(Map<String, dynamic> json) {
@@ -389,11 +391,11 @@ class _$TagSuggestionCopyWithImpl<$Res, $Val extends TagSuggestion>
 }
 
 /// @nodoc
-abstract class _$$_TagSuggestionCopyWith<$Res>
+abstract class _$$TagSuggestionImplCopyWith<$Res>
     implements $TagSuggestionCopyWith<$Res> {
-  factory _$$_TagSuggestionCopyWith(
-          _$_TagSuggestion value, $Res Function(_$_TagSuggestion) then) =
-      __$$_TagSuggestionCopyWithImpl<$Res>;
+  factory _$$TagSuggestionImplCopyWith(
+          _$TagSuggestionImpl value, $Res Function(_$TagSuggestionImpl) then) =
+      __$$TagSuggestionImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -405,11 +407,11 @@ abstract class _$$_TagSuggestionCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$_TagSuggestionCopyWithImpl<$Res>
-    extends _$TagSuggestionCopyWithImpl<$Res, _$_TagSuggestion>
-    implements _$$_TagSuggestionCopyWith<$Res> {
-  __$$_TagSuggestionCopyWithImpl(
-      _$_TagSuggestion _value, $Res Function(_$_TagSuggestion) _then)
+class __$$TagSuggestionImplCopyWithImpl<$Res>
+    extends _$TagSuggestionCopyWithImpl<$Res, _$TagSuggestionImpl>
+    implements _$$TagSuggestionImplCopyWith<$Res> {
+  __$$TagSuggestionImplCopyWithImpl(
+      _$TagSuggestionImpl _value, $Res Function(_$TagSuggestionImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -421,7 +423,7 @@ class __$$_TagSuggestionCopyWithImpl<$Res>
     Object? category = null,
     Object? antecedentName = freezed,
   }) {
-    return _then(_$_TagSuggestion(
+    return _then(_$TagSuggestionImpl(
       id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
@@ -448,16 +450,16 @@ class __$$_TagSuggestionCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$_TagSuggestion implements _TagSuggestion {
-  const _$_TagSuggestion(
+class _$TagSuggestionImpl implements _TagSuggestion {
+  const _$TagSuggestionImpl(
       {required this.id,
       required this.name,
       required this.postCount,
       required this.category,
       required this.antecedentName});
 
-  factory _$_TagSuggestion.fromJson(Map<String, dynamic> json) =>
-      _$$_TagSuggestionFromJson(json);
+  factory _$TagSuggestionImpl.fromJson(Map<String, dynamic> json) =>
+      _$$TagSuggestionImplFromJson(json);
 
   @override
   final int id;
@@ -479,7 +481,7 @@ class _$_TagSuggestion implements _TagSuggestion {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_TagSuggestion &&
+            other is _$TagSuggestionImpl &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.name, name) || other.name == name) &&
             (identical(other.postCount, postCount) ||
@@ -498,12 +500,12 @@ class _$_TagSuggestion implements _TagSuggestion {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_TagSuggestionCopyWith<_$_TagSuggestion> get copyWith =>
-      __$$_TagSuggestionCopyWithImpl<_$_TagSuggestion>(this, _$identity);
+  _$$TagSuggestionImplCopyWith<_$TagSuggestionImpl> get copyWith =>
+      __$$TagSuggestionImplCopyWithImpl<_$TagSuggestionImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_TagSuggestionToJson(
+    return _$$TagSuggestionImplToJson(
       this,
     );
   }
@@ -515,10 +517,10 @@ abstract class _TagSuggestion implements TagSuggestion {
       required final String name,
       required final int postCount,
       required final int category,
-      required final String? antecedentName}) = _$_TagSuggestion;
+      required final String? antecedentName}) = _$TagSuggestionImpl;
 
   factory _TagSuggestion.fromJson(Map<String, dynamic> json) =
-      _$_TagSuggestion.fromJson;
+      _$TagSuggestionImpl.fromJson;
 
   @override
   int get id;
@@ -532,6 +534,6 @@ abstract class _TagSuggestion implements TagSuggestion {
   String? get antecedentName;
   @override
   @JsonKey(ignore: true)
-  _$$_TagSuggestionCopyWith<_$_TagSuggestion> get copyWith =>
+  _$$TagSuggestionImplCopyWith<_$TagSuggestionImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

@@ -511,11 +511,11 @@ class _$CurrentUserCopyWithImpl<$Res, $Val extends CurrentUser>
 }
 
 /// @nodoc
-abstract class _$$_CurrentUserCopyWith<$Res>
+abstract class _$$CurrentUserImplCopyWith<$Res>
     implements $CurrentUserCopyWith<$Res> {
-  factory _$$_CurrentUserCopyWith(
-          _$_CurrentUser value, $Res Function(_$_CurrentUser) then) =
-      __$$_CurrentUserCopyWithImpl<$Res>;
+  factory _$$CurrentUserImplCopyWith(
+          _$CurrentUserImpl value, $Res Function(_$CurrentUserImpl) then) =
+      __$$CurrentUserImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -587,11 +587,11 @@ abstract class _$$_CurrentUserCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$_CurrentUserCopyWithImpl<$Res>
-    extends _$CurrentUserCopyWithImpl<$Res, _$_CurrentUser>
-    implements _$$_CurrentUserCopyWith<$Res> {
-  __$$_CurrentUserCopyWithImpl(
-      _$_CurrentUser _value, $Res Function(_$_CurrentUser) _then)
+class __$$CurrentUserImplCopyWithImpl<$Res>
+    extends _$CurrentUserCopyWithImpl<$Res, _$CurrentUserImpl>
+    implements _$$CurrentUserImplCopyWith<$Res> {
+  __$$CurrentUserImplCopyWithImpl(
+      _$CurrentUserImpl _value, $Res Function(_$CurrentUserImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -663,7 +663,7 @@ class __$$_CurrentUserCopyWithImpl<$Res>
     Object? favoriteLimit = null,
     Object? tagQueryLimit = null,
   }) {
-    return _then(_$_CurrentUser(
+    return _then(_$CurrentUserImpl(
       wikiPageVersionCount: null == wikiPageVersionCount
           ? _value.wikiPageVersionCount
           : wikiPageVersionCount // ignore: cast_nullable_to_non_nullable
@@ -930,8 +930,8 @@ class __$$_CurrentUserCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$_CurrentUser implements _CurrentUser {
-  const _$_CurrentUser(
+class _$CurrentUserImpl implements _CurrentUser {
+  const _$CurrentUserImpl(
       {required this.wikiPageVersionCount,
       required this.artistVersionCount,
       required this.poolVersionCount,
@@ -998,8 +998,8 @@ class _$_CurrentUser implements _CurrentUser {
       required this.favoriteLimit,
       required this.tagQueryLimit});
 
-  factory _$_CurrentUser.fromJson(Map<String, dynamic> json) =>
-      _$$_CurrentUserFromJson(json);
+  factory _$CurrentUserImpl.fromJson(Map<String, dynamic> json) =>
+      _$$CurrentUserImplFromJson(json);
 
   @override
   final int wikiPageVersionCount;
@@ -1141,7 +1141,7 @@ class _$_CurrentUser implements _CurrentUser {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_CurrentUser &&
+            other is _$CurrentUserImpl &&
             (identical(other.wikiPageVersionCount, wikiPageVersionCount) ||
                 other.wikiPageVersionCount == wikiPageVersionCount) &&
             (identical(other.artistVersionCount, artistVersionCount) ||
@@ -1323,12 +1323,12 @@ class _$_CurrentUser implements _CurrentUser {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_CurrentUserCopyWith<_$_CurrentUser> get copyWith =>
-      __$$_CurrentUserCopyWithImpl<_$_CurrentUser>(this, _$identity);
+  _$$CurrentUserImplCopyWith<_$CurrentUserImpl> get copyWith =>
+      __$$CurrentUserImplCopyWithImpl<_$CurrentUserImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_CurrentUserToJson(
+    return _$$CurrentUserImplToJson(
       this,
     );
   }
@@ -1400,10 +1400,10 @@ abstract class _CurrentUser implements CurrentUser {
       required final int remainingApiLimit,
       required final int statementTimeout,
       required final int favoriteLimit,
-      required final int tagQueryLimit}) = _$_CurrentUser;
+      required final int tagQueryLimit}) = _$CurrentUserImpl;
 
   factory _CurrentUser.fromJson(Map<String, dynamic> json) =
-      _$_CurrentUser.fromJson;
+      _$CurrentUserImpl.fromJson;
 
   @override
   int get wikiPageVersionCount;
@@ -1537,6 +1537,6 @@ abstract class _CurrentUser implements CurrentUser {
   int get tagQueryLimit;
   @override
   @JsonKey(ignore: true)
-  _$$_CurrentUserCopyWith<_$_CurrentUser> get copyWith =>
+  _$$CurrentUserImplCopyWith<_$CurrentUserImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

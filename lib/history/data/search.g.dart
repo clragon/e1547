@@ -6,8 +6,9 @@ part of 'search.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$_HistoriesSearch _$$_HistoriesSearchFromJson(Map<String, dynamic> json) =>
-    _$_HistoriesSearch(
+_$HistoriesSearchImpl _$$HistoriesSearchImplFromJson(
+        Map<String, dynamic> json) =>
+    _$HistoriesSearchImpl(
       date:
           json['date'] == null ? null : DateTime.parse(json['date'] as String),
       searchFilters: (json['search_filters'] as List<dynamic>)
@@ -18,7 +19,8 @@ _$_HistoriesSearch _$$_HistoriesSearchFromJson(Map<String, dynamic> json) =>
           .toSet(),
     );
 
-Map<String, dynamic> _$$_HistoriesSearchToJson(_$_HistoriesSearch instance) =>
+Map<String, dynamic> _$$HistoriesSearchImplToJson(
+        _$HistoriesSearchImpl instance) =>
     <String, dynamic>{
       'date': instance.date?.toIso8601String(),
       'search_filters': instance.searchFilters

@@ -6,7 +6,8 @@ part of 'flag.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$_PostFlag _$$_PostFlagFromJson(Map<String, dynamic> json) => _$_PostFlag(
+_$PostFlagImpl _$$PostFlagImplFromJson(Map<String, dynamic> json) =>
+    _$PostFlagImpl(
       id: json['id'] as int,
       createdAt: DateTime.parse(json['created_at'] as String),
       postId: json['post_id'] as int,
@@ -18,7 +19,7 @@ _$_PostFlag _$$_PostFlagFromJson(Map<String, dynamic> json) => _$_PostFlag(
       type: $enumDecode(_$PostFlagTypeEnumMap, json['type']),
     );
 
-Map<String, dynamic> _$$_PostFlagToJson(_$_PostFlag instance) =>
+Map<String, dynamic> _$$PostFlagImplToJson(_$PostFlagImpl instance) =>
     <String, dynamic>{
       'id': instance.id,
       'created_at': instance.createdAt.toIso8601String(),
