@@ -162,7 +162,7 @@ class Avatar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (post?.sample.url != null) {
-      return GestureDetector(
+      return MouseCursorRegion(
         onTap: onTap,
         child: PostTileOverlay(
           post: post!,
