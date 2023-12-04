@@ -39,6 +39,7 @@ class _TagEditorState extends State<TagEditor> {
   Widget build(BuildContext context) {
     return TagInput(
       labelText: widget.category,
+      direction: VerticalDirection.up,
       textInputAction: TextInputAction.done,
       submit: (_) => widget.controller.action!(),
       controller: controller,
