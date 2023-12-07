@@ -166,21 +166,18 @@ class Avatar extends StatelessWidget {
         onTap: onTap,
         child: PostTileOverlay(
           post: post!,
-          child: Hero(
-            tag: post!.link,
-            child: Container(
-              decoration: const BoxDecoration(shape: BoxShape.circle),
-              clipBehavior: Clip.antiAlias,
-              width: radius * 2,
-              height: radius * 2,
-              child: CachedNetworkImage(
-                imageUrl: post!.sample.url!,
-                fit: BoxFit.cover,
-                cacheManager: context.read<BaseCacheManager>(),
-                placeholder: (context, url) => const EmptyAvatar(),
-                errorWidget: (context, url, error) => const Center(
-                  child: Icon(Icons.warning_amber),
-                ),
+          child: Container(
+            decoration: const BoxDecoration(shape: BoxShape.circle),
+            clipBehavior: Clip.antiAlias,
+            width: radius * 2,
+            height: radius * 2,
+            child: CachedNetworkImage(
+              imageUrl: post!.sample.url!,
+              fit: BoxFit.cover,
+              cacheManager: context.read<BaseCacheManager>(),
+              placeholder: (context, url) => const EmptyAvatar(),
+              errorWidget: (context, url, error) => const Center(
+                child: Icon(Icons.warning_amber),
               ),
             ),
           ),
