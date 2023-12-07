@@ -73,15 +73,18 @@ class DialogActionController extends PromptActionController {
 
   @override
   void close() {
-    if (_dialog == null) return;
-    NavigatorState? navigator = _dialog?.navigator;
-    if (navigator != null) {
-      if (_dialog!.isCurrent) {
-        navigator.pop();
-      } else {
-        navigator.removeRoute(_dialog!);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_dialog == null) return;
+      NavigatorState? navigator = _dialog?.navigator;
+      if (navigator != null) {
+        if (_dialog!.isCurrent) {
+          navigator.pop();
+        } else {
+          navigator.removeRoute(_dialog!);
+        }
       }
-    }
+      reset();
+    });
   }
 
   @override
@@ -91,8 +94,13 @@ class DialogActionController extends PromptActionController {
   }
 
   @override
-  void show(BuildContext context, Widget? child) {
+  void forgive() {
+    super.forgive();
     close();
+  }
+
+  @override
+  void show(BuildContext context, Widget? child) {
     showDialog(
       context: context,
       builder: (context) {
@@ -107,17 +115,11 @@ class DialogActionController extends PromptActionController {
           ),
         );
       },
-    ).then((_) => reset());
+    );
   }
 }
 
 class LoadingDialogActionController extends DialogActionController {
-  @override
-  // ignore: must_call_super
-  void forgive() {
-    // Your crimes are unforgivable.
-  }
-
   @override
   void show(BuildContext context, [Widget? child]) {
     super.show(
