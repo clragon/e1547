@@ -119,7 +119,7 @@ class _WindowFrameState extends State<WindowFrame> with WindowListener {
                                   ),
                               duration: defaultAnimationDuration,
                               child: Text(
-                                context.read<AppInfo>().appName,
+                                AppInfo.instance.appName,
                               ),
                             ),
                           ),

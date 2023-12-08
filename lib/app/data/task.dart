@@ -13,8 +13,8 @@ final Loggy _loggy = Loggy('BackgroundTask');
 
 /// Prepares controller objects necessary to run various tasks in a background isolate.
 Future<ControllerBundle> prepareBackgroundIsolate() async {
-  AppInfo appInfo = await initializeAppInfo();
-  AppStorage storage = await initializeAppStorage(info: appInfo);
+  await initializeAppInfo();
+  AppStorage storage = await initializeAppStorage();
   await initializeLogger(path: storage.temporaryFiles, postfix: 'background');
   Settings settings = Settings(storage.preferences);
 
@@ -22,7 +22,6 @@ Future<ControllerBundle> prepareBackgroundIsolate() async {
   await identities.activate(settings.identity.value);
 
   return ControllerBundle(
-    appInfo: appInfo,
     databases: storage,
     settings: settings,
     identities: identities,
@@ -34,14 +33,10 @@ class ControllerBundle {
   ///
   /// Useful for isolates or tests.
   const ControllerBundle({
-    required this.appInfo,
     required this.databases,
     required this.settings,
     required this.identities,
   });
-
-  /// Application information.
-  final AppInfo appInfo;
 
   /// Application databases.
   final AppStorage databases;

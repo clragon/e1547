@@ -15,7 +15,7 @@ export 'package:e1547/settings/settings.dart' show AppInfo;
 export 'package:window_manager/window_manager.dart' show WindowManager;
 
 /// Initializes an AppInfo with default production values.
-Future<AppInfo> initializeAppInfo() async => AppInfo.fromPlatform(
+Future<void> initializeAppInfo() async => AppInfo.initializePlatform(
       developer: 'binaryfloof',
       github: 'clragon/e1547',
       discord: 'MRwKGqfmUz',
@@ -25,9 +25,9 @@ Future<AppInfo> initializeAppInfo() async => AppInfo.fromPlatform(
     );
 
 /// Initializes the storages used by the app with default production values.
-Future<AppStorage> initializeAppStorage({required AppInfo info}) async {
+Future<AppStorage> initializeAppStorage() async {
   final String temporaryFiles = await getTemporaryDirectory()
-      .then((value) => join(value.path, info.appName));
+      .then((value) => join(value.path, AppInfo.instance.appName));
   return AppStorage(
     preferences: await SharedPreferences.getInstance(),
     temporaryFiles: temporaryFiles,

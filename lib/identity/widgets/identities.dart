@@ -127,7 +127,7 @@ class IdentitiesPage extends StatelessWidget {
                                     const AppIcon(radius: 64),
                                     const SizedBox(height: 32),
                                     Text(
-                                      context.read<AppInfo>().appName,
+                                      AppInfo.instance.appName,
                                       style: Theme.of(context)
                                           .textTheme
                                           .titleLarge,

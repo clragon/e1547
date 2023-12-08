@@ -16,9 +16,7 @@ class AboutPage extends StatefulWidget {
 
 class _AboutPageState extends State<AboutPage> {
   late Future<List<AppVersion>> versions =
-      context.read<AppInfo>().getNewVersions(
-            cache: context.read<AppStorage>().httpCache,
-          );
+      context.read<AppUpdater?>()?.getNewVersions() ?? Future.value([]);
 
   Widget linkListTile({
     Widget? leading,
@@ -36,116 +34,111 @@ class _AboutPageState extends State<AboutPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer2<AppInfo, AppStorage>(
-      builder: (context, appInfo, storage, child) => Scaffold(
-        appBar: const DefaultAppBar(
-          title: Text('About'),
-          leading: BackButton(),
-        ),
-        body: RefreshablePage(
-          refresh: (refreshController) async {
-            try {
-              setState(() {
-                versions = appInfo.getNewVersions(
-                  cache: storage.httpCache,
-                  force: true,
-                );
-              });
-              await versions;
-              refreshController.refreshCompleted();
-            } on AppInfoClientException {
-              refreshController.refreshFailed();
-            }
-          },
-          builder: (context, child) => LimitedWidthLayout(child: child),
-          child: (context) => ListView(
-            padding: LimitedWidthLayout.of(context).padding,
-            children: [
-              SizedBox(
-                height: 300,
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const AppIcon(radius: 64),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 24, bottom: 12),
-                        child: Text(
-                          appInfo.appName,
-                          style: const TextStyle(
-                            fontSize: 22,
-                          ),
-                        ),
-                      ),
-                      Text(
-                        appInfo.version,
+    AppInfo appInfo = AppInfo.instance;
+    return Scaffold(
+      appBar: const DefaultAppBar(
+        title: Text('About'),
+        leading: BackButton(),
+      ),
+      body: RefreshablePage(
+        refresh: (refreshController) async {
+          try {
+            setState(() => versions =
+                context.read<AppUpdater>().getNewVersions(force: true));
+            await versions;
+            refreshController.refreshCompleted();
+          } on AppUpdaterException {
+            refreshController.refreshFailed();
+          }
+        },
+        builder: (context, child) => LimitedWidthLayout(child: child),
+        child: (context) => ListView(
+          padding: LimitedWidthLayout.of(context).padding,
+          children: [
+            SizedBox(
+              height: 300,
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const AppIcon(radius: 64),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 24, bottom: 12),
+                      child: Text(
+                        appInfo.appName,
                         style: const TextStyle(
-                          fontSize: 16,
+                          fontSize: 22,
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                    Text(
+                      appInfo.version,
+                      style: const TextStyle(
+                        fontSize: 16,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 32),
-                child: Card(
-                  child: Column(
-                    children: [
-                      _VersionTile(newVersions: versions),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 32),
+              child: Card(
+                child: Column(
+                  children: [
+                    _VersionTile(newVersions: versions),
+                    linkListTile(
+                      leading: const FaIcon(FontAwesomeIcons.github),
+                      title: const Text('GitHub'),
+                      link: 'https://github.com/',
+                      extra: appInfo.github,
+                    ),
+                    linkListTile(
+                      leading: const FaIcon(FontAwesomeIcons.discord),
+                      title: const Text('Discord'),
+                      link: 'https://discord.gg/',
+                      extra: appInfo.discord,
+                    ),
+                    if (appInfo.website != null)
                       linkListTile(
-                        leading: const FaIcon(FontAwesomeIcons.github),
-                        title: const Text('GitHub'),
-                        link: 'https://github.com/',
-                        extra: appInfo.github,
+                        leading: const FaIcon(FontAwesomeIcons.house),
+                        title: const Text('Website'),
+                        link: 'https://',
+                        extra: appInfo.website,
                       ),
+                    if (appInfo.kofi != null &&
+                        ![
+                          Source.IS_INSTALLED_FROM_PLAY_STORE,
+                          Source.IS_INSTALLED_FROM_APP_STORE,
+                        ].contains(appInfo.source))
                       linkListTile(
-                        leading: const FaIcon(FontAwesomeIcons.discord),
-                        title: const Text('Discord'),
-                        link: 'https://discord.gg/',
-                        extra: appInfo.discord,
+                        leading: const FaIcon(FontAwesomeIcons.mugSaucer),
+                        title: const Text('Ko-fi'),
+                        link: 'https://ko-fi.com/',
+                        extra: appInfo.kofi,
                       ),
-                      if (appInfo.website != null)
-                        linkListTile(
-                          leading: const FaIcon(FontAwesomeIcons.house),
-                          title: const Text('Website'),
-                          link: 'https://',
-                          extra: appInfo.website,
-                        ),
-                      if (appInfo.kofi != null &&
-                          ![
-                            Source.IS_INSTALLED_FROM_PLAY_STORE,
-                            Source.IS_INSTALLED_FROM_APP_STORE,
-                          ].contains(appInfo.source))
-                        linkListTile(
-                          leading: const FaIcon(FontAwesomeIcons.mugSaucer),
-                          title: const Text('Ko-fi'),
-                          link: 'https://ko-fi.com/',
-                          extra: appInfo.kofi,
-                        ),
-                      if (appInfo.email != null)
-                        linkListTile(
-                          leading: const FaIcon(FontAwesomeIcons.solidEnvelope),
-                          title: const Text('Email'),
-                          link: 'mailto:',
-                          extra: appInfo.email,
-                        ),
-                      const Divider(),
+                    if (appInfo.email != null)
                       linkListTile(
-                        leading: const FaIcon(FontAwesomeIcons.googlePlay),
-                        title: const Text('Playstore'),
-                        link: Platform.isAndroid
-                            ? 'https://play.google.com/store/apps/details?id='
-                            : 'https://play.google.com/store/search?q=',
-                        extra: context.read<AppInfo>().packageName,
+                        leading: const FaIcon(FontAwesomeIcons.solidEnvelope),
+                        title: const Text('Email'),
+                        link: 'mailto:',
+                        extra: appInfo.email,
                       ),
-                    ],
-                  ),
+                    const Divider(),
+                    linkListTile(
+                      leading: const FaIcon(FontAwesomeIcons.googlePlay),
+                      title: const Text('Playstore'),
+                      link: Platform.isAndroid
+                          ? 'https://play.google.com/store/apps/details?id='
+                          : 'https://play.google.com/store/search?q=',
+                      extra: AppInfo.instance.packageName,
+                    ),
+                  ],
                 ),
               ),
-              const SizedBox(height: 30),
-            ],
-          ),
+            ),
+            const SizedBox(height: 30),
+          ],
         ),
       ),
     );
@@ -160,12 +153,15 @@ class _VersionTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    void openGithub() => launch(
-        'https://github.com/${context.read<AppInfo>().github!}/releases/latest');
+    void openGithub() {
+      AppUpdater? updater = context.read<AppUpdater?>();
+      if (updater == null) return;
+      launch(updater.latestReleaseUrl());
+    }
 
     Widget changesDialog(List<AppVersion> versions) {
       return AlertDialog(
-        title: Text(context.watch<AppInfo>().appName),
+        title: Text(AppInfo.instance.appName),
         content: ConstrainedBox(
           constraints: const BoxConstraints(maxHeight: 400),
           child: SingleChildScrollView(
@@ -274,10 +270,8 @@ class DrawerUpdateIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SubFuture<List<AppVersion>>(
-      create: () => context.read<AppInfo>().getNewVersions(
-            cache: context.read<AppStorage>().httpCache,
-          ),
-      keys: [context.watch<AppInfo>()],
+      create: () =>
+          context.read<AppUpdater?>()?.getNewVersions() ?? Future.value([]),
       builder: (context, snapshot) {
         if (snapshot.hasData && snapshot.data!.isNotEmpty) {
           return Stack(

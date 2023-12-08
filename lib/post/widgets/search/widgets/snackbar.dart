@@ -10,7 +10,6 @@ Future<void> postDownloadingNotification(
   Set<Post> items,
 ) async {
   Settings settings = context.read<Settings>();
-  AppInfo appInfo = context.read<AppInfo>();
   BaseCacheManager cache = context.read<BaseCacheManager>();
   final loggy = Loggy('Post Downloader');
   return loadingNotification<Post>(
@@ -22,7 +21,7 @@ Future<void> postDownloadingNotification(
         await item.download(
           path: settings.downloadPath.value,
           onPathChanged: (path) => settings.downloadPath.value = path,
-          folder: appInfo.appName,
+          folder: AppInfo.instance.appName,
           cache: cache,
         );
         return true;

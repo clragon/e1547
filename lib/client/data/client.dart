@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:dio/dio.dart';
+import 'package:e1547/app/app.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/comment/comment.dart';
 import 'package:e1547/identity/identity.dart';
@@ -25,14 +26,13 @@ class Client {
   Client({
     required this.identity,
     required this.traits,
-    required this.userAgent,
     this.cache,
   }) : status = ValueNotifier(const ClientSyncStatus()) {
     _dio = Dio(
       BaseOptions(
         baseUrl: _host,
         headers: {
-          HttpHeaders.userAgentHeader: userAgent,
+          HttpHeaders.userAgentHeader: AppInfo.instance.userAgent,
           ...?identity.headers,
         },
         sendTimeout: const Duration(seconds: 30),
@@ -60,10 +60,6 @@ class Client {
   void dispose() {
     _dio.close();
   }
-
-  /// The user agent of this client.
-  /// Format: `appname/version (developer)`
-  final String userAgent;
 
   /// The user identity of this client.
   final Identity identity;

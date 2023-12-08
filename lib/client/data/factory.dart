@@ -14,13 +14,11 @@ class ClientConfig {
   ClientConfig({
     required this.identity,
     required this.traits,
-    required this.userAgent,
     this.cache,
   });
 
   final Identity identity;
   final ValueNotifier<Traits> traits;
-  final String userAgent;
   final CacheStore? cache;
 }
 
@@ -34,7 +32,6 @@ class ClientFactory {
         return Client(
           identity: config.identity,
           traits: config.traits,
-          userAgent: config.userAgent,
           cache: config.cache,
         );
     }

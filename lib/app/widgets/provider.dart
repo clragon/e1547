@@ -5,6 +5,8 @@
 /// because no two controllers should be attached to global singletons.
 library;
 
+import 'dart:io';
+
 import 'package:e1547/app/app.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/follow/follow.dart';
@@ -13,6 +15,7 @@ import 'package:e1547/identity/identity.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:e1547/traits/traits.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_sub/flutter_sub.dart';
@@ -148,36 +151,68 @@ class ClientFactoryProvider extends SubProvider0<ClientFactory> {
       : super(create: (context) => ClientFactory());
 }
 
-class ClientProvider extends SubProvider5<AppStorage, IdentitiesService,
-    TraitsService, AppInfo, ClientFactory, Client> {
+class ClientProvider extends SubProvider4<AppStorage, IdentitiesService,
+    TraitsService, ClientFactory, Client> {
   ClientProvider({super.child, super.builder})
       : super(
-          create: (context, storage, identities, traits, info, factory) =>
+          create: (context, storage, identities, traits, factory) =>
               factory.create(
             ClientConfig(
               identity: identities.identity,
               traits: traits.notifier,
-              userAgent: info.userAgent,
               cache: storage.httpCache,
             ),
           ),
           keys: (context) => [
             context.watch<IdentitiesService>().identity,
+            context.watch<TraitsService>(), // notifier is created per identity
             context.watch<AppStorage>().httpCache,
-            context.watch<AppInfo>().userAgent,
           ],
           dispose: (context, client) => client.dispose(),
         );
 }
 
-class CacheManagerProvider extends Provider<BaseCacheManager> {
-  CacheManagerProvider({super.key, super.child, super.builder})
+class CacheManagerProvider
+    extends SubProvider<IdentitiesService, BaseCacheManager> {
+  CacheManagerProvider({super.child, super.builder})
       : super(
-          create: (context) => CacheManager(
+          create: (context, service) => CacheManager(
             Config(
               DefaultCacheManager.key,
               stalePeriod: const Duration(days: 1),
+              repo: JsonCacheInfoRepository(
+                databaseName: DefaultCacheManager.key,
+              ),
+              fileService: _IdentityHttpFileService(service.identity),
             ),
           ),
+        );
+}
+
+class _IdentityHttpFileService extends HttpFileService {
+  _IdentityHttpFileService(this.identity);
+
+  final Identity identity;
+
+  @override
+  Future<FileServiceResponse> get(String url,
+      {Map<String, String>? headers}) async {
+    return super.get(url, headers: {
+      ...headers ?? {},
+      HttpHeaders.userAgentHeader: AppInfo.instance.userAgent,
+      ...?identity.headers,
+    });
+  }
+}
+
+class AppUpdateProvider extends SubProvider<AppStorage, AppUpdater?> {
+  AppUpdateProvider({super.child, super.builder})
+      : super(
+          create: (context, storage) {
+            if (kDebugMode) return null;
+            return GithubAppUpdater(
+              cache: storage.httpCache,
+            );
+          },
         );
 }

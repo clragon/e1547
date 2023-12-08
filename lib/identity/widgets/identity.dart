@@ -219,7 +219,7 @@ class _IdentityPageState extends State<IdentityPage> {
                                 const AppIcon(radius: 64),
                                 const SizedBox(height: 32),
                                 Text(
-                                  context.read<AppInfo>().appName,
+                                  AppInfo.instance.appName,
                                   style: Theme.of(context).textTheme.titleLarge,
                                 ),
                               ],
@@ -380,7 +380,7 @@ class _LoginLoadingDialogState extends State<LoginLoadingDialog> {
         title: const Text('Unknown host'),
         content: Text(
           'The host ${linkToDisplay(widget.host)} is not recognized.\n'
-          '${context.read<AppInfo>().appName} only supports hosts with the official e621 API.\n'
+          '${AppInfo.instance.appName} only supports hosts with the official e621 API.\n'
           'If you don\'t know what this means, '
           'please do not proceed.\n',
         ),

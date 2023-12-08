@@ -4,6 +4,7 @@ import 'package:e1547/client/client.dart';
 import 'package:e1547/identity/identity.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/logs/logs.dart';
+import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sub/flutter_sub.dart';
 import 'package:webview_cookie_manager/webview_cookie_manager.dart';
@@ -137,7 +138,7 @@ class CookieCapturePage extends StatefulWidget {
 
 class _CookieCapturePageState extends State<CookieCapturePage> {
   late final WebViewController controller = WebViewController()
-    ..setUserAgent(context.read<Client>().userAgent)
+    ..setUserAgent(AppInfo.instance.userAgent)
     ..setJavaScriptMode(JavaScriptMode.unrestricted)
     ..setBackgroundColor(Theme.of(context).colorScheme.background)
     ..loadRequest(Uri.https(context.read<Client>().host));

@@ -1,18 +1,13 @@
 import 'dart:io';
 
-import 'package:dio/dio.dart';
-import 'package:e1547/interface/interface.dart';
-import 'package:e1547/logs/logs.dart';
-import 'package:flutter/foundation.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:pub_semver/pub_semver.dart';
 import 'package:store_checker/store_checker.dart';
 
 export 'package:store_checker/store_checker.dart' show Source;
 
-class AppInfo extends PackageInfo {
-  /// Represents constant global application configuration.
-  AppInfo({
+/// Represents constant global application configuration.
+final class AppInfo extends PackageInfo {
+  AppInfo._({
     required this.developer,
     required this.github,
     required this.discord,
@@ -28,7 +23,7 @@ class AppInfo extends PackageInfo {
   });
 
   /// Creates application information from platform info.
-  static Future<AppInfo> fromPlatform({
+  static Future<void> initializePlatform({
     required String developer,
     required String? github,
     required String? discord,
@@ -43,7 +38,7 @@ class AppInfo extends PackageInfo {
       }
       return StoreChecker.getSource;
     });
-    return AppInfo(
+    _instance = AppInfo._(
       developer: developer,
       github: github,
       discord: discord,
@@ -57,6 +52,43 @@ class AppInfo extends PackageInfo {
       buildNumber: info.buildNumber,
       buildSignature: info.buildSignature,
     );
+  }
+
+  static Future<void> initializeMock({
+    required String developer,
+    required String? github,
+    required String? discord,
+    required String? website,
+    required String? kofi,
+    required String? email,
+    required String appName,
+    required String packageName,
+    required String version,
+    required String buildNumber,
+    String buildSignature = '',
+    Source source = Source.UNKNOWN,
+  }) async =>
+      _instance = AppInfo._(
+        developer: developer,
+        github: github,
+        discord: discord,
+        website: website,
+        kofi: kofi,
+        email: email,
+        source: source,
+        appName: appName,
+        packageName: packageName,
+        version: version,
+        buildNumber: buildNumber,
+        buildSignature: buildSignature,
+      );
+
+  static AppInfo? _instance;
+  static AppInfo get instance {
+    if (_instance == null) {
+      throw StateError('AppInfo has not been initialized');
+    }
+    return _instance!;
   }
 
   /// Developer of the app.
@@ -80,130 +112,9 @@ class AppInfo extends PackageInfo {
   /// Source of installation.
   final Source source;
 
+  /// User agent for HTTP requests.
   String get userAgent => '$appName/$version ($developer)';
-
-  /// Retrieves all app versions from github.
-  /// This call is expensive. Provide a cache when possible!
-  Future<List<AppVersion>> getVersions({
-    CacheStore? cache,
-    bool force = false,
-  }) async {
-    // We do not want to exhaust the GitHub API during testing
-    if (kDebugMode) return [];
-    Dio dio = Dio(
-      BaseOptions(headers: {HttpHeaders.userAgentHeader: userAgent}),
-    );
-    dio.interceptors.add(LoggyDioInterceptor(
-      requestLevel: LogLevel.debug,
-      responseLevel: LogLevel.debug,
-      errorLevel: LogLevel.warning,
-    ));
-    dio.interceptors.add(
-      ClientCacheInterceptor(options: ClientCacheConfig(store: cache)),
-    );
-    List<dynamic> releases = await dio
-        .get(
-          'https://api.github.com/repos/$github/releases',
-          options: ClientCacheConfig(
-            store: cache,
-            policy: force ? CachePolicy.refresh : CachePolicy.request,
-          ).toOptions(),
-        )
-        .then((e) => e.data);
-    List<AppVersion> versions = [];
-    for (Map<String, dynamic> release in releases) {
-      try {
-        versions.add(
-          AppVersion(
-            version: Version.parse(release['tag_name']),
-            name: release['name'],
-            description: release['body'],
-            date: DateTime.parse(release['published_at']),
-            binaries: List<String>.from(release['assets']?.map(
-              (e) => e['name'].split('.').last,
-            )),
-          ),
-        );
-      } on FormatException {
-        continue;
-      }
-    }
-    return versions;
-  }
-
-  /// Retrieves versions which are newer than the currently installed one.
-  /// This call is expensive. Provide a cache when possible!
-  Future<List<AppVersion>> getNewVersions({
-    CacheStore? cache,
-    bool force = false,
-    bool beta = false,
-  }) async {
-    List<AppVersion> versions = await getVersions(cache: cache, force: force);
-    AppVersion current =
-        AppVersion(version: Version.parse('$version+$buildNumber'));
-
-    // Remove prior versions
-    versions.removeWhere(
-      (e) =>
-          e.version.compareTo(current.version) < 1 ||
-          (!beta && Version.prioritize(e.version, current.version) < 1),
-    );
-
-    // Remove versions which do not contain our desired binary
-    String? binary;
-    if (Platform.isAndroid) {
-      binary = 'apk';
-    } else if (Platform.isIOS) {
-      binary = 'ipa';
-    } else if (Platform.isWindows) {
-      // enable this when releasing windows
-      // binary = 'exe';
-    }
-    if (binary != null) {
-      versions.removeWhere((e) => !(e.binaries?.contains(binary) ?? false));
-    }
-
-    // Remove versions newer than 7 days if the app has been installed from a store
-    if (source.isFromStore) {
-      versions.removeWhere((e) =>
-          (e.date?.isBefore(
-            DateTime.now().subtract(const Duration(days: 7)),
-          )) ??
-          false);
-    }
-
-    return versions;
-  }
 }
-
-class AppVersion {
-  /// Represents an App version with name, description and version number.
-  /// Commonly pulled from GitHub.
-  AppVersion({
-    required this.version,
-    this.name,
-    this.description,
-    this.date,
-    this.binaries,
-  });
-
-  /// Name of this version.
-  final String? name;
-
-  /// Description of this version.
-  final String? description;
-
-  /// The version. Should follow pub.dev semver standards.
-  final Version version;
-
-  /// Date of the release.
-  final DateTime? date;
-
-  /// List of file extensions of available binaries.
-  final List<String>? binaries;
-}
-
-typedef AppInfoClientException = DioException;
 
 extension StoreSource on Source {
   bool get isFromStore => ![

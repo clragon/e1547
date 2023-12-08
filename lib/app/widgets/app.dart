@@ -17,7 +17,7 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        CacheManagerProvider(),
+        AppUpdateProvider(),
         ClientFactoryProvider(),
         SettingsProvider(),
         VideoServiceProvider(),
@@ -29,8 +29,8 @@ class App extends StatelessWidget {
           drawerHeader: (context) => const UserDrawerHeader(),
         ),
       ],
-      child: Consumer3<AppInfo, Settings, RouterDrawerController>(
-        builder: (context, appInfo, settings, navigation, child) =>
+      child: Consumer2<Settings, RouterDrawerController>(
+        builder: (context, settings, navigation, child) =>
             ValueListenableBuilder<AppTheme>(
           valueListenable: settings.theme,
           builder: (context, value, child) => ExcludeSemantics(
@@ -38,7 +38,7 @@ class App extends StatelessWidget {
               value: value.data.appBarTheme.systemOverlayStyle ??
                   const SystemUiOverlayStyle(),
               child: MaterialApp(
-                title: appInfo.appName,
+                title: AppInfo.instance.appName,
                 theme: value.data,
                 routes: navigation.routes,
                 navigatorObservers: [
@@ -67,6 +67,7 @@ class App extends StatelessWidget {
                             IdentitiesServiceProvider(),
                             TraitsServiceProvider(),
                             ClientProvider(),
+                            CacheManagerProvider(),
                             FollowsProvider(),
                             HistoriesServiceProvider(),
                             AccountAvatarProvider(),
