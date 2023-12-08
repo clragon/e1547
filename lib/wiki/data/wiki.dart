@@ -7,18 +7,18 @@ part 'wiki.g.dart';
 class Wiki with _$Wiki {
   const factory Wiki({
     required int id,
-    required DateTime createdAt,
-    required DateTime? updatedAt,
     required String title,
     required String body,
-    required int creatorId,
-    required bool isLocked,
-    required int? updaterId,
-    required bool isDeleted,
-    required List<String> otherNames,
-    required String creatorName,
+    required DateTime createdAt,
+    DateTime? updatedAt,
     required int categoryId,
+    List<String>? otherNames,
+    bool? isLocked,
   }) = _Wiki;
 
   factory Wiki.fromJson(dynamic json) => _$WikiFromJson(json);
+}
+
+extension E621Wiki on Wiki {
+  static Wiki fromJson(dynamic json) => Wiki.fromJson(json);
 }

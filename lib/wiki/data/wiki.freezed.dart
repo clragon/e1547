@@ -21,17 +21,13 @@ Wiki _$WikiFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$Wiki {
   int get id => throw _privateConstructorUsedError;
-  DateTime get createdAt => throw _privateConstructorUsedError;
-  DateTime? get updatedAt => throw _privateConstructorUsedError;
   String get title => throw _privateConstructorUsedError;
   String get body => throw _privateConstructorUsedError;
-  int get creatorId => throw _privateConstructorUsedError;
-  bool get isLocked => throw _privateConstructorUsedError;
-  int? get updaterId => throw _privateConstructorUsedError;
-  bool get isDeleted => throw _privateConstructorUsedError;
-  List<String> get otherNames => throw _privateConstructorUsedError;
-  String get creatorName => throw _privateConstructorUsedError;
+  DateTime get createdAt => throw _privateConstructorUsedError;
+  DateTime? get updatedAt => throw _privateConstructorUsedError;
   int get categoryId => throw _privateConstructorUsedError;
+  List<String>? get otherNames => throw _privateConstructorUsedError;
+  bool? get isLocked => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -45,17 +41,13 @@ abstract class $WikiCopyWith<$Res> {
   @useResult
   $Res call(
       {int id,
-      DateTime createdAt,
-      DateTime? updatedAt,
       String title,
       String body,
-      int creatorId,
-      bool isLocked,
-      int? updaterId,
-      bool isDeleted,
-      List<String> otherNames,
-      String creatorName,
-      int categoryId});
+      DateTime createdAt,
+      DateTime? updatedAt,
+      int categoryId,
+      List<String>? otherNames,
+      bool? isLocked});
 }
 
 /// @nodoc
@@ -72,31 +64,19 @@ class _$WikiCopyWithImpl<$Res, $Val extends Wiki>
   @override
   $Res call({
     Object? id = null,
-    Object? createdAt = null,
-    Object? updatedAt = freezed,
     Object? title = null,
     Object? body = null,
-    Object? creatorId = null,
-    Object? isLocked = null,
-    Object? updaterId = freezed,
-    Object? isDeleted = null,
-    Object? otherNames = null,
-    Object? creatorName = null,
+    Object? createdAt = null,
+    Object? updatedAt = freezed,
     Object? categoryId = null,
+    Object? otherNames = freezed,
+    Object? isLocked = freezed,
   }) {
     return _then(_value.copyWith(
       id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
               as int,
-      createdAt: null == createdAt
-          ? _value.createdAt
-          : createdAt // ignore: cast_nullable_to_non_nullable
-              as DateTime,
-      updatedAt: freezed == updatedAt
-          ? _value.updatedAt
-          : updatedAt // ignore: cast_nullable_to_non_nullable
-              as DateTime?,
       title: null == title
           ? _value.title
           : title // ignore: cast_nullable_to_non_nullable
@@ -105,34 +85,26 @@ class _$WikiCopyWithImpl<$Res, $Val extends Wiki>
           ? _value.body
           : body // ignore: cast_nullable_to_non_nullable
               as String,
-      creatorId: null == creatorId
-          ? _value.creatorId
-          : creatorId // ignore: cast_nullable_to_non_nullable
-              as int,
-      isLocked: null == isLocked
-          ? _value.isLocked
-          : isLocked // ignore: cast_nullable_to_non_nullable
-              as bool,
-      updaterId: freezed == updaterId
-          ? _value.updaterId
-          : updaterId // ignore: cast_nullable_to_non_nullable
-              as int?,
-      isDeleted: null == isDeleted
-          ? _value.isDeleted
-          : isDeleted // ignore: cast_nullable_to_non_nullable
-              as bool,
-      otherNames: null == otherNames
-          ? _value.otherNames
-          : otherNames // ignore: cast_nullable_to_non_nullable
-              as List<String>,
-      creatorName: null == creatorName
-          ? _value.creatorName
-          : creatorName // ignore: cast_nullable_to_non_nullable
-              as String,
+      createdAt: null == createdAt
+          ? _value.createdAt
+          : createdAt // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      updatedAt: freezed == updatedAt
+          ? _value.updatedAt
+          : updatedAt // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
       categoryId: null == categoryId
           ? _value.categoryId
           : categoryId // ignore: cast_nullable_to_non_nullable
               as int,
+      otherNames: freezed == otherNames
+          ? _value.otherNames
+          : otherNames // ignore: cast_nullable_to_non_nullable
+              as List<String>?,
+      isLocked: freezed == isLocked
+          ? _value.isLocked
+          : isLocked // ignore: cast_nullable_to_non_nullable
+              as bool?,
     ) as $Val);
   }
 }
@@ -146,17 +118,13 @@ abstract class _$$WikiImplCopyWith<$Res> implements $WikiCopyWith<$Res> {
   @useResult
   $Res call(
       {int id,
-      DateTime createdAt,
-      DateTime? updatedAt,
       String title,
       String body,
-      int creatorId,
-      bool isLocked,
-      int? updaterId,
-      bool isDeleted,
-      List<String> otherNames,
-      String creatorName,
-      int categoryId});
+      DateTime createdAt,
+      DateTime? updatedAt,
+      int categoryId,
+      List<String>? otherNames,
+      bool? isLocked});
 }
 
 /// @nodoc
@@ -170,31 +138,19 @@ class __$$WikiImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? id = null,
-    Object? createdAt = null,
-    Object? updatedAt = freezed,
     Object? title = null,
     Object? body = null,
-    Object? creatorId = null,
-    Object? isLocked = null,
-    Object? updaterId = freezed,
-    Object? isDeleted = null,
-    Object? otherNames = null,
-    Object? creatorName = null,
+    Object? createdAt = null,
+    Object? updatedAt = freezed,
     Object? categoryId = null,
+    Object? otherNames = freezed,
+    Object? isLocked = freezed,
   }) {
     return _then(_$WikiImpl(
       id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
               as int,
-      createdAt: null == createdAt
-          ? _value.createdAt
-          : createdAt // ignore: cast_nullable_to_non_nullable
-              as DateTime,
-      updatedAt: freezed == updatedAt
-          ? _value.updatedAt
-          : updatedAt // ignore: cast_nullable_to_non_nullable
-              as DateTime?,
       title: null == title
           ? _value.title
           : title // ignore: cast_nullable_to_non_nullable
@@ -203,34 +159,26 @@ class __$$WikiImplCopyWithImpl<$Res>
           ? _value.body
           : body // ignore: cast_nullable_to_non_nullable
               as String,
-      creatorId: null == creatorId
-          ? _value.creatorId
-          : creatorId // ignore: cast_nullable_to_non_nullable
-              as int,
-      isLocked: null == isLocked
-          ? _value.isLocked
-          : isLocked // ignore: cast_nullable_to_non_nullable
-              as bool,
-      updaterId: freezed == updaterId
-          ? _value.updaterId
-          : updaterId // ignore: cast_nullable_to_non_nullable
-              as int?,
-      isDeleted: null == isDeleted
-          ? _value.isDeleted
-          : isDeleted // ignore: cast_nullable_to_non_nullable
-              as bool,
-      otherNames: null == otherNames
-          ? _value._otherNames
-          : otherNames // ignore: cast_nullable_to_non_nullable
-              as List<String>,
-      creatorName: null == creatorName
-          ? _value.creatorName
-          : creatorName // ignore: cast_nullable_to_non_nullable
-              as String,
+      createdAt: null == createdAt
+          ? _value.createdAt
+          : createdAt // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      updatedAt: freezed == updatedAt
+          ? _value.updatedAt
+          : updatedAt // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
       categoryId: null == categoryId
           ? _value.categoryId
           : categoryId // ignore: cast_nullable_to_non_nullable
               as int,
+      otherNames: freezed == otherNames
+          ? _value._otherNames
+          : otherNames // ignore: cast_nullable_to_non_nullable
+              as List<String>?,
+      isLocked: freezed == isLocked
+          ? _value.isLocked
+          : isLocked // ignore: cast_nullable_to_non_nullable
+              as bool?,
     ));
   }
 }
@@ -240,17 +188,13 @@ class __$$WikiImplCopyWithImpl<$Res>
 class _$WikiImpl implements _Wiki {
   const _$WikiImpl(
       {required this.id,
-      required this.createdAt,
-      required this.updatedAt,
       required this.title,
       required this.body,
-      required this.creatorId,
-      required this.isLocked,
-      required this.updaterId,
-      required this.isDeleted,
-      required final List<String> otherNames,
-      required this.creatorName,
-      required this.categoryId})
+      required this.createdAt,
+      this.updatedAt,
+      required this.categoryId,
+      final List<String>? otherNames,
+      this.isLocked})
       : _otherNames = otherNames;
 
   factory _$WikiImpl.fromJson(Map<String, dynamic> json) =>
@@ -259,37 +203,31 @@ class _$WikiImpl implements _Wiki {
   @override
   final int id;
   @override
-  final DateTime createdAt;
-  @override
-  final DateTime? updatedAt;
-  @override
   final String title;
   @override
   final String body;
   @override
-  final int creatorId;
+  final DateTime createdAt;
   @override
-  final bool isLocked;
+  final DateTime? updatedAt;
   @override
-  final int? updaterId;
+  final int categoryId;
+  final List<String>? _otherNames;
   @override
-  final bool isDeleted;
-  final List<String> _otherNames;
-  @override
-  List<String> get otherNames {
+  List<String>? get otherNames {
+    final value = _otherNames;
+    if (value == null) return null;
     if (_otherNames is EqualUnmodifiableListView) return _otherNames;
     // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_otherNames);
+    return EqualUnmodifiableListView(value);
   }
 
   @override
-  final String creatorName;
-  @override
-  final int categoryId;
+  final bool? isLocked;
 
   @override
   String toString() {
-    return 'Wiki(id: $id, createdAt: $createdAt, updatedAt: $updatedAt, title: $title, body: $body, creatorId: $creatorId, isLocked: $isLocked, updaterId: $updaterId, isDeleted: $isDeleted, otherNames: $otherNames, creatorName: $creatorName, categoryId: $categoryId)';
+    return 'Wiki(id: $id, title: $title, body: $body, createdAt: $createdAt, updatedAt: $updatedAt, categoryId: $categoryId, otherNames: $otherNames, isLocked: $isLocked)';
   }
 
   @override
@@ -298,26 +236,18 @@ class _$WikiImpl implements _Wiki {
         (other.runtimeType == runtimeType &&
             other is _$WikiImpl &&
             (identical(other.id, id) || other.id == id) &&
+            (identical(other.title, title) || other.title == title) &&
+            (identical(other.body, body) || other.body == body) &&
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt) &&
             (identical(other.updatedAt, updatedAt) ||
                 other.updatedAt == updatedAt) &&
-            (identical(other.title, title) || other.title == title) &&
-            (identical(other.body, body) || other.body == body) &&
-            (identical(other.creatorId, creatorId) ||
-                other.creatorId == creatorId) &&
-            (identical(other.isLocked, isLocked) ||
-                other.isLocked == isLocked) &&
-            (identical(other.updaterId, updaterId) ||
-                other.updaterId == updaterId) &&
-            (identical(other.isDeleted, isDeleted) ||
-                other.isDeleted == isDeleted) &&
+            (identical(other.categoryId, categoryId) ||
+                other.categoryId == categoryId) &&
             const DeepCollectionEquality()
                 .equals(other._otherNames, _otherNames) &&
-            (identical(other.creatorName, creatorName) ||
-                other.creatorName == creatorName) &&
-            (identical(other.categoryId, categoryId) ||
-                other.categoryId == categoryId));
+            (identical(other.isLocked, isLocked) ||
+                other.isLocked == isLocked));
   }
 
   @JsonKey(ignore: true)
@@ -325,17 +255,13 @@ class _$WikiImpl implements _Wiki {
   int get hashCode => Object.hash(
       runtimeType,
       id,
-      createdAt,
-      updatedAt,
       title,
       body,
-      creatorId,
-      isLocked,
-      updaterId,
-      isDeleted,
+      createdAt,
+      updatedAt,
+      categoryId,
       const DeepCollectionEquality().hash(_otherNames),
-      creatorName,
-      categoryId);
+      isLocked);
 
   @JsonKey(ignore: true)
   @override
@@ -354,44 +280,32 @@ class _$WikiImpl implements _Wiki {
 abstract class _Wiki implements Wiki {
   const factory _Wiki(
       {required final int id,
-      required final DateTime createdAt,
-      required final DateTime? updatedAt,
       required final String title,
       required final String body,
-      required final int creatorId,
-      required final bool isLocked,
-      required final int? updaterId,
-      required final bool isDeleted,
-      required final List<String> otherNames,
-      required final String creatorName,
-      required final int categoryId}) = _$WikiImpl;
+      required final DateTime createdAt,
+      final DateTime? updatedAt,
+      required final int categoryId,
+      final List<String>? otherNames,
+      final bool? isLocked}) = _$WikiImpl;
 
   factory _Wiki.fromJson(Map<String, dynamic> json) = _$WikiImpl.fromJson;
 
   @override
   int get id;
   @override
-  DateTime get createdAt;
-  @override
-  DateTime? get updatedAt;
-  @override
   String get title;
   @override
   String get body;
   @override
-  int get creatorId;
+  DateTime get createdAt;
   @override
-  bool get isLocked;
-  @override
-  int? get updaterId;
-  @override
-  bool get isDeleted;
-  @override
-  List<String> get otherNames;
-  @override
-  String get creatorName;
+  DateTime? get updatedAt;
   @override
   int get categoryId;
+  @override
+  List<String>? get otherNames;
+  @override
+  bool? get isLocked;
   @override
   @JsonKey(ignore: true)
   _$$WikiImplCopyWith<_$WikiImpl> get copyWith =>

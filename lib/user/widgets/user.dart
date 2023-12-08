@@ -392,13 +392,13 @@ class UserInfo extends StatelessWidget {
     Widget info(
       IconData icon,
       String title,
-      String value, {
+      Object value, {
       VoidCallback? onLongPress,
     }) {
       return UserInfoTile(
         icon: icon,
         title: title,
-        value: value,
+        value: value.toString(),
         onLongPress: onLongPress,
         compact: compact,
       );
@@ -418,12 +418,14 @@ class UserInfo extends StatelessWidget {
             ));
           },
         ),
-        info(Icons.shield, 'rank', user.levelString.toLowerCase()),
-        info(Icons.upload, 'posts', user.postUploadCount.toString()),
-        info(Icons.edit, 'edits', user.postUpdateCount.toString()),
-        info(Icons.favorite, 'favorites', user.favoriteCount.toString()),
-        info(Icons.comment, 'comments', user.commentCount.toString()),
-        info(Icons.forum, 'forum', user.forumPostCount.toString()),
+        if (user.stats case final stats?) ...[
+          info(Icons.shield, 'rank', stats.levelString.toLowerCase()),
+          info(Icons.upload, 'posts', stats.postUploadCount),
+          info(Icons.edit, 'edits', stats.postUpdateCount),
+          info(Icons.favorite, 'favorites', stats.favoriteCount),
+          info(Icons.comment, 'comments', stats.commentCount),
+          info(Icons.forum, 'forum', stats.forumPostCount),
+        ]
       ],
     );
   }

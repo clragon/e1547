@@ -6,31 +6,36 @@ part 'user.g.dart';
 @freezed
 class User with _$User {
   const factory User({
-    required int wikiPageVersionCount,
-    required int artistVersionCount,
-    required int poolVersionCount,
-    required int forumPostCount,
-    required int commentCount,
-    required int flagCount,
-    required int favoriteCount,
-    required int positiveFeedbackCount,
-    required int neutralFeedbackCount,
-    required int negativeFeedbackCount,
-    required int uploadLimit,
     required int id,
-    required DateTime createdAt,
     required String name,
-    required int level,
-    required int baseUploadLimit,
-    required int postUploadCount,
-    required int postUpdateCount,
-    required int noteUpdateCount,
-    required bool isBanned,
-    required bool canApprovePosts,
-    required bool canUploadFree,
-    required String levelString,
     required int? avatarId,
+    UserStats? stats,
   }) = _User;
 
   factory User.fromJson(dynamic json) => _$UserFromJson(json);
+}
+
+@freezed
+class UserStats with _$UserStats {
+  const factory UserStats({
+    required String levelString,
+    required int favoriteCount,
+    required int postUpdateCount,
+    required int postUploadCount,
+    required int forumPostCount,
+    required int commentCount,
+  }) = _UserStats;
+
+  factory UserStats.fromJson(dynamic json) => _$UserStatsFromJson(json);
+}
+
+extension E621User on User {
+  static User fromJson(dynamic json) {
+    return User(
+      id: json['id'],
+      name: json['name'],
+      avatarId: json['avatar_id'],
+      stats: UserStats.fromJson(json),
+    );
+  }
 }

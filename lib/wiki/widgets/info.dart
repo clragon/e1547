@@ -53,26 +53,26 @@ class WikiInfo extends StatelessWidget {
               ),
             ],
           ),
-          textInfoRow(
-            'alias',
-            wiki.otherNames.join(', '),
-          ),
+          if (wiki.otherNames case final otherNames?)
+            textInfoRow(
+              'alias',
+              otherNames.join(', '),
+            ),
           textInfoRow(
             'created',
             formatDateTime(wiki.createdAt.toLocal()),
           ),
           textInfoRow(
             'updated',
-            wiki.updatedAt != null
-                ? formatDateTime(
-                    wiki.updatedAt!.toLocal(),
-                  )
-                : 'never',
+            formatDateTime(
+              (wiki.updatedAt ?? wiki.createdAt).toLocal(),
+            ),
           ),
-          textInfoRow(
-            'locked',
-            wiki.isLocked ? 'yes' : 'no',
-          ),
+          if (wiki.isLocked case final isLocked?)
+            textInfoRow(
+              'locked',
+              isLocked ? 'yes' : 'no',
+            ),
         ],
       ),
     );

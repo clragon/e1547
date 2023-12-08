@@ -20,30 +20,10 @@ User _$UserFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$User {
-  int get wikiPageVersionCount => throw _privateConstructorUsedError;
-  int get artistVersionCount => throw _privateConstructorUsedError;
-  int get poolVersionCount => throw _privateConstructorUsedError;
-  int get forumPostCount => throw _privateConstructorUsedError;
-  int get commentCount => throw _privateConstructorUsedError;
-  int get flagCount => throw _privateConstructorUsedError;
-  int get favoriteCount => throw _privateConstructorUsedError;
-  int get positiveFeedbackCount => throw _privateConstructorUsedError;
-  int get neutralFeedbackCount => throw _privateConstructorUsedError;
-  int get negativeFeedbackCount => throw _privateConstructorUsedError;
-  int get uploadLimit => throw _privateConstructorUsedError;
   int get id => throw _privateConstructorUsedError;
-  DateTime get createdAt => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
-  int get level => throw _privateConstructorUsedError;
-  int get baseUploadLimit => throw _privateConstructorUsedError;
-  int get postUploadCount => throw _privateConstructorUsedError;
-  int get postUpdateCount => throw _privateConstructorUsedError;
-  int get noteUpdateCount => throw _privateConstructorUsedError;
-  bool get isBanned => throw _privateConstructorUsedError;
-  bool get canApprovePosts => throw _privateConstructorUsedError;
-  bool get canUploadFree => throw _privateConstructorUsedError;
-  String get levelString => throw _privateConstructorUsedError;
   int? get avatarId => throw _privateConstructorUsedError;
+  UserStats? get stats => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -55,31 +35,9 @@ abstract class $UserCopyWith<$Res> {
   factory $UserCopyWith(User value, $Res Function(User) then) =
       _$UserCopyWithImpl<$Res, User>;
   @useResult
-  $Res call(
-      {int wikiPageVersionCount,
-      int artistVersionCount,
-      int poolVersionCount,
-      int forumPostCount,
-      int commentCount,
-      int flagCount,
-      int favoriteCount,
-      int positiveFeedbackCount,
-      int neutralFeedbackCount,
-      int negativeFeedbackCount,
-      int uploadLimit,
-      int id,
-      DateTime createdAt,
-      String name,
-      int level,
-      int baseUploadLimit,
-      int postUploadCount,
-      int postUpdateCount,
-      int noteUpdateCount,
-      bool isBanned,
-      bool canApprovePosts,
-      bool canUploadFree,
-      String levelString,
-      int? avatarId});
+  $Res call({int id, String name, int? avatarId, UserStats? stats});
+
+  $UserStatsCopyWith<$Res>? get stats;
 }
 
 /// @nodoc
@@ -95,129 +53,41 @@ class _$UserCopyWithImpl<$Res, $Val extends User>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? wikiPageVersionCount = null,
-    Object? artistVersionCount = null,
-    Object? poolVersionCount = null,
-    Object? forumPostCount = null,
-    Object? commentCount = null,
-    Object? flagCount = null,
-    Object? favoriteCount = null,
-    Object? positiveFeedbackCount = null,
-    Object? neutralFeedbackCount = null,
-    Object? negativeFeedbackCount = null,
-    Object? uploadLimit = null,
     Object? id = null,
-    Object? createdAt = null,
     Object? name = null,
-    Object? level = null,
-    Object? baseUploadLimit = null,
-    Object? postUploadCount = null,
-    Object? postUpdateCount = null,
-    Object? noteUpdateCount = null,
-    Object? isBanned = null,
-    Object? canApprovePosts = null,
-    Object? canUploadFree = null,
-    Object? levelString = null,
     Object? avatarId = freezed,
+    Object? stats = freezed,
   }) {
     return _then(_value.copyWith(
-      wikiPageVersionCount: null == wikiPageVersionCount
-          ? _value.wikiPageVersionCount
-          : wikiPageVersionCount // ignore: cast_nullable_to_non_nullable
-              as int,
-      artistVersionCount: null == artistVersionCount
-          ? _value.artistVersionCount
-          : artistVersionCount // ignore: cast_nullable_to_non_nullable
-              as int,
-      poolVersionCount: null == poolVersionCount
-          ? _value.poolVersionCount
-          : poolVersionCount // ignore: cast_nullable_to_non_nullable
-              as int,
-      forumPostCount: null == forumPostCount
-          ? _value.forumPostCount
-          : forumPostCount // ignore: cast_nullable_to_non_nullable
-              as int,
-      commentCount: null == commentCount
-          ? _value.commentCount
-          : commentCount // ignore: cast_nullable_to_non_nullable
-              as int,
-      flagCount: null == flagCount
-          ? _value.flagCount
-          : flagCount // ignore: cast_nullable_to_non_nullable
-              as int,
-      favoriteCount: null == favoriteCount
-          ? _value.favoriteCount
-          : favoriteCount // ignore: cast_nullable_to_non_nullable
-              as int,
-      positiveFeedbackCount: null == positiveFeedbackCount
-          ? _value.positiveFeedbackCount
-          : positiveFeedbackCount // ignore: cast_nullable_to_non_nullable
-              as int,
-      neutralFeedbackCount: null == neutralFeedbackCount
-          ? _value.neutralFeedbackCount
-          : neutralFeedbackCount // ignore: cast_nullable_to_non_nullable
-              as int,
-      negativeFeedbackCount: null == negativeFeedbackCount
-          ? _value.negativeFeedbackCount
-          : negativeFeedbackCount // ignore: cast_nullable_to_non_nullable
-              as int,
-      uploadLimit: null == uploadLimit
-          ? _value.uploadLimit
-          : uploadLimit // ignore: cast_nullable_to_non_nullable
-              as int,
       id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
               as int,
-      createdAt: null == createdAt
-          ? _value.createdAt
-          : createdAt // ignore: cast_nullable_to_non_nullable
-              as DateTime,
       name: null == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
-              as String,
-      level: null == level
-          ? _value.level
-          : level // ignore: cast_nullable_to_non_nullable
-              as int,
-      baseUploadLimit: null == baseUploadLimit
-          ? _value.baseUploadLimit
-          : baseUploadLimit // ignore: cast_nullable_to_non_nullable
-              as int,
-      postUploadCount: null == postUploadCount
-          ? _value.postUploadCount
-          : postUploadCount // ignore: cast_nullable_to_non_nullable
-              as int,
-      postUpdateCount: null == postUpdateCount
-          ? _value.postUpdateCount
-          : postUpdateCount // ignore: cast_nullable_to_non_nullable
-              as int,
-      noteUpdateCount: null == noteUpdateCount
-          ? _value.noteUpdateCount
-          : noteUpdateCount // ignore: cast_nullable_to_non_nullable
-              as int,
-      isBanned: null == isBanned
-          ? _value.isBanned
-          : isBanned // ignore: cast_nullable_to_non_nullable
-              as bool,
-      canApprovePosts: null == canApprovePosts
-          ? _value.canApprovePosts
-          : canApprovePosts // ignore: cast_nullable_to_non_nullable
-              as bool,
-      canUploadFree: null == canUploadFree
-          ? _value.canUploadFree
-          : canUploadFree // ignore: cast_nullable_to_non_nullable
-              as bool,
-      levelString: null == levelString
-          ? _value.levelString
-          : levelString // ignore: cast_nullable_to_non_nullable
               as String,
       avatarId: freezed == avatarId
           ? _value.avatarId
           : avatarId // ignore: cast_nullable_to_non_nullable
               as int?,
+      stats: freezed == stats
+          ? _value.stats
+          : stats // ignore: cast_nullable_to_non_nullable
+              as UserStats?,
     ) as $Val);
+  }
+
+  @override
+  @pragma('vm:prefer-inline')
+  $UserStatsCopyWith<$Res>? get stats {
+    if (_value.stats == null) {
+      return null;
+    }
+
+    return $UserStatsCopyWith<$Res>(_value.stats!, (value) {
+      return _then(_value.copyWith(stats: value) as $Val);
+    });
   }
 }
 
@@ -228,31 +98,10 @@ abstract class _$$UserImplCopyWith<$Res> implements $UserCopyWith<$Res> {
       __$$UserImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call(
-      {int wikiPageVersionCount,
-      int artistVersionCount,
-      int poolVersionCount,
-      int forumPostCount,
-      int commentCount,
-      int flagCount,
-      int favoriteCount,
-      int positiveFeedbackCount,
-      int neutralFeedbackCount,
-      int negativeFeedbackCount,
-      int uploadLimit,
-      int id,
-      DateTime createdAt,
-      String name,
-      int level,
-      int baseUploadLimit,
-      int postUploadCount,
-      int postUpdateCount,
-      int noteUpdateCount,
-      bool isBanned,
-      bool canApprovePosts,
-      bool canUploadFree,
-      String levelString,
-      int? avatarId});
+  $Res call({int id, String name, int? avatarId, UserStats? stats});
+
+  @override
+  $UserStatsCopyWith<$Res>? get stats;
 }
 
 /// @nodoc
@@ -265,128 +114,28 @@ class __$$UserImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? wikiPageVersionCount = null,
-    Object? artistVersionCount = null,
-    Object? poolVersionCount = null,
-    Object? forumPostCount = null,
-    Object? commentCount = null,
-    Object? flagCount = null,
-    Object? favoriteCount = null,
-    Object? positiveFeedbackCount = null,
-    Object? neutralFeedbackCount = null,
-    Object? negativeFeedbackCount = null,
-    Object? uploadLimit = null,
     Object? id = null,
-    Object? createdAt = null,
     Object? name = null,
-    Object? level = null,
-    Object? baseUploadLimit = null,
-    Object? postUploadCount = null,
-    Object? postUpdateCount = null,
-    Object? noteUpdateCount = null,
-    Object? isBanned = null,
-    Object? canApprovePosts = null,
-    Object? canUploadFree = null,
-    Object? levelString = null,
     Object? avatarId = freezed,
+    Object? stats = freezed,
   }) {
     return _then(_$UserImpl(
-      wikiPageVersionCount: null == wikiPageVersionCount
-          ? _value.wikiPageVersionCount
-          : wikiPageVersionCount // ignore: cast_nullable_to_non_nullable
-              as int,
-      artistVersionCount: null == artistVersionCount
-          ? _value.artistVersionCount
-          : artistVersionCount // ignore: cast_nullable_to_non_nullable
-              as int,
-      poolVersionCount: null == poolVersionCount
-          ? _value.poolVersionCount
-          : poolVersionCount // ignore: cast_nullable_to_non_nullable
-              as int,
-      forumPostCount: null == forumPostCount
-          ? _value.forumPostCount
-          : forumPostCount // ignore: cast_nullable_to_non_nullable
-              as int,
-      commentCount: null == commentCount
-          ? _value.commentCount
-          : commentCount // ignore: cast_nullable_to_non_nullable
-              as int,
-      flagCount: null == flagCount
-          ? _value.flagCount
-          : flagCount // ignore: cast_nullable_to_non_nullable
-              as int,
-      favoriteCount: null == favoriteCount
-          ? _value.favoriteCount
-          : favoriteCount // ignore: cast_nullable_to_non_nullable
-              as int,
-      positiveFeedbackCount: null == positiveFeedbackCount
-          ? _value.positiveFeedbackCount
-          : positiveFeedbackCount // ignore: cast_nullable_to_non_nullable
-              as int,
-      neutralFeedbackCount: null == neutralFeedbackCount
-          ? _value.neutralFeedbackCount
-          : neutralFeedbackCount // ignore: cast_nullable_to_non_nullable
-              as int,
-      negativeFeedbackCount: null == negativeFeedbackCount
-          ? _value.negativeFeedbackCount
-          : negativeFeedbackCount // ignore: cast_nullable_to_non_nullable
-              as int,
-      uploadLimit: null == uploadLimit
-          ? _value.uploadLimit
-          : uploadLimit // ignore: cast_nullable_to_non_nullable
-              as int,
       id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
               as int,
-      createdAt: null == createdAt
-          ? _value.createdAt
-          : createdAt // ignore: cast_nullable_to_non_nullable
-              as DateTime,
       name: null == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
-              as String,
-      level: null == level
-          ? _value.level
-          : level // ignore: cast_nullable_to_non_nullable
-              as int,
-      baseUploadLimit: null == baseUploadLimit
-          ? _value.baseUploadLimit
-          : baseUploadLimit // ignore: cast_nullable_to_non_nullable
-              as int,
-      postUploadCount: null == postUploadCount
-          ? _value.postUploadCount
-          : postUploadCount // ignore: cast_nullable_to_non_nullable
-              as int,
-      postUpdateCount: null == postUpdateCount
-          ? _value.postUpdateCount
-          : postUpdateCount // ignore: cast_nullable_to_non_nullable
-              as int,
-      noteUpdateCount: null == noteUpdateCount
-          ? _value.noteUpdateCount
-          : noteUpdateCount // ignore: cast_nullable_to_non_nullable
-              as int,
-      isBanned: null == isBanned
-          ? _value.isBanned
-          : isBanned // ignore: cast_nullable_to_non_nullable
-              as bool,
-      canApprovePosts: null == canApprovePosts
-          ? _value.canApprovePosts
-          : canApprovePosts // ignore: cast_nullable_to_non_nullable
-              as bool,
-      canUploadFree: null == canUploadFree
-          ? _value.canUploadFree
-          : canUploadFree // ignore: cast_nullable_to_non_nullable
-              as bool,
-      levelString: null == levelString
-          ? _value.levelString
-          : levelString // ignore: cast_nullable_to_non_nullable
               as String,
       avatarId: freezed == avatarId
           ? _value.avatarId
           : avatarId // ignore: cast_nullable_to_non_nullable
               as int?,
+      stats: freezed == stats
+          ? _value.stats
+          : stats // ignore: cast_nullable_to_non_nullable
+              as UserStats?,
     ));
   }
 }
@@ -395,86 +144,26 @@ class __$$UserImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$UserImpl implements _User {
   const _$UserImpl(
-      {required this.wikiPageVersionCount,
-      required this.artistVersionCount,
-      required this.poolVersionCount,
-      required this.forumPostCount,
-      required this.commentCount,
-      required this.flagCount,
-      required this.favoriteCount,
-      required this.positiveFeedbackCount,
-      required this.neutralFeedbackCount,
-      required this.negativeFeedbackCount,
-      required this.uploadLimit,
-      required this.id,
-      required this.createdAt,
+      {required this.id,
       required this.name,
-      required this.level,
-      required this.baseUploadLimit,
-      required this.postUploadCount,
-      required this.postUpdateCount,
-      required this.noteUpdateCount,
-      required this.isBanned,
-      required this.canApprovePosts,
-      required this.canUploadFree,
-      required this.levelString,
-      required this.avatarId});
+      required this.avatarId,
+      this.stats});
 
   factory _$UserImpl.fromJson(Map<String, dynamic> json) =>
       _$$UserImplFromJson(json);
 
   @override
-  final int wikiPageVersionCount;
-  @override
-  final int artistVersionCount;
-  @override
-  final int poolVersionCount;
-  @override
-  final int forumPostCount;
-  @override
-  final int commentCount;
-  @override
-  final int flagCount;
-  @override
-  final int favoriteCount;
-  @override
-  final int positiveFeedbackCount;
-  @override
-  final int neutralFeedbackCount;
-  @override
-  final int negativeFeedbackCount;
-  @override
-  final int uploadLimit;
-  @override
   final int id;
-  @override
-  final DateTime createdAt;
   @override
   final String name;
   @override
-  final int level;
-  @override
-  final int baseUploadLimit;
-  @override
-  final int postUploadCount;
-  @override
-  final int postUpdateCount;
-  @override
-  final int noteUpdateCount;
-  @override
-  final bool isBanned;
-  @override
-  final bool canApprovePosts;
-  @override
-  final bool canUploadFree;
-  @override
-  final String levelString;
-  @override
   final int? avatarId;
+  @override
+  final UserStats? stats;
 
   @override
   String toString() {
-    return 'User(wikiPageVersionCount: $wikiPageVersionCount, artistVersionCount: $artistVersionCount, poolVersionCount: $poolVersionCount, forumPostCount: $forumPostCount, commentCount: $commentCount, flagCount: $flagCount, favoriteCount: $favoriteCount, positiveFeedbackCount: $positiveFeedbackCount, neutralFeedbackCount: $neutralFeedbackCount, negativeFeedbackCount: $negativeFeedbackCount, uploadLimit: $uploadLimit, id: $id, createdAt: $createdAt, name: $name, level: $level, baseUploadLimit: $baseUploadLimit, postUploadCount: $postUploadCount, postUpdateCount: $postUpdateCount, noteUpdateCount: $noteUpdateCount, isBanned: $isBanned, canApprovePosts: $canApprovePosts, canUploadFree: $canUploadFree, levelString: $levelString, avatarId: $avatarId)';
+    return 'User(id: $id, name: $name, avatarId: $avatarId, stats: $stats)';
   }
 
   @override
@@ -482,82 +171,16 @@ class _$UserImpl implements _User {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$UserImpl &&
-            (identical(other.wikiPageVersionCount, wikiPageVersionCount) ||
-                other.wikiPageVersionCount == wikiPageVersionCount) &&
-            (identical(other.artistVersionCount, artistVersionCount) ||
-                other.artistVersionCount == artistVersionCount) &&
-            (identical(other.poolVersionCount, poolVersionCount) ||
-                other.poolVersionCount == poolVersionCount) &&
-            (identical(other.forumPostCount, forumPostCount) ||
-                other.forumPostCount == forumPostCount) &&
-            (identical(other.commentCount, commentCount) ||
-                other.commentCount == commentCount) &&
-            (identical(other.flagCount, flagCount) ||
-                other.flagCount == flagCount) &&
-            (identical(other.favoriteCount, favoriteCount) ||
-                other.favoriteCount == favoriteCount) &&
-            (identical(other.positiveFeedbackCount, positiveFeedbackCount) ||
-                other.positiveFeedbackCount == positiveFeedbackCount) &&
-            (identical(other.neutralFeedbackCount, neutralFeedbackCount) ||
-                other.neutralFeedbackCount == neutralFeedbackCount) &&
-            (identical(other.negativeFeedbackCount, negativeFeedbackCount) ||
-                other.negativeFeedbackCount == negativeFeedbackCount) &&
-            (identical(other.uploadLimit, uploadLimit) ||
-                other.uploadLimit == uploadLimit) &&
             (identical(other.id, id) || other.id == id) &&
-            (identical(other.createdAt, createdAt) ||
-                other.createdAt == createdAt) &&
             (identical(other.name, name) || other.name == name) &&
-            (identical(other.level, level) || other.level == level) &&
-            (identical(other.baseUploadLimit, baseUploadLimit) ||
-                other.baseUploadLimit == baseUploadLimit) &&
-            (identical(other.postUploadCount, postUploadCount) ||
-                other.postUploadCount == postUploadCount) &&
-            (identical(other.postUpdateCount, postUpdateCount) ||
-                other.postUpdateCount == postUpdateCount) &&
-            (identical(other.noteUpdateCount, noteUpdateCount) ||
-                other.noteUpdateCount == noteUpdateCount) &&
-            (identical(other.isBanned, isBanned) ||
-                other.isBanned == isBanned) &&
-            (identical(other.canApprovePosts, canApprovePosts) ||
-                other.canApprovePosts == canApprovePosts) &&
-            (identical(other.canUploadFree, canUploadFree) ||
-                other.canUploadFree == canUploadFree) &&
-            (identical(other.levelString, levelString) ||
-                other.levelString == levelString) &&
             (identical(other.avatarId, avatarId) ||
-                other.avatarId == avatarId));
+                other.avatarId == avatarId) &&
+            (identical(other.stats, stats) || other.stats == stats));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hashAll([
-        runtimeType,
-        wikiPageVersionCount,
-        artistVersionCount,
-        poolVersionCount,
-        forumPostCount,
-        commentCount,
-        flagCount,
-        favoriteCount,
-        positiveFeedbackCount,
-        neutralFeedbackCount,
-        negativeFeedbackCount,
-        uploadLimit,
-        id,
-        createdAt,
-        name,
-        level,
-        baseUploadLimit,
-        postUploadCount,
-        postUpdateCount,
-        noteUpdateCount,
-        isBanned,
-        canApprovePosts,
-        canUploadFree,
-        levelString,
-        avatarId
-      ]);
+  int get hashCode => Object.hash(runtimeType, id, name, avatarId, stats);
 
   @JsonKey(ignore: true)
   @override
@@ -575,83 +198,269 @@ class _$UserImpl implements _User {
 
 abstract class _User implements User {
   const factory _User(
-      {required final int wikiPageVersionCount,
-      required final int artistVersionCount,
-      required final int poolVersionCount,
-      required final int forumPostCount,
-      required final int commentCount,
-      required final int flagCount,
-      required final int favoriteCount,
-      required final int positiveFeedbackCount,
-      required final int neutralFeedbackCount,
-      required final int negativeFeedbackCount,
-      required final int uploadLimit,
-      required final int id,
-      required final DateTime createdAt,
+      {required final int id,
       required final String name,
-      required final int level,
-      required final int baseUploadLimit,
-      required final int postUploadCount,
-      required final int postUpdateCount,
-      required final int noteUpdateCount,
-      required final bool isBanned,
-      required final bool canApprovePosts,
-      required final bool canUploadFree,
-      required final String levelString,
-      required final int? avatarId}) = _$UserImpl;
+      required final int? avatarId,
+      final UserStats? stats}) = _$UserImpl;
 
   factory _User.fromJson(Map<String, dynamic> json) = _$UserImpl.fromJson;
 
   @override
-  int get wikiPageVersionCount;
+  int get id;
   @override
-  int get artistVersionCount;
+  String get name;
   @override
-  int get poolVersionCount;
+  int? get avatarId;
+  @override
+  UserStats? get stats;
+  @override
+  @JsonKey(ignore: true)
+  _$$UserImplCopyWith<_$UserImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+UserStats _$UserStatsFromJson(Map<String, dynamic> json) {
+  return _UserStats.fromJson(json);
+}
+
+/// @nodoc
+mixin _$UserStats {
+  String get levelString => throw _privateConstructorUsedError;
+  int get favoriteCount => throw _privateConstructorUsedError;
+  int get postUpdateCount => throw _privateConstructorUsedError;
+  int get postUploadCount => throw _privateConstructorUsedError;
+  int get forumPostCount => throw _privateConstructorUsedError;
+  int get commentCount => throw _privateConstructorUsedError;
+
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+  @JsonKey(ignore: true)
+  $UserStatsCopyWith<UserStats> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $UserStatsCopyWith<$Res> {
+  factory $UserStatsCopyWith(UserStats value, $Res Function(UserStats) then) =
+      _$UserStatsCopyWithImpl<$Res, UserStats>;
+  @useResult
+  $Res call(
+      {String levelString,
+      int favoriteCount,
+      int postUpdateCount,
+      int postUploadCount,
+      int forumPostCount,
+      int commentCount});
+}
+
+/// @nodoc
+class _$UserStatsCopyWithImpl<$Res, $Val extends UserStats>
+    implements $UserStatsCopyWith<$Res> {
+  _$UserStatsCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? levelString = null,
+    Object? favoriteCount = null,
+    Object? postUpdateCount = null,
+    Object? postUploadCount = null,
+    Object? forumPostCount = null,
+    Object? commentCount = null,
+  }) {
+    return _then(_value.copyWith(
+      levelString: null == levelString
+          ? _value.levelString
+          : levelString // ignore: cast_nullable_to_non_nullable
+              as String,
+      favoriteCount: null == favoriteCount
+          ? _value.favoriteCount
+          : favoriteCount // ignore: cast_nullable_to_non_nullable
+              as int,
+      postUpdateCount: null == postUpdateCount
+          ? _value.postUpdateCount
+          : postUpdateCount // ignore: cast_nullable_to_non_nullable
+              as int,
+      postUploadCount: null == postUploadCount
+          ? _value.postUploadCount
+          : postUploadCount // ignore: cast_nullable_to_non_nullable
+              as int,
+      forumPostCount: null == forumPostCount
+          ? _value.forumPostCount
+          : forumPostCount // ignore: cast_nullable_to_non_nullable
+              as int,
+      commentCount: null == commentCount
+          ? _value.commentCount
+          : commentCount // ignore: cast_nullable_to_non_nullable
+              as int,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$UserStatsImplCopyWith<$Res>
+    implements $UserStatsCopyWith<$Res> {
+  factory _$$UserStatsImplCopyWith(
+          _$UserStatsImpl value, $Res Function(_$UserStatsImpl) then) =
+      __$$UserStatsImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call(
+      {String levelString,
+      int favoriteCount,
+      int postUpdateCount,
+      int postUploadCount,
+      int forumPostCount,
+      int commentCount});
+}
+
+/// @nodoc
+class __$$UserStatsImplCopyWithImpl<$Res>
+    extends _$UserStatsCopyWithImpl<$Res, _$UserStatsImpl>
+    implements _$$UserStatsImplCopyWith<$Res> {
+  __$$UserStatsImplCopyWithImpl(
+      _$UserStatsImpl _value, $Res Function(_$UserStatsImpl) _then)
+      : super(_value, _then);
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? levelString = null,
+    Object? favoriteCount = null,
+    Object? postUpdateCount = null,
+    Object? postUploadCount = null,
+    Object? forumPostCount = null,
+    Object? commentCount = null,
+  }) {
+    return _then(_$UserStatsImpl(
+      levelString: null == levelString
+          ? _value.levelString
+          : levelString // ignore: cast_nullable_to_non_nullable
+              as String,
+      favoriteCount: null == favoriteCount
+          ? _value.favoriteCount
+          : favoriteCount // ignore: cast_nullable_to_non_nullable
+              as int,
+      postUpdateCount: null == postUpdateCount
+          ? _value.postUpdateCount
+          : postUpdateCount // ignore: cast_nullable_to_non_nullable
+              as int,
+      postUploadCount: null == postUploadCount
+          ? _value.postUploadCount
+          : postUploadCount // ignore: cast_nullable_to_non_nullable
+              as int,
+      forumPostCount: null == forumPostCount
+          ? _value.forumPostCount
+          : forumPostCount // ignore: cast_nullable_to_non_nullable
+              as int,
+      commentCount: null == commentCount
+          ? _value.commentCount
+          : commentCount // ignore: cast_nullable_to_non_nullable
+              as int,
+    ));
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$UserStatsImpl implements _UserStats {
+  const _$UserStatsImpl(
+      {required this.levelString,
+      required this.favoriteCount,
+      required this.postUpdateCount,
+      required this.postUploadCount,
+      required this.forumPostCount,
+      required this.commentCount});
+
+  factory _$UserStatsImpl.fromJson(Map<String, dynamic> json) =>
+      _$$UserStatsImplFromJson(json);
+
+  @override
+  final String levelString;
+  @override
+  final int favoriteCount;
+  @override
+  final int postUpdateCount;
+  @override
+  final int postUploadCount;
+  @override
+  final int forumPostCount;
+  @override
+  final int commentCount;
+
+  @override
+  String toString() {
+    return 'UserStats(levelString: $levelString, favoriteCount: $favoriteCount, postUpdateCount: $postUpdateCount, postUploadCount: $postUploadCount, forumPostCount: $forumPostCount, commentCount: $commentCount)';
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$UserStatsImpl &&
+            (identical(other.levelString, levelString) ||
+                other.levelString == levelString) &&
+            (identical(other.favoriteCount, favoriteCount) ||
+                other.favoriteCount == favoriteCount) &&
+            (identical(other.postUpdateCount, postUpdateCount) ||
+                other.postUpdateCount == postUpdateCount) &&
+            (identical(other.postUploadCount, postUploadCount) ||
+                other.postUploadCount == postUploadCount) &&
+            (identical(other.forumPostCount, forumPostCount) ||
+                other.forumPostCount == forumPostCount) &&
+            (identical(other.commentCount, commentCount) ||
+                other.commentCount == commentCount));
+  }
+
+  @JsonKey(ignore: true)
+  @override
+  int get hashCode => Object.hash(runtimeType, levelString, favoriteCount,
+      postUpdateCount, postUploadCount, forumPostCount, commentCount);
+
+  @JsonKey(ignore: true)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$UserStatsImplCopyWith<_$UserStatsImpl> get copyWith =>
+      __$$UserStatsImplCopyWithImpl<_$UserStatsImpl>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$UserStatsImplToJson(
+      this,
+    );
+  }
+}
+
+abstract class _UserStats implements UserStats {
+  const factory _UserStats(
+      {required final String levelString,
+      required final int favoriteCount,
+      required final int postUpdateCount,
+      required final int postUploadCount,
+      required final int forumPostCount,
+      required final int commentCount}) = _$UserStatsImpl;
+
+  factory _UserStats.fromJson(Map<String, dynamic> json) =
+      _$UserStatsImpl.fromJson;
+
+  @override
+  String get levelString;
+  @override
+  int get favoriteCount;
+  @override
+  int get postUpdateCount;
+  @override
+  int get postUploadCount;
   @override
   int get forumPostCount;
   @override
   int get commentCount;
   @override
-  int get flagCount;
-  @override
-  int get favoriteCount;
-  @override
-  int get positiveFeedbackCount;
-  @override
-  int get neutralFeedbackCount;
-  @override
-  int get negativeFeedbackCount;
-  @override
-  int get uploadLimit;
-  @override
-  int get id;
-  @override
-  DateTime get createdAt;
-  @override
-  String get name;
-  @override
-  int get level;
-  @override
-  int get baseUploadLimit;
-  @override
-  int get postUploadCount;
-  @override
-  int get postUpdateCount;
-  @override
-  int get noteUpdateCount;
-  @override
-  bool get isBanned;
-  @override
-  bool get canApprovePosts;
-  @override
-  bool get canUploadFree;
-  @override
-  String get levelString;
-  @override
-  int? get avatarId;
-  @override
   @JsonKey(ignore: true)
-  _$$UserImplCopyWith<_$UserImpl> get copyWith =>
+  _$$UserStatsImplCopyWith<_$UserStatsImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

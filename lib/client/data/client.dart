@@ -483,7 +483,7 @@ class Client {
         )
         .then((response) => response.data);
 
-    return body.map((entry) => Wiki.fromJson(entry)).toList();
+    return body.map((entry) => E621Wiki.fromJson(entry)).toList();
   }
 
   Future<Wiki> wiki({
@@ -499,7 +499,7 @@ class Client {
         )
         .then((response) => response.data);
 
-    return Wiki.fromJson(body);
+    return E621Wiki.fromJson(body);
   }
 
   Future<User> user({
@@ -515,7 +515,7 @@ class Client {
         )
         .then((response) => response.data);
 
-    return User.fromJson(body);
+    return E621User.fromJson(body);
   }
 
   Future<void> reportUser({
@@ -555,7 +555,7 @@ class Client {
         )
         .then((response) => response.data);
 
-    Account result = Account.fromJson(body);
+    Account result = E621Account.fromJson(body);
 
     traits.value = traits.value.copyWith(
       denylist: result.blacklistedTags?.split('\n') ?? [],
