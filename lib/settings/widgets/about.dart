@@ -39,7 +39,6 @@ class _AboutPageState extends State<AboutPage> {
       extendBodyBehindAppBar: true,
       appBar: const TransparentAppBar(
         child: DefaultAppBar(
-          title: Text('About'),
           leading: CloseButton(),
         ),
       ),
