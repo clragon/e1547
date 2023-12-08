@@ -36,9 +36,12 @@ class _AboutPageState extends State<AboutPage> {
   Widget build(BuildContext context) {
     AppInfo appInfo = AppInfo.instance;
     return Scaffold(
-      appBar: const DefaultAppBar(
-        title: Text('About'),
-        leading: BackButton(),
+      extendBodyBehindAppBar: true,
+      appBar: const TransparentAppBar(
+        child: DefaultAppBar(
+          title: Text('About'),
+          leading: CloseButton(),
+        ),
       ),
       body: RefreshablePage(
         refresh: (refreshController) async {
@@ -55,6 +58,7 @@ class _AboutPageState extends State<AboutPage> {
         child: (context) => ListView(
           padding: LimitedWidthLayout.of(context).padding,
           children: [
+            const SizedBox(height: 100),
             SizedBox(
               height: 300,
               child: Center(
