@@ -81,7 +81,7 @@ class FollowUpdate {
     this.refreshRate = const Duration(hours: 1),
   });
 
-  late final Logger loggy = Logger('$runtimeType#$hashCode');
+  late final Logger logger = Logger('$runtimeType#$hashCode');
 
   final int refreshAmount;
   final Duration refreshRate;
@@ -97,7 +97,7 @@ class FollowUpdate {
   bool get cancelled => _cancelled;
 
   void cancel() {
-    loggy.fine('Follow update cancelled!');
+    logger.fine('Follow update cancelled!');
     _cancelled = true;
   }
 
@@ -106,10 +106,10 @@ class FollowUpdate {
 
   late final StreamController<int> _remaining = BehaviorSubject()
     ..stream.listen(
-      (value) => loggy.fine('Updating $value follows...'),
+      (value) => logger.fine('Updating $value follows...'),
       onError: (exception, stacktrace) =>
-          loggy.severe('Follow update failed!', exception, stacktrace),
-      onDone: () => loggy.info('Follow update finished!'),
+          logger.severe('Follow update failed!', exception, stacktrace),
+      onDone: () => logger.info('Follow update finished!'),
     );
 
   Stream<int> get remaining => _remaining.stream;
@@ -131,10 +131,10 @@ class FollowUpdate {
   Future<void> run() async {
     if (_running) return;
     _running = true;
-    loggy.info('Follow update started!');
+    logger.info('Follow update started!');
     try {
       if (force ?? false) {
-        loggy.fine('Force refreshing follows...');
+        logger.fine('Force refreshing follows...');
         await service.transaction(() async {
           List<Follow> follows = await service.all(
             types: [FollowType.notify, FollowType.update],
@@ -223,7 +223,7 @@ class FollowUpdate {
       List<Post> picked = updates.values.flattened.toList();
       List<Post> leftovers = allPosts.whereNot(picked.contains).toList();
       if (leftovers.isNotEmpty) {
-        loggy.info(
+        logger.info(
           'Follow update found ${leftovers.length} leftover posts!\n'
           '${prettyLogObject(leftovers, header: 'Leftovers')}',
         );
@@ -242,7 +242,7 @@ class FollowUpdate {
         if (alias != follow.alias) {
           Follow updated = follow.copyWith(alias: alias);
           updates[updated] = updates.remove(follow)!;
-          loggy.info(
+          logger.info(
             'Follow update corrected alias for ${follow.tags} to $alias',
           );
           updates = assign(updates.keys.toList(), allPosts);
@@ -292,7 +292,7 @@ class FollowUpdate {
           follow = follow.copyWith(
             type: FollowType.bookmark,
           );
-          loggy.info(
+          logger.info(
             'Follow update found no pool for ${follow.tags}. Set to bookmarked!',
           );
         } else {

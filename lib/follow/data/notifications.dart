@@ -15,9 +15,9 @@ Future<bool> backgroundUpdateFollows({
   required Client client,
   required FlutterLocalNotificationsPlugin notifications,
 }) async {
-  final Logger loggy = Logger('BackgroundFollows');
+  final Logger logger = Logger('BackgroundFollows');
 
-  loggy.info('Starting follow update');
+  logger.info('Starting follow update');
 
   List<Follow> previous = await service.all(
     types: [FollowType.notify],
@@ -33,7 +33,7 @@ Future<bool> backgroundUpdateFollows({
     types: [FollowType.notify],
   );
 
-  loggy.info('Completed follow update');
+  logger.info('Completed follow update');
 
   await updateFollowNotifications(
     previous: previous,
