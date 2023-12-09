@@ -72,7 +72,7 @@ class FollowsUpdater extends ValueNotifier<FollowUpdate?> {
   }
 }
 
-class FollowUpdate with ObjectLoggy {
+class FollowUpdate {
   FollowUpdate({
     required this.service,
     required this.client,
@@ -80,6 +80,8 @@ class FollowUpdate with ObjectLoggy {
     this.refreshAmount = 5,
     this.refreshRate = const Duration(hours: 1),
   });
+
+  late final Logger loggy = Logger('$runtimeType#$hashCode');
 
   final int refreshAmount;
   final Duration refreshRate;
@@ -95,7 +97,7 @@ class FollowUpdate with ObjectLoggy {
   bool get cancelled => _cancelled;
 
   void cancel() {
-    loggy.debug('Follow update cancelled!');
+    loggy.fine('Follow update cancelled!');
     _cancelled = true;
   }
 
@@ -104,9 +106,9 @@ class FollowUpdate with ObjectLoggy {
 
   late final StreamController<int> _remaining = BehaviorSubject()
     ..stream.listen(
-      (value) => loggy.debug('Updating $value follows...'),
+      (value) => loggy.fine('Updating $value follows...'),
       onError: (exception, stacktrace) =>
-          loggy.error('Follow update failed!', exception, stacktrace),
+          loggy.severe('Follow update failed!', exception, stacktrace),
       onDone: () => loggy.info('Follow update finished!'),
     );
 
@@ -132,7 +134,7 @@ class FollowUpdate with ObjectLoggy {
     loggy.info('Follow update started!');
     try {
       if (force ?? false) {
-        loggy.debug('Force refreshing follows...');
+        loggy.fine('Force refreshing follows...');
         await service.transaction(() async {
           List<Follow> follows = await service.all(
             types: [FollowType.notify, FollowType.update],

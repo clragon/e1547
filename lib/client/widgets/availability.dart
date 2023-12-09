@@ -14,24 +14,24 @@ class ClientAvailabilityCheck extends StatelessWidget {
   ClientAvailabilityCheck({super.key, required this.child});
 
   final Widget child;
-  final Loggy loggy = Loggy('ClientAvailability');
+  final Logger logger = Logger('ClientAvailability');
 
   Future<void> check(BuildContext context) async {
     RouterDrawerController controller = context.read<RouterDrawerController>();
     Client client = context.read<Client>();
     try {
       await client.availability();
-      loggy.info('Client is available!');
+      logger.info('Client is available!');
     } on ClientException catch (e, stacktrace) {
       if (CancelToken.isCancel(e)) {
-        loggy.debug('Client availability check cancelled!');
+        logger.fine('Client availability check cancelled!');
         return;
       }
       int? statusCode = e.response?.statusCode;
       if (statusCode == null) return;
       switch (statusCode) {
         case HttpStatus.serviceUnavailable:
-          loggy.warning('Client is unavailable, attempting resolve!');
+          logger.warning('Client is unavailable, attempting resolve!');
           controller.navigator!.push(
             MaterialPageRoute(
               builder: (context) =>
@@ -40,14 +40,14 @@ class ClientAvailabilityCheck extends StatelessWidget {
           );
           return;
         case HttpStatus.forbidden:
-          loggy.warning('Client has denied access! Failing silently...');
+          logger.warning('Client has denied access! Failing silently...');
           // This could potentially logout the user.
           // However, it might be returned during Cloudflare API blockages.
           // Logout the user, and if theyre already logged out, trigger Resolver?
           return;
       }
       if (500 <= statusCode && statusCode < 600) {
-        loggy.warning('Client is unavailable, resolve not possible!');
+        logger.warning('Client is unavailable, resolve not possible!');
         controller.navigator!.push(
           MaterialPageRoute(
             builder: (context) => const HostUnvailablePage(),
@@ -55,7 +55,7 @@ class ClientAvailabilityCheck extends StatelessWidget {
         );
         return;
       }
-      loggy.error('Availability Check failed!', e, stacktrace);
+      logger.severe('Availability Check failed!', e, stacktrace);
     }
   }
 

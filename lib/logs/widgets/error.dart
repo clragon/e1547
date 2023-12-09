@@ -21,7 +21,7 @@ class LoggerErrorNotifier extends StatelessWidget {
     if (messenger == null) return;
     if (event.isEmpty) return;
     LogRecord item = event.first;
-    if (item.level.priority == logLevelCritical.priority) {
+    if (item.level == Level.SHOUT) {
       Color background = item.level.color;
       try {
         messenger.clearSnackBars();

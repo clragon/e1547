@@ -2,13 +2,13 @@ import 'package:e1547/logs/logs.dart';
 import 'package:flutter/widgets.dart';
 
 class RouteLoggerObserver extends NavigatorObserver {
-  final Loggy loggy = Loggy('Routes');
+  final Logger logger = Logger('Routes');
 
   void logRoute(Route<dynamic>? route, String action) {
     if (route == null) return;
     String? name = route.settings.name;
     if (name == null) return;
-    loggy.debug('$name $action');
+    logger.fine('$name $action');
   }
 
   @override

@@ -212,9 +212,7 @@ class SettingsPage extends StatelessWidget {
                 Consumer<Logs>(
                   builder: (context, logs, child) => SubStream<List<LogRecord>>(
                     create: () => logs.stream(
-                        filter: (level, type) =>
-                            level.priority == logLevelCritical.priority ||
-                            level.priority == LogLevel.error.priority),
+                        filter: (level, type) => level >= Level.SEVERE),
                     builder: (context, snapshot) => ListTile(
                       leading: const Icon(Icons.format_list_numbered),
                       title: const Text('Logs'),

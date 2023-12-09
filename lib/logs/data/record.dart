@@ -1,8 +1,8 @@
 import 'dart:convert';
 
-import 'package:e1547/logs/logs.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:logging/logging.dart';
 
 class LogString {
   LogString({
@@ -37,7 +37,7 @@ class LogString {
     List<LogString> logs = [];
     RegExp fullRegex = RegExp(
       r'^\s*(?<level>'
-      '(${logLevels.map((e) => e.name).join('|')})'
+      '(${Level.LEVELS.map((e) => e.name).join('|')})'
       r')\s*\|\s*(?<time>'
       r'\d{2}:\d{2}:\d{2}\.\d{3}'
       r')\s*\|\s*(?<loggerName>[^:\n]+?):',
@@ -48,7 +48,7 @@ class LogString {
       RegExpMatch match = matches[i];
       DateTime time =
           logStringDateFormat.parse(match.namedGroup('time')!.trim());
-      LogLevel level = logLevels
+      Level level = Level.LEVELS
           .singleWhere((e) => e.name == match.namedGroup('level')!.trim());
       String loggerName = match.namedGroup('loggerName')!.trim();
       RegExpMatch? next;
@@ -67,7 +67,7 @@ class LogString {
   }
 
   final DateTime time;
-  final LogLevel level;
+  final Level level;
   final String loggerName;
   final String body;
 
@@ -106,28 +106,27 @@ String prettyLogObject(Object data, {String? header}) {
   return buffer.toString();
 }
 
-final List<LogLevel> logLevels = List.unmodifiable([
-  LogLevel.debug,
-  LogLevel.info,
-  LogLevel.warning,
-  LogLevel.error,
-  logLevelCritical,
-]);
-
-extension LogLevelColor on LogLevel? {
+extension LogLevelColor on Level? {
   Color get color {
-    switch (this) {
-      case LogLevel.error:
-        return Colors.red[400]!;
-      case logLevelCritical:
-        return Colors.red[800]!;
-      case LogLevel.warning:
-        return Colors.orange[400]!;
-      case LogLevel.info:
-        return Colors.green[400]!;
-      case LogLevel.debug:
-      default:
-        return Colors.blue[400]!;
+    Level? level = this;
+    if (level == null) {
+      return Colors.grey[400]!;
     }
+    if (level <= Level.FINER) {
+      return Colors.blue[200]!;
+    }
+    if (level <= Level.FINE) {
+      return Colors.blue[400]!;
+    }
+    if (level <= Level.INFO) {
+      return Colors.green[400]!;
+    }
+    if (level <= Level.WARNING) {
+      return Colors.orange[400]!;
+    }
+    if (level <= Level.SEVERE) {
+      return Colors.red[400]!;
+    }
+    return Colors.red[800]!;
   }
 }

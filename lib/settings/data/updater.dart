@@ -2,9 +2,8 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:e1547/interface/interface.dart';
+import 'package:e1547/logs/logs.dart';
 import 'package:e1547/settings/settings.dart';
-import 'package:flutter_loggy_dio/flutter_loggy_dio.dart';
-import 'package:loggy/loggy.dart';
 import 'package:pub_semver/pub_semver.dart';
 
 abstract class AppUpdater {
@@ -36,11 +35,7 @@ class GithubAppUpdater extends AppUpdater {
         },
       ),
     );
-    dio.interceptors.add(LoggyDioInterceptor(
-      requestLevel: LogLevel.debug,
-      responseLevel: LogLevel.debug,
-      errorLevel: LogLevel.warning,
-    ));
+    dio.interceptors.add(LoggingDioInterceptor());
     dio.interceptors.add(
       ClientCacheInterceptor(options: ClientCacheConfig(store: cache)),
     );

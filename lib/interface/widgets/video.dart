@@ -33,7 +33,7 @@ class VideoService extends ChangeNotifier {
   // the list of all loaded videos is global.
   static final Map<VideoConfig, VideoPlayer> _videos = {};
 
-  final Loggy _loggy = Loggy('Videos');
+  final Logger _logger = Logger('Videos');
 
   final int maxLoaded = 3;
 
@@ -45,7 +45,7 @@ class VideoService extends ChangeNotifier {
     _muteVideos = value;
     _videos.values.forEach((e) => e.setVolume(muteVideos ? 0 : 100));
     notifyListeners();
-    _loggy.debug('${_muteVideos ? 'Muted' : 'Unmuted'} all controllers');
+    _logger.fine('${_muteVideos ? 'Muted' : 'Unmuted'} all controllers');
   }
 
   VideoPlayer getVideo(VideoConfig key) {
@@ -53,7 +53,7 @@ class VideoService extends ChangeNotifier {
       Map<VideoConfig, VideoPlayer> loaded = Map.of(_videos);
       loaded.remove(key);
       if (loaded.length < maxLoaded) break;
-      _loggy.debug('Too many (${loaded.length}) videos loaded!');
+      _logger.fine('Too many (${loaded.length}) videos loaded!');
       disposeVideo(loaded.keys.first);
     }
     return _videos.putIfAbsent(
@@ -75,7 +75,7 @@ class VideoService extends ChangeNotifier {
       await controller.pause();
       await controller.dispose();
       notifyListeners();
-      _loggy.debug('Unloaded $key');
+      _logger.fine('Unloaded $key');
     }
   }
 }

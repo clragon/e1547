@@ -31,7 +31,7 @@ class _LogsPageState extends State<LogsPage> {
   Stream<List<LogString>> loadLogs(List<int> levels) {
     return context
         .read<Logs>()
-        .stream(filter: (level, type) => levels.contains(level.priority))
+        .stream(filter: (level, type) => levels.contains(level.value))
         .map((e) => e.reversed.map((e) => LogString.fromRecord(e)).toList());
   }
 
@@ -58,7 +58,7 @@ class _LogsPageState extends State<LogsPage> {
 
   Future<List<LogString>> _read(File file, List<int> levels) async =>
       LogString.parse(await file.readAsString())
-          .where((e) => levels.contains(e.level.priority))
+          .where((e) => levels.contains(e.level.value))
           .toList()
           .reversed
           .toList();
@@ -324,7 +324,7 @@ class LogPage extends StatefulWidget {
 }
 
 class _LogPageState extends State<LogPage> {
-  List<int> levels = logLevels.map((e) => e.priority).toList();
+  List<int> levels = Level.LEVELS.map((e) => e.value).toList();
 
   @override
   Widget build(BuildContext context) {

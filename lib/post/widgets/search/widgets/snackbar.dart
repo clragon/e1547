@@ -11,7 +11,7 @@ Future<void> postDownloadingNotification(
 ) async {
   Settings settings = context.read<Settings>();
   BaseCacheManager cache = context.read<BaseCacheManager>();
-  final loggy = Loggy('Post Downloader');
+  final logger = Logger('Post Downloader');
   return loadingNotification<Post>(
     context: context,
     icon: const Icon(Icons.download),
@@ -26,7 +26,7 @@ Future<void> postDownloadingNotification(
         );
         return true;
       } on PostDownloadException catch (exception, stacktrace) {
-        loggy.error('Failed to download post', exception, stacktrace);
+        logger.severe('Failed to download post', exception, stacktrace);
         return false;
       }
     },

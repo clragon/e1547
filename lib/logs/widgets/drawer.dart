@@ -1,6 +1,5 @@
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/logs/data/log.dart';
-import 'package:e1547/logs/data/printer.dart';
 import 'package:flutter/material.dart';
 
 class LogRecordDrawer extends StatelessWidget {
@@ -15,20 +14,20 @@ class LogRecordDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const List<LogLevel> filters = [
-      LogLevel.debug,
-      LogLevel.info,
-      LogLevel.warning,
-      LogLevel.error,
-      logLevelCritical,
+    const List<Level> filters = [
+      Level.FINE,
+      Level.INFO,
+      Level.WARNING,
+      Level.SEVERE,
+      Level.SHOUT,
     ];
 
-    Map<LogLevel, Widget> icons = {
-      LogLevel.debug: const Icon(Icons.build),
-      LogLevel.info: const Icon(Icons.info_outline),
-      LogLevel.warning: const Icon(Icons.warning_amber),
-      LogLevel.error: const Icon(Icons.error_outline),
-      logLevelCritical: const Icon(Icons.error),
+    Map<Level, Widget> icons = {
+      Level.FINE: const Icon(Icons.monitor_heart_outlined),
+      Level.INFO: const Icon(Icons.info_outline),
+      Level.WARNING: const Icon(Icons.warning_amber),
+      Level.SEVERE: const Icon(Icons.report_outlined),
+      Level.SHOUT: const Icon(Icons.crisis_alert),
     };
 
     return ContextDrawer(
@@ -44,16 +43,16 @@ class LogRecordDrawer extends StatelessWidget {
             child: CheckboxListTile(
               secondary: icons[filter],
               title: Text(filter.name),
-              value: levels.contains(filter.priority),
+              value: levels.contains(filter.value),
               onChanged: (value) {
                 if (value == null) {
                   return;
                 }
                 List<int> levels = List.of(this.levels);
                 if (value) {
-                  levels.add(filter.priority);
+                  levels.add(filter.value);
                 } else {
-                  levels.remove(filter.priority);
+                  levels.remove(filter.value);
                 }
                 onChanged(levels);
               },

@@ -49,22 +49,26 @@ DatabaseConnection connectDatabase(String name) =>
 Future<Logs> initializeLogger({
   required String path,
   String? postfix,
-  List<LoggyPrinter>? printers,
+  List<LogPrinter>? printers,
 }) async {
-  MemoryLogs logs = MemoryLogs();
+  Logger.root.level = Level.ALL;
+
+  Logs logs = Logs();
   File logFile = File(join(path,
       '${logFileDateFormat.format(DateTime.now())}${postfix != null ? '.$postfix' : ''}.log'));
-  Loggy.initLoggy(
-    logPrinter: MultiLoggyPrinter([
-      logs,
-      const ConsoleLoggyPrinter(),
-      FilePrinter(logFile),
-      if (printers != null) ...printers,
-    ]),
-  );
+
+  printers ??= [];
+  printers.add(logs);
+  printers.add(FileLogPrinter(logFile));
+  printers.add(const ConsoleLogPrinter());
+
+  for (final printer in printers) {
+    printer.connect(Logger.root.onRecord);
+  }
+
   registerFlutterErrorHandler(
-    (error, trace) => Loggy('Flutter').log(
-      logLevelCritical,
+    (error, trace) => Logger('Flutter').log(
+      Level.SHOUT,
       error,
       error,
       trace,
