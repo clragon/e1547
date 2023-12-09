@@ -1,6 +1,7 @@
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/logs/logs.dart';
 import 'package:flutter/material.dart';
+import 'package:recase/recase.dart';
 
 class LogStringCard extends StatelessWidget {
   const LogStringCard({
@@ -14,13 +15,15 @@ class LogStringCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String short = item.body.ellipse(100).split('\n').first;
+    String long = '${item.logger}: ${item.body}';
+    String short = long.ellipse(100).split('\n').first;
     return LogRecordExpandable(
       key: ValueKey(item),
       color: item.level.color,
-      title: Text(item.title),
+      title: Text(
+          '${item.level.name.pascalCase} | ${logStringDateFormat.format(item.time)}'),
       content: Text(short),
-      fullContent: short != item.body ? LogStringBody(item: item) : null,
+      fullContent: short != long ? LogStringBody(item: item) : null,
       expanded: expanded,
     );
   }
@@ -33,7 +36,7 @@ class LogStringBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String value = item.body;
+    String value = '${item.logger}: ${item.body}';
     value = value.replaceAllMapped(RegExp(r'\r\n'), (_) => '\n');
     RegExp sectionRegex =
         RegExp(r'╔(?<title>[^═╗\n]*)(═*╗)?\n(?<content>(║.*?\n)*)(╚═*╝)');

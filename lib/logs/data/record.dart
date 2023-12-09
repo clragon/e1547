@@ -8,7 +8,7 @@ class LogString {
   LogString({
     required this.time,
     required this.level,
-    required this.loggerName,
+    required this.logger,
     required this.body,
   });
 
@@ -16,14 +16,14 @@ class LogString {
     return LogString(
       time: record.time,
       level: record.level,
-      loggerName: record.loggerName,
+      logger: record.loggerName,
       body: _buildRecordMessage(record),
     );
   }
 
   static String _buildRecordMessage(LogRecord record) {
     StringBuffer buffer = StringBuffer();
-    buffer.writeln('${record.loggerName}: ${record.message}');
+    buffer.writeln(record.message);
     if (record.error != null) {
       buffer.write(prettyLogObject(record.error!, header: 'Error'));
     }
@@ -37,10 +37,11 @@ class LogString {
     List<LogString> logs = [];
     RegExp fullRegex = RegExp(
       r'^\s*(?<level>'
-      '(${Level.LEVELS.map((e) => e.name).join('|')})'
+      '(${Level.LEVELS.map((e) => e.name).join('|')}|DEBUG)'
       r')\s*\|\s*(?<time>'
       r'\d{2}:\d{2}:\d{2}\.\d{3}'
       r')\s*\|\s*(?<loggerName>[^:\n]+?):',
+      caseSensitive: false,
       multiLine: true,
     );
     List<RegExpMatch> matches = fullRegex.allMatches(value).toList();
@@ -48,8 +49,11 @@ class LogString {
       RegExpMatch match = matches[i];
       DateTime time =
           logStringDateFormat.parse(match.namedGroup('time')!.trim());
-      Level level = Level.LEVELS
-          .singleWhere((e) => e.name == match.namedGroup('level')!.trim());
+      String levelName = match.namedGroup('level')!.trim().toUpperCase();
+      if (levelName == 'DEBUG') {
+        levelName = 'FINE';
+      }
+      Level level = Level.LEVELS.singleWhere((e) => e.name == levelName);
       String loggerName = match.namedGroup('loggerName')!.trim();
       RegExpMatch? next;
       if (i + 1 < matches.length) {
@@ -59,7 +63,7 @@ class LogString {
       logs.add(LogString(
         time: time,
         level: level,
-        loggerName: loggerName,
+        logger: loggerName,
         body: body,
       ));
     }
@@ -68,13 +72,12 @@ class LogString {
 
   final DateTime time;
   final Level level;
-  final String loggerName;
+  final String logger;
   final String body;
 
-  String get title => '$level | ${logStringDateFormat.format(time)}';
-
   @override
-  String toString() => '$title | $loggerName: $body';
+  String toString() =>
+      '$level | ${logStringDateFormat.format(time)} | $logger: $body';
 }
 
 final DateFormat logStringDateFormat = DateFormat('HH:mm:ss.SSS');

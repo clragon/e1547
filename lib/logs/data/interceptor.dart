@@ -85,7 +85,7 @@ class LoggingDioInterceptor extends Interceptor {
   void onError(DioException err, ErrorInterceptorHandler handler) {
     StringBuffer buffer = StringBuffer();
 
-    bool isOkay = false;
+    bool isOkay = CancelToken.isCancel(err);
 
     if (err.type == DioExceptionType.badResponse) {
       if (err.response!.statusCode! < 400) {

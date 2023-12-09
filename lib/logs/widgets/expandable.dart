@@ -55,11 +55,16 @@ class LogRecordExpandable extends StatelessWidget {
                       Positioned(
                         left: 16,
                         top: -8,
-                        child: Container(
-                          color: Theme.of(context).cardColor,
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 4, horizontal: 10),
-                          child: title!,
+                        right: 0,
+                        bottom: 0,
+                        child: Align(
+                          alignment: Alignment.topLeft,
+                          child: Container(
+                            color: Theme.of(context).cardColor,
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 4, horizontal: 10),
+                            child: title!,
+                          ),
                         ),
                       ),
                     Positioned(

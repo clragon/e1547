@@ -1,6 +1,7 @@
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/logs/logs.dart';
 import 'package:flutter/material.dart';
+import 'package:recase/recase.dart';
 
 class LogRecordDrawer extends StatelessWidget {
   const LogRecordDrawer({
@@ -42,7 +43,7 @@ class LogRecordDrawer extends StatelessWidget {
             padding: const EdgeInsets.only(left: 16),
             child: CheckboxListTile(
               secondary: icons[filter],
-              title: Text(filter.name),
+              title: Text(filter.name.pascalCase),
               value: levels.contains(filter.value),
               onChanged: (value) {
                 if (value == null) {
