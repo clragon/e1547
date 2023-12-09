@@ -1,5 +1,5 @@
 import 'package:e1547/interface/interface.dart';
-import 'package:e1547/logs/data/log.dart';
+import 'package:e1547/logs/logs.dart';
 import 'package:flutter/material.dart';
 
 class LogRecordDrawer extends StatelessWidget {

@@ -1,7 +1,6 @@
 // data
 export 'data/file.dart';
 export 'data/interceptor.dart';
-export 'data/log.dart';
 export 'data/printer.dart';
 export 'data/record.dart';
 export 'data/routes.dart';
