@@ -115,7 +115,7 @@ class DialogActionController extends PromptActionController {
           ),
         );
       },
-    );
+    ).then((_) => reset());
   }
 }
 
