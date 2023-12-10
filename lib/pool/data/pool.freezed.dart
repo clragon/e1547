@@ -24,13 +24,10 @@ mixin _$Pool {
   String get name => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
   DateTime get updatedAt => throw _privateConstructorUsedError;
-  int get creatorId => throw _privateConstructorUsedError;
   String get description => throw _privateConstructorUsedError;
-  bool get isActive => throw _privateConstructorUsedError;
-  Category get category => throw _privateConstructorUsedError;
   List<int> get postIds => throw _privateConstructorUsedError;
-  String get creatorName => throw _privateConstructorUsedError;
   int get postCount => throw _privateConstructorUsedError;
+  PoolActivity? get activity => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -47,13 +44,12 @@ abstract class $PoolCopyWith<$Res> {
       String name,
       DateTime createdAt,
       DateTime updatedAt,
-      int creatorId,
       String description,
-      bool isActive,
-      Category category,
       List<int> postIds,
-      String creatorName,
-      int postCount});
+      int postCount,
+      PoolActivity? activity});
+
+  $PoolActivityCopyWith<$Res>? get activity;
 }
 
 /// @nodoc
@@ -73,13 +69,10 @@ class _$PoolCopyWithImpl<$Res, $Val extends Pool>
     Object? name = null,
     Object? createdAt = null,
     Object? updatedAt = null,
-    Object? creatorId = null,
     Object? description = null,
-    Object? isActive = null,
-    Object? category = null,
     Object? postIds = null,
-    Object? creatorName = null,
     Object? postCount = null,
+    Object? activity = freezed,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -98,35 +91,35 @@ class _$PoolCopyWithImpl<$Res, $Val extends Pool>
           ? _value.updatedAt
           : updatedAt // ignore: cast_nullable_to_non_nullable
               as DateTime,
-      creatorId: null == creatorId
-          ? _value.creatorId
-          : creatorId // ignore: cast_nullable_to_non_nullable
-              as int,
       description: null == description
           ? _value.description
           : description // ignore: cast_nullable_to_non_nullable
               as String,
-      isActive: null == isActive
-          ? _value.isActive
-          : isActive // ignore: cast_nullable_to_non_nullable
-              as bool,
-      category: null == category
-          ? _value.category
-          : category // ignore: cast_nullable_to_non_nullable
-              as Category,
       postIds: null == postIds
           ? _value.postIds
           : postIds // ignore: cast_nullable_to_non_nullable
               as List<int>,
-      creatorName: null == creatorName
-          ? _value.creatorName
-          : creatorName // ignore: cast_nullable_to_non_nullable
-              as String,
       postCount: null == postCount
           ? _value.postCount
           : postCount // ignore: cast_nullable_to_non_nullable
               as int,
+      activity: freezed == activity
+          ? _value.activity
+          : activity // ignore: cast_nullable_to_non_nullable
+              as PoolActivity?,
     ) as $Val);
+  }
+
+  @override
+  @pragma('vm:prefer-inline')
+  $PoolActivityCopyWith<$Res>? get activity {
+    if (_value.activity == null) {
+      return null;
+    }
+
+    return $PoolActivityCopyWith<$Res>(_value.activity!, (value) {
+      return _then(_value.copyWith(activity: value) as $Val);
+    });
   }
 }
 
@@ -142,13 +135,13 @@ abstract class _$$PoolImplCopyWith<$Res> implements $PoolCopyWith<$Res> {
       String name,
       DateTime createdAt,
       DateTime updatedAt,
-      int creatorId,
       String description,
-      bool isActive,
-      Category category,
       List<int> postIds,
-      String creatorName,
-      int postCount});
+      int postCount,
+      PoolActivity? activity});
+
+  @override
+  $PoolActivityCopyWith<$Res>? get activity;
 }
 
 /// @nodoc
@@ -165,13 +158,10 @@ class __$$PoolImplCopyWithImpl<$Res>
     Object? name = null,
     Object? createdAt = null,
     Object? updatedAt = null,
-    Object? creatorId = null,
     Object? description = null,
-    Object? isActive = null,
-    Object? category = null,
     Object? postIds = null,
-    Object? creatorName = null,
     Object? postCount = null,
+    Object? activity = freezed,
   }) {
     return _then(_$PoolImpl(
       id: null == id
@@ -190,34 +180,22 @@ class __$$PoolImplCopyWithImpl<$Res>
           ? _value.updatedAt
           : updatedAt // ignore: cast_nullable_to_non_nullable
               as DateTime,
-      creatorId: null == creatorId
-          ? _value.creatorId
-          : creatorId // ignore: cast_nullable_to_non_nullable
-              as int,
       description: null == description
           ? _value.description
           : description // ignore: cast_nullable_to_non_nullable
               as String,
-      isActive: null == isActive
-          ? _value.isActive
-          : isActive // ignore: cast_nullable_to_non_nullable
-              as bool,
-      category: null == category
-          ? _value.category
-          : category // ignore: cast_nullable_to_non_nullable
-              as Category,
       postIds: null == postIds
           ? _value._postIds
           : postIds // ignore: cast_nullable_to_non_nullable
               as List<int>,
-      creatorName: null == creatorName
-          ? _value.creatorName
-          : creatorName // ignore: cast_nullable_to_non_nullable
-              as String,
       postCount: null == postCount
           ? _value.postCount
           : postCount // ignore: cast_nullable_to_non_nullable
               as int,
+      activity: freezed == activity
+          ? _value.activity
+          : activity // ignore: cast_nullable_to_non_nullable
+              as PoolActivity?,
     ));
   }
 }
@@ -230,13 +208,10 @@ class _$PoolImpl implements _Pool {
       required this.name,
       required this.createdAt,
       required this.updatedAt,
-      required this.creatorId,
       required this.description,
-      required this.isActive,
-      required this.category,
       required final List<int> postIds,
-      required this.creatorName,
-      required this.postCount})
+      required this.postCount,
+      required this.activity})
       : _postIds = postIds;
 
   factory _$PoolImpl.fromJson(Map<String, dynamic> json) =>
@@ -251,13 +226,7 @@ class _$PoolImpl implements _Pool {
   @override
   final DateTime updatedAt;
   @override
-  final int creatorId;
-  @override
   final String description;
-  @override
-  final bool isActive;
-  @override
-  final Category category;
   final List<int> _postIds;
   @override
   List<int> get postIds {
@@ -267,13 +236,13 @@ class _$PoolImpl implements _Pool {
   }
 
   @override
-  final String creatorName;
-  @override
   final int postCount;
+  @override
+  final PoolActivity? activity;
 
   @override
   String toString() {
-    return 'Pool(id: $id, name: $name, createdAt: $createdAt, updatedAt: $updatedAt, creatorId: $creatorId, description: $description, isActive: $isActive, category: $category, postIds: $postIds, creatorName: $creatorName, postCount: $postCount)';
+    return 'Pool(id: $id, name: $name, createdAt: $createdAt, updatedAt: $updatedAt, description: $description, postIds: $postIds, postCount: $postCount, activity: $activity)';
   }
 
   @override
@@ -287,19 +256,13 @@ class _$PoolImpl implements _Pool {
                 other.createdAt == createdAt) &&
             (identical(other.updatedAt, updatedAt) ||
                 other.updatedAt == updatedAt) &&
-            (identical(other.creatorId, creatorId) ||
-                other.creatorId == creatorId) &&
             (identical(other.description, description) ||
                 other.description == description) &&
-            (identical(other.isActive, isActive) ||
-                other.isActive == isActive) &&
-            (identical(other.category, category) ||
-                other.category == category) &&
             const DeepCollectionEquality().equals(other._postIds, _postIds) &&
-            (identical(other.creatorName, creatorName) ||
-                other.creatorName == creatorName) &&
             (identical(other.postCount, postCount) ||
-                other.postCount == postCount));
+                other.postCount == postCount) &&
+            (identical(other.activity, activity) ||
+                other.activity == activity));
   }
 
   @JsonKey(ignore: true)
@@ -310,13 +273,10 @@ class _$PoolImpl implements _Pool {
       name,
       createdAt,
       updatedAt,
-      creatorId,
       description,
-      isActive,
-      category,
       const DeepCollectionEquality().hash(_postIds),
-      creatorName,
-      postCount);
+      postCount,
+      activity);
 
   @JsonKey(ignore: true)
   @override
@@ -338,13 +298,10 @@ abstract class _Pool implements Pool {
       required final String name,
       required final DateTime createdAt,
       required final DateTime updatedAt,
-      required final int creatorId,
       required final String description,
-      required final bool isActive,
-      required final Category category,
       required final List<int> postIds,
-      required final String creatorName,
-      required final int postCount}) = _$PoolImpl;
+      required final int postCount,
+      required final PoolActivity? activity}) = _$PoolImpl;
 
   factory _Pool.fromJson(Map<String, dynamic> json) = _$PoolImpl.fromJson;
 
@@ -357,21 +314,153 @@ abstract class _Pool implements Pool {
   @override
   DateTime get updatedAt;
   @override
-  int get creatorId;
-  @override
   String get description;
-  @override
-  bool get isActive;
-  @override
-  Category get category;
   @override
   List<int> get postIds;
   @override
-  String get creatorName;
-  @override
   int get postCount;
+  @override
+  PoolActivity? get activity;
   @override
   @JsonKey(ignore: true)
   _$$PoolImplCopyWith<_$PoolImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+PoolActivity _$PoolActivityFromJson(Map<String, dynamic> json) {
+  return _PoolActivity.fromJson(json);
+}
+
+/// @nodoc
+mixin _$PoolActivity {
+  bool get isActive => throw _privateConstructorUsedError;
+
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+  @JsonKey(ignore: true)
+  $PoolActivityCopyWith<PoolActivity> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $PoolActivityCopyWith<$Res> {
+  factory $PoolActivityCopyWith(
+          PoolActivity value, $Res Function(PoolActivity) then) =
+      _$PoolActivityCopyWithImpl<$Res, PoolActivity>;
+  @useResult
+  $Res call({bool isActive});
+}
+
+/// @nodoc
+class _$PoolActivityCopyWithImpl<$Res, $Val extends PoolActivity>
+    implements $PoolActivityCopyWith<$Res> {
+  _$PoolActivityCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? isActive = null,
+  }) {
+    return _then(_value.copyWith(
+      isActive: null == isActive
+          ? _value.isActive
+          : isActive // ignore: cast_nullable_to_non_nullable
+              as bool,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$PoolActivityImplCopyWith<$Res>
+    implements $PoolActivityCopyWith<$Res> {
+  factory _$$PoolActivityImplCopyWith(
+          _$PoolActivityImpl value, $Res Function(_$PoolActivityImpl) then) =
+      __$$PoolActivityImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({bool isActive});
+}
+
+/// @nodoc
+class __$$PoolActivityImplCopyWithImpl<$Res>
+    extends _$PoolActivityCopyWithImpl<$Res, _$PoolActivityImpl>
+    implements _$$PoolActivityImplCopyWith<$Res> {
+  __$$PoolActivityImplCopyWithImpl(
+      _$PoolActivityImpl _value, $Res Function(_$PoolActivityImpl) _then)
+      : super(_value, _then);
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? isActive = null,
+  }) {
+    return _then(_$PoolActivityImpl(
+      isActive: null == isActive
+          ? _value.isActive
+          : isActive // ignore: cast_nullable_to_non_nullable
+              as bool,
+    ));
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$PoolActivityImpl implements _PoolActivity {
+  const _$PoolActivityImpl({required this.isActive});
+
+  factory _$PoolActivityImpl.fromJson(Map<String, dynamic> json) =>
+      _$$PoolActivityImplFromJson(json);
+
+  @override
+  final bool isActive;
+
+  @override
+  String toString() {
+    return 'PoolActivity(isActive: $isActive)';
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$PoolActivityImpl &&
+            (identical(other.isActive, isActive) ||
+                other.isActive == isActive));
+  }
+
+  @JsonKey(ignore: true)
+  @override
+  int get hashCode => Object.hash(runtimeType, isActive);
+
+  @JsonKey(ignore: true)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$PoolActivityImplCopyWith<_$PoolActivityImpl> get copyWith =>
+      __$$PoolActivityImplCopyWithImpl<_$PoolActivityImpl>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$PoolActivityImplToJson(
+      this,
+    );
+  }
+}
+
+abstract class _PoolActivity implements PoolActivity {
+  const factory _PoolActivity({required final bool isActive}) =
+      _$PoolActivityImpl;
+
+  factory _PoolActivity.fromJson(Map<String, dynamic> json) =
+      _$PoolActivityImpl.fromJson;
+
+  @override
+  bool get isActive;
+  @override
+  @JsonKey(ignore: true)
+  _$$PoolActivityImplCopyWith<_$PoolActivityImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

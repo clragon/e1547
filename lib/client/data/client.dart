@@ -411,7 +411,7 @@ class Client {
 
     List<Pool> pools = [];
     for (Map<String, dynamic> raw in body) {
-      Pool pool = Pool.fromJson(raw);
+      Pool pool = E621Pool.fromJson(raw);
       pools.add(pool);
     }
 
@@ -431,7 +431,7 @@ class Client {
         )
         .then((response) => response.data);
 
-    return Pool.fromJson(body);
+    return E621Pool.fromJson(body);
   }
 
   Future<List<Post>> postsByPool({
