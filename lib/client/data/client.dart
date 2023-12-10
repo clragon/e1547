@@ -723,7 +723,7 @@ class Client {
     List<Comment> comments = [];
     if (body is List<dynamic>) {
       for (Map<String, dynamic> rawComment in body) {
-        comments.add(Comment.fromJson(rawComment));
+        comments.add(E621Comment.fromJson(rawComment));
       }
     }
 
@@ -764,7 +764,7 @@ class Client {
         )
         .then((response) => response.data);
 
-    return Comment.fromJson(body);
+    return E621Comment.fromJson(body);
   }
 
   Future<void> postComment({

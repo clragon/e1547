@@ -56,46 +56,14 @@ class CommentsController extends PageClientDataController<Comment> {
     required bool replace,
   }) async {
     assertOwnsItem(comment);
-    if (comment.voteStatus == VoteStatus.unknown) {
-      if (upvote) {
-        comment = comment.copyWith(
-          score: comment.score + 1,
-          voteStatus: VoteStatus.upvoted,
-        );
-      } else {
-        comment = comment.copyWith(
-          score: comment.score - 1,
-          voteStatus: VoteStatus.downvoted,
-        );
-      }
-    } else {
-      if (upvote) {
-        if (comment.voteStatus == VoteStatus.upvoted) {
-          comment = comment.copyWith(
-            score: comment.score - 1,
-            voteStatus: VoteStatus.unknown,
-          );
-        } else {
-          comment = comment.copyWith(
-            score: comment.score + 2,
-            voteStatus: VoteStatus.upvoted,
-          );
-        }
-      } else {
-        if (comment.voteStatus == VoteStatus.upvoted) {
-          comment = comment.copyWith(
-            score: comment.score - 2,
-            voteStatus: VoteStatus.downvoted,
-          );
-        } else {
-          comment = comment.copyWith(
-            score: comment.score + 1,
-            voteStatus: VoteStatus.unknown,
-          );
-        }
-      }
-    }
-    replaceComment(comment);
+    replaceComment(
+      comment.copyWith(
+        vote: comment.vote?.withVote(
+          upvote ? VoteStatus.upvoted : VoteStatus.downvoted,
+          replace,
+        ),
+      ),
+    );
     try {
       await client.voteComment(
         id: comment.id,
@@ -105,6 +73,7 @@ class CommentsController extends PageClientDataController<Comment> {
       evictCache();
       return true;
     } on ClientException {
+      replaceComment(comment);
       return false;
     }
   }

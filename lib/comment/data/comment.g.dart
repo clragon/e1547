@@ -9,40 +9,50 @@ part of 'comment.dart';
 _$CommentImpl _$$CommentImplFromJson(Map<String, dynamic> json) =>
     _$CommentImpl(
       id: json['id'] as int,
-      createdAt: DateTime.parse(json['created_at'] as String),
       postId: json['post_id'] as int,
-      creatorId: json['creator_id'] as int,
       body: json['body'] as String,
-      score: json['score'] as int,
+      createdAt: DateTime.parse(json['created_at'] as String),
       updatedAt: DateTime.parse(json['updated_at'] as String),
-      updaterId: json['updater_id'] as int,
-      doNotBumpPost: json['do_not_bump_post'] as bool,
-      isHidden: json['is_hidden'] as bool,
-      isSticky: json['is_sticky'] as bool,
-      warningType:
-          $enumDecodeNullable(_$WarningTypeEnumMap, json['warning_type']),
-      warningUserId: json['warning_user_id'] as int?,
+      creatorId: json['creator_id'] as int,
       creatorName: json['creator_name'] as String,
-      updaterName: json['updater_name'] as String,
+      vote: json['vote'] == null ? null : CommentVote.fromJson(json['vote']),
+      warning: json['warning'] == null
+          ? null
+          : CommentWarning.fromJson(json['warning']),
     );
 
 Map<String, dynamic> _$$CommentImplToJson(_$CommentImpl instance) =>
     <String, dynamic>{
       'id': instance.id,
-      'created_at': instance.createdAt.toIso8601String(),
       'post_id': instance.postId,
-      'creator_id': instance.creatorId,
       'body': instance.body,
-      'score': instance.score,
+      'created_at': instance.createdAt.toIso8601String(),
       'updated_at': instance.updatedAt.toIso8601String(),
-      'updater_id': instance.updaterId,
-      'do_not_bump_post': instance.doNotBumpPost,
-      'is_hidden': instance.isHidden,
-      'is_sticky': instance.isSticky,
-      'warning_type': _$WarningTypeEnumMap[instance.warningType],
-      'warning_user_id': instance.warningUserId,
+      'creator_id': instance.creatorId,
       'creator_name': instance.creatorName,
-      'updater_name': instance.updaterName,
+      'vote': instance.vote,
+      'warning': instance.warning,
+    };
+
+_$CommentVoteImpl _$$CommentVoteImplFromJson(Map<String, dynamic> json) =>
+    _$CommentVoteImpl(
+      score: json['score'] as int,
+    );
+
+Map<String, dynamic> _$$CommentVoteImplToJson(_$CommentVoteImpl instance) =>
+    <String, dynamic>{
+      'score': instance.score,
+    };
+
+_$CommentWarningImpl _$$CommentWarningImplFromJson(Map<String, dynamic> json) =>
+    _$CommentWarningImpl(
+      type: $enumDecodeNullable(_$WarningTypeEnumMap, json['type']),
+    );
+
+Map<String, dynamic> _$$CommentWarningImplToJson(
+        _$CommentWarningImpl instance) =>
+    <String, dynamic>{
+      'type': _$WarningTypeEnumMap[instance.type],
     };
 
 const _$WarningTypeEnumMap = {
