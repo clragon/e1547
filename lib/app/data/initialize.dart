@@ -54,8 +54,7 @@ Future<Logs> initializeLogger({
   Logger.root.level = Level.ALL;
 
   Logs logs = Logs();
-  File logFile = File(join(path,
-      '${logFileDateFormat.format(DateTime.now())}${postfix != null ? '.$postfix' : ''}.log'));
+  File logFile = createLogFile(path, postfix);
 
   printers ??= [];
   printers.add(logs);
@@ -75,6 +74,33 @@ Future<Logs> initializeLogger({
     ),
   );
   return logs;
+}
+
+File createLogFile(String directoryPath, String? postfix) {
+  File logFile = File(join(directoryPath,
+      '${logFileDateFormat.format(DateTime.now())}${postfix != null ? '.$postfix' : ''}.log'));
+
+  Directory dir = Directory(directoryPath);
+  List<File> logFiles = dir
+      .listSync()
+      .whereType<File>()
+      .where((entity) => entity.path.endsWith('.log'))
+      .toList();
+
+  DateTime getFileDate(String fileName) {
+    var name = basenameWithoutExtension(fileName);
+    return logFileDateFormat.parse(name);
+  }
+
+  logFiles.sort((a, b) => getFileDate(b.path).compareTo(getFileDate(a.path)));
+
+  if (logFiles.length > 50) {
+    for (final oldFile in logFiles.sublist(10)) {
+      oldFile.deleteSync();
+    }
+  }
+
+  return logFile;
 }
 
 /// Registers an error callback for uncaught exceptions and flutter errors.
