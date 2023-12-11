@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:share_plus/share_plus.dart' as plus;
 
-class Share {
+abstract final class Share {
   static Future<void> share(BuildContext context, String text) async {
     if (Platform.isAndroid || Platform.isIOS) {
       return plus.Share.share(text);
@@ -24,6 +24,7 @@ class Share {
         Uint8List.fromList(utf8.encode(text)),
         name: name,
         mimeType: 'text/plain',
+        path: name,
       );
       await plus.Share.shareXFiles([file]);
     } else {
