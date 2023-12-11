@@ -106,6 +106,8 @@ class PostsPageFloatingActionButton extends StatelessWidget {
           filters: [
             NestedFilterTag(
               tag: 'tags',
+              decode: TagMap.parse,
+              encode: (value) => TagMap(value).toString(),
               filters: const [
                 NumberRangeFilterTag(
                   tag: 'score',

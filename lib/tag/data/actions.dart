@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 final List<String> wikiMetaTags =
     List.unmodifiable(['help:', 'e621:', 'howto:']);
 
-String sortTags(String tags) => QueryMap.parse(tags).toString();
+String sortTags(String tags) => TagMap.parse(tags).toString();
 
 /// Removes prefixes from tags.
 String tagToRaw(String tags) => tags

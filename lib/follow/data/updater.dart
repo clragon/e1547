@@ -237,7 +237,7 @@ class FollowUpdate {
         List<Post> posts = update.value;
         if (posts.isNotEmpty) continue;
         String? alias = await rateLimit(client.tagAliases(
-          query: QueryMap({'search[antecedent_name]': follow.tags}),
+          query: TagMap({'search[antecedent_name]': follow.tags}),
         ));
         if (alias != follow.alias) {
           Follow updated = follow.copyWith(alias: alias);
@@ -271,7 +271,7 @@ class FollowUpdate {
     _assertNoDuplicates([follow.tags]);
 
     List<Post> posts = await rateLimit(client.posts(
-      query: QueryMap({'tags': follow.tags}),
+      query: TagMap({'tags': follow.tags}),
       limit: refreshAmount,
       ordered: false,
       force: force,

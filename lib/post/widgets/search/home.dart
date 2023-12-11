@@ -17,7 +17,7 @@ class _HomePageState extends State<HomePage> with RouterDrawerEntryWidget {
   Widget build(BuildContext context) {
     Client client = context.watch<Client>();
     return PostsProvider(
-      query: QueryMap({'tags': client.traits.value.homeTags}),
+      query: TagMap({'tags': client.traits.value.homeTags}),
       child: Consumer<PostsController>(
         builder: (context, controller, child) =>
             PostsControllerHistoryConnector(

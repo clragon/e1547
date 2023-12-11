@@ -7,6 +7,7 @@ export 'data/desktop.dart';
 export 'data/dio.dart';
 export 'data/hosts.dart';
 export 'data/listenable.dart';
+export 'data/map.dart';
 export 'data/share.dart';
 export 'data/sql.dart';
 export 'data/stream.dart';

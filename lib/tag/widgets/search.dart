@@ -70,7 +70,7 @@ class PromptFilterList extends StatefulWidget {
 }
 
 class _PromptFilterListState extends State<PromptFilterList> {
-  late QueryMap tags = QueryMap(widget.tags);
+  late QueryMap tags = Map.of(widget.tags);
 
   void onChanged(QueryMap tags) {
     setState(() => this.tags = tags);
@@ -86,7 +86,7 @@ class _PromptFilterListState extends State<PromptFilterList> {
   void didUpdateWidget(PromptFilterList oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.tags != oldWidget.tags) {
-      tags = QueryMap(widget.tags);
+      tags = Map.of(widget.tags);
     }
   }
 

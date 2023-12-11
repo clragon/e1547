@@ -117,7 +117,7 @@ class HistoriesService extends HistoriesDao with ChangeNotifier {
       );
 
   Future<void> addPostSearch(
-    QueryMap search, {
+    Map<String, String> search, {
     List<Post>? posts,
   }) =>
       add(
@@ -146,7 +146,7 @@ class HistoriesService extends HistoriesDao with ChangeNotifier {
       );
 
   Future<void> addPoolSearch(
-    QueryMap search, {
+    Map<String, String> search, {
     List<Pool>? pools,
   }) =>
       add(
@@ -178,7 +178,7 @@ class HistoriesService extends HistoriesDao with ChangeNotifier {
       );
 
   Future<void> addTopicSearch(
-    QueryMap search, {
+    Map<String, String> search, {
     List<Topic>? topics,
   }) =>
       add(

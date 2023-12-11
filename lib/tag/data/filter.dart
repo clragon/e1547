@@ -1,5 +1,4 @@
 import 'package:e1547/interface/interface.dart';
-import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
 
 @immutable
@@ -179,7 +178,7 @@ class FilterTagState<T extends FilterTag> {
   });
 
   static QueryMap _setOrRemove(QueryMap tags, String key, String? value) {
-    tags = QueryMap(tags);
+    tags = Map.of(tags);
     if (value == null) {
       tags.remove(key);
     } else {

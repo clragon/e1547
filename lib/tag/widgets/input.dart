@@ -78,7 +78,7 @@ class TagInput extends StatelessWidget {
             String operator = tag[0];
             if (!['-', '~'].contains(operator)) operator = '';
             tags[selection] = operator + suggestion.name;
-            controller.text = '${QueryMap.parse(tags.join(' '))} ';
+            controller.text = '${TagMap.parse(tags.join(' '))} ';
             controller.setFocusToEnd();
           },
           itemBuilder: (context, itemData) => Row(

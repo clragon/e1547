@@ -89,7 +89,7 @@ class _PostsSearchPageState extends State<PostsSearchPage> {
 
           Future<void> updateSearch() async {
             if (!mounted) return;
-            if (listEquals(lastQuery?.tags, controller.query.tags)) return;
+            if (mapEquals(lastQuery, controller.query)) return;
             lastQuery = controller.query;
             HistoriesService historiesService =
                 context.read<HistoriesService>();
@@ -112,7 +112,7 @@ class _PostsSearchPageState extends State<PostsSearchPage> {
             if (pool != null) {
               return tagToName(pool!.name);
             }
-            QueryMap tags = QueryMap.parse(controller.query['tags'] ?? '');
+            TagMap tags = TagMap.parse(controller.query['tags'] ?? '');
             if (tags.length == 1) {
               return tagToName(tags.toString());
             }

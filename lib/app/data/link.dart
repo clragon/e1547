@@ -4,7 +4,6 @@ import 'package:e1547/pool/pool.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/reply/reply.dart';
 import 'package:e1547/settings/settings.dart';
-import 'package:e1547/tag/tag.dart';
 import 'package:e1547/topic/topic.dart';
 import 'package:e1547/user/user.dart';
 import 'package:e1547/wiki/wiki.dart';
@@ -48,7 +47,7 @@ class Link {
 
   final LinkType type;
   final Object? id;
-  final QueryMap? query;
+  final Map<String, String>? query;
 }
 
 @immutable
@@ -65,7 +64,8 @@ class LeafLinkParser extends LinkParser {
   });
 
   final String path;
-  final Link? Function(Map<String, String> args, QueryMap? query) transformer;
+  final Link? Function(Map<String, String> args, Map<String, String>? query)
+      transformer;
 
   @override
   Link? parse(String link) {
@@ -78,7 +78,7 @@ class LeafLinkParser extends LinkParser {
 
     if (match != null) {
       Map<String, String> arguments = extract(names, match);
-      QueryMap? query = QueryMap(uri.queryParameters);
+      Map<String, String>? query = uri.queryParameters;
       if (query.isEmpty) query = null;
       return transformer(arguments, query);
     }

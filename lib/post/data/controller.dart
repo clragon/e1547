@@ -1,7 +1,6 @@
 import 'package:e1547/client/client.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
-import 'package:e1547/tag/data/map.dart';
 import 'package:flutter/foundation.dart';
 
 class PostsController extends PageClientDataController<Post>
@@ -14,7 +13,7 @@ class PostsController extends PageClientDataController<Post>
     bool denying = true,
     this.canSearch = true,
     this.filterMode = PostFilterMode.filtering,
-  })  : _query = query ?? QueryMap(),
+  })  : _query = query ?? {},
         _orderFavorites = orderFavorites,
         _orderPools = orderPools {
     this.denying = denying;
@@ -28,8 +27,8 @@ class PostsController extends PageClientDataController<Post>
   QueryMap _query;
   QueryMap get query => _query;
   set query(QueryMap value) {
-    if (listEquals(_query.tags, value.tags)) return;
-    _query = QueryMap(value);
+    if (mapEquals(_query, value)) return;
+    _query = Map.of(value);
     refresh();
   }
 

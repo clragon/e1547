@@ -1,9 +1,9 @@
 import 'package:e1547/app/app.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/history/history.dart';
+import 'package:e1547/interface/interface.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:flutter/widgets.dart';
-import 'package:provider/provider.dart';
 
 extension Identification on History {
   bool isItem(LinkType type) {

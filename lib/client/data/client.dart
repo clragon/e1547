@@ -178,7 +178,7 @@ class Client {
       if (chunk.isEmpty) continue;
       String filter = 'id:${chunk.join(',')}';
       List<Post> part = await posts(
-        query: QueryMap({'tags': filter}),
+        query: {'tags': filter},
         limit: limit,
         ordered: false,
         force: force,
@@ -342,13 +342,12 @@ class Client {
       result.removeWhere((e) => e.flags.deleted || e.file.url == null);
       return result;
     } else {
-      query = QueryMap({
-        ...?query,
-        'tags': QueryMap.parse(tags)..['fav'] = identity.username,
-      });
       return posts(
         page: page,
-        query: query,
+        query: {
+          ...?query,
+          'tags': (TagMap.parse(tags)..['fav'] = identity.username).toString(),
+        },
         ordered: false,
         force: force,
         cancelToken: cancelToken,
@@ -650,11 +649,11 @@ class Client {
       List<TagSuggestion> tags = [];
       for (final tag in await this.tags(
         limit: 3,
-        query: QueryMap({
+        query: {
           'search[name_matches]': '$search*',
           'search[category]': category,
           'search[order]': 'count',
-        }),
+        }.toQuery(),
         force: force,
       )) {
         tags.add(
@@ -741,11 +740,11 @@ class Client {
     return comments(
       page: page,
       limit: limit,
-      query: QueryMap({
+      query: {
         'group_by': 'comment',
         'search[post_id]': id,
         'search[order]': ascending ?? false ? 'id_asc' : 'id_desc',
-      }),
+      }.toQuery(),
       force: force,
       cancelToken: cancelToken,
     );
@@ -927,10 +926,10 @@ class Client {
       id: id,
       page: page,
       limit: limit,
-      query: QueryMap({
+      query: {
         'search[topic_id]': id,
         'search[order]': ascending ?? false ? 'id_asc' : 'id_desc',
-      }),
+      }.toQuery(),
       force: force,
       cancelToken: cancelToken,
     );

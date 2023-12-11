@@ -62,7 +62,7 @@ class TagSearchSheet extends StatelessWidget {
                       Navigator.of(context).push(
                         MaterialPageRoute(
                           builder: (context) => PostsSearchPage(
-                            query: QueryMap({'tags': tag}),
+                            query: TagMap({'tags': tag}),
                           ),
                         ),
                       );
@@ -118,7 +118,7 @@ class TagSearchInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<String> tags = QueryMap.parse(tag).toString().split(' ');
+    List<String> tags = TagMap.parse(tag).toString().split(' ');
 
     if (tags.length > 1) {
       return SingleChildScrollView(
@@ -245,7 +245,7 @@ class _SearchTagDisplayState extends State<SearchTagDisplay> {
 
   Future<Wiki?> retrieveWiki() async {
     List<Wiki> results = await context.read<Client>().wikis(
-          query: QueryMap({'search[title]': tagToRaw(widget.tag)}),
+          query: TagMap({'search[title]': tagToRaw(widget.tag)}),
         );
     return results.firstWhereOrNull((e) => e.title == tagToRaw(widget.tag));
   }

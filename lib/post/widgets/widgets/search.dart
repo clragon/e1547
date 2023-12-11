@@ -24,9 +24,9 @@ class TagSearchFilter extends StatelessWidget {
     FilterTagThemeData theme = FilterTagTheme.of(context);
     return SubTextValue(
       value: state.value,
-      onChanged: (value) => state.onChanged(QueryMap.parse(value).toString()),
+      onChanged: (value) => state.onChanged(TagMap.parse(value).toString()),
       shouldUpdate: (oldValue, newValue) =>
-          QueryMap.parse(oldValue).toString() != newValue,
+          TagMap.parse(oldValue).toString() != newValue,
       builder: (context, controller) => TagInput(
         textInputAction: TextInputAction.search,
         direction: VerticalDirection.up,
@@ -63,7 +63,7 @@ class EditTagPrompt extends StatelessWidget {
       ),
       child: Material(
         child: PromptFilterList(
-          tags: QueryMap({'tags': tag}),
+          tags: TagMap({'tags': tag}),
           onSubmit: (value) => onSubmit(value['tags']!),
           submitIcon: isDesktop ? const Icon(Icons.add) : null,
           filters: [

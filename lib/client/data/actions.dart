@@ -3,6 +3,21 @@ import 'package:e1547/interface/interface.dart';
 
 typedef ClientException = DioException;
 
+extension QueryMapExtension on Map<String, dynamic> {
+  /// Transforms a given Map into a QueryMap.
+  ///
+  /// Null values are omitted.
+  /// All other values are converted to strings.
+  QueryMap toQuery() => Map.fromEntries(
+        entries.where((entry) => entry.value != null).map(
+              (entry) => MapEntry(
+                entry.key,
+                entry.value.toString(),
+              ),
+            ),
+      );
+}
+
 Future<bool> validateCall(Future<void> Function() call) async {
   try {
     await call();

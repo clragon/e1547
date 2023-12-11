@@ -113,7 +113,7 @@ Future<void> migrateHistory(
         host: normalizedHost,
         type: ClientType.e621,
         username: credentials?.username,
-        headers: QueryMap({
+        headers: TagMap({
           HttpHeaders.authorizationHeader: credentials?.basicAuth,
         }),
       ),

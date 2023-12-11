@@ -14,7 +14,7 @@ class _HotPageState extends State<HotPage> with RouterDrawerEntryWidget {
   @override
   Widget build(BuildContext context) {
     return PostsProvider(
-      query: QueryMap({'tags': 'order:rank'}),
+      query: TagMap({'tags': 'order:rank'}),
       child: Consumer<PostsController>(
         builder: (context, controller, child) =>
             PostsControllerHistoryConnector(

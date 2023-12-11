@@ -99,12 +99,14 @@ class PrimaryFilterConfig extends BuilderFilterConfig {
 class NestedFilterTag extends BuilderFilterTag {
   NestedFilterTag({
     required super.tag,
+    required QueryMap Function(String value) decode,
+    required String Function(QueryMap tags) encode,
     super.name,
     required this.filters,
   }) : super(
           builder: (context, state) => FilterList(
-            tags: QueryMap.parse(state.tags[tag] ?? ''),
-            onChanged: (value) => state.onChanged(value.toString()),
+            tags: decode(state.tags[tag] ?? ''),
+            onChanged: (value) => state.onChanged(encode(value)),
             filters: filters,
           ),
         );
