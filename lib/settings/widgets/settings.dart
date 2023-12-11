@@ -118,6 +118,7 @@ class SettingsPage extends StatelessWidget {
                                 title: const Text('Tile size'),
                                 value: NumberRange(value),
                                 initialMode: RangeDialogMode.exact,
+                                enforceMax: false,
                                 canChangeMode: false,
                                 division: (300 / 50).round(),
                                 min: 100,
