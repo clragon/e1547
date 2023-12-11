@@ -25,11 +25,8 @@ mixin _$Reply {
   DateTime get updatedAt => throw _privateConstructorUsedError;
   String get body => throw _privateConstructorUsedError;
   int get creatorId => throw _privateConstructorUsedError;
-  int? get updaterId => throw _privateConstructorUsedError;
   int get topicId => throw _privateConstructorUsedError;
-  bool get isHidden => throw _privateConstructorUsedError;
-  WarningType? get warningType => throw _privateConstructorUsedError;
-  int? get warningUserId => throw _privateConstructorUsedError;
+  ReplyWarning? get warning => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -47,11 +44,10 @@ abstract class $ReplyCopyWith<$Res> {
       DateTime updatedAt,
       String body,
       int creatorId,
-      int? updaterId,
       int topicId,
-      bool isHidden,
-      WarningType? warningType,
-      int? warningUserId});
+      ReplyWarning? warning});
+
+  $ReplyWarningCopyWith<$Res>? get warning;
 }
 
 /// @nodoc
@@ -72,11 +68,8 @@ class _$ReplyCopyWithImpl<$Res, $Val extends Reply>
     Object? updatedAt = null,
     Object? body = null,
     Object? creatorId = null,
-    Object? updaterId = freezed,
     Object? topicId = null,
-    Object? isHidden = null,
-    Object? warningType = freezed,
-    Object? warningUserId = freezed,
+    Object? warning = freezed,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -99,27 +92,27 @@ class _$ReplyCopyWithImpl<$Res, $Val extends Reply>
           ? _value.creatorId
           : creatorId // ignore: cast_nullable_to_non_nullable
               as int,
-      updaterId: freezed == updaterId
-          ? _value.updaterId
-          : updaterId // ignore: cast_nullable_to_non_nullable
-              as int?,
       topicId: null == topicId
           ? _value.topicId
           : topicId // ignore: cast_nullable_to_non_nullable
               as int,
-      isHidden: null == isHidden
-          ? _value.isHidden
-          : isHidden // ignore: cast_nullable_to_non_nullable
-              as bool,
-      warningType: freezed == warningType
-          ? _value.warningType
-          : warningType // ignore: cast_nullable_to_non_nullable
-              as WarningType?,
-      warningUserId: freezed == warningUserId
-          ? _value.warningUserId
-          : warningUserId // ignore: cast_nullable_to_non_nullable
-              as int?,
+      warning: freezed == warning
+          ? _value.warning
+          : warning // ignore: cast_nullable_to_non_nullable
+              as ReplyWarning?,
     ) as $Val);
+  }
+
+  @override
+  @pragma('vm:prefer-inline')
+  $ReplyWarningCopyWith<$Res>? get warning {
+    if (_value.warning == null) {
+      return null;
+    }
+
+    return $ReplyWarningCopyWith<$Res>(_value.warning!, (value) {
+      return _then(_value.copyWith(warning: value) as $Val);
+    });
   }
 }
 
@@ -136,11 +129,11 @@ abstract class _$$ReplyImplCopyWith<$Res> implements $ReplyCopyWith<$Res> {
       DateTime updatedAt,
       String body,
       int creatorId,
-      int? updaterId,
       int topicId,
-      bool isHidden,
-      WarningType? warningType,
-      int? warningUserId});
+      ReplyWarning? warning});
+
+  @override
+  $ReplyWarningCopyWith<$Res>? get warning;
 }
 
 /// @nodoc
@@ -159,11 +152,8 @@ class __$$ReplyImplCopyWithImpl<$Res>
     Object? updatedAt = null,
     Object? body = null,
     Object? creatorId = null,
-    Object? updaterId = freezed,
     Object? topicId = null,
-    Object? isHidden = null,
-    Object? warningType = freezed,
-    Object? warningUserId = freezed,
+    Object? warning = freezed,
   }) {
     return _then(_$ReplyImpl(
       id: null == id
@@ -186,26 +176,14 @@ class __$$ReplyImplCopyWithImpl<$Res>
           ? _value.creatorId
           : creatorId // ignore: cast_nullable_to_non_nullable
               as int,
-      updaterId: freezed == updaterId
-          ? _value.updaterId
-          : updaterId // ignore: cast_nullable_to_non_nullable
-              as int?,
       topicId: null == topicId
           ? _value.topicId
           : topicId // ignore: cast_nullable_to_non_nullable
               as int,
-      isHidden: null == isHidden
-          ? _value.isHidden
-          : isHidden // ignore: cast_nullable_to_non_nullable
-              as bool,
-      warningType: freezed == warningType
-          ? _value.warningType
-          : warningType // ignore: cast_nullable_to_non_nullable
-              as WarningType?,
-      warningUserId: freezed == warningUserId
-          ? _value.warningUserId
-          : warningUserId // ignore: cast_nullable_to_non_nullable
-              as int?,
+      warning: freezed == warning
+          ? _value.warning
+          : warning // ignore: cast_nullable_to_non_nullable
+              as ReplyWarning?,
     ));
   }
 }
@@ -219,11 +197,8 @@ class _$ReplyImpl implements _Reply {
       required this.updatedAt,
       required this.body,
       required this.creatorId,
-      required this.updaterId,
       required this.topicId,
-      required this.isHidden,
-      required this.warningType,
-      required this.warningUserId});
+      required this.warning});
 
   factory _$ReplyImpl.fromJson(Map<String, dynamic> json) =>
       _$$ReplyImplFromJson(json);
@@ -239,19 +214,13 @@ class _$ReplyImpl implements _Reply {
   @override
   final int creatorId;
   @override
-  final int? updaterId;
-  @override
   final int topicId;
   @override
-  final bool isHidden;
-  @override
-  final WarningType? warningType;
-  @override
-  final int? warningUserId;
+  final ReplyWarning? warning;
 
   @override
   String toString() {
-    return 'Reply(id: $id, createdAt: $createdAt, updatedAt: $updatedAt, body: $body, creatorId: $creatorId, updaterId: $updaterId, topicId: $topicId, isHidden: $isHidden, warningType: $warningType, warningUserId: $warningUserId)';
+    return 'Reply(id: $id, createdAt: $createdAt, updatedAt: $updatedAt, body: $body, creatorId: $creatorId, topicId: $topicId, warning: $warning)';
   }
 
   @override
@@ -267,21 +236,14 @@ class _$ReplyImpl implements _Reply {
             (identical(other.body, body) || other.body == body) &&
             (identical(other.creatorId, creatorId) ||
                 other.creatorId == creatorId) &&
-            (identical(other.updaterId, updaterId) ||
-                other.updaterId == updaterId) &&
             (identical(other.topicId, topicId) || other.topicId == topicId) &&
-            (identical(other.isHidden, isHidden) ||
-                other.isHidden == isHidden) &&
-            (identical(other.warningType, warningType) ||
-                other.warningType == warningType) &&
-            (identical(other.warningUserId, warningUserId) ||
-                other.warningUserId == warningUserId));
+            (identical(other.warning, warning) || other.warning == warning));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, id, createdAt, updatedAt, body,
-      creatorId, updaterId, topicId, isHidden, warningType, warningUserId);
+  int get hashCode => Object.hash(
+      runtimeType, id, createdAt, updatedAt, body, creatorId, topicId, warning);
 
   @JsonKey(ignore: true)
   @override
@@ -304,11 +266,8 @@ abstract class _Reply implements Reply {
       required final DateTime updatedAt,
       required final String body,
       required final int creatorId,
-      required final int? updaterId,
       required final int topicId,
-      required final bool isHidden,
-      required final WarningType? warningType,
-      required final int? warningUserId}) = _$ReplyImpl;
+      required final ReplyWarning? warning}) = _$ReplyImpl;
 
   factory _Reply.fromJson(Map<String, dynamic> json) = _$ReplyImpl.fromJson;
 
@@ -323,17 +282,148 @@ abstract class _Reply implements Reply {
   @override
   int get creatorId;
   @override
-  int? get updaterId;
-  @override
   int get topicId;
   @override
-  bool get isHidden;
-  @override
-  WarningType? get warningType;
-  @override
-  int? get warningUserId;
+  ReplyWarning? get warning;
   @override
   @JsonKey(ignore: true)
   _$$ReplyImplCopyWith<_$ReplyImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+ReplyWarning _$ReplyWarningFromJson(Map<String, dynamic> json) {
+  return _ReplyWarning.fromJson(json);
+}
+
+/// @nodoc
+mixin _$ReplyWarning {
+  WarningType? get type => throw _privateConstructorUsedError;
+
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+  @JsonKey(ignore: true)
+  $ReplyWarningCopyWith<ReplyWarning> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $ReplyWarningCopyWith<$Res> {
+  factory $ReplyWarningCopyWith(
+          ReplyWarning value, $Res Function(ReplyWarning) then) =
+      _$ReplyWarningCopyWithImpl<$Res, ReplyWarning>;
+  @useResult
+  $Res call({WarningType? type});
+}
+
+/// @nodoc
+class _$ReplyWarningCopyWithImpl<$Res, $Val extends ReplyWarning>
+    implements $ReplyWarningCopyWith<$Res> {
+  _$ReplyWarningCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? type = freezed,
+  }) {
+    return _then(_value.copyWith(
+      type: freezed == type
+          ? _value.type
+          : type // ignore: cast_nullable_to_non_nullable
+              as WarningType?,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$ReplyWarningImplCopyWith<$Res>
+    implements $ReplyWarningCopyWith<$Res> {
+  factory _$$ReplyWarningImplCopyWith(
+          _$ReplyWarningImpl value, $Res Function(_$ReplyWarningImpl) then) =
+      __$$ReplyWarningImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({WarningType? type});
+}
+
+/// @nodoc
+class __$$ReplyWarningImplCopyWithImpl<$Res>
+    extends _$ReplyWarningCopyWithImpl<$Res, _$ReplyWarningImpl>
+    implements _$$ReplyWarningImplCopyWith<$Res> {
+  __$$ReplyWarningImplCopyWithImpl(
+      _$ReplyWarningImpl _value, $Res Function(_$ReplyWarningImpl) _then)
+      : super(_value, _then);
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? type = freezed,
+  }) {
+    return _then(_$ReplyWarningImpl(
+      type: freezed == type
+          ? _value.type
+          : type // ignore: cast_nullable_to_non_nullable
+              as WarningType?,
+    ));
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$ReplyWarningImpl implements _ReplyWarning {
+  const _$ReplyWarningImpl({required this.type});
+
+  factory _$ReplyWarningImpl.fromJson(Map<String, dynamic> json) =>
+      _$$ReplyWarningImplFromJson(json);
+
+  @override
+  final WarningType? type;
+
+  @override
+  String toString() {
+    return 'ReplyWarning(type: $type)';
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$ReplyWarningImpl &&
+            (identical(other.type, type) || other.type == type));
+  }
+
+  @JsonKey(ignore: true)
+  @override
+  int get hashCode => Object.hash(runtimeType, type);
+
+  @JsonKey(ignore: true)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$ReplyWarningImplCopyWith<_$ReplyWarningImpl> get copyWith =>
+      __$$ReplyWarningImplCopyWithImpl<_$ReplyWarningImpl>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$ReplyWarningImplToJson(
+      this,
+    );
+  }
+}
+
+abstract class _ReplyWarning implements ReplyWarning {
+  const factory _ReplyWarning({required final WarningType? type}) =
+      _$ReplyWarningImpl;
+
+  factory _ReplyWarning.fromJson(Map<String, dynamic> json) =
+      _$ReplyWarningImpl.fromJson;
+
+  @override
+  WarningType? get type;
+  @override
+  @JsonKey(ignore: true)
+  _$$ReplyWarningImplCopyWith<_$ReplyWarningImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

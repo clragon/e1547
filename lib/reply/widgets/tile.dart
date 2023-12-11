@@ -79,7 +79,7 @@ class ReplyTile extends StatelessWidget {
                     ),
                   ],
                 ),
-                if (reply.warningType != null)
+                if (reply.warning?.type case final warning?)
                   Row(
                     children: [
                       Padding(
@@ -91,7 +91,7 @@ class ReplyTile extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        reply.warningType!.message,
+                        warning.message,
                         style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                               color: Theme.of(context).colorScheme.error,
                             ),

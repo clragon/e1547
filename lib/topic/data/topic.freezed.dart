@@ -22,14 +22,11 @@ Topic _$TopicFromJson(Map<String, dynamic> json) {
 mixin _$Topic {
   int get id => throw _privateConstructorUsedError;
   int get creatorId => throw _privateConstructorUsedError;
-  int get updaterId => throw _privateConstructorUsedError;
   String get title => throw _privateConstructorUsedError;
   int get responseCount => throw _privateConstructorUsedError;
-  bool get isSticky => throw _privateConstructorUsedError;
-  bool get isLocked => throw _privateConstructorUsedError;
-  bool get isHidden => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
   DateTime get updatedAt => throw _privateConstructorUsedError;
+  bool get isLocked => throw _privateConstructorUsedError;
   int get categoryId => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -45,14 +42,11 @@ abstract class $TopicCopyWith<$Res> {
   $Res call(
       {int id,
       int creatorId,
-      int updaterId,
       String title,
       int responseCount,
-      bool isSticky,
-      bool isLocked,
-      bool isHidden,
       DateTime createdAt,
       DateTime updatedAt,
+      bool isLocked,
       int categoryId});
 }
 
@@ -71,14 +65,11 @@ class _$TopicCopyWithImpl<$Res, $Val extends Topic>
   $Res call({
     Object? id = null,
     Object? creatorId = null,
-    Object? updaterId = null,
     Object? title = null,
     Object? responseCount = null,
-    Object? isSticky = null,
-    Object? isLocked = null,
-    Object? isHidden = null,
     Object? createdAt = null,
     Object? updatedAt = null,
+    Object? isLocked = null,
     Object? categoryId = null,
   }) {
     return _then(_value.copyWith(
@@ -90,10 +81,6 @@ class _$TopicCopyWithImpl<$Res, $Val extends Topic>
           ? _value.creatorId
           : creatorId // ignore: cast_nullable_to_non_nullable
               as int,
-      updaterId: null == updaterId
-          ? _value.updaterId
-          : updaterId // ignore: cast_nullable_to_non_nullable
-              as int,
       title: null == title
           ? _value.title
           : title // ignore: cast_nullable_to_non_nullable
@@ -102,18 +89,6 @@ class _$TopicCopyWithImpl<$Res, $Val extends Topic>
           ? _value.responseCount
           : responseCount // ignore: cast_nullable_to_non_nullable
               as int,
-      isSticky: null == isSticky
-          ? _value.isSticky
-          : isSticky // ignore: cast_nullable_to_non_nullable
-              as bool,
-      isLocked: null == isLocked
-          ? _value.isLocked
-          : isLocked // ignore: cast_nullable_to_non_nullable
-              as bool,
-      isHidden: null == isHidden
-          ? _value.isHidden
-          : isHidden // ignore: cast_nullable_to_non_nullable
-              as bool,
       createdAt: null == createdAt
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
@@ -122,6 +97,10 @@ class _$TopicCopyWithImpl<$Res, $Val extends Topic>
           ? _value.updatedAt
           : updatedAt // ignore: cast_nullable_to_non_nullable
               as DateTime,
+      isLocked: null == isLocked
+          ? _value.isLocked
+          : isLocked // ignore: cast_nullable_to_non_nullable
+              as bool,
       categoryId: null == categoryId
           ? _value.categoryId
           : categoryId // ignore: cast_nullable_to_non_nullable
@@ -140,14 +119,11 @@ abstract class _$$TopicImplCopyWith<$Res> implements $TopicCopyWith<$Res> {
   $Res call(
       {int id,
       int creatorId,
-      int updaterId,
       String title,
       int responseCount,
-      bool isSticky,
-      bool isLocked,
-      bool isHidden,
       DateTime createdAt,
       DateTime updatedAt,
+      bool isLocked,
       int categoryId});
 }
 
@@ -164,14 +140,11 @@ class __$$TopicImplCopyWithImpl<$Res>
   $Res call({
     Object? id = null,
     Object? creatorId = null,
-    Object? updaterId = null,
     Object? title = null,
     Object? responseCount = null,
-    Object? isSticky = null,
-    Object? isLocked = null,
-    Object? isHidden = null,
     Object? createdAt = null,
     Object? updatedAt = null,
+    Object? isLocked = null,
     Object? categoryId = null,
   }) {
     return _then(_$TopicImpl(
@@ -183,10 +156,6 @@ class __$$TopicImplCopyWithImpl<$Res>
           ? _value.creatorId
           : creatorId // ignore: cast_nullable_to_non_nullable
               as int,
-      updaterId: null == updaterId
-          ? _value.updaterId
-          : updaterId // ignore: cast_nullable_to_non_nullable
-              as int,
       title: null == title
           ? _value.title
           : title // ignore: cast_nullable_to_non_nullable
@@ -195,18 +164,6 @@ class __$$TopicImplCopyWithImpl<$Res>
           ? _value.responseCount
           : responseCount // ignore: cast_nullable_to_non_nullable
               as int,
-      isSticky: null == isSticky
-          ? _value.isSticky
-          : isSticky // ignore: cast_nullable_to_non_nullable
-              as bool,
-      isLocked: null == isLocked
-          ? _value.isLocked
-          : isLocked // ignore: cast_nullable_to_non_nullable
-              as bool,
-      isHidden: null == isHidden
-          ? _value.isHidden
-          : isHidden // ignore: cast_nullable_to_non_nullable
-              as bool,
       createdAt: null == createdAt
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
@@ -215,6 +172,10 @@ class __$$TopicImplCopyWithImpl<$Res>
           ? _value.updatedAt
           : updatedAt // ignore: cast_nullable_to_non_nullable
               as DateTime,
+      isLocked: null == isLocked
+          ? _value.isLocked
+          : isLocked // ignore: cast_nullable_to_non_nullable
+              as bool,
       categoryId: null == categoryId
           ? _value.categoryId
           : categoryId // ignore: cast_nullable_to_non_nullable
@@ -229,14 +190,11 @@ class _$TopicImpl implements _Topic {
   const _$TopicImpl(
       {required this.id,
       required this.creatorId,
-      required this.updaterId,
       required this.title,
       required this.responseCount,
-      required this.isSticky,
-      required this.isLocked,
-      required this.isHidden,
       required this.createdAt,
       required this.updatedAt,
+      required this.isLocked,
       required this.categoryId});
 
   factory _$TopicImpl.fromJson(Map<String, dynamic> json) =>
@@ -247,27 +205,21 @@ class _$TopicImpl implements _Topic {
   @override
   final int creatorId;
   @override
-  final int updaterId;
-  @override
   final String title;
   @override
   final int responseCount;
-  @override
-  final bool isSticky;
-  @override
-  final bool isLocked;
-  @override
-  final bool isHidden;
   @override
   final DateTime createdAt;
   @override
   final DateTime updatedAt;
   @override
+  final bool isLocked;
+  @override
   final int categoryId;
 
   @override
   String toString() {
-    return 'Topic(id: $id, creatorId: $creatorId, updaterId: $updaterId, title: $title, responseCount: $responseCount, isSticky: $isSticky, isLocked: $isLocked, isHidden: $isHidden, createdAt: $createdAt, updatedAt: $updatedAt, categoryId: $categoryId)';
+    return 'Topic(id: $id, creatorId: $creatorId, title: $title, responseCount: $responseCount, createdAt: $createdAt, updatedAt: $updatedAt, isLocked: $isLocked, categoryId: $categoryId)';
   }
 
   @override
@@ -278,40 +230,23 @@ class _$TopicImpl implements _Topic {
             (identical(other.id, id) || other.id == id) &&
             (identical(other.creatorId, creatorId) ||
                 other.creatorId == creatorId) &&
-            (identical(other.updaterId, updaterId) ||
-                other.updaterId == updaterId) &&
             (identical(other.title, title) || other.title == title) &&
             (identical(other.responseCount, responseCount) ||
                 other.responseCount == responseCount) &&
-            (identical(other.isSticky, isSticky) ||
-                other.isSticky == isSticky) &&
-            (identical(other.isLocked, isLocked) ||
-                other.isLocked == isLocked) &&
-            (identical(other.isHidden, isHidden) ||
-                other.isHidden == isHidden) &&
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt) &&
             (identical(other.updatedAt, updatedAt) ||
                 other.updatedAt == updatedAt) &&
+            (identical(other.isLocked, isLocked) ||
+                other.isLocked == isLocked) &&
             (identical(other.categoryId, categoryId) ||
                 other.categoryId == categoryId));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      id,
-      creatorId,
-      updaterId,
-      title,
-      responseCount,
-      isSticky,
-      isLocked,
-      isHidden,
-      createdAt,
-      updatedAt,
-      categoryId);
+  int get hashCode => Object.hash(runtimeType, id, creatorId, title,
+      responseCount, createdAt, updatedAt, isLocked, categoryId);
 
   @JsonKey(ignore: true)
   @override
@@ -331,14 +266,11 @@ abstract class _Topic implements Topic {
   const factory _Topic(
       {required final int id,
       required final int creatorId,
-      required final int updaterId,
       required final String title,
       required final int responseCount,
-      required final bool isSticky,
-      required final bool isLocked,
-      required final bool isHidden,
       required final DateTime createdAt,
       required final DateTime updatedAt,
+      required final bool isLocked,
       required final int categoryId}) = _$TopicImpl;
 
   factory _Topic.fromJson(Map<String, dynamic> json) = _$TopicImpl.fromJson;
@@ -348,21 +280,15 @@ abstract class _Topic implements Topic {
   @override
   int get creatorId;
   @override
-  int get updaterId;
-  @override
   String get title;
   @override
   int get responseCount;
   @override
-  bool get isSticky;
-  @override
-  bool get isLocked;
-  @override
-  bool get isHidden;
-  @override
   DateTime get createdAt;
   @override
   DateTime get updatedAt;
+  @override
+  bool get isLocked;
   @override
   int get categoryId;
   @override

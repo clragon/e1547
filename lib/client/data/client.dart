@@ -861,7 +861,7 @@ class Client {
     List<Topic> threads = [];
     if (body is List<dynamic>) {
       for (Map<String, dynamic> raw in body) {
-        threads.add(Topic.fromJson(raw));
+        threads.add(E621Topic.fromJson(raw));
       }
     }
 
@@ -881,7 +881,7 @@ class Client {
         )
         .then((response) => response.data);
 
-    return Topic.fromJson(body);
+    return E621Topic.fromJson(body);
   }
 
   Future<List<Reply>> replies({
@@ -908,7 +908,7 @@ class Client {
     List<Reply> replies = [];
     if (body is List<dynamic>) {
       for (Map<String, dynamic> raw in body) {
-        replies.add(Reply.fromJson(raw));
+        replies.add(E621Reply.fromJson(raw));
       }
     }
 
@@ -949,6 +949,6 @@ class Client {
         )
         .then((response) => response.data);
 
-    return Reply.fromJson(body);
+    return E621Reply.fromJson(body);
   }
 }
