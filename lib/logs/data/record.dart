@@ -37,7 +37,7 @@ class LogString {
     List<LogString> logs = [];
     RegExp fullRegex = RegExp(
       r'^\s*(?<level>'
-      '(${Level.LEVELS.map((e) => e.name).join('|')}|DEBUG)'
+      '(${Level.LEVELS.map((e) => e.name).join('|')})'
       r')\s*\|\s*(?<time>'
       r'\d{2}:\d{2}:\d{2}\.\d{3}'
       r')\s*\|\s*(?<loggerName>[^:\n]+?):',
@@ -49,11 +49,8 @@ class LogString {
       RegExpMatch match = matches[i];
       DateTime time =
           logStringDateFormat.parse(match.namedGroup('time')!.trim());
-      String levelName = match.namedGroup('level')!.trim().toUpperCase();
-      if (levelName == 'DEBUG') {
-        levelName = 'FINE';
-      }
-      Level level = Level.LEVELS.singleWhere((e) => e.name == levelName);
+      Level level = Level.LEVELS.singleWhere(
+          (e) => e.name == match.namedGroup('level')!.trim().toUpperCase());
       String loggerName = match.namedGroup('loggerName')!.trim();
       RegExpMatch? next;
       if (i + 1 < matches.length) {
