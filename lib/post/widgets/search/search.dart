@@ -132,7 +132,7 @@ class _PostsSearchPageState extends State<PostsSearchPage> {
                 actions: [
                   CrossFade(
                     showChild: !loadingInfo &&
-                        (controller.query['tags']?.isNotEmpty ?? true),
+                        (controller.query['tags']?.trim().isNotEmpty ?? false),
                     child: IconButton(
                       icon: const Icon(Icons.info_outline),
                       onPressed: pool != null
