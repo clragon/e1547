@@ -112,7 +112,7 @@ extension E621Comment on Comment {
             score: pick('score').asIntOrThrow(),
           ),
           warning: CommentWarning(
-            type: pick('warningType').letOrNull(
+            type: pick('warning_type').letOrNull(
                 (pick) => WarningType.values.asNameMap()[pick.asString()]!),
           ),
         ),
