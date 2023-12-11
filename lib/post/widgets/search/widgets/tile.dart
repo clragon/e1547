@@ -300,7 +300,7 @@ class PostFeedTile extends StatelessWidget {
     int? cacheSize = context.read<ImageCacheSize>().size;
 
     Widget actions() {
-      return DimSubtree(
+      return Dimmed(
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [

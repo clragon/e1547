@@ -113,7 +113,7 @@ class _IdentityPageState extends State<IdentityPage> {
                   ),
                   CrossFade(
                     showChild: apiKeysUrl != null,
-                    child: DimSubtree(
+                    child: Dimmed(
                       child: IconButton(
                         icon: const Icon(Icons.launch),
                         onPressed: () => launch(apiKeysUrl ?? ''),

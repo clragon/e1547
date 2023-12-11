@@ -128,7 +128,7 @@ class DrawerTagCounterBody extends StatelessWidget {
                           ),
                         ],
                       ),
-                      child: const DimSubtree(
+                      child: const Dimmed(
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [

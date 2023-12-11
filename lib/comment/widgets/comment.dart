@@ -75,7 +75,7 @@ class CommentTile extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             if (comment.vote case final vote?)
-              DimSubtree(
+              Dimmed(
                 child: VoteDisplay(
                   padding: EdgeInsets.zero,
                   score: vote.score,
@@ -130,7 +130,7 @@ class CommentTile extends StatelessWidget {
               ),
             const Spacer(),
             PopupMenuButton<VoidCallback>(
-              icon: const DimSubtree(child: Icon(Icons.more_vert)),
+              icon: const Dimmed(child: Icon(Icons.more_vert)),
               onSelected: (value) => value(),
               itemBuilder: (context) => [
                 if (context.read<Client>().identity.username ==

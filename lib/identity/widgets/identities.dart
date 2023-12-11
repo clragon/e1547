@@ -15,7 +15,7 @@ class IdentitiesPage extends StatelessWidget {
         Navigator.of(context).maybePop();
       },
       trailing: PopupMenuButton<VoidCallback>(
-        icon: const DimSubtree(child: Icon(Icons.more_vert)),
+        icon: const Dimmed(child: Icon(Icons.more_vert)),
         onSelected: (value) => value(),
         itemBuilder: (context) => [
           PopupMenuTile(

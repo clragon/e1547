@@ -39,8 +39,8 @@ class TimedText extends StatelessWidget {
   }
 }
 
-class DimSubtree extends StatelessWidget {
-  const DimSubtree({super.key, required this.child, this.opacity = 0.35});
+class Dimmed extends StatelessWidget {
+  const Dimmed({super.key, required this.child, this.opacity = 0.35});
 
   final Widget child;
   final double opacity;

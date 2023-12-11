@@ -114,7 +114,7 @@ class HostUnvailablePage extends StatelessWidget {
                   child: const Text('Resolve'),
                 ),
               ] else
-                DimSubtree(
+                Dimmed(
                   child: Text(
                     '\nPlease wait for ${context.watch<Client>().host} to resolve the situation on their end.',
                   ),
