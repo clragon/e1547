@@ -53,34 +53,28 @@ class App extends StatelessWidget {
                   GlobalCupertinoLocalizations.delegate,
                   RelativeTimeLocalizations.delegate,
                 ],
-                builder: (context, child) => MediaQuery(
-                  // Temporary hack to fix https://github.com/AbdulRahmanAlHamali/flutter_typeahead/issues/463
-                  data: MediaQuery.of(context).copyWith(
-                    accessibleNavigation: false,
-                  ),
-                  child: WindowFrame(
-                    child: WindowShortcuts(
-                      child: AppLoadingScreen(
-                        child: MultiProvider(
-                          providers: [
-                            const DatabaseMigrationProvider(),
-                            IdentitiesServiceProvider(),
-                            TraitsServiceProvider(),
-                            ClientProvider(),
-                            CacheManagerProvider(),
-                            FollowsProvider(),
-                            HistoriesServiceProvider(),
-                            AccountAvatarProvider(),
-                          ],
-                          child: TraitsSync(
-                            child: AppLoadingScreenEnd(
-                              child: ErrorNotifier(
-                                child: LockScreen(
-                                  child: ClientAvailabilityCheck(
-                                    child: AppLinkHandler(
-                                      child: NotificationHandler(
-                                        child: child!,
-                                      ),
+                builder: (context, child) => WindowFrame(
+                  child: WindowShortcuts(
+                    child: AppLoadingScreen(
+                      child: MultiProvider(
+                        providers: [
+                          const DatabaseMigrationProvider(),
+                          IdentitiesServiceProvider(),
+                          TraitsServiceProvider(),
+                          ClientProvider(),
+                          CacheManagerProvider(),
+                          FollowsProvider(),
+                          HistoriesServiceProvider(),
+                          AccountAvatarProvider(),
+                        ],
+                        child: TraitsSync(
+                          child: AppLoadingScreenEnd(
+                            child: ErrorNotifier(
+                              child: LockScreen(
+                                child: ClientAvailabilityCheck(
+                                  child: AppLinkHandler(
+                                    child: NotificationHandler(
+                                      child: child!,
                                     ),
                                   ),
                                 ),
