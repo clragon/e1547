@@ -67,14 +67,11 @@ class ImageGrid extends StatelessWidget {
                     length: images!.length.clamp(0, 4),
                     crossAxisCount: 2,
                   ),
-                  child: Opacity(
-                    opacity: 0.8,
-                    child: CachedNetworkImage(
-                      imageUrl: images![index],
-                      errorWidget: defaultErrorBuilder,
-                      fit: BoxFit.cover,
-                      cacheManager: context.read<BaseCacheManager>(),
-                    ),
+                  child: CachedNetworkImage(
+                    imageUrl: images![index],
+                    errorWidget: defaultErrorBuilder,
+                    fit: BoxFit.cover,
+                    cacheManager: context.read<BaseCacheManager>(),
                   ),
                 );
               } else {
