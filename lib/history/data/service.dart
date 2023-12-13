@@ -148,6 +148,7 @@ class HistoriesService extends HistoriesDao with ChangeNotifier {
   Future<void> addPoolSearch(
     Map<String, String> search, {
     List<Pool>? pools,
+    List<Post>? posts,
   }) =>
       add(
         HistoryRequest(
@@ -156,6 +157,16 @@ class HistoriesService extends HistoriesDao with ChangeNotifier {
             path: '/pools',
             queryParameters: search.isNotEmpty ? search : null,
           ).toString(),
+          thumbnails: [
+            if (pools != null)
+              ..._getThumbnails(
+                posts
+                    ?.where((a) => pools
+                        .whereNot((e) => e.postIds.isEmpty)
+                        .any((b) => b.postIds.first == a.id))
+                    .toList(),
+              )
+          ],
           subtitle: pools?.isNotEmpty ?? false
               ? _composeSearchSubtitle({
                   for (final value in pools!) value.link: tagToName(value.name)

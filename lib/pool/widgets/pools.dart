@@ -28,6 +28,7 @@ class _PoolsPageState extends State<PoolsPage> with RouterDrawerEntryWidget {
               service.addPoolSearch(
             controller.query,
             pools: controller.items,
+            posts: controller.thumbnails.items,
           ),
           child: RefreshableDataPage.builder(
             appBar: const DefaultAppBar(
