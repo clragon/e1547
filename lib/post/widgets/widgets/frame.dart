@@ -86,7 +86,7 @@ class ScaffoldFrameChild extends StatelessWidget {
     Widget body() {
       return AnimatedOpacity(
         opacity: shown ? 1 : 0,
-        duration: const Duration(milliseconds: 50),
+        duration: defaultAnimationDuration,
         child: ExcludeFocus(
           excluding: !shown,
           child: IgnorePointer(

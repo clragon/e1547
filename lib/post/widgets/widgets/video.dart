@@ -28,7 +28,7 @@ class VideoButton extends StatelessWidget {
         builder: (context, animationController) => AnimatedBuilder(
           animation: Listenable.merge([frameController]),
           builder: (context, child) {
-            var [playing, buffering, initialized] = states.data ??
+            final [playing, buffering, initialized] = states.data ??
                 [
                   player.state.playing,
                   player.state.buffering,
