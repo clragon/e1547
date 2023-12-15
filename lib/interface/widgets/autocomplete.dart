@@ -43,41 +43,34 @@ class AutocompleteTextField<T> extends StatelessWidget {
       direction: direction,
       hideOnEmpty: true,
       hideOnSelect: false,
-      builder: (context, controller, focusNode) {
-        return TextField(
-          controller: controller,
-          autofocus: true,
-          focusNode: focusNode,
-          inputFormatters: inputFormatters,
-          decoration: decoration?.copyWith(
-                labelText: labelText,
-              ) ??
-              InputDecoration(labelText: labelText),
-          onSubmitted: submit,
-          textInputAction: textInputAction ?? TextInputAction.search,
-          readOnly: readOnly,
-        );
-      },
-      decorationBuilder: (context, child) => Card(
-        margin: EdgeInsets.zero,
-        color: Theme.of(context).colorScheme.background,
-        child: Builder(
-          builder: (context) {
-            if (hasFab) {
-              return ClipRect(
-                clipBehavior: Clip.antiAlias,
-                child: DecoratedBox(
-                  decoration: const ShapeDecoration(
-                    shape: AutocompleteCutout(),
-                  ),
-                  child: child,
-                ),
-              );
-            }
-            return child;
-          },
-        ),
+      builder: (context, controller, focusNode) => TextField(
+        controller: controller,
+        autofocus: true,
+        focusNode: focusNode,
+        inputFormatters: inputFormatters,
+        decoration: decoration?.copyWith(
+              labelText: labelText,
+            ) ??
+            InputDecoration(labelText: labelText),
+        onSubmitted: submit,
+        textInputAction: textInputAction ?? TextInputAction.search,
+        readOnly: readOnly,
       ),
+      decorationBuilder: (context, child) {
+        Widget result = Card(
+          margin: EdgeInsets.zero,
+          color: Theme.of(context).colorScheme.background,
+          child: child,
+        );
+
+        if (hasFab) {
+          return ClipPath.shape(
+            shape: const AutocompleteCutout(),
+            child: result,
+          );
+        }
+        return result;
+      },
       loadingBuilder: (context) => const ListTile(
         title: Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -113,35 +106,31 @@ class AutocompleteCutout extends ShapeBorder {
   EdgeInsetsGeometry get dimensions => EdgeInsets.zero;
 
   @override
-  Path getInnerPath(Rect rect, {TextDirection? textDirection}) => Path();
+  Path getInnerPath(Rect rect, {TextDirection? textDirection}) =>
+      Path()..addRect(rect);
 
   @override
   Path getOuterPath(Rect rect, {TextDirection? textDirection}) {
+    const shape = CircularNotchedRectangle();
+
     Size size = rect.size;
     double edgeDistance = 16;
     double padding = 2;
-    double offset = 5.5;
+    double offset = 4;
     double width = 56;
     double radius = width / 2;
 
-    return Path.combine(
-      PathOperation.difference,
-      Path()
-        ..lineTo(size.width, 0)
-        ..lineTo(size.width, size.height)
-        ..lineTo(size.width, size.height)
-        ..lineTo(0, size.height)
-        ..lineTo(0, 0),
-      Path()
-        ..addOval(
+    return shape
+        .getOuterPath(
+          rect,
           Rect.fromCircle(
-            center: Offset(
-                size.width - radius - edgeDistance, size.height + offset),
+            center: Offset(size.width - radius - edgeDistance, 0),
             radius: radius + padding,
           ),
         )
-        ..close(),
-    );
+        .transform((Matrix4.diagonal3Values(1, -1, 1)
+              ..translate(0.0, -size.height - offset))
+            .storage);
   }
 
   @override
