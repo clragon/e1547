@@ -10,7 +10,7 @@ export 'data/theme.dart';
 // widgets
 export 'widgets/app.dart';
 export 'widgets/errors.dart';
-export 'widgets/frame.dart';
+export 'widgets/window.dart';
 export 'widgets/link.dart';
 export 'widgets/loading.dart';
 export 'widgets/lock.dart';
