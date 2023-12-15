@@ -18,25 +18,13 @@ class LockScreen extends StatefulWidget {
 }
 
 class _LockScreenState extends State<LockScreen> {
-  Object _instance = Object();
-
   bool get biometrics => context.read<Settings>().biometricAuth.value;
-
   String? get pin => context.read<Settings>().appPin.value;
-
   bool get enabled => pin != null || biometrics;
-
   late bool locked = enabled;
 
-  void lock() {
-    _instance = Object();
-    setState(() => locked = true);
-  }
-
-  void unlock() {
-    _instance = Object();
-    setState(() => locked = false);
-  }
+  void lock() => setState(() => locked = true);
+  void unlock() => setState(() => locked = false);
 
   @override
   Widget build(BuildContext context) {
@@ -71,24 +59,31 @@ class _LockScreenState extends State<LockScreen> {
 
     bool showLock = lock != null && enabled && locked;
 
+    HeroController heroController = HeroControllerScope.of(context);
+
     return SubListener(
       listener: this.lock,
       listenable: Listenable.merge([
         context.read<Settings>().appPin,
         context.read<Settings>().biometricAuth
       ]),
-      builder: (context) => Stack(
-        fit: StackFit.passthrough,
-        children: [
-          ExcludeFocus(
-            excluding: showLock,
-            child: Offstage(
-              offstage: showLock,
-              child: widget.child,
+      builder: (context) => HeroControllerScope.none(
+        child: Navigator(
+          pages: [
+            MaterialPage(
+              child: Visibility(
+                visible: !showLock,
+                maintainState: true,
+                child: HeroControllerScope(
+                  controller: heroController,
+                  child: widget.child,
+                ),
+              ),
             ),
-          ),
-          if (showLock) KeyedSubtree(key: ObjectKey(_instance), child: lock!)
-        ],
+            if (showLock) MaterialPage(child: lock!),
+          ],
+          onPopPage: (route, result) => false,
+        ),
       ),
     );
   }
