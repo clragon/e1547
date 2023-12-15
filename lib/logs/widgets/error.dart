@@ -20,7 +20,7 @@ class LoggerErrorNotifier extends StatelessWidget {
     ScaffoldMessengerState? messenger = ScaffoldMessenger.maybeOf(context);
     if (messenger == null) return;
     if (event.isEmpty) return;
-    LogRecord item = event.first;
+    LogRecord item = event.last;
     if (item.level == Level.SHOUT) {
       Color background = item.level.color;
       try {
