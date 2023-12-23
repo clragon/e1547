@@ -23,6 +23,7 @@ export 'widgets/drawer.dart';
 export 'widgets/expandable.dart';
 export 'widgets/gallery.dart';
 export 'widgets/header.dart';
+export 'widgets/hero.dart';
 export 'widgets/link.dart';
 export 'widgets/loading.dart';
 export 'widgets/navigation.dart';

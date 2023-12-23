@@ -10,15 +10,24 @@ import 'package:flutter_sub/flutter_sub.dart';
 import 'package:webview_cookie_manager/webview_cookie_manager.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
-class ClientAvailabilityCheck extends StatelessWidget {
-  ClientAvailabilityCheck({super.key, required this.child});
+class ClientAvailabilityCheck extends StatefulWidget {
+  const ClientAvailabilityCheck({super.key, required this.child});
 
   final Widget child;
+
+  @override
+  State<ClientAvailabilityCheck> createState() =>
+      _ClientAvailabilityCheckState();
+}
+
+class _ClientAvailabilityCheckState extends State<ClientAvailabilityCheck> {
+  GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
   final Logger logger = Logger('ClientAvailability');
 
   Future<void> check(BuildContext context) async {
-    RouterDrawerController controller = context.read<RouterDrawerController>();
+    bool? offerResolve;
     Client client = context.read<Client>();
+
     try {
       await client.availability();
       logger.info('Client is available!');
@@ -32,42 +41,55 @@ class ClientAvailabilityCheck extends StatelessWidget {
       switch (statusCode) {
         case HttpStatus.serviceUnavailable:
           logger.warning('Client is unavailable, attempting resolve!');
-          controller.navigator!.push(
-            MaterialPageRoute(
-              builder: (context) =>
-                  const HostUnvailablePage(offerResolve: true),
-            ),
-          );
-          return;
+          offerResolve = true;
+          break;
         case HttpStatus.forbidden:
           logger.warning('Client has denied access! Failing silently...');
           // This could potentially logout the user.
           // However, it might be returned during Cloudflare API blockages.
           // Logout the user, and if theyre already logged out, trigger Resolver?
+          break;
+        case >= 500 && < 600:
+          logger.warning('Client is unavailable, resolve not possible!');
+          offerResolve = false;
           return;
+        default:
+          logger.severe('Availability Check failed!', e, stacktrace);
       }
-      if (500 <= statusCode && statusCode < 600) {
-        logger.warning('Client is unavailable, resolve not possible!');
-        controller.navigator!.push(
-          MaterialPageRoute(
-            builder: (context) => const HostUnvailablePage(),
-          ),
-        );
-        return;
-      }
-      logger.severe('Availability Check failed!', e, stacktrace);
+    }
+
+    if (offerResolve case final bool offerResolve) {
+      navigatorKey.currentState?.push(
+        MaterialPageRoute(
+          builder: (context) => HostUnvailablePage(offerResolve: offerResolve),
+        ),
+      );
     }
   }
 
   @override
-  Widget build(BuildContext context) => SubEffect(
-        effect: () {
-          check(context);
-          return null;
-        },
-        keys: [context.watch<Client>()],
-        child: child,
-      );
+  Widget build(BuildContext context) {
+    return SubEffect(
+      effect: () {
+        check(context);
+        return null;
+      },
+      keys: [context.watch<Client>()],
+      child: HeroControllerScopePassThrough(
+        child: widget.child,
+        builder: (context, child) => Navigator(
+          key: navigatorKey,
+          pages: [
+            MaterialPage(child: child),
+          ],
+          onPopPage: (route, result) {
+            if (route.didPop(result)) return true;
+            return false;
+          },
+        ),
+      ),
+    );
+  }
 }
 
 class HostUnvailablePage extends StatelessWidget {
@@ -78,9 +100,8 @@ class HostUnvailablePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        leading: const CloseButton(),
-        title: const Text('Host unavailable'),
+      appBar: TransparentAppBar(
+        child: AppBar(leading: const CloseButton()),
       ),
       body: Center(
         child: Padding(
@@ -96,7 +117,7 @@ class HostUnvailablePage extends StatelessWidget {
               ),
               const SizedBox(height: 20),
               Text(
-                'It appears that ${context.watch<Client>().host} is not available!',
+                'It appears that ${linkToDisplay(context.watch<Client>().host)} is not available!',
               ),
               const SizedBox(height: 16),
               if (offerResolve && (Platform.isAndroid || Platform.isIOS)) ...[
@@ -116,7 +137,7 @@ class HostUnvailablePage extends StatelessWidget {
               ] else
                 Dimmed(
                   child: Text(
-                    '\nPlease wait for ${context.watch<Client>().host} to resolve the situation on their end.',
+                    '\nPlease wait for ${linkToDisplay(context.watch<Client>().host)} to resolve the situation on their end.',
                   ),
                 ),
             ],

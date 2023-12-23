@@ -59,25 +59,21 @@ class _LockScreenState extends State<LockScreen> {
 
     bool showLock = lock != null && enabled && locked;
 
-    HeroController heroController = HeroControllerScope.of(context);
-
     return SubListener(
       listener: this.lock,
       listenable: Listenable.merge([
         context.read<Settings>().appPin,
         context.read<Settings>().biometricAuth
       ]),
-      builder: (context) => HeroControllerScope.none(
-        child: Navigator(
+      builder: (context) => HeroControllerScopePassThrough(
+        child: widget.child,
+        builder: (context, child) => Navigator(
           pages: [
             MaterialPage(
               child: Visibility(
                 visible: !showLock,
                 maintainState: true,
-                child: HeroControllerScope(
-                  controller: heroController,
-                  child: widget.child,
-                ),
+                child: child,
               ),
             ),
             if (showLock) MaterialPage(child: lock!),
