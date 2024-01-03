@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:isolate';
 
 import 'package:collection/collection.dart';
 import 'package:e1547/app/app.dart';
@@ -36,32 +37,62 @@ class _LogsPageState extends State<LogsPage> {
   }
 
   Stream<List<LogString>> loadFile(String path, List<int> levels) {
-    File file = File(path);
     late StreamController<List<LogString>> controller;
+    late Isolate isolate;
+    ReceivePort port = ReceivePort();
+
     controller = StreamController(
       onListen: () async {
-        controller.add(await _read(file, levels));
-        try {
-          controller.addStream(
-            file.watch(events: FileSystemEvent.modify).asyncMap(
-                  (_) async => _read(file, levels),
-                ),
-          );
-        } on FileSystemException {
-          controller.addStream(Stream.value(await _read(file, levels)));
-        }
+        isolate = await Isolate.spawn(
+          (port) async {
+            try {
+              File file = File(path);
+              try {
+                port.send(file.readAsStringSync());
+              } on FileSystemException catch (e) {
+                port.send(e);
+                return;
+              }
+              try {
+                await for (final _
+                    in file.watch(events: FileSystemEvent.modify)) {
+                  port.send(file.readAsStringSync());
+                }
+              } on FileSystemException {
+                // platform does not support file watching
+              }
+            } on Object catch (e) {
+              port.send(e);
+            }
+          },
+          port.sendPort,
+        );
+
+        port.listen(
+          (data) {
+            if (data is String) {
+              controller.add(LogString.parse(data)
+                  .where((e) => levels.contains(e.level.value))
+                  .toList()
+                  .reversed
+                  .toList());
+            } else if (data is FileSystemException) {
+              controller.addError(data);
+            } else {
+              throw data;
+            }
+          },
+          onDone: () => controller.close(),
+        );
       },
-      onCancel: () => controller.close(),
+      onCancel: () {
+        port.close();
+        isolate.kill();
+      },
     );
+
     return controller.stream;
   }
-
-  Future<List<LogString>> _read(File file, List<int> levels) async =>
-      LogString.parse(await file.readAsString())
-          .where((e) => levels.contains(e.level.value))
-          .toList()
-          .reversed
-          .toList();
 
   @override
   Widget build(BuildContext context) {
@@ -144,13 +175,16 @@ class _LogFileListState extends State<LogFileList> {
   }
 
   void load() {
-    files = Directory(context.read<AppStorage>().temporaryFiles)
-        .list()
-        .where((e) =>
-            FileSystemEntity.isFileSync(e.path) && e.path.endsWith('.log'))
-        .cast<File>()
-        .map((e) => LogFileInfo.parse(e.path))
-        .toList();
+    String tempDir = context.read<AppStorage>().temporaryFiles;
+    files = Isolate.run<List<LogFileInfo>>(
+      () async => Directory(tempDir)
+          .listSync()
+          .where((e) =>
+              FileSystemEntity.isFileSync(e.path) && e.path.endsWith('.log'))
+          .cast<File>()
+          .map((e) => LogFileInfo.parse(e.path))
+          .toList(),
+    );
     setState(() {});
   }
 
