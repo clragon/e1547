@@ -62,7 +62,7 @@ or
 
 1. Download the [latest APK](https://github.com/clragon/e1547/releases/latest)
 2. Open it on your Android device with a file manager
-3. click install
+3. Click install
 
 ### Installing on iOS
 
