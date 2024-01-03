@@ -56,25 +56,23 @@ You can also find the app on the Google PlayStore:
 
 ### Installing on Android
 
-- Install through the [Google PlayStore](https://play.google.com/store/apps/details?id=net.e1547&referrer=utm_source%3Dgithub%26utm_medium%3Dbutton%26utm_campaign%3Dgithub%2520readme%2520instructions)
+- Install through the [Google PlayStore](https://play.google.com/store/apps/details?id=net.e1547)
 
 or
 
-1. Download the latest APK
-2. Open it on your Android device
-3. ???
-4. Profit
+1. Download the [latest APK](https://github.com/clragon/e1547/releases/latest)
+2. Open it on your Android device with a file manager
+3. click install
 
 ### Installing on iOS
 
-- Follow the instructions on [AltStore](https://altstore.io/)
-- An altstore source file for automatic updates can be found on [e1547.clynamic.net](https://e1547.clynamic.net/assets/altstore.json)
+The app is not available in the AppStore.
+
+- Follow the instructions on [Sideloadly](https://sideloadly.io/)
 
 or
 
-1. Jailbreak your iPhone
-2. Install [AppSync Unified](https://cydia.akemi.ai/) in Cydia
-3. Sync the e1547 ipa file to your device and install it in AppSync Unified
+- Jailbreak your device and install the [IPA](https://github.com/clragon/e1547/releases/latest) directly
 
 ## Compilation
 
@@ -94,7 +92,7 @@ If you want to participate in development decisions, you can join the discord:
 
 [![Discord](https://img.shields.io/discord/763321712766877727.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](https://discord.gg/MRwKGqfmUz)
 
-You can also post on the [e926 forum thread](https://e926.net/forum_topics/25854).  
+You can also post on the [e6 forum thread](https://e926.net/forum_topics/25854).  
 If you notice something not working, feel free to open a github issue.
 
 ## Credit
