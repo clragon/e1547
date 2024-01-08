@@ -46,7 +46,7 @@ class _DenyListPageState extends State<DenyListPage> {
         builder: (context, client, child) => ValueListenableBuilder(
           valueListenable: client.traits,
           builder: (context, traits, child) {
-            List<String> denylist = traits.denylist;
+            List<String> denylist = traits.denylist.toList();
             return RefreshableLoadingPage(
               onEmptyIcon: const Icon(Icons.check),
               onEmpty: const Text('Your blacklist is empty'),
@@ -91,12 +91,17 @@ class _DenyListPageState extends State<DenyListPage> {
                           }
                         } on ClientException {
                           throw const ActionControllerException(
-                              message: 'Failed to update blacklist!');
+                            message: 'Failed to update blacklist!',
+                          );
                         }
                       },
                     );
                   },
-                  onDelete: () => denylist.removeAt(index),
+                  onDelete: () => client.updateTraits(
+                    traits: traits.copyWith(
+                      denylist: denylist..remove(denylist[index]),
+                    ),
+                  ),
                 ),
               ),
               appBar: DefaultAppBar(
@@ -125,11 +130,17 @@ class _DenyListPageState extends State<DenyListPage> {
                                   submit: (value) async {
                                     value = value.trim();
                                     try {
-                                      if (value.isNotEmpty) {}
+                                      if (value.isNotEmpty) {
+                                        await client.updateTraits(
+                                          traits: traits.copyWith(
+                                            denylist: denylist..add(value),
+                                          ),
+                                        );
+                                      }
                                     } on ClientException {
                                       throw const ActionControllerException(
-                                          message:
-                                              'Failed to update blacklist!');
+                                        message: 'Failed to update blacklist!',
+                                      );
                                     }
                                   },
                                 ),

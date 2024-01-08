@@ -565,8 +565,9 @@ class Client {
   }) async {
     Traits previous = this.traits.value;
     try {
-      this.traits.value = traits;
       if (!listEquals(traits.denylist, this.traits.value.denylist)) {
+        this.traits.value = traits;
+
         Map<String, dynamic> body = {
           'user[blacklisted_tags]': traits.denylist.join('\n'),
         };

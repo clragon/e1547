@@ -23,9 +23,13 @@ class DenyListEditor extends StatelessWidget {
         List<String> tags = value.split('\n');
         tags = tags.trim();
         tags.removeWhere((tag) => tag.isEmpty);
-        client.traits.value = client.traits.value.copyWith(
-          denylist: tags,
-        );
+        try {
+          await client.updateTraits(
+            traits: client.traits.value.copyWith(denylist: tags),
+          );
+        } on ClientException {
+          return 'Failed to update blacklist!';
+        }
         if (context.mounted) {
           Navigator.of(context).maybePop();
         }
