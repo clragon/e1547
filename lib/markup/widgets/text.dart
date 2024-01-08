@@ -206,7 +206,10 @@ class DTextBody extends StatelessWidget {
   }) {
     local ??= false;
     VoidCallback action = () => launch(link);
-    if (local) {
+    Uri uri = Uri.parse(link);
+    // TODO: this should not be hardcoded
+    bool home = ['e621.net', 'e926.net'].contains(uri.host);
+    if (local || home) {
       VoidCallback? linkAction =
           const E621LinkParser().parseOnTap(context, link);
       if (linkAction != null) {

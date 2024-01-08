@@ -104,8 +104,6 @@ abstract class BranchLinkParser extends LinkParser {
   }
 }
 
-// some day we'll just switch to a navigator with urls
-// and the client interface will just have a single route to route map function.
 class E621LinkParser extends BranchLinkParser {
   const E621LinkParser();
 
