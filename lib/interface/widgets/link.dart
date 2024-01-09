@@ -35,6 +35,7 @@ class LinkPreviewProviderState extends State<LinkPreviewProvider> {
       builder: (context) => LinkOverlay(notifier: _linkNotifier),
     );
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
       Overlay.of(context).insert(overlayEntry);
     });
   }
