@@ -5,8 +5,31 @@ class DTextGrammar extends GrammarDefinition<List<DTextElement>> {
   @override
   Parser<List<DTextElement>> start() => body().end();
 
-  Parser<List<DTextElement>> body([Parser? limit]) =>
-      ref2(withText, ref1(element, limit), limit);
+  Parser<List<DTextElement>> body([Parser? limit]) => ref1(
+        trimmed,
+        ref2(
+          withText,
+          [
+            ref0(blocks),
+            ref1(textElement, limit),
+          ].toChoiceParser(),
+          limit,
+        ),
+      );
+
+  Parser<List<DTextElement>> trimmed(Parser<List<DTextElement>> parser) {
+    return parser.map((l) {
+      if (l.first is DTextContent) {
+        final first = l.first as DTextContent;
+        l[0] = DTextContent(first.content.trimLeft());
+      }
+      if (l.last is DTextContent) {
+        final last = l.last as DTextContent;
+        l[l.length - 1] = DTextContent(last.content.trimRight());
+      }
+      return l;
+    });
+  }
 
   Parser<List<DTextElement>> withText([
     Parser<DTextElement>? other,
@@ -29,11 +52,6 @@ class DTextGrammar extends GrammarDefinition<List<DTextElement>> {
               return [...l, current];
             }
           }).toList());
-
-  Parser<DTextElement> element([Parser? limit]) => [
-        ref0(blocks),
-        ref1(textElement, limit),
-      ].toChoiceParser();
 
   Parser<DTextElement> blocks() => [
         ref0(quote),
