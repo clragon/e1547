@@ -27,7 +27,7 @@ mixin _$Comment {
   DateTime get updatedAt => throw _privateConstructorUsedError;
   int get creatorId => throw _privateConstructorUsedError;
   String get creatorName => throw _privateConstructorUsedError;
-  CommentVote? get vote => throw _privateConstructorUsedError;
+  VoteInfo? get vote => throw _privateConstructorUsedError;
   CommentWarning? get warning => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -48,10 +48,9 @@ abstract class $CommentCopyWith<$Res> {
       DateTime updatedAt,
       int creatorId,
       String creatorName,
-      CommentVote? vote,
+      VoteInfo? vote,
       CommentWarning? warning});
 
-  $CommentVoteCopyWith<$Res>? get vote;
   $CommentWarningCopyWith<$Res>? get warning;
 }
 
@@ -110,24 +109,12 @@ class _$CommentCopyWithImpl<$Res, $Val extends Comment>
       vote: freezed == vote
           ? _value.vote
           : vote // ignore: cast_nullable_to_non_nullable
-              as CommentVote?,
+              as VoteInfo?,
       warning: freezed == warning
           ? _value.warning
           : warning // ignore: cast_nullable_to_non_nullable
               as CommentWarning?,
     ) as $Val);
-  }
-
-  @override
-  @pragma('vm:prefer-inline')
-  $CommentVoteCopyWith<$Res>? get vote {
-    if (_value.vote == null) {
-      return null;
-    }
-
-    return $CommentVoteCopyWith<$Res>(_value.vote!, (value) {
-      return _then(_value.copyWith(vote: value) as $Val);
-    });
   }
 
   @override
@@ -158,11 +145,9 @@ abstract class _$$CommentImplCopyWith<$Res> implements $CommentCopyWith<$Res> {
       DateTime updatedAt,
       int creatorId,
       String creatorName,
-      CommentVote? vote,
+      VoteInfo? vote,
       CommentWarning? warning});
 
-  @override
-  $CommentVoteCopyWith<$Res>? get vote;
   @override
   $CommentWarningCopyWith<$Res>? get warning;
 }
@@ -220,7 +205,7 @@ class __$$CommentImplCopyWithImpl<$Res>
       vote: freezed == vote
           ? _value.vote
           : vote // ignore: cast_nullable_to_non_nullable
-              as CommentVote?,
+              as VoteInfo?,
       warning: freezed == warning
           ? _value.warning
           : warning // ignore: cast_nullable_to_non_nullable
@@ -261,7 +246,7 @@ class _$CommentImpl implements _Comment {
   @override
   final String creatorName;
   @override
-  final CommentVote? vote;
+  final VoteInfo? vote;
   @override
   final CommentWarning? warning;
 
@@ -318,7 +303,7 @@ abstract class _Comment implements Comment {
       required final DateTime updatedAt,
       required final int creatorId,
       required final String creatorName,
-      required final CommentVote? vote,
+      required final VoteInfo? vote,
       required final CommentWarning? warning}) = _$CommentImpl;
 
   factory _Comment.fromJson(Map<String, dynamic> json) = _$CommentImpl.fromJson;
@@ -338,181 +323,12 @@ abstract class _Comment implements Comment {
   @override
   String get creatorName;
   @override
-  CommentVote? get vote;
+  VoteInfo? get vote;
   @override
   CommentWarning? get warning;
   @override
   @JsonKey(ignore: true)
   _$$CommentImplCopyWith<_$CommentImpl> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
-CommentVote _$CommentVoteFromJson(Map<String, dynamic> json) {
-  return _CommentVote.fromJson(json);
-}
-
-/// @nodoc
-mixin _$CommentVote {
-  int get score => throw _privateConstructorUsedError;
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  VoteStatus get status => throw _privateConstructorUsedError;
-
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
-  $CommentVoteCopyWith<CommentVote> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class $CommentVoteCopyWith<$Res> {
-  factory $CommentVoteCopyWith(
-          CommentVote value, $Res Function(CommentVote) then) =
-      _$CommentVoteCopyWithImpl<$Res, CommentVote>;
-  @useResult
-  $Res call(
-      {int score,
-      @JsonKey(includeFromJson: false, includeToJson: false)
-      VoteStatus status});
-}
-
-/// @nodoc
-class _$CommentVoteCopyWithImpl<$Res, $Val extends CommentVote>
-    implements $CommentVoteCopyWith<$Res> {
-  _$CommentVoteCopyWithImpl(this._value, this._then);
-
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
-
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? score = null,
-    Object? status = null,
-  }) {
-    return _then(_value.copyWith(
-      score: null == score
-          ? _value.score
-          : score // ignore: cast_nullable_to_non_nullable
-              as int,
-      status: null == status
-          ? _value.status
-          : status // ignore: cast_nullable_to_non_nullable
-              as VoteStatus,
-    ) as $Val);
-  }
-}
-
-/// @nodoc
-abstract class _$$CommentVoteImplCopyWith<$Res>
-    implements $CommentVoteCopyWith<$Res> {
-  factory _$$CommentVoteImplCopyWith(
-          _$CommentVoteImpl value, $Res Function(_$CommentVoteImpl) then) =
-      __$$CommentVoteImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call(
-      {int score,
-      @JsonKey(includeFromJson: false, includeToJson: false)
-      VoteStatus status});
-}
-
-/// @nodoc
-class __$$CommentVoteImplCopyWithImpl<$Res>
-    extends _$CommentVoteCopyWithImpl<$Res, _$CommentVoteImpl>
-    implements _$$CommentVoteImplCopyWith<$Res> {
-  __$$CommentVoteImplCopyWithImpl(
-      _$CommentVoteImpl _value, $Res Function(_$CommentVoteImpl) _then)
-      : super(_value, _then);
-
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? score = null,
-    Object? status = null,
-  }) {
-    return _then(_$CommentVoteImpl(
-      score: null == score
-          ? _value.score
-          : score // ignore: cast_nullable_to_non_nullable
-              as int,
-      status: null == status
-          ? _value.status
-          : status // ignore: cast_nullable_to_non_nullable
-              as VoteStatus,
-    ));
-  }
-}
-
-/// @nodoc
-@JsonSerializable()
-class _$CommentVoteImpl extends _CommentVote {
-  const _$CommentVoteImpl(
-      {required this.score,
-      @JsonKey(includeFromJson: false, includeToJson: false)
-      this.status = VoteStatus.unknown})
-      : super._();
-
-  factory _$CommentVoteImpl.fromJson(Map<String, dynamic> json) =>
-      _$$CommentVoteImplFromJson(json);
-
-  @override
-  final int score;
-  @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  final VoteStatus status;
-
-  @override
-  String toString() {
-    return 'CommentVote(score: $score, status: $status)';
-  }
-
-  @override
-  bool operator ==(dynamic other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$CommentVoteImpl &&
-            (identical(other.score, score) || other.score == score) &&
-            (identical(other.status, status) || other.status == status));
-  }
-
-  @JsonKey(ignore: true)
-  @override
-  int get hashCode => Object.hash(runtimeType, score, status);
-
-  @JsonKey(ignore: true)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$CommentVoteImplCopyWith<_$CommentVoteImpl> get copyWith =>
-      __$$CommentVoteImplCopyWithImpl<_$CommentVoteImpl>(this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$CommentVoteImplToJson(
-      this,
-    );
-  }
-}
-
-abstract class _CommentVote extends CommentVote {
-  const factory _CommentVote(
-      {required final int score,
-      @JsonKey(includeFromJson: false, includeToJson: false)
-      final VoteStatus status}) = _$CommentVoteImpl;
-  const _CommentVote._() : super._();
-
-  factory _CommentVote.fromJson(Map<String, dynamic> json) =
-      _$CommentVoteImpl.fromJson;
-
-  @override
-  int get score;
-  @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  VoteStatus get status;
-  @override
-  @JsonKey(ignore: true)
-  _$$CommentVoteImplCopyWith<_$CommentVoteImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 

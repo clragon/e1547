@@ -15,7 +15,9 @@ _$CommentImpl _$$CommentImplFromJson(Map<String, dynamic> json) =>
       updatedAt: DateTime.parse(json['updated_at'] as String),
       creatorId: json['creator_id'] as int,
       creatorName: json['creator_name'] as String,
-      vote: json['vote'] == null ? null : CommentVote.fromJson(json['vote']),
+      vote: json['vote'] == null
+          ? null
+          : VoteInfo.fromJson(json['vote'] as Map<String, dynamic>),
       warning: json['warning'] == null
           ? null
           : CommentWarning.fromJson(json['warning']),
@@ -32,16 +34,6 @@ Map<String, dynamic> _$$CommentImplToJson(_$CommentImpl instance) =>
       'creator_name': instance.creatorName,
       'vote': instance.vote,
       'warning': instance.warning,
-    };
-
-_$CommentVoteImpl _$$CommentVoteImplFromJson(Map<String, dynamic> json) =>
-    _$CommentVoteImpl(
-      score: json['score'] as int,
-    );
-
-Map<String, dynamic> _$$CommentVoteImplToJson(_$CommentVoteImpl instance) =>
-    <String, dynamic>{
-      'score': instance.score,
     };
 
 _$CommentWarningImpl _$$CommentWarningImplFromJson(Map<String, dynamic> json) =>

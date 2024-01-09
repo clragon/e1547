@@ -15,59 +15,11 @@ class Comment with _$Comment {
     required DateTime updatedAt,
     required int creatorId,
     required String creatorName,
-    required CommentVote? vote,
+    required VoteInfo? vote,
     required CommentWarning? warning,
   }) = _Comment;
 
   factory Comment.fromJson(dynamic json) => _$CommentFromJson(json);
-}
-
-@freezed
-class CommentVote with _$CommentVote {
-  const factory CommentVote({
-    required int score,
-    @JsonKey(includeFromJson: false, includeToJson: false)
-    @Default(VoteStatus.unknown)
-    VoteStatus status,
-  }) = _CommentVote;
-
-  factory CommentVote.fromJson(dynamic json) => _$CommentVoteFromJson(json);
-
-  const CommentVote._();
-
-  CommentVote withVote(VoteStatus status, [bool replace = false]) {
-    switch (status) {
-      case VoteStatus.upvoted:
-        switch (this.status) {
-          case VoteStatus.upvoted:
-            if (replace) return this;
-            return copyWith(score: score - 1, status: VoteStatus.unknown);
-          case VoteStatus.downvoted:
-            return copyWith(score: score - 2, status: status);
-          case VoteStatus.unknown:
-            return copyWith(score: score - 1, status: status);
-        }
-      case VoteStatus.downvoted:
-        switch (this.status) {
-          case VoteStatus.upvoted:
-            return copyWith(score: score + 2, status: status);
-          case VoteStatus.downvoted:
-            if (replace) return this;
-            return copyWith(score: score + 1, status: VoteStatus.unknown);
-          case VoteStatus.unknown:
-            return copyWith(score: score + 1, status: status);
-        }
-      case VoteStatus.unknown:
-        switch (this.status) {
-          case VoteStatus.upvoted:
-            return copyWith(score: score - 1, status: status);
-          case VoteStatus.downvoted:
-            return copyWith(score: score + 1, status: status);
-          case VoteStatus.unknown:
-            return this;
-        }
-    }
-  }
 }
 
 @freezed
@@ -108,7 +60,7 @@ extension E621Comment on Comment {
           updatedAt: pick('updated_at').asDateTimeOrThrow(),
           creatorId: pick('creator_id').asIntOrThrow(),
           creatorName: pick('creator_name').asStringOrThrow(),
-          vote: CommentVote(
+          vote: VoteInfo(
             score: pick('score').asIntOrThrow(),
           ),
           warning: CommentWarning(
