@@ -1,5 +1,4 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:collection/collection.dart';
 import 'package:e1547/app/app.dart';
 import 'package:e1547/history/history.dart';
 import 'package:e1547/interface/interface.dart';
@@ -139,67 +138,26 @@ class PoolNameFilter extends StatelessWidget {
         suggestionsCallback: (value) async {
           HistoriesService service = context.read<HistoriesService>();
           value = value.trim();
-          List<_PoolSearchResult?> entries = [];
-          entries.addAll(
-            (await service
-                    .all(
-                      linkRegex: r'/pools' +
-                          RegExp.escape(Uri(queryParameters: {
-                            r'search[name_matches]': '',
-                          }).toString()) +
-                          r'=' +
-                          queryDivider +
-                          r'*' +
-                          RegExp.escape(Uri.encodeQueryComponent(value)) +
-                          queryDivider +
-                          r'*',
-                    )
-                    .first)
-                .map((e) {
-              String? name = const E621LinkParser()
-                  .parse(e.link)
-                  ?.query?['search[name_matches]'];
-              if (name != null) {
-                return _PoolSearchResult(time: e.visitedAt, name: name);
-              }
-              return null;
-            }).take(4),
-          );
-          entries.addAll((await service
+
+          return (await service
                   .all(
                     linkRegex: r'/pools/.*',
                     titleRegex: r'.*' +
                         RegExp.escape(value.replaceAll(' ', '_')) +
                         r'.*',
+                    limit: 4,
                   )
                   .first)
-              .map((e) {
-            String? name = e.title;
-            if (name != null) {
-              return _PoolSearchResult(
-                time: e.visitedAt,
-                name: name.replaceAll('_', ' '),
-                thumbnail: e.thumbnails.isNotEmpty ? e.thumbnails.first : null,
-                link: e.link,
-              );
-            }
-            return null;
-          }).take(4));
-          Map<String, _PoolSearchResult> results = {};
-          for (final result
-              in entries.whereNotNull().cast<_PoolSearchResult>()) {
-            _PoolSearchResult? old = results[result.name];
-            if (old == null) {
-              results[result.name] = result;
-            } else if (old.link == null && result.link != null) {
-              results[result.name] = result;
-            } else if (result.link != null && old.time.isBefore(result.time)) {
-              results[result.name] = result;
-            }
-          }
-          return results.values
-              .sorted((a, b) => b.time.compareTo(a.time))
-              .take(4)
+              .where((e) => e.title != null)
+              .map(
+                (e) => _PoolSearchResult(
+                  time: e.visitedAt,
+                  name: e.title!.replaceAll('_', ' '),
+                  thumbnail:
+                      e.thumbnails.isNotEmpty ? e.thumbnails.first : null,
+                  link: e.link,
+                ),
+              )
               .toList();
         },
         itemBuilder: (context, value) => ListTile(
