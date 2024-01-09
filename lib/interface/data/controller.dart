@@ -97,6 +97,7 @@ abstract class DataController<KeyType, ItemType> with ChangeNotifier {
       _fetching = true;
       _error = null;
       onPreRequest(force, reset, background);
+      await Future.value();
       notifyListeners();
       KeyType? key = nextPageKey;
       if (reset) key = firstPageKey;
