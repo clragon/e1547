@@ -50,13 +50,13 @@ class WrapperFilterConfig extends BuilderFilterConfig {
   }) : super(
           builder: (context, state) {
             QueryMap wrap(QueryMap tags) {
-              return QueryMap.fromIterable(
+              return QueryMap.fromEntries(
                 tags.entries.map((e) => MapEntry(wrapper(e.key), e.value)),
               );
             }
 
             QueryMap unwrap(QueryMap tags) {
-              return QueryMap.fromIterable(
+              return QueryMap.fromEntries(
                 tags.entries.map((e) => MapEntry(unwrapper(e.key), e.value)),
               );
             }
