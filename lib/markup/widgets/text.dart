@@ -10,7 +10,7 @@ import 'package:username_generator/username_generator.dart';
 
 class DText extends StatefulWidget {
   const DText(
-    this.data, {
+    this.value, {
     super.key,
     this.style,
     this.maxLines,
@@ -22,7 +22,7 @@ class DText extends StatefulWidget {
   final TextStyle? style;
   final int? maxLines;
   final TextOverflow overflow;
-  final String data;
+  final String value;
   final TextAlign textAlign;
   final bool softWrap;
 
@@ -36,7 +36,7 @@ class _DTextState extends State<DText> {
 
   void _runParse() {
     try {
-      elements = DTextGrammar().build().parse(widget.data).value;
+      elements = DTextGrammar().build().parse(widget.value).value;
     } on ParserException catch (e) {
       error = e;
     }
@@ -51,7 +51,7 @@ class _DTextState extends State<DText> {
   @override
   void didUpdateWidget(covariant DText oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.data != widget.data) {
+    if (oldWidget.value != widget.value) {
       _runParse();
     }
   }

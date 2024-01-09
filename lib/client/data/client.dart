@@ -39,6 +39,7 @@ class Client {
         connectTimeout: const Duration(seconds: 30),
       ),
     );
+    _dio.interceptors.add(NewlineReplaceInterceptor());
     _dio.interceptors.add(LoggingDioInterceptor());
     if (cache != null) {
       _dio.interceptors.add(
