@@ -89,43 +89,50 @@ extension PostDenying on Post {
     List<String> deniers = [];
 
     for (String line in denylist) {
-      List<String> deny = [];
-      List<String> any = [];
-      List<String> allow = [];
+      bool pass = true;
+      bool isOptional = false;
+      bool hasOptional = false;
 
-      for (final tag in line.split(' ')) {
+      for (String tag in line.split(' ')) {
         if (tagToRaw(tag).isEmpty) continue;
 
-        switch (tag[0]) {
-          case '-':
-            allow.add(tag.substring(1));
+        bool optional = false;
+        bool inverted = false;
+
+        if (tag[0] == '~') {
+          optional = true;
+          tag = tag.substring(1);
+        }
+
+        if (tag[0] == '-') {
+          inverted = true;
+          tag = tag.substring(1);
+        }
+
+        bool matches = hasTag(tag);
+
+        if (inverted) {
+          matches = !matches;
+        }
+
+        if (optional) {
+          isOptional = true;
+          if (matches) {
+            hasOptional = true;
+          }
+        } else {
+          if (!matches) {
+            pass = false;
             break;
-          case '~':
-            any.add(tag.substring(1));
-            break;
-          default:
-            deny.add(tag);
-            break;
+          }
         }
       }
 
-      bool denying = deny.isNotEmpty || any.isNotEmpty;
-
-      bool deniedAll = deny.isNotEmpty && deny.every(hasTag);
-      bool deniedAny = any.any(hasTag);
-
-      bool denied = deniedAll || deniedAny;
-
-      bool allowing = allow.isNotEmpty;
-      bool allowed = allow.isEmpty || allow.any(hasTag);
-
-      if (denying) {
-        if ((!denied || (allowing && allowed))) {
-          continue;
-        }
-      } else if (!allowing || allowed) {
-        continue;
+      if (pass && isOptional) {
+        pass = hasOptional;
       }
+
+      if (!pass) continue;
 
       deniers.add(line);
     }
