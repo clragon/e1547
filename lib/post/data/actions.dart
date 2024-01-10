@@ -15,21 +15,12 @@ extension PostTagging on Post {
       String value = tag.split(':')[1];
       switch (identifier) {
         case 'id':
-          if (id == int.tryParse(value)) {
-            return true;
-          }
-          break;
+          return id == int.tryParse(value);
         case 'rating':
-          if (rating == Rating.values.asNameMap()[value] ||
-              value == rating.title.toLowerCase()) {
-            return true;
-          }
-          break;
+          return rating == Rating.values.asNameMap()[value] ||
+              value == rating.title.toLowerCase();
         case 'type':
-          if (file.ext.toLowerCase() == value.toLowerCase()) {
-            return true;
-          }
-          break;
+          return file.ext.toLowerCase() == value.toLowerCase();
         case 'width':
           NumberRange? range = NumberRange.tryParse(value);
           if (range == null) return false;
@@ -64,10 +55,7 @@ extension PostTagging on Post {
           // This cannot be implemented, as it requires a user lookup
           return false;
         case 'pool':
-          if (pools.contains(int.tryParse(value))) {
-            return true;
-          }
-          break;
+          return pools.contains(int.tryParse(value));
         case 'tagcount':
           NumberRange? range = NumberRange.tryParse(value);
           if (range == null) return false;
