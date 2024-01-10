@@ -109,11 +109,21 @@ extension PostDenying on Post {
         }
       }
 
-      bool denied = deny.isNotEmpty && deny.every(hasTag);
+      bool denying = deny.isNotEmpty || any.isNotEmpty;
+
+      bool deniedAll = deny.isNotEmpty && deny.every(hasTag);
       bool deniedAny = any.any(hasTag);
+
+      bool denied = deniedAll || deniedAny;
+
+      bool allowing = allow.isNotEmpty;
       bool allowed = allow.isEmpty || allow.any(hasTag);
 
-      if (!denied && !deniedAny && allowed) {
+      if (denying) {
+        if ((!denied || (allowing && allowed))) {
+          continue;
+        }
+      } else if (!allowing || allowed) {
         continue;
       }
 
