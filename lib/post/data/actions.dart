@@ -8,18 +8,20 @@ import 'package:flutter/material.dart';
 
 extension PostTagging on Post {
   bool hasTag(String tag) {
+    if (tag.trim().isEmpty) return false;
+
     if (tag.contains(':')) {
       String identifier = tag.split(':')[0];
       String value = tag.split(':')[1];
       switch (identifier) {
-        case 'rating':
-          if (rating == Rating.values.asNameMap()[value] ||
-              value == rating.title.toLowerCase()) {
+        case 'id':
+          if (id == int.tryParse(value)) {
             return true;
           }
           break;
-        case 'id':
-          if (id == int.tryParse(value)) {
+        case 'rating':
+          if (rating == Rating.values.asNameMap()[value] ||
+              value == rating.title.toLowerCase()) {
             return true;
           }
           break;
@@ -28,22 +30,51 @@ extension PostTagging on Post {
             return true;
           }
           break;
+        case 'width':
+          NumberRange? range = NumberRange.tryParse(value);
+          if (range == null) return false;
+          return range.has(file.width);
+        case 'height':
+          NumberRange? range = NumberRange.tryParse(value);
+          if (range == null) return false;
+          return range.has(file.height);
+        case 'filesize':
+          NumberRange? range = NumberRange.tryParse(value);
+          if (range == null) return false;
+          return range.has(file.size);
+        case 'score':
+          NumberRange? range = NumberRange.tryParse(value);
+          if (range == null) return false;
+          return range.has(score.total);
+        case 'favcount':
+          NumberRange? range = NumberRange.tryParse(value);
+          if (range == null) return false;
+          return range.has(favCount);
+        case 'fav':
+          return isFavorited;
+        case 'uploader':
+        case 'user':
+          // This cannot be implemented, as it requires a user lookup
+          return false;
+        case 'userid':
+          NumberRange? range = NumberRange.tryParse(value);
+          if (range == null) return false;
+          return range.has(uploaderId);
+        case 'username':
+          // This cannot be implemented, as it requires a user lookup
+          return false;
         case 'pool':
           if (pools.contains(int.tryParse(value))) {
             return true;
           }
           break;
-        case 'uploader':
-        case 'userid':
-        case 'user':
-          if (uploaderId.toString() == value) {
-            return true;
-          }
-          break;
-        case 'score':
+        case 'tagcount':
           NumberRange? range = NumberRange.tryParse(value);
           if (range == null) return false;
-          return range.has(score.total);
+          return range.has(tags.values.fold<int>(
+            0,
+            (previousValue, element) => previousValue + element.length,
+          ));
       }
     }
 
@@ -78,14 +109,13 @@ extension PostDenying on Post {
         }
       }
 
-      bool denied = deny.every(hasTag);
-      if (!denied) continue;
+      bool denied = deny.isNotEmpty && deny.every(hasTag);
+      bool deniedAny = any.any(hasTag);
+      bool allowed = allow.isEmpty || allow.any(hasTag);
 
-      bool allowed = allow.any(hasTag);
-      if (allowed) continue;
-
-      bool optional = any.isEmpty || any.any(hasTag);
-      if (!optional) continue;
+      if (!denied && !deniedAny && allowed) {
+        continue;
+      }
 
       deniers.add(line);
     }

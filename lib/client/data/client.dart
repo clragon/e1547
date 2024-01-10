@@ -554,7 +554,7 @@ class Client {
     Account result = E621Account.fromJson(body);
 
     traits.value = traits.value.copyWith(
-      denylist: result.blacklistedTags?.split('\n') ?? [],
+      denylist: result.blacklistedTags?.split('\n').trim() ?? [],
     );
 
     return result;
