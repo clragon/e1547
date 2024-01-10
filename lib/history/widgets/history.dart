@@ -85,15 +85,18 @@ class HistoriesPage extends StatelessWidget {
             endDrawer: ContextDrawer(
               title: const Text('History'),
               children: [
-                SubStream<int>(
-                  create: () => controller.service.length(),
-                  keys: [controller.service],
-                  builder: (context, snapshot) => SwitchListTile(
-                    title: const Text('Enabled'),
-                    subtitle: Text('${snapshot.data ?? 0} pages visited'),
-                    secondary: const Icon(Icons.history),
-                    value: controller.service.enabled,
-                    onChanged: (value) => controller.service.enabled = value,
+                AnimatedBuilder(
+                  animation: controller.service,
+                  builder: (context, child) => SubStream<int>(
+                    create: () => controller.service.length(),
+                    keys: [controller.service],
+                    builder: (context, snapshot) => SwitchListTile(
+                      title: const Text('Enabled'),
+                      subtitle: Text('${snapshot.data ?? 0} pages visited'),
+                      secondary: const Icon(Icons.history),
+                      value: controller.service.enabled,
+                      onChanged: (value) => controller.service.enabled = value,
+                    ),
                   ),
                 ),
                 AnimatedBuilder(
