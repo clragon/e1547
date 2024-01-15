@@ -19,11 +19,11 @@ class DTextGrammar extends GrammarDefinition<List<DTextElement>> {
 
   Parser<List<DTextElement>> trimmed(Parser<List<DTextElement>> parser) {
     return parser.map((l) {
-      if (l.first is DTextContent) {
+      if (l.firstOrNull is DTextContent) {
         final first = l.first as DTextContent;
         l[0] = DTextContent(first.content.trimLeft());
       }
-      if (l.last is DTextContent) {
+      if (l.lastOrNull is DTextContent) {
         final last = l.last as DTextContent;
         l[l.length - 1] = DTextContent(last.content.trimRight());
       }
