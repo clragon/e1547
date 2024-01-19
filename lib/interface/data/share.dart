@@ -1,8 +1,10 @@
-import 'dart:convert';
 import 'dart:io';
 
+import 'package:e1547/logs/logs.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:path/path.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart' as plus;
 
 abstract final class Share {
@@ -20,13 +22,14 @@ abstract final class Share {
     String? name,
   }) async {
     if (Platform.isAndroid || Platform.isIOS) {
-      plus.XFile file = plus.XFile.fromData(
-        Uint8List.fromList(utf8.encode(text)),
-        name: name,
-        mimeType: 'text/plain',
-        path: name,
+      File file = File(
+        join(
+          await getTemporaryDirectory().then((e) => e.path),
+          name ?? '${logFileDateFormat.format(DateTime.now())}.txt',
+        ),
       );
-      await plus.Share.shareXFiles([file]);
+      await file.writeAsString(text);
+      await plus.Share.shareXFiles([plus.XFile(file.path)]);
     } else {
       return clipboard(context, text);
     }
