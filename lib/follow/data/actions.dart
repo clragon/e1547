@@ -28,9 +28,11 @@ extension Updating on Follow {
     Follow updated = this;
     updated = updated.withTitle(tagToName(pool.name));
     if (pool.activity?.isActive case final isActive?) {
-      updated = updated.copyWith(
-        type: isActive ? FollowType.notify : FollowType.bookmark,
-      );
+      if (!isActive) {
+        updated = updated.copyWith(
+          type: FollowType.bookmark,
+        );
+      }
     }
     return updated;
   }
