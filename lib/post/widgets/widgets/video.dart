@@ -506,7 +506,7 @@ class PostVideoWidget extends StatelessWidget {
         bool initialized = snapshot.data ?? player.isInitialized;
         if (!initialized) return placeholder();
         return AspectRatio(
-          aspectRatio: post.file.width / post.file.height,
+          aspectRatio: post.width / post.height,
           child: Video(
             controller: player.controller,
             fill: Colors.transparent,

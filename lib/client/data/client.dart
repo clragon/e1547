@@ -152,10 +152,10 @@ class Client {
         .then((response) => response.data);
 
     List<Post> posts =
-        List<Post>.from(body['posts'].map((e) => Post.fromJson(e)));
+        List<Post>.from(body['posts'].map((e) => E621Post.fromJson(e)));
 
     posts.removeWhere(
-      (e) => (e.file.url == null && !e.flags.deleted) || e.file.ext == 'swf',
+      (e) => (e.file == null && !e.isDeleted) || e.ext == 'swf',
     );
 
     return posts;
@@ -266,7 +266,7 @@ class Client {
         )
         .then((response) => response.data);
 
-    return Post.fromJson(body['post']);
+    return E621Post.fromJson(body['post']);
   }
 
   Future<void> updatePost(int postId, Map<String, String?> body) async {
@@ -339,8 +339,8 @@ class Client {
           )
           .then((response) => response.data);
 
-      List<Post> result = List.from(body['posts'].map(Post.fromJson));
-      result.removeWhere((e) => e.flags.deleted || e.file.url == null);
+      List<Post> result = List.from(body['posts'].map(E621Post.fromJson));
+      result.removeWhere((e) => e.isDeleted || e.file == null);
       return result;
     } else {
       return posts(

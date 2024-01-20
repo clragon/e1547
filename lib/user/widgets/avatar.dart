@@ -62,7 +62,7 @@ class AccountAvatarProvider
                     context.read<AccountAvatarController>();
                 await controller.waitForNextPage();
                 Post? avatar = controller.items?.firstOrNull;
-                if (avatar?.sample.url != null && context.mounted) {
+                if (avatar?.sample != null && context.mounted) {
                   await preloadPostImage(
                     context: context,
                     post: avatar!,
@@ -157,7 +157,7 @@ class Avatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (post?.sample.url != null) {
+    if (post?.sample != null) {
       return MouseCursorRegion(
         onTap: onTap,
         child: PostTileOverlay(
@@ -168,7 +168,7 @@ class Avatar extends StatelessWidget {
             width: radius * 2,
             height: radius * 2,
             child: CachedNetworkImage(
-              imageUrl: post!.sample.url!,
+              imageUrl: post!.sample!,
               fit: BoxFit.cover,
               cacheManager: context.read<BaseCacheManager>(),
               placeholder: (context, url) => const EmptyAvatar(),

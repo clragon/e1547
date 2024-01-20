@@ -14,18 +14,11 @@ Future<void> preloadPostImage({
   required Post post,
   required PostImageSize size,
 }) async {
-  String? url;
-  switch (size) {
-    case PostImageSize.preview:
-      url = post.preview.url;
-      break;
-    case PostImageSize.sample:
-      url = post.sample.url;
-      break;
-    case PostImageSize.file:
-      url = post.file.url;
-      break;
-  }
+  String? url = switch (size) {
+    PostImageSize.preview => post.preview,
+    PostImageSize.sample => post.sample,
+    PostImageSize.file => post.file
+  };
   if (post.type != PostType.image) return;
   if (url != null) {
     context.read<BaseCacheManager>().downloadFile(url);
@@ -43,7 +36,7 @@ Future<void> preloadPostImages({
     int target = index + 1 + i;
     if (0 < target && target < posts.length) {
       Post post = posts[target];
-      if (post.type == PostType.image && post.file.url != null) {
+      if (post.type == PostType.image && post.file != null) {
         if (!context.mounted) return;
         await preloadPostImage(context: context, post: post, size: size);
       }

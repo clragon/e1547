@@ -17,7 +17,7 @@ List<PopupMenuItem<VoidCallback>> postMenuPostActions(
       title: 'Share',
       icon: Icons.share,
     ),
-    if (post.file.url != null)
+    if (post.file != null)
       PopupMenuTile(
         value: () => postDownloadingNotification(context, {post}),
         title: 'Download',

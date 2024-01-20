@@ -91,7 +91,7 @@ class HistoriesService extends HistoriesDao with ChangeNotifier {
   List<String> _getThumbnails(List<Post>? posts, {List<String>? denylist}) =>
       posts
           ?.where((e) => denylist == null || !e.isDeniedBy(denylist))
-          .map((e) => e.sample.url)
+          .map((e) => e.sample)
           .where((e) => e != null)
           .cast<String>()
           .take(4)
@@ -211,7 +211,7 @@ class HistoriesService extends HistoriesDao with ChangeNotifier {
         HistoryRequest(
           visitedAt: DateTime.now(),
           link: '/users/${user.name}',
-          thumbnails: [if (avatar?.sample.url != null) avatar!.sample.url!],
+          thumbnails: [if (avatar?.sample != null) avatar!.sample!],
         ),
       );
 

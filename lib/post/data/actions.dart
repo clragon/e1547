@@ -20,23 +20,23 @@ extension PostTagging on Post {
           return rating == Rating.values.asNameMap()[value] ||
               value == rating.title.toLowerCase();
         case 'type':
-          return file.ext.toLowerCase() == value.toLowerCase();
+          return ext.toLowerCase() == value.toLowerCase();
         case 'width':
           NumberRange? range = NumberRange.tryParse(value);
           if (range == null) return false;
-          return range.has(file.width);
+          return range.has(width);
         case 'height':
           NumberRange? range = NumberRange.tryParse(value);
           if (range == null) return false;
-          return range.has(file.height);
+          return range.has(height);
         case 'filesize':
           NumberRange? range = NumberRange.tryParse(value);
           if (range == null) return false;
-          return range.has(file.size);
+          return range.has(size);
         case 'score':
           NumberRange? range = NumberRange.tryParse(value);
           if (range == null) return false;
-          return range.has(score.total);
+          return range.has(vote.score);
         case 'favcount':
           NumberRange? range = NumberRange.tryParse(value);
           if (range == null) return false;
@@ -137,7 +137,7 @@ enum PostType {
 
 extension PostTyping on Post {
   PostType get type {
-    switch (file.ext) {
+    switch (ext) {
       case 'mp4':
       case 'webm':
         if (PlatformCapabilities.hasVideos) {
@@ -154,19 +154,14 @@ extension PostTyping on Post {
 
 extension PostVideoPlaying on Post {
   VideoPlayer? getVideo(BuildContext context, {bool? listen}) {
-    if (type == PostType.video && file.url != null) {
+    if (type == PostType.video && file != null) {
       VideoService service;
       if (listen ?? true) {
         service = context.watch<VideoService>();
       } else {
         service = context.read<VideoService>();
       }
-      return service.getVideo(
-        VideoConfig(
-          url: file.url!,
-          size: file.size,
-        ),
-      );
+      return service.getVideo(file!);
     }
     return null;
   }
@@ -244,65 +239,11 @@ mixin PostsActionController<KeyType> on ClientDataController<KeyType, Post> {
     required bool replace,
   }) async {
     assertOwnsItem(post);
-    if (post.voteStatus == VoteStatus.unknown) {
-      if (upvote) {
-        post = post.copyWith(
-          score: post.score.copyWith(
-            total: post.score.total + 1,
-            up: post.score.up + 1,
-          ),
-          voteStatus: VoteStatus.upvoted,
-        );
-      } else {
-        post = post.copyWith(
-          score: post.score.copyWith(
-            total: post.score.total - 1,
-            down: post.score.down + 1,
-          ),
-          voteStatus: VoteStatus.downvoted,
-        );
-      }
-    } else {
-      if (upvote) {
-        if (post.voteStatus == VoteStatus.upvoted) {
-          post = post.copyWith(
-            score: post.score.copyWith(
-              total: post.score.total - 1,
-              down: post.score.down + 1,
-            ),
-            voteStatus: VoteStatus.unknown,
-          );
-        } else {
-          post = post.copyWith(
-            score: post.score.copyWith(
-              total: post.score.total + 2,
-              up: post.score.up + 1,
-              down: post.score.down - 1,
-            ),
-            voteStatus: VoteStatus.upvoted,
-          );
-        }
-      } else {
-        if (post.voteStatus == VoteStatus.upvoted) {
-          post = post.copyWith(
-            score: post.score.copyWith(
-              total: post.score.total - 2,
-              up: post.score.up - 1,
-              down: post.score.down + 1,
-            ),
-            voteStatus: VoteStatus.downvoted,
-          );
-        } else {
-          post = post.copyWith(
-            score: post.score.copyWith(
-              total: post.score.total + 1,
-              up: post.score.up + 1,
-            ),
-            voteStatus: VoteStatus.unknown,
-          );
-        }
-      }
-    }
+    post = post.copyWith(
+        vote: post.vote.withVote(
+      upvote ? VoteStatus.upvoted : VoteStatus.downvoted,
+      replace,
+    ));
     replacePost(post);
     try {
       await client.votePost(post.id, upvote, replace);

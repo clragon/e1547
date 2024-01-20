@@ -55,9 +55,8 @@ class RatingDisplay extends StatelessWidget {
         ),
         ListTile(
           title: Text(rating.title),
-          leading:
-              !post.flags.ratingLocked ? rating.icon : const Icon(Icons.lock),
-          onTap: canEdit && !post.flags.ratingLocked
+          leading: rating.icon,
+          onTap: canEdit
               ? () => showRatingDialog(
                   context: context,
                   onSelected: (value) {

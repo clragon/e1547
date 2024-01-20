@@ -45,8 +45,8 @@ class PostFullscreen extends StatelessWidget {
                         heroAttributes: PhotoViewHeroAttributes(tag: post.link),
                         backgroundDecoration:
                             const BoxDecoration(color: Colors.transparent),
-                        childSize: Size(post.file.width.toDouble(),
-                            post.file.height.toDouble()),
+                        childSize:
+                            Size(post.width.toDouble(), post.height.toDouble()),
                         initialScale: PhotoViewComputedScale.contained,
                         minScale: PhotoViewComputedScale.contained,
                         maxScale: PhotoViewComputedScale.covered * 6,

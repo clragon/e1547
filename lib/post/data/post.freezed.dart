@@ -21,31 +21,28 @@ Post _$PostFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$Post {
   int get id => throw _privateConstructorUsedError;
+  String? get file => throw _privateConstructorUsedError;
+  String? get sample => throw _privateConstructorUsedError;
+  String? get preview => throw _privateConstructorUsedError;
+  int get width => throw _privateConstructorUsedError;
+  int get height => throw _privateConstructorUsedError;
+  String get ext => throw _privateConstructorUsedError;
+  int get size => throw _privateConstructorUsedError;
+  Map<String, List<String>> get tags => throw _privateConstructorUsedError;
+  int get uploaderId => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
   DateTime? get updatedAt => throw _privateConstructorUsedError;
-  @JsonKey(name: 'file')
-  PostSourceFile get fileRaw => throw _privateConstructorUsedError;
-  PostPreviewFile get preview => throw _privateConstructorUsedError;
-  PostSampleFile get sample => throw _privateConstructorUsedError;
-  Score get score => throw _privateConstructorUsedError;
-  Map<String, List<String>> get tags => throw _privateConstructorUsedError;
-  List<String>? get lockedTags => throw _privateConstructorUsedError;
-  int? get changeSeq => throw _privateConstructorUsedError;
-  Flags get flags => throw _privateConstructorUsedError;
+  VoteInfo get vote => throw _privateConstructorUsedError;
+  bool get isDeleted => throw _privateConstructorUsedError;
   Rating get rating => throw _privateConstructorUsedError;
-  int get favCount => throw _privateConstructorUsedError;
+  int get favCount =>
+      throw _privateConstructorUsedError; // turn into class with bool isFavorited?
+  bool get isFavorited => throw _privateConstructorUsedError;
+  int get commentCount => throw _privateConstructorUsedError;
+  String get description => throw _privateConstructorUsedError;
   List<String> get sources => throw _privateConstructorUsedError;
   List<int> get pools => throw _privateConstructorUsedError;
   Relationships get relationships => throw _privateConstructorUsedError;
-  int? get approverId => throw _privateConstructorUsedError;
-  int get uploaderId => throw _privateConstructorUsedError;
-  String get description => throw _privateConstructorUsedError;
-  int get commentCount => throw _privateConstructorUsedError;
-  bool get isFavorited => throw _privateConstructorUsedError;
-  bool get hasNotes => throw _privateConstructorUsedError;
-  double? get duration => throw _privateConstructorUsedError;
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  VoteStatus get voteStatus => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -59,36 +56,28 @@ abstract class $PostCopyWith<$Res> {
   @useResult
   $Res call(
       {int id,
+      String? file,
+      String? sample,
+      String? preview,
+      int width,
+      int height,
+      String ext,
+      int size,
+      Map<String, List<String>> tags,
+      int uploaderId,
       DateTime createdAt,
       DateTime? updatedAt,
-      @JsonKey(name: 'file') PostSourceFile fileRaw,
-      PostPreviewFile preview,
-      PostSampleFile sample,
-      Score score,
-      Map<String, List<String>> tags,
-      List<String>? lockedTags,
-      int? changeSeq,
-      Flags flags,
+      VoteInfo vote,
+      bool isDeleted,
       Rating rating,
       int favCount,
+      bool isFavorited,
+      int commentCount,
+      String description,
       List<String> sources,
       List<int> pools,
-      Relationships relationships,
-      int? approverId,
-      int uploaderId,
-      String description,
-      int commentCount,
-      bool isFavorited,
-      bool hasNotes,
-      double? duration,
-      @JsonKey(includeFromJson: false, includeToJson: false)
-      VoteStatus voteStatus});
+      Relationships relationships});
 
-  $PostSourceFileCopyWith<$Res> get fileRaw;
-  $PostPreviewFileCopyWith<$Res> get preview;
-  $PostSampleFileCopyWith<$Res> get sample;
-  $ScoreCopyWith<$Res> get score;
-  $FlagsCopyWith<$Res> get flags;
   $RelationshipsCopyWith<$Res> get relationships;
 }
 
@@ -106,34 +95,68 @@ class _$PostCopyWithImpl<$Res, $Val extends Post>
   @override
   $Res call({
     Object? id = null,
+    Object? file = freezed,
+    Object? sample = freezed,
+    Object? preview = freezed,
+    Object? width = null,
+    Object? height = null,
+    Object? ext = null,
+    Object? size = null,
+    Object? tags = null,
+    Object? uploaderId = null,
     Object? createdAt = null,
     Object? updatedAt = freezed,
-    Object? fileRaw = null,
-    Object? preview = null,
-    Object? sample = null,
-    Object? score = null,
-    Object? tags = null,
-    Object? lockedTags = freezed,
-    Object? changeSeq = freezed,
-    Object? flags = null,
+    Object? vote = null,
+    Object? isDeleted = null,
     Object? rating = null,
     Object? favCount = null,
+    Object? isFavorited = null,
+    Object? commentCount = null,
+    Object? description = null,
     Object? sources = null,
     Object? pools = null,
     Object? relationships = null,
-    Object? approverId = freezed,
-    Object? uploaderId = null,
-    Object? description = null,
-    Object? commentCount = null,
-    Object? isFavorited = null,
-    Object? hasNotes = null,
-    Object? duration = freezed,
-    Object? voteStatus = null,
   }) {
     return _then(_value.copyWith(
       id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
+              as int,
+      file: freezed == file
+          ? _value.file
+          : file // ignore: cast_nullable_to_non_nullable
+              as String?,
+      sample: freezed == sample
+          ? _value.sample
+          : sample // ignore: cast_nullable_to_non_nullable
+              as String?,
+      preview: freezed == preview
+          ? _value.preview
+          : preview // ignore: cast_nullable_to_non_nullable
+              as String?,
+      width: null == width
+          ? _value.width
+          : width // ignore: cast_nullable_to_non_nullable
+              as int,
+      height: null == height
+          ? _value.height
+          : height // ignore: cast_nullable_to_non_nullable
+              as int,
+      ext: null == ext
+          ? _value.ext
+          : ext // ignore: cast_nullable_to_non_nullable
+              as String,
+      size: null == size
+          ? _value.size
+          : size // ignore: cast_nullable_to_non_nullable
+              as int,
+      tags: null == tags
+          ? _value.tags
+          : tags // ignore: cast_nullable_to_non_nullable
+              as Map<String, List<String>>,
+      uploaderId: null == uploaderId
+          ? _value.uploaderId
+          : uploaderId // ignore: cast_nullable_to_non_nullable
               as int,
       createdAt: null == createdAt
           ? _value.createdAt
@@ -143,38 +166,14 @@ class _$PostCopyWithImpl<$Res, $Val extends Post>
           ? _value.updatedAt
           : updatedAt // ignore: cast_nullable_to_non_nullable
               as DateTime?,
-      fileRaw: null == fileRaw
-          ? _value.fileRaw
-          : fileRaw // ignore: cast_nullable_to_non_nullable
-              as PostSourceFile,
-      preview: null == preview
-          ? _value.preview
-          : preview // ignore: cast_nullable_to_non_nullable
-              as PostPreviewFile,
-      sample: null == sample
-          ? _value.sample
-          : sample // ignore: cast_nullable_to_non_nullable
-              as PostSampleFile,
-      score: null == score
-          ? _value.score
-          : score // ignore: cast_nullable_to_non_nullable
-              as Score,
-      tags: null == tags
-          ? _value.tags
-          : tags // ignore: cast_nullable_to_non_nullable
-              as Map<String, List<String>>,
-      lockedTags: freezed == lockedTags
-          ? _value.lockedTags
-          : lockedTags // ignore: cast_nullable_to_non_nullable
-              as List<String>?,
-      changeSeq: freezed == changeSeq
-          ? _value.changeSeq
-          : changeSeq // ignore: cast_nullable_to_non_nullable
-              as int?,
-      flags: null == flags
-          ? _value.flags
-          : flags // ignore: cast_nullable_to_non_nullable
-              as Flags,
+      vote: null == vote
+          ? _value.vote
+          : vote // ignore: cast_nullable_to_non_nullable
+              as VoteInfo,
+      isDeleted: null == isDeleted
+          ? _value.isDeleted
+          : isDeleted // ignore: cast_nullable_to_non_nullable
+              as bool,
       rating: null == rating
           ? _value.rating
           : rating // ignore: cast_nullable_to_non_nullable
@@ -183,6 +182,18 @@ class _$PostCopyWithImpl<$Res, $Val extends Post>
           ? _value.favCount
           : favCount // ignore: cast_nullable_to_non_nullable
               as int,
+      isFavorited: null == isFavorited
+          ? _value.isFavorited
+          : isFavorited // ignore: cast_nullable_to_non_nullable
+              as bool,
+      commentCount: null == commentCount
+          ? _value.commentCount
+          : commentCount // ignore: cast_nullable_to_non_nullable
+              as int,
+      description: null == description
+          ? _value.description
+          : description // ignore: cast_nullable_to_non_nullable
+              as String,
       sources: null == sources
           ? _value.sources
           : sources // ignore: cast_nullable_to_non_nullable
@@ -195,79 +206,7 @@ class _$PostCopyWithImpl<$Res, $Val extends Post>
           ? _value.relationships
           : relationships // ignore: cast_nullable_to_non_nullable
               as Relationships,
-      approverId: freezed == approverId
-          ? _value.approverId
-          : approverId // ignore: cast_nullable_to_non_nullable
-              as int?,
-      uploaderId: null == uploaderId
-          ? _value.uploaderId
-          : uploaderId // ignore: cast_nullable_to_non_nullable
-              as int,
-      description: null == description
-          ? _value.description
-          : description // ignore: cast_nullable_to_non_nullable
-              as String,
-      commentCount: null == commentCount
-          ? _value.commentCount
-          : commentCount // ignore: cast_nullable_to_non_nullable
-              as int,
-      isFavorited: null == isFavorited
-          ? _value.isFavorited
-          : isFavorited // ignore: cast_nullable_to_non_nullable
-              as bool,
-      hasNotes: null == hasNotes
-          ? _value.hasNotes
-          : hasNotes // ignore: cast_nullable_to_non_nullable
-              as bool,
-      duration: freezed == duration
-          ? _value.duration
-          : duration // ignore: cast_nullable_to_non_nullable
-              as double?,
-      voteStatus: null == voteStatus
-          ? _value.voteStatus
-          : voteStatus // ignore: cast_nullable_to_non_nullable
-              as VoteStatus,
     ) as $Val);
-  }
-
-  @override
-  @pragma('vm:prefer-inline')
-  $PostSourceFileCopyWith<$Res> get fileRaw {
-    return $PostSourceFileCopyWith<$Res>(_value.fileRaw, (value) {
-      return _then(_value.copyWith(fileRaw: value) as $Val);
-    });
-  }
-
-  @override
-  @pragma('vm:prefer-inline')
-  $PostPreviewFileCopyWith<$Res> get preview {
-    return $PostPreviewFileCopyWith<$Res>(_value.preview, (value) {
-      return _then(_value.copyWith(preview: value) as $Val);
-    });
-  }
-
-  @override
-  @pragma('vm:prefer-inline')
-  $PostSampleFileCopyWith<$Res> get sample {
-    return $PostSampleFileCopyWith<$Res>(_value.sample, (value) {
-      return _then(_value.copyWith(sample: value) as $Val);
-    });
-  }
-
-  @override
-  @pragma('vm:prefer-inline')
-  $ScoreCopyWith<$Res> get score {
-    return $ScoreCopyWith<$Res>(_value.score, (value) {
-      return _then(_value.copyWith(score: value) as $Val);
-    });
-  }
-
-  @override
-  @pragma('vm:prefer-inline')
-  $FlagsCopyWith<$Res> get flags {
-    return $FlagsCopyWith<$Res>(_value.flags, (value) {
-      return _then(_value.copyWith(flags: value) as $Val);
-    });
   }
 
   @override
@@ -288,41 +227,28 @@ abstract class _$$PostImplCopyWith<$Res> implements $PostCopyWith<$Res> {
   @useResult
   $Res call(
       {int id,
+      String? file,
+      String? sample,
+      String? preview,
+      int width,
+      int height,
+      String ext,
+      int size,
+      Map<String, List<String>> tags,
+      int uploaderId,
       DateTime createdAt,
       DateTime? updatedAt,
-      @JsonKey(name: 'file') PostSourceFile fileRaw,
-      PostPreviewFile preview,
-      PostSampleFile sample,
-      Score score,
-      Map<String, List<String>> tags,
-      List<String>? lockedTags,
-      int? changeSeq,
-      Flags flags,
+      VoteInfo vote,
+      bool isDeleted,
       Rating rating,
       int favCount,
+      bool isFavorited,
+      int commentCount,
+      String description,
       List<String> sources,
       List<int> pools,
-      Relationships relationships,
-      int? approverId,
-      int uploaderId,
-      String description,
-      int commentCount,
-      bool isFavorited,
-      bool hasNotes,
-      double? duration,
-      @JsonKey(includeFromJson: false, includeToJson: false)
-      VoteStatus voteStatus});
+      Relationships relationships});
 
-  @override
-  $PostSourceFileCopyWith<$Res> get fileRaw;
-  @override
-  $PostPreviewFileCopyWith<$Res> get preview;
-  @override
-  $PostSampleFileCopyWith<$Res> get sample;
-  @override
-  $ScoreCopyWith<$Res> get score;
-  @override
-  $FlagsCopyWith<$Res> get flags;
   @override
   $RelationshipsCopyWith<$Res> get relationships;
 }
@@ -338,34 +264,68 @@ class __$$PostImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? id = null,
+    Object? file = freezed,
+    Object? sample = freezed,
+    Object? preview = freezed,
+    Object? width = null,
+    Object? height = null,
+    Object? ext = null,
+    Object? size = null,
+    Object? tags = null,
+    Object? uploaderId = null,
     Object? createdAt = null,
     Object? updatedAt = freezed,
-    Object? fileRaw = null,
-    Object? preview = null,
-    Object? sample = null,
-    Object? score = null,
-    Object? tags = null,
-    Object? lockedTags = freezed,
-    Object? changeSeq = freezed,
-    Object? flags = null,
+    Object? vote = null,
+    Object? isDeleted = null,
     Object? rating = null,
     Object? favCount = null,
+    Object? isFavorited = null,
+    Object? commentCount = null,
+    Object? description = null,
     Object? sources = null,
     Object? pools = null,
     Object? relationships = null,
-    Object? approverId = freezed,
-    Object? uploaderId = null,
-    Object? description = null,
-    Object? commentCount = null,
-    Object? isFavorited = null,
-    Object? hasNotes = null,
-    Object? duration = freezed,
-    Object? voteStatus = null,
   }) {
     return _then(_$PostImpl(
       id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
+              as int,
+      file: freezed == file
+          ? _value.file
+          : file // ignore: cast_nullable_to_non_nullable
+              as String?,
+      sample: freezed == sample
+          ? _value.sample
+          : sample // ignore: cast_nullable_to_non_nullable
+              as String?,
+      preview: freezed == preview
+          ? _value.preview
+          : preview // ignore: cast_nullable_to_non_nullable
+              as String?,
+      width: null == width
+          ? _value.width
+          : width // ignore: cast_nullable_to_non_nullable
+              as int,
+      height: null == height
+          ? _value.height
+          : height // ignore: cast_nullable_to_non_nullable
+              as int,
+      ext: null == ext
+          ? _value.ext
+          : ext // ignore: cast_nullable_to_non_nullable
+              as String,
+      size: null == size
+          ? _value.size
+          : size // ignore: cast_nullable_to_non_nullable
+              as int,
+      tags: null == tags
+          ? _value._tags
+          : tags // ignore: cast_nullable_to_non_nullable
+              as Map<String, List<String>>,
+      uploaderId: null == uploaderId
+          ? _value.uploaderId
+          : uploaderId // ignore: cast_nullable_to_non_nullable
               as int,
       createdAt: null == createdAt
           ? _value.createdAt
@@ -375,38 +335,14 @@ class __$$PostImplCopyWithImpl<$Res>
           ? _value.updatedAt
           : updatedAt // ignore: cast_nullable_to_non_nullable
               as DateTime?,
-      fileRaw: null == fileRaw
-          ? _value.fileRaw
-          : fileRaw // ignore: cast_nullable_to_non_nullable
-              as PostSourceFile,
-      preview: null == preview
-          ? _value.preview
-          : preview // ignore: cast_nullable_to_non_nullable
-              as PostPreviewFile,
-      sample: null == sample
-          ? _value.sample
-          : sample // ignore: cast_nullable_to_non_nullable
-              as PostSampleFile,
-      score: null == score
-          ? _value.score
-          : score // ignore: cast_nullable_to_non_nullable
-              as Score,
-      tags: null == tags
-          ? _value._tags
-          : tags // ignore: cast_nullable_to_non_nullable
-              as Map<String, List<String>>,
-      lockedTags: freezed == lockedTags
-          ? _value._lockedTags
-          : lockedTags // ignore: cast_nullable_to_non_nullable
-              as List<String>?,
-      changeSeq: freezed == changeSeq
-          ? _value.changeSeq
-          : changeSeq // ignore: cast_nullable_to_non_nullable
-              as int?,
-      flags: null == flags
-          ? _value.flags
-          : flags // ignore: cast_nullable_to_non_nullable
-              as Flags,
+      vote: null == vote
+          ? _value.vote
+          : vote // ignore: cast_nullable_to_non_nullable
+              as VoteInfo,
+      isDeleted: null == isDeleted
+          ? _value.isDeleted
+          : isDeleted // ignore: cast_nullable_to_non_nullable
+              as bool,
       rating: null == rating
           ? _value.rating
           : rating // ignore: cast_nullable_to_non_nullable
@@ -415,6 +351,18 @@ class __$$PostImplCopyWithImpl<$Res>
           ? _value.favCount
           : favCount // ignore: cast_nullable_to_non_nullable
               as int,
+      isFavorited: null == isFavorited
+          ? _value.isFavorited
+          : isFavorited // ignore: cast_nullable_to_non_nullable
+              as bool,
+      commentCount: null == commentCount
+          ? _value.commentCount
+          : commentCount // ignore: cast_nullable_to_non_nullable
+              as int,
+      description: null == description
+          ? _value.description
+          : description // ignore: cast_nullable_to_non_nullable
+              as String,
       sources: null == sources
           ? _value._sources
           : sources // ignore: cast_nullable_to_non_nullable
@@ -427,76 +375,39 @@ class __$$PostImplCopyWithImpl<$Res>
           ? _value.relationships
           : relationships // ignore: cast_nullable_to_non_nullable
               as Relationships,
-      approverId: freezed == approverId
-          ? _value.approverId
-          : approverId // ignore: cast_nullable_to_non_nullable
-              as int?,
-      uploaderId: null == uploaderId
-          ? _value.uploaderId
-          : uploaderId // ignore: cast_nullable_to_non_nullable
-              as int,
-      description: null == description
-          ? _value.description
-          : description // ignore: cast_nullable_to_non_nullable
-              as String,
-      commentCount: null == commentCount
-          ? _value.commentCount
-          : commentCount // ignore: cast_nullable_to_non_nullable
-              as int,
-      isFavorited: null == isFavorited
-          ? _value.isFavorited
-          : isFavorited // ignore: cast_nullable_to_non_nullable
-              as bool,
-      hasNotes: null == hasNotes
-          ? _value.hasNotes
-          : hasNotes // ignore: cast_nullable_to_non_nullable
-              as bool,
-      duration: freezed == duration
-          ? _value.duration
-          : duration // ignore: cast_nullable_to_non_nullable
-              as double?,
-      voteStatus: null == voteStatus
-          ? _value.voteStatus
-          : voteStatus // ignore: cast_nullable_to_non_nullable
-              as VoteStatus,
     ));
   }
 }
 
 /// @nodoc
 @JsonSerializable()
-class _$PostImpl extends _Post {
+class _$PostImpl implements _Post {
   const _$PostImpl(
       {required this.id,
+      required this.file,
+      required this.sample,
+      required this.preview,
+      required this.width,
+      required this.height,
+      required this.ext,
+      required this.size,
+      required final Map<String, List<String>> tags,
+      required this.uploaderId,
       required this.createdAt,
       required this.updatedAt,
-      @JsonKey(name: 'file') required this.fileRaw,
-      required this.preview,
-      required this.sample,
-      required this.score,
-      required final Map<String, List<String>> tags,
-      required final List<String>? lockedTags,
-      required this.changeSeq,
-      required this.flags,
+      required this.vote,
+      required this.isDeleted,
       required this.rating,
       required this.favCount,
+      required this.isFavorited,
+      required this.commentCount,
+      required this.description,
       required final List<String> sources,
       required final List<int> pools,
-      required this.relationships,
-      required this.approverId,
-      required this.uploaderId,
-      required this.description,
-      required this.commentCount,
-      required this.isFavorited,
-      required this.hasNotes,
-      required this.duration,
-      @JsonKey(includeFromJson: false, includeToJson: false)
-      this.voteStatus = VoteStatus.unknown})
+      required this.relationships})
       : _tags = tags,
-        _lockedTags = lockedTags,
         _sources = sources,
-        _pools = pools,
-        super._();
+        _pools = pools;
 
   factory _$PostImpl.fromJson(Map<String, dynamic> json) =>
       _$$PostImplFromJson(json);
@@ -504,18 +415,19 @@ class _$PostImpl extends _Post {
   @override
   final int id;
   @override
-  final DateTime createdAt;
+  final String? file;
   @override
-  final DateTime? updatedAt;
+  final String? sample;
   @override
-  @JsonKey(name: 'file')
-  final PostSourceFile fileRaw;
+  final String? preview;
   @override
-  final PostPreviewFile preview;
+  final int width;
   @override
-  final PostSampleFile sample;
+  final int height;
   @override
-  final Score score;
+  final String ext;
+  @override
+  final int size;
   final Map<String, List<String>> _tags;
   @override
   Map<String, List<String>> get tags {
@@ -524,24 +436,27 @@ class _$PostImpl extends _Post {
     return EqualUnmodifiableMapView(_tags);
   }
 
-  final List<String>? _lockedTags;
   @override
-  List<String>? get lockedTags {
-    final value = _lockedTags;
-    if (value == null) return null;
-    if (_lockedTags is EqualUnmodifiableListView) return _lockedTags;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(value);
-  }
-
+  final int uploaderId;
   @override
-  final int? changeSeq;
+  final DateTime createdAt;
   @override
-  final Flags flags;
+  final DateTime? updatedAt;
+  @override
+  final VoteInfo vote;
+  @override
+  final bool isDeleted;
   @override
   final Rating rating;
   @override
   final int favCount;
+// turn into class with bool isFavorited?
+  @override
+  final bool isFavorited;
+  @override
+  final int commentCount;
+  @override
+  final String description;
   final List<String> _sources;
   @override
   List<String> get sources {
@@ -560,27 +475,10 @@ class _$PostImpl extends _Post {
 
   @override
   final Relationships relationships;
-  @override
-  final int? approverId;
-  @override
-  final int uploaderId;
-  @override
-  final String description;
-  @override
-  final int commentCount;
-  @override
-  final bool isFavorited;
-  @override
-  final bool hasNotes;
-  @override
-  final double? duration;
-  @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  final VoteStatus voteStatus;
 
   @override
   String toString() {
-    return 'Post(id: $id, createdAt: $createdAt, updatedAt: $updatedAt, fileRaw: $fileRaw, preview: $preview, sample: $sample, score: $score, tags: $tags, lockedTags: $lockedTags, changeSeq: $changeSeq, flags: $flags, rating: $rating, favCount: $favCount, sources: $sources, pools: $pools, relationships: $relationships, approverId: $approverId, uploaderId: $uploaderId, description: $description, commentCount: $commentCount, isFavorited: $isFavorited, hasNotes: $hasNotes, duration: $duration, voteStatus: $voteStatus)';
+    return 'Post(id: $id, file: $file, sample: $sample, preview: $preview, width: $width, height: $height, ext: $ext, size: $size, tags: $tags, uploaderId: $uploaderId, createdAt: $createdAt, updatedAt: $updatedAt, vote: $vote, isDeleted: $isDeleted, rating: $rating, favCount: $favCount, isFavorited: $isFavorited, commentCount: $commentCount, description: $description, sources: $sources, pools: $pools, relationships: $relationships)';
   }
 
   @override
@@ -589,43 +487,36 @@ class _$PostImpl extends _Post {
         (other.runtimeType == runtimeType &&
             other is _$PostImpl &&
             (identical(other.id, id) || other.id == id) &&
+            (identical(other.file, file) || other.file == file) &&
+            (identical(other.sample, sample) || other.sample == sample) &&
+            (identical(other.preview, preview) || other.preview == preview) &&
+            (identical(other.width, width) || other.width == width) &&
+            (identical(other.height, height) || other.height == height) &&
+            (identical(other.ext, ext) || other.ext == ext) &&
+            (identical(other.size, size) || other.size == size) &&
+            const DeepCollectionEquality().equals(other._tags, _tags) &&
+            (identical(other.uploaderId, uploaderId) ||
+                other.uploaderId == uploaderId) &&
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt) &&
             (identical(other.updatedAt, updatedAt) ||
                 other.updatedAt == updatedAt) &&
-            (identical(other.fileRaw, fileRaw) || other.fileRaw == fileRaw) &&
-            (identical(other.preview, preview) || other.preview == preview) &&
-            (identical(other.sample, sample) || other.sample == sample) &&
-            (identical(other.score, score) || other.score == score) &&
-            const DeepCollectionEquality().equals(other._tags, _tags) &&
-            const DeepCollectionEquality()
-                .equals(other._lockedTags, _lockedTags) &&
-            (identical(other.changeSeq, changeSeq) ||
-                other.changeSeq == changeSeq) &&
-            (identical(other.flags, flags) || other.flags == flags) &&
+            (identical(other.vote, vote) || other.vote == vote) &&
+            (identical(other.isDeleted, isDeleted) ||
+                other.isDeleted == isDeleted) &&
             (identical(other.rating, rating) || other.rating == rating) &&
             (identical(other.favCount, favCount) ||
                 other.favCount == favCount) &&
+            (identical(other.isFavorited, isFavorited) ||
+                other.isFavorited == isFavorited) &&
+            (identical(other.commentCount, commentCount) ||
+                other.commentCount == commentCount) &&
+            (identical(other.description, description) ||
+                other.description == description) &&
             const DeepCollectionEquality().equals(other._sources, _sources) &&
             const DeepCollectionEquality().equals(other._pools, _pools) &&
             (identical(other.relationships, relationships) ||
-                other.relationships == relationships) &&
-            (identical(other.approverId, approverId) ||
-                other.approverId == approverId) &&
-            (identical(other.uploaderId, uploaderId) ||
-                other.uploaderId == uploaderId) &&
-            (identical(other.description, description) ||
-                other.description == description) &&
-            (identical(other.commentCount, commentCount) ||
-                other.commentCount == commentCount) &&
-            (identical(other.isFavorited, isFavorited) ||
-                other.isFavorited == isFavorited) &&
-            (identical(other.hasNotes, hasNotes) ||
-                other.hasNotes == hasNotes) &&
-            (identical(other.duration, duration) ||
-                other.duration == duration) &&
-            (identical(other.voteStatus, voteStatus) ||
-                other.voteStatus == voteStatus));
+                other.relationships == relationships));
   }
 
   @JsonKey(ignore: true)
@@ -633,29 +524,27 @@ class _$PostImpl extends _Post {
   int get hashCode => Object.hashAll([
         runtimeType,
         id,
+        file,
+        sample,
+        preview,
+        width,
+        height,
+        ext,
+        size,
+        const DeepCollectionEquality().hash(_tags),
+        uploaderId,
         createdAt,
         updatedAt,
-        fileRaw,
-        preview,
-        sample,
-        score,
-        const DeepCollectionEquality().hash(_tags),
-        const DeepCollectionEquality().hash(_lockedTags),
-        changeSeq,
-        flags,
+        vote,
+        isDeleted,
         rating,
         favCount,
+        isFavorited,
+        commentCount,
+        description,
         const DeepCollectionEquality().hash(_sources),
         const DeepCollectionEquality().hash(_pools),
-        relationships,
-        approverId,
-        uploaderId,
-        description,
-        commentCount,
-        isFavorited,
-        hasNotes,
-        duration,
-        voteStatus
+        relationships
       ]);
 
   @JsonKey(ignore: true)
@@ -672,673 +561,41 @@ class _$PostImpl extends _Post {
   }
 }
 
-abstract class _Post extends Post {
+abstract class _Post implements Post {
   const factory _Post(
       {required final int id,
+      required final String? file,
+      required final String? sample,
+      required final String? preview,
+      required final int width,
+      required final int height,
+      required final String ext,
+      required final int size,
+      required final Map<String, List<String>> tags,
+      required final int uploaderId,
       required final DateTime createdAt,
       required final DateTime? updatedAt,
-      @JsonKey(name: 'file') required final PostSourceFile fileRaw,
-      required final PostPreviewFile preview,
-      required final PostSampleFile sample,
-      required final Score score,
-      required final Map<String, List<String>> tags,
-      required final List<String>? lockedTags,
-      required final int? changeSeq,
-      required final Flags flags,
+      required final VoteInfo vote,
+      required final bool isDeleted,
       required final Rating rating,
       required final int favCount,
+      required final bool isFavorited,
+      required final int commentCount,
+      required final String description,
       required final List<String> sources,
       required final List<int> pools,
-      required final Relationships relationships,
-      required final int? approverId,
-      required final int uploaderId,
-      required final String description,
-      required final int commentCount,
-      required final bool isFavorited,
-      required final bool hasNotes,
-      required final double? duration,
-      @JsonKey(includeFromJson: false, includeToJson: false)
-      final VoteStatus voteStatus}) = _$PostImpl;
-  const _Post._() : super._();
+      required final Relationships relationships}) = _$PostImpl;
 
   factory _Post.fromJson(Map<String, dynamic> json) = _$PostImpl.fromJson;
 
   @override
   int get id;
   @override
-  DateTime get createdAt;
+  String? get file;
   @override
-  DateTime? get updatedAt;
+  String? get sample;
   @override
-  @JsonKey(name: 'file')
-  PostSourceFile get fileRaw;
-  @override
-  PostPreviewFile get preview;
-  @override
-  PostSampleFile get sample;
-  @override
-  Score get score;
-  @override
-  Map<String, List<String>> get tags;
-  @override
-  List<String>? get lockedTags;
-  @override
-  int? get changeSeq;
-  @override
-  Flags get flags;
-  @override
-  Rating get rating;
-  @override
-  int get favCount;
-  @override
-  List<String> get sources;
-  @override
-  List<int> get pools;
-  @override
-  Relationships get relationships;
-  @override
-  int? get approverId;
-  @override
-  int get uploaderId;
-  @override
-  String get description;
-  @override
-  int get commentCount;
-  @override
-  bool get isFavorited;
-  @override
-  bool get hasNotes;
-  @override
-  double? get duration;
-  @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  VoteStatus get voteStatus;
-  @override
-  @JsonKey(ignore: true)
-  _$$PostImplCopyWith<_$PostImpl> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
-PostPreviewFile _$PostPreviewFileFromJson(Map<String, dynamic> json) {
-  return _PostPreviewFile.fromJson(json);
-}
-
-/// @nodoc
-mixin _$PostPreviewFile {
-  int get width => throw _privateConstructorUsedError;
-  int get height => throw _privateConstructorUsedError;
-  String? get url => throw _privateConstructorUsedError;
-
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
-  $PostPreviewFileCopyWith<PostPreviewFile> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class $PostPreviewFileCopyWith<$Res> {
-  factory $PostPreviewFileCopyWith(
-          PostPreviewFile value, $Res Function(PostPreviewFile) then) =
-      _$PostPreviewFileCopyWithImpl<$Res, PostPreviewFile>;
-  @useResult
-  $Res call({int width, int height, String? url});
-}
-
-/// @nodoc
-class _$PostPreviewFileCopyWithImpl<$Res, $Val extends PostPreviewFile>
-    implements $PostPreviewFileCopyWith<$Res> {
-  _$PostPreviewFileCopyWithImpl(this._value, this._then);
-
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
-
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? width = null,
-    Object? height = null,
-    Object? url = freezed,
-  }) {
-    return _then(_value.copyWith(
-      width: null == width
-          ? _value.width
-          : width // ignore: cast_nullable_to_non_nullable
-              as int,
-      height: null == height
-          ? _value.height
-          : height // ignore: cast_nullable_to_non_nullable
-              as int,
-      url: freezed == url
-          ? _value.url
-          : url // ignore: cast_nullable_to_non_nullable
-              as String?,
-    ) as $Val);
-  }
-}
-
-/// @nodoc
-abstract class _$$PostPreviewFileImplCopyWith<$Res>
-    implements $PostPreviewFileCopyWith<$Res> {
-  factory _$$PostPreviewFileImplCopyWith(_$PostPreviewFileImpl value,
-          $Res Function(_$PostPreviewFileImpl) then) =
-      __$$PostPreviewFileImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({int width, int height, String? url});
-}
-
-/// @nodoc
-class __$$PostPreviewFileImplCopyWithImpl<$Res>
-    extends _$PostPreviewFileCopyWithImpl<$Res, _$PostPreviewFileImpl>
-    implements _$$PostPreviewFileImplCopyWith<$Res> {
-  __$$PostPreviewFileImplCopyWithImpl(
-      _$PostPreviewFileImpl _value, $Res Function(_$PostPreviewFileImpl) _then)
-      : super(_value, _then);
-
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? width = null,
-    Object? height = null,
-    Object? url = freezed,
-  }) {
-    return _then(_$PostPreviewFileImpl(
-      width: null == width
-          ? _value.width
-          : width // ignore: cast_nullable_to_non_nullable
-              as int,
-      height: null == height
-          ? _value.height
-          : height // ignore: cast_nullable_to_non_nullable
-              as int,
-      url: freezed == url
-          ? _value.url
-          : url // ignore: cast_nullable_to_non_nullable
-              as String?,
-    ));
-  }
-}
-
-/// @nodoc
-@JsonSerializable()
-class _$PostPreviewFileImpl implements _PostPreviewFile {
-  const _$PostPreviewFileImpl(
-      {required this.width, required this.height, required this.url});
-
-  factory _$PostPreviewFileImpl.fromJson(Map<String, dynamic> json) =>
-      _$$PostPreviewFileImplFromJson(json);
-
-  @override
-  final int width;
-  @override
-  final int height;
-  @override
-  final String? url;
-
-  @override
-  String toString() {
-    return 'PostPreviewFile(width: $width, height: $height, url: $url)';
-  }
-
-  @override
-  bool operator ==(dynamic other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$PostPreviewFileImpl &&
-            (identical(other.width, width) || other.width == width) &&
-            (identical(other.height, height) || other.height == height) &&
-            (identical(other.url, url) || other.url == url));
-  }
-
-  @JsonKey(ignore: true)
-  @override
-  int get hashCode => Object.hash(runtimeType, width, height, url);
-
-  @JsonKey(ignore: true)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$PostPreviewFileImplCopyWith<_$PostPreviewFileImpl> get copyWith =>
-      __$$PostPreviewFileImplCopyWithImpl<_$PostPreviewFileImpl>(
-          this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$PostPreviewFileImplToJson(
-      this,
-    );
-  }
-}
-
-abstract class _PostPreviewFile implements PostPreviewFile {
-  const factory _PostPreviewFile(
-      {required final int width,
-      required final int height,
-      required final String? url}) = _$PostPreviewFileImpl;
-
-  factory _PostPreviewFile.fromJson(Map<String, dynamic> json) =
-      _$PostPreviewFileImpl.fromJson;
-
-  @override
-  int get width;
-  @override
-  int get height;
-  @override
-  String? get url;
-  @override
-  @JsonKey(ignore: true)
-  _$$PostPreviewFileImplCopyWith<_$PostPreviewFileImpl> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
-PostSampleFile _$PostSampleFileFromJson(Map<String, dynamic> json) {
-  return _PostSampleFile.fromJson(json);
-}
-
-/// @nodoc
-mixin _$PostSampleFile {
-  bool get has => throw _privateConstructorUsedError;
-  int get height => throw _privateConstructorUsedError;
-  int get width => throw _privateConstructorUsedError;
-  String? get url => throw _privateConstructorUsedError;
-
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
-  $PostSampleFileCopyWith<PostSampleFile> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class $PostSampleFileCopyWith<$Res> {
-  factory $PostSampleFileCopyWith(
-          PostSampleFile value, $Res Function(PostSampleFile) then) =
-      _$PostSampleFileCopyWithImpl<$Res, PostSampleFile>;
-  @useResult
-  $Res call({bool has, int height, int width, String? url});
-}
-
-/// @nodoc
-class _$PostSampleFileCopyWithImpl<$Res, $Val extends PostSampleFile>
-    implements $PostSampleFileCopyWith<$Res> {
-  _$PostSampleFileCopyWithImpl(this._value, this._then);
-
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
-
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? has = null,
-    Object? height = null,
-    Object? width = null,
-    Object? url = freezed,
-  }) {
-    return _then(_value.copyWith(
-      has: null == has
-          ? _value.has
-          : has // ignore: cast_nullable_to_non_nullable
-              as bool,
-      height: null == height
-          ? _value.height
-          : height // ignore: cast_nullable_to_non_nullable
-              as int,
-      width: null == width
-          ? _value.width
-          : width // ignore: cast_nullable_to_non_nullable
-              as int,
-      url: freezed == url
-          ? _value.url
-          : url // ignore: cast_nullable_to_non_nullable
-              as String?,
-    ) as $Val);
-  }
-}
-
-/// @nodoc
-abstract class _$$PostSampleFileImplCopyWith<$Res>
-    implements $PostSampleFileCopyWith<$Res> {
-  factory _$$PostSampleFileImplCopyWith(_$PostSampleFileImpl value,
-          $Res Function(_$PostSampleFileImpl) then) =
-      __$$PostSampleFileImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({bool has, int height, int width, String? url});
-}
-
-/// @nodoc
-class __$$PostSampleFileImplCopyWithImpl<$Res>
-    extends _$PostSampleFileCopyWithImpl<$Res, _$PostSampleFileImpl>
-    implements _$$PostSampleFileImplCopyWith<$Res> {
-  __$$PostSampleFileImplCopyWithImpl(
-      _$PostSampleFileImpl _value, $Res Function(_$PostSampleFileImpl) _then)
-      : super(_value, _then);
-
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? has = null,
-    Object? height = null,
-    Object? width = null,
-    Object? url = freezed,
-  }) {
-    return _then(_$PostSampleFileImpl(
-      has: null == has
-          ? _value.has
-          : has // ignore: cast_nullable_to_non_nullable
-              as bool,
-      height: null == height
-          ? _value.height
-          : height // ignore: cast_nullable_to_non_nullable
-              as int,
-      width: null == width
-          ? _value.width
-          : width // ignore: cast_nullable_to_non_nullable
-              as int,
-      url: freezed == url
-          ? _value.url
-          : url // ignore: cast_nullable_to_non_nullable
-              as String?,
-    ));
-  }
-}
-
-/// @nodoc
-@JsonSerializable()
-class _$PostSampleFileImpl implements _PostSampleFile {
-  const _$PostSampleFileImpl(
-      {required this.has,
-      required this.height,
-      required this.width,
-      required this.url});
-
-  factory _$PostSampleFileImpl.fromJson(Map<String, dynamic> json) =>
-      _$$PostSampleFileImplFromJson(json);
-
-  @override
-  final bool has;
-  @override
-  final int height;
-  @override
-  final int width;
-  @override
-  final String? url;
-
-  @override
-  String toString() {
-    return 'PostSampleFile(has: $has, height: $height, width: $width, url: $url)';
-  }
-
-  @override
-  bool operator ==(dynamic other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$PostSampleFileImpl &&
-            (identical(other.has, has) || other.has == has) &&
-            (identical(other.height, height) || other.height == height) &&
-            (identical(other.width, width) || other.width == width) &&
-            (identical(other.url, url) || other.url == url));
-  }
-
-  @JsonKey(ignore: true)
-  @override
-  int get hashCode => Object.hash(runtimeType, has, height, width, url);
-
-  @JsonKey(ignore: true)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$PostSampleFileImplCopyWith<_$PostSampleFileImpl> get copyWith =>
-      __$$PostSampleFileImplCopyWithImpl<_$PostSampleFileImpl>(
-          this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$PostSampleFileImplToJson(
-      this,
-    );
-  }
-}
-
-abstract class _PostSampleFile implements PostSampleFile {
-  const factory _PostSampleFile(
-      {required final bool has,
-      required final int height,
-      required final int width,
-      required final String? url}) = _$PostSampleFileImpl;
-
-  factory _PostSampleFile.fromJson(Map<String, dynamic> json) =
-      _$PostSampleFileImpl.fromJson;
-
-  @override
-  bool get has;
-  @override
-  int get height;
-  @override
-  int get width;
-  @override
-  String? get url;
-  @override
-  @JsonKey(ignore: true)
-  _$$PostSampleFileImplCopyWith<_$PostSampleFileImpl> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
-PostSourceFile _$PostSourceFileFromJson(Map<String, dynamic> json) {
-  return _PostSourceFile.fromJson(json);
-}
-
-/// @nodoc
-mixin _$PostSourceFile {
-  int get width => throw _privateConstructorUsedError;
-  int get height => throw _privateConstructorUsedError;
-  String get ext => throw _privateConstructorUsedError;
-  int get size => throw _privateConstructorUsedError;
-  String get md5 => throw _privateConstructorUsedError;
-  String? get url => throw _privateConstructorUsedError;
-
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
-  $PostSourceFileCopyWith<PostSourceFile> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class $PostSourceFileCopyWith<$Res> {
-  factory $PostSourceFileCopyWith(
-          PostSourceFile value, $Res Function(PostSourceFile) then) =
-      _$PostSourceFileCopyWithImpl<$Res, PostSourceFile>;
-  @useResult
-  $Res call(
-      {int width, int height, String ext, int size, String md5, String? url});
-}
-
-/// @nodoc
-class _$PostSourceFileCopyWithImpl<$Res, $Val extends PostSourceFile>
-    implements $PostSourceFileCopyWith<$Res> {
-  _$PostSourceFileCopyWithImpl(this._value, this._then);
-
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
-
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? width = null,
-    Object? height = null,
-    Object? ext = null,
-    Object? size = null,
-    Object? md5 = null,
-    Object? url = freezed,
-  }) {
-    return _then(_value.copyWith(
-      width: null == width
-          ? _value.width
-          : width // ignore: cast_nullable_to_non_nullable
-              as int,
-      height: null == height
-          ? _value.height
-          : height // ignore: cast_nullable_to_non_nullable
-              as int,
-      ext: null == ext
-          ? _value.ext
-          : ext // ignore: cast_nullable_to_non_nullable
-              as String,
-      size: null == size
-          ? _value.size
-          : size // ignore: cast_nullable_to_non_nullable
-              as int,
-      md5: null == md5
-          ? _value.md5
-          : md5 // ignore: cast_nullable_to_non_nullable
-              as String,
-      url: freezed == url
-          ? _value.url
-          : url // ignore: cast_nullable_to_non_nullable
-              as String?,
-    ) as $Val);
-  }
-}
-
-/// @nodoc
-abstract class _$$PostSourceFileImplCopyWith<$Res>
-    implements $PostSourceFileCopyWith<$Res> {
-  factory _$$PostSourceFileImplCopyWith(_$PostSourceFileImpl value,
-          $Res Function(_$PostSourceFileImpl) then) =
-      __$$PostSourceFileImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call(
-      {int width, int height, String ext, int size, String md5, String? url});
-}
-
-/// @nodoc
-class __$$PostSourceFileImplCopyWithImpl<$Res>
-    extends _$PostSourceFileCopyWithImpl<$Res, _$PostSourceFileImpl>
-    implements _$$PostSourceFileImplCopyWith<$Res> {
-  __$$PostSourceFileImplCopyWithImpl(
-      _$PostSourceFileImpl _value, $Res Function(_$PostSourceFileImpl) _then)
-      : super(_value, _then);
-
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? width = null,
-    Object? height = null,
-    Object? ext = null,
-    Object? size = null,
-    Object? md5 = null,
-    Object? url = freezed,
-  }) {
-    return _then(_$PostSourceFileImpl(
-      width: null == width
-          ? _value.width
-          : width // ignore: cast_nullable_to_non_nullable
-              as int,
-      height: null == height
-          ? _value.height
-          : height // ignore: cast_nullable_to_non_nullable
-              as int,
-      ext: null == ext
-          ? _value.ext
-          : ext // ignore: cast_nullable_to_non_nullable
-              as String,
-      size: null == size
-          ? _value.size
-          : size // ignore: cast_nullable_to_non_nullable
-              as int,
-      md5: null == md5
-          ? _value.md5
-          : md5 // ignore: cast_nullable_to_non_nullable
-              as String,
-      url: freezed == url
-          ? _value.url
-          : url // ignore: cast_nullable_to_non_nullable
-              as String?,
-    ));
-  }
-}
-
-/// @nodoc
-@JsonSerializable()
-class _$PostSourceFileImpl implements _PostSourceFile {
-  const _$PostSourceFileImpl(
-      {required this.width,
-      required this.height,
-      required this.ext,
-      required this.size,
-      required this.md5,
-      required this.url});
-
-  factory _$PostSourceFileImpl.fromJson(Map<String, dynamic> json) =>
-      _$$PostSourceFileImplFromJson(json);
-
-  @override
-  final int width;
-  @override
-  final int height;
-  @override
-  final String ext;
-  @override
-  final int size;
-  @override
-  final String md5;
-  @override
-  final String? url;
-
-  @override
-  String toString() {
-    return 'PostSourceFile(width: $width, height: $height, ext: $ext, size: $size, md5: $md5, url: $url)';
-  }
-
-  @override
-  bool operator ==(dynamic other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$PostSourceFileImpl &&
-            (identical(other.width, width) || other.width == width) &&
-            (identical(other.height, height) || other.height == height) &&
-            (identical(other.ext, ext) || other.ext == ext) &&
-            (identical(other.size, size) || other.size == size) &&
-            (identical(other.md5, md5) || other.md5 == md5) &&
-            (identical(other.url, url) || other.url == url));
-  }
-
-  @JsonKey(ignore: true)
-  @override
-  int get hashCode =>
-      Object.hash(runtimeType, width, height, ext, size, md5, url);
-
-  @JsonKey(ignore: true)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$PostSourceFileImplCopyWith<_$PostSourceFileImpl> get copyWith =>
-      __$$PostSourceFileImplCopyWithImpl<_$PostSourceFileImpl>(
-          this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$PostSourceFileImplToJson(
-      this,
-    );
-  }
-}
-
-abstract class _PostSourceFile implements PostSourceFile {
-  const factory _PostSourceFile(
-      {required final int width,
-      required final int height,
-      required final String ext,
-      required final int size,
-      required final String md5,
-      required final String? url}) = _$PostSourceFileImpl;
-
-  factory _PostSourceFile.fromJson(Map<String, dynamic> json) =
-      _$PostSourceFileImpl.fromJson;
-
+  String? get preview;
   @override
   int get width;
   @override
@@ -1348,252 +605,36 @@ abstract class _PostSourceFile implements PostSourceFile {
   @override
   int get size;
   @override
-  String get md5;
+  Map<String, List<String>> get tags;
   @override
-  String? get url;
+  int get uploaderId;
   @override
-  @JsonKey(ignore: true)
-  _$$PostSourceFileImplCopyWith<_$PostSourceFileImpl> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
-Flags _$FlagsFromJson(Map<String, dynamic> json) {
-  return _Flags.fromJson(json);
-}
-
-/// @nodoc
-mixin _$Flags {
-  bool get pending => throw _privateConstructorUsedError;
-  bool get flagged => throw _privateConstructorUsedError;
-  bool get noteLocked => throw _privateConstructorUsedError;
-  bool get statusLocked => throw _privateConstructorUsedError;
-  bool get ratingLocked => throw _privateConstructorUsedError;
-  bool get deleted => throw _privateConstructorUsedError;
-
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
-  $FlagsCopyWith<Flags> get copyWith => throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class $FlagsCopyWith<$Res> {
-  factory $FlagsCopyWith(Flags value, $Res Function(Flags) then) =
-      _$FlagsCopyWithImpl<$Res, Flags>;
-  @useResult
-  $Res call(
-      {bool pending,
-      bool flagged,
-      bool noteLocked,
-      bool statusLocked,
-      bool ratingLocked,
-      bool deleted});
-}
-
-/// @nodoc
-class _$FlagsCopyWithImpl<$Res, $Val extends Flags>
-    implements $FlagsCopyWith<$Res> {
-  _$FlagsCopyWithImpl(this._value, this._then);
-
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
-
-  @pragma('vm:prefer-inline')
+  DateTime get createdAt;
   @override
-  $Res call({
-    Object? pending = null,
-    Object? flagged = null,
-    Object? noteLocked = null,
-    Object? statusLocked = null,
-    Object? ratingLocked = null,
-    Object? deleted = null,
-  }) {
-    return _then(_value.copyWith(
-      pending: null == pending
-          ? _value.pending
-          : pending // ignore: cast_nullable_to_non_nullable
-              as bool,
-      flagged: null == flagged
-          ? _value.flagged
-          : flagged // ignore: cast_nullable_to_non_nullable
-              as bool,
-      noteLocked: null == noteLocked
-          ? _value.noteLocked
-          : noteLocked // ignore: cast_nullable_to_non_nullable
-              as bool,
-      statusLocked: null == statusLocked
-          ? _value.statusLocked
-          : statusLocked // ignore: cast_nullable_to_non_nullable
-              as bool,
-      ratingLocked: null == ratingLocked
-          ? _value.ratingLocked
-          : ratingLocked // ignore: cast_nullable_to_non_nullable
-              as bool,
-      deleted: null == deleted
-          ? _value.deleted
-          : deleted // ignore: cast_nullable_to_non_nullable
-              as bool,
-    ) as $Val);
-  }
-}
-
-/// @nodoc
-abstract class _$$FlagsImplCopyWith<$Res> implements $FlagsCopyWith<$Res> {
-  factory _$$FlagsImplCopyWith(
-          _$FlagsImpl value, $Res Function(_$FlagsImpl) then) =
-      __$$FlagsImplCopyWithImpl<$Res>;
+  DateTime? get updatedAt;
   @override
-  @useResult
-  $Res call(
-      {bool pending,
-      bool flagged,
-      bool noteLocked,
-      bool statusLocked,
-      bool ratingLocked,
-      bool deleted});
-}
-
-/// @nodoc
-class __$$FlagsImplCopyWithImpl<$Res>
-    extends _$FlagsCopyWithImpl<$Res, _$FlagsImpl>
-    implements _$$FlagsImplCopyWith<$Res> {
-  __$$FlagsImplCopyWithImpl(
-      _$FlagsImpl _value, $Res Function(_$FlagsImpl) _then)
-      : super(_value, _then);
-
-  @pragma('vm:prefer-inline')
+  VoteInfo get vote;
   @override
-  $Res call({
-    Object? pending = null,
-    Object? flagged = null,
-    Object? noteLocked = null,
-    Object? statusLocked = null,
-    Object? ratingLocked = null,
-    Object? deleted = null,
-  }) {
-    return _then(_$FlagsImpl(
-      pending: null == pending
-          ? _value.pending
-          : pending // ignore: cast_nullable_to_non_nullable
-              as bool,
-      flagged: null == flagged
-          ? _value.flagged
-          : flagged // ignore: cast_nullable_to_non_nullable
-              as bool,
-      noteLocked: null == noteLocked
-          ? _value.noteLocked
-          : noteLocked // ignore: cast_nullable_to_non_nullable
-              as bool,
-      statusLocked: null == statusLocked
-          ? _value.statusLocked
-          : statusLocked // ignore: cast_nullable_to_non_nullable
-              as bool,
-      ratingLocked: null == ratingLocked
-          ? _value.ratingLocked
-          : ratingLocked // ignore: cast_nullable_to_non_nullable
-              as bool,
-      deleted: null == deleted
-          ? _value.deleted
-          : deleted // ignore: cast_nullable_to_non_nullable
-              as bool,
-    ));
-  }
-}
-
-/// @nodoc
-@JsonSerializable()
-class _$FlagsImpl implements _Flags {
-  const _$FlagsImpl(
-      {required this.pending,
-      required this.flagged,
-      required this.noteLocked,
-      required this.statusLocked,
-      required this.ratingLocked,
-      required this.deleted});
-
-  factory _$FlagsImpl.fromJson(Map<String, dynamic> json) =>
-      _$$FlagsImplFromJson(json);
-
+  bool get isDeleted;
   @override
-  final bool pending;
+  Rating get rating;
   @override
-  final bool flagged;
+  int get favCount;
+  @override // turn into class with bool isFavorited?
+  bool get isFavorited;
   @override
-  final bool noteLocked;
+  int get commentCount;
   @override
-  final bool statusLocked;
+  String get description;
   @override
-  final bool ratingLocked;
+  List<String> get sources;
   @override
-  final bool deleted;
-
+  List<int> get pools;
   @override
-  String toString() {
-    return 'Flags(pending: $pending, flagged: $flagged, noteLocked: $noteLocked, statusLocked: $statusLocked, ratingLocked: $ratingLocked, deleted: $deleted)';
-  }
-
-  @override
-  bool operator ==(dynamic other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$FlagsImpl &&
-            (identical(other.pending, pending) || other.pending == pending) &&
-            (identical(other.flagged, flagged) || other.flagged == flagged) &&
-            (identical(other.noteLocked, noteLocked) ||
-                other.noteLocked == noteLocked) &&
-            (identical(other.statusLocked, statusLocked) ||
-                other.statusLocked == statusLocked) &&
-            (identical(other.ratingLocked, ratingLocked) ||
-                other.ratingLocked == ratingLocked) &&
-            (identical(other.deleted, deleted) || other.deleted == deleted));
-  }
-
-  @JsonKey(ignore: true)
-  @override
-  int get hashCode => Object.hash(runtimeType, pending, flagged, noteLocked,
-      statusLocked, ratingLocked, deleted);
-
-  @JsonKey(ignore: true)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$FlagsImplCopyWith<_$FlagsImpl> get copyWith =>
-      __$$FlagsImplCopyWithImpl<_$FlagsImpl>(this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$FlagsImplToJson(
-      this,
-    );
-  }
-}
-
-abstract class _Flags implements Flags {
-  const factory _Flags(
-      {required final bool pending,
-      required final bool flagged,
-      required final bool noteLocked,
-      required final bool statusLocked,
-      required final bool ratingLocked,
-      required final bool deleted}) = _$FlagsImpl;
-
-  factory _Flags.fromJson(Map<String, dynamic> json) = _$FlagsImpl.fromJson;
-
-  @override
-  bool get pending;
-  @override
-  bool get flagged;
-  @override
-  bool get noteLocked;
-  @override
-  bool get statusLocked;
-  @override
-  bool get ratingLocked;
-  @override
-  bool get deleted;
+  Relationships get relationships;
   @override
   @JsonKey(ignore: true)
-  _$$FlagsImplCopyWith<_$FlagsImpl> get copyWith =>
+  _$$PostImplCopyWith<_$PostImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
@@ -1804,173 +845,5 @@ abstract class _Relationships implements Relationships {
   @override
   @JsonKey(ignore: true)
   _$$RelationshipsImplCopyWith<_$RelationshipsImpl> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
-Score _$ScoreFromJson(Map<String, dynamic> json) {
-  return _Score.fromJson(json);
-}
-
-/// @nodoc
-mixin _$Score {
-  int get up => throw _privateConstructorUsedError;
-  int get down => throw _privateConstructorUsedError;
-  int get total => throw _privateConstructorUsedError;
-
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
-  $ScoreCopyWith<Score> get copyWith => throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class $ScoreCopyWith<$Res> {
-  factory $ScoreCopyWith(Score value, $Res Function(Score) then) =
-      _$ScoreCopyWithImpl<$Res, Score>;
-  @useResult
-  $Res call({int up, int down, int total});
-}
-
-/// @nodoc
-class _$ScoreCopyWithImpl<$Res, $Val extends Score>
-    implements $ScoreCopyWith<$Res> {
-  _$ScoreCopyWithImpl(this._value, this._then);
-
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
-
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? up = null,
-    Object? down = null,
-    Object? total = null,
-  }) {
-    return _then(_value.copyWith(
-      up: null == up
-          ? _value.up
-          : up // ignore: cast_nullable_to_non_nullable
-              as int,
-      down: null == down
-          ? _value.down
-          : down // ignore: cast_nullable_to_non_nullable
-              as int,
-      total: null == total
-          ? _value.total
-          : total // ignore: cast_nullable_to_non_nullable
-              as int,
-    ) as $Val);
-  }
-}
-
-/// @nodoc
-abstract class _$$ScoreImplCopyWith<$Res> implements $ScoreCopyWith<$Res> {
-  factory _$$ScoreImplCopyWith(
-          _$ScoreImpl value, $Res Function(_$ScoreImpl) then) =
-      __$$ScoreImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({int up, int down, int total});
-}
-
-/// @nodoc
-class __$$ScoreImplCopyWithImpl<$Res>
-    extends _$ScoreCopyWithImpl<$Res, _$ScoreImpl>
-    implements _$$ScoreImplCopyWith<$Res> {
-  __$$ScoreImplCopyWithImpl(
-      _$ScoreImpl _value, $Res Function(_$ScoreImpl) _then)
-      : super(_value, _then);
-
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? up = null,
-    Object? down = null,
-    Object? total = null,
-  }) {
-    return _then(_$ScoreImpl(
-      up: null == up
-          ? _value.up
-          : up // ignore: cast_nullable_to_non_nullable
-              as int,
-      down: null == down
-          ? _value.down
-          : down // ignore: cast_nullable_to_non_nullable
-              as int,
-      total: null == total
-          ? _value.total
-          : total // ignore: cast_nullable_to_non_nullable
-              as int,
-    ));
-  }
-}
-
-/// @nodoc
-@JsonSerializable()
-class _$ScoreImpl implements _Score {
-  const _$ScoreImpl(
-      {required this.up, required this.down, required this.total});
-
-  factory _$ScoreImpl.fromJson(Map<String, dynamic> json) =>
-      _$$ScoreImplFromJson(json);
-
-  @override
-  final int up;
-  @override
-  final int down;
-  @override
-  final int total;
-
-  @override
-  String toString() {
-    return 'Score(up: $up, down: $down, total: $total)';
-  }
-
-  @override
-  bool operator ==(dynamic other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$ScoreImpl &&
-            (identical(other.up, up) || other.up == up) &&
-            (identical(other.down, down) || other.down == down) &&
-            (identical(other.total, total) || other.total == total));
-  }
-
-  @JsonKey(ignore: true)
-  @override
-  int get hashCode => Object.hash(runtimeType, up, down, total);
-
-  @JsonKey(ignore: true)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$ScoreImplCopyWith<_$ScoreImpl> get copyWith =>
-      __$$ScoreImplCopyWithImpl<_$ScoreImpl>(this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$ScoreImplToJson(
-      this,
-    );
-  }
-}
-
-abstract class _Score implements Score {
-  const factory _Score(
-      {required final int up,
-      required final int down,
-      required final int total}) = _$ScoreImpl;
-
-  factory _Score.fromJson(Map<String, dynamic> json) = _$ScoreImpl.fromJson;
-
-  @override
-  int get up;
-  @override
-  int get down;
-  @override
-  int get total;
-  @override
-  @JsonKey(ignore: true)
-  _$$ScoreImplCopyWith<_$ScoreImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

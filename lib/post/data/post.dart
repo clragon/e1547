@@ -1,5 +1,4 @@
-import 'dart:io';
-
+import 'package:deep_pick/deep_pick.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -10,97 +9,30 @@ part 'post.g.dart';
 class Post with _$Post {
   const factory Post({
     required int id,
-    required DateTime createdAt,
-    required DateTime? updatedAt,
-    @JsonKey(name: 'file') required PostSourceFile fileRaw,
-    required PostPreviewFile preview,
-    required PostSampleFile sample,
-    required Score score,
-    required Map<String, List<String>> tags,
-    required List<String>? lockedTags,
-    required int? changeSeq,
-    required Flags flags,
-    required Rating rating,
-    required int favCount,
-    required List<String> sources,
-    required List<int> pools,
-    required Relationships relationships,
-    required int? approverId,
-    required int uploaderId,
-    required String description,
-    required int commentCount,
-    required bool isFavorited,
-    required bool hasNotes,
-    required double? duration,
-    @JsonKey(includeFromJson: false, includeToJson: false)
-    @Default(VoteStatus.unknown)
-    VoteStatus voteStatus,
-  }) = _Post;
-
-  const Post._();
-
-  factory Post.fromJson(dynamic json) => _$PostFromJson(json);
-
-  PostSourceFile get file => Platform.isIOS && fileRaw.ext == 'webm'
-      ? fileRaw.copyWith(
-          ext: 'mp4',
-          url: fileRaw.url?.replaceAll('.webm', '.mp4'),
-        )
-      : fileRaw;
-}
-
-@freezed
-class PostPreviewFile with _$PostPreviewFile {
-  const factory PostPreviewFile({
-    required int width,
-    required int height,
-    required String? url,
-  }) = _PostPreviewFile;
-
-  factory PostPreviewFile.fromJson(dynamic json) =>
-      _$PostPreviewFileFromJson(json);
-}
-
-@freezed
-class PostSampleFile with _$PostSampleFile {
-  const factory PostSampleFile({
-    required bool has,
-    required int height,
-    required int width,
-    required String? url,
-  }) = _PostSampleFile;
-
-  factory PostSampleFile.fromJson(dynamic json) =>
-      _$PostSampleFileFromJson(json);
-}
-
-@freezed
-class PostSourceFile with _$PostSourceFile {
-  const factory PostSourceFile({
+    required String? file,
+    required String? sample,
+    required String? preview,
     required int width,
     required int height,
     required String ext,
     required int size,
-    required String md5,
-    required String? url,
-  }) = _PostSourceFile;
+    required Map<String, List<String>> tags,
+    required int uploaderId,
+    required DateTime createdAt,
+    required DateTime? updatedAt,
+    required VoteInfo vote,
+    required bool isDeleted,
+    required Rating rating,
+    required int favCount, // turn into class with bool isFavorited?
+    required bool isFavorited,
+    required int commentCount,
+    required String description,
+    required List<String> sources,
+    required List<int> pools,
+    required Relationships relationships,
+  }) = _Post;
 
-  factory PostSourceFile.fromJson(dynamic json) =>
-      _$PostSourceFileFromJson(json);
-}
-
-@freezed
-class Flags with _$Flags {
-  const factory Flags({
-    required bool pending,
-    required bool flagged,
-    required bool noteLocked,
-    required bool statusLocked,
-    required bool ratingLocked,
-    required bool deleted,
-  }) = _Flags;
-
-  factory Flags.fromJson(dynamic json) => _$FlagsFromJson(json);
+  factory Post.fromJson(dynamic json) => _$PostFromJson(json);
 }
 
 @JsonEnum()
@@ -118,13 +50,46 @@ class Relationships with _$Relationships {
   factory Relationships.fromJson(dynamic json) => _$RelationshipsFromJson(json);
 }
 
-@freezed
-class Score with _$Score {
-  const factory Score({
-    required int up,
-    required int down,
-    required int total,
-  }) = _Score;
-
-  factory Score.fromJson(dynamic json) => _$ScoreFromJson(json);
+extension E621Post on Post {
+  static Post fromJson(dynamic json) => pick(json).letOrThrow(
+        (pick) => Post(
+          id: pick('id').asIntOrThrow(),
+          file: pick('file').letOrThrow((pick) => pick('url').asStringOrNull()),
+          sample:
+              pick('sample').letOrThrow((pick) => pick('url').asStringOrNull()),
+          preview: pick('preview')
+              .letOrThrow((pick) => pick('url').asStringOrNull()),
+          width:
+              pick('file').letOrThrow((pick) => pick('width').asIntOrThrow()),
+          height:
+              pick('file').letOrThrow((pick) => pick('height').asIntOrThrow()),
+          ext: pick('file').letOrThrow((pick) => pick('ext').asStringOrThrow()),
+          size: pick('file').letOrThrow((pick) => pick('size').asIntOrThrow()),
+          tags: pick('tags').letOrThrow(
+            (pick) => pick.asMapOrThrow<String, List<dynamic>>().map(
+                  (key, value) => MapEntry(key, List.from(value)),
+                ),
+          ),
+          uploaderId: pick('uploader_id').asIntOrThrow(),
+          createdAt: pick('created_at').asDateTimeOrThrow(),
+          updatedAt: pick('updated_at').asDateTimeOrThrow(),
+          vote: VoteInfo(
+            score: pick('score')
+                .letOrThrow((pick) => pick('total').asIntOrThrow()),
+          ),
+          isDeleted: pick('flags')
+              .letOrThrow((pick) => pick('deleted').asBoolOrThrow()),
+          rating: pick('rating').letOrThrow(
+              (pick) => Rating.values.asNameMap()[pick.asString()]!),
+          favCount: pick('fav_count').asIntOrThrow(),
+          isFavorited: pick('is_favorited').asBoolOrThrow(),
+          commentCount: pick('comment_count').asIntOrThrow(),
+          description: pick('description').asStringOrThrow(),
+          sources:
+              pick('sources').asListOrThrow((pick) => pick.asStringOrThrow()),
+          pools: pick('pools').asListOrThrow((pick) => pick.asIntOrThrow()),
+          relationships: pick('relationships').letOrThrow((pick) =>
+              Relationships.fromJson(pick.asMapOrThrow<String, dynamic>())),
+        ),
+      );
 }

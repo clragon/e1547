@@ -67,7 +67,7 @@ Widget postGrid({
         pagingController: controller.paging,
         builderDelegate: buildBuilderDelegate(
           (context, item, index) => AspectRatio(
-            aspectRatio: 1 / (item.sample.height / item.sample.width),
+            aspectRatio: 1 / (item.height / item.width),
             child: itemBuilder(context, item, index),
           ),
         ),

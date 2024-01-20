@@ -17,7 +17,7 @@ class DeletionDisplay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (!post.flags.deleted) return const SizedBox.shrink();
+    if (!post.isDeleted) return const SizedBox.shrink();
     return SubFuture<PostFlag>(
       create: () async {
         List<PostFlag> flags = await context.read<Client>().flags(

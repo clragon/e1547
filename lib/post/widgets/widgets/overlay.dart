@@ -26,10 +26,10 @@ class PostImageOverlay extends StatelessWidget {
       );
     }
 
-    if (post.flags.deleted) {
+    if (post.isDeleted) {
       return centerText('Post was deleted');
     }
-    if (post.file.url == null) {
+    if (post.file == null) {
       return IconMessage(
         title: const Text('Image unavailable in safe mode'),
         icon: const Icon(Icons.image_not_supported_outlined),
@@ -51,12 +51,12 @@ class PostImageOverlay extends StatelessWidget {
 
     if (post.type == PostType.unsupported) {
       return IconMessage(
-        title: Text('${post.file.ext} files are not supported'),
+        title: Text('${post.ext} files are not supported'),
         icon: const Icon(Icons.image_not_supported_outlined),
         action: Padding(
           padding: const EdgeInsets.all(4),
           child: TextButton(
-            onPressed: () async => launch(post.file.url!),
+            onPressed: () async => launch(post.file!),
             child: const Text('Open'),
           ),
         ),

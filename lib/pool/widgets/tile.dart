@@ -57,7 +57,7 @@ class PoolTile extends StatelessWidget {
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxHeight: 400),
               child: AspectRatio(
-                aspectRatio: max(post.file.width / post.file.height, 0.9),
+                aspectRatio: max(post.width / post.height, 0.9),
                 child: PostImageTile(post: post),
               ),
             ),

@@ -18,8 +18,8 @@ class LikeDisplay extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             VoteDisplay(
-              status: post.voteStatus,
-              score: post.score.total,
+              status: post.vote.status,
+              score: post.vote.score,
               onUpvote: (isLiked) async {
                 PostsController controller = context.read<PostsController>();
                 ScaffoldMessengerState messenger =

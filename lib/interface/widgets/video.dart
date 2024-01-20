@@ -31,7 +31,7 @@ class VideoService extends ChangeNotifier {
 
   // To prevent the app from crashing due tue OutOfMemoryErrors,
   // the list of all loaded videos is global.
-  static final Map<VideoConfig, VideoPlayer> _videos = {};
+  static final Map<String, VideoPlayer> _videos = {};
 
   final Logger _logger = Logger('Videos');
 
@@ -48,9 +48,9 @@ class VideoService extends ChangeNotifier {
     _logger.fine('${_muteVideos ? 'Muted' : 'Unmuted'} all controllers');
   }
 
-  VideoPlayer getVideo(VideoConfig key) {
+  VideoPlayer getVideo(String key) {
     while (true) {
-      Map<VideoConfig, VideoPlayer> loaded = Map.of(_videos);
+      Map<String, VideoPlayer> loaded = Map.of(_videos);
       loaded.remove(key);
       if (loaded.length < maxLoaded) break;
       _logger.fine('Too many (${loaded.length}) videos loaded!');
@@ -60,7 +60,7 @@ class VideoService extends ChangeNotifier {
       key,
       () {
         VideoPlayer player = VideoPlayer();
-        player.open(Media(key.url), play: false);
+        player.open(Media(key), play: false);
         player.setPlaylistMode(PlaylistMode.single);
         player.setVolume(_muteVideos ? 0 : 100);
         return player;
@@ -68,7 +68,7 @@ class VideoService extends ChangeNotifier {
     );
   }
 
-  Future<void> disposeVideo(VideoConfig key) async {
+  Future<void> disposeVideo(String key) async {
     VideoPlayer? controller = _videos[key];
     if (controller != null) {
       _videos.remove(key);
@@ -78,24 +78,6 @@ class VideoService extends ChangeNotifier {
       _logger.fine('Unloaded $key');
     }
   }
-}
-
-@immutable
-class VideoConfig {
-  const VideoConfig({required this.url, required this.size});
-
-  final String url;
-  final int size;
-
-  @override
-  bool operator ==(Object other) =>
-      other is VideoConfig && other.url == url && other.size == size;
-
-  @override
-  int get hashCode => Object.hash(url.hashCode, size.hashCode);
-
-  @override
-  String toString() => 'Video($url)';
 }
 
 class VideoServiceProvider
