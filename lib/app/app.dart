@@ -10,10 +10,10 @@ export 'data/theme.dart';
 // widgets
 export 'widgets/app.dart';
 export 'widgets/errors.dart';
-export 'widgets/window.dart';
 export 'widgets/link.dart';
 export 'widgets/loading.dart';
 export 'widgets/lock.dart';
 export 'widgets/migration.dart';
 export 'widgets/notification.dart';
 export 'widgets/provider.dart';
+export 'widgets/window.dart';
