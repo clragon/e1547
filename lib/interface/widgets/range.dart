@@ -80,11 +80,11 @@ class NumberRange {
     }
   }
 
-  /// Returns a new NumberRange where [value] and [endValue] are ensured to be within [min] and [max].
-  NumberRange clamp(int? min, int? max) {
+  /// Returns a new NumberRange where [value] and [endValue] are ensured to be within [lower] and [upper].
+  NumberRange clamp(int? lower, int? upper) {
     return NumberRange(
-      value.clamp(min ?? value, max ?? value),
-      endValue: endValue?.clamp(min ?? endValue!, max ?? endValue!),
+      value.clamp(lower ?? value, upper ?? value),
+      endValue: endValue?.clamp(lower ?? endValue!, upper ?? endValue!),
       comparison: comparison,
     );
   }
