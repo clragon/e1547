@@ -12,6 +12,7 @@ class TraitsTable extends Table {
       onUpdate: KeyAction.cascade, onDelete: KeyAction.cascade)();
   TextColumn get denylist => text().map(JsonSqlConverter.list<String>())();
   TextColumn get homeTags => text()();
+  TextColumn get avatar => text().nullable()();
 
   @override
   Set<Column<Object>>? get primaryKey => {id};

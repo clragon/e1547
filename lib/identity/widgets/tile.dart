@@ -7,14 +7,12 @@ class IdentityTile extends StatelessWidget {
   const IdentityTile({
     super.key,
     required this.identity,
-    this.onTap,
-    this.leading,
     this.trailing,
+    this.onTap,
   });
 
   final Identity identity;
   final VoidCallback? onTap;
-  final Widget? leading;
   final Widget? trailing;
 
   @override
@@ -22,9 +20,9 @@ class IdentityTile extends StatelessWidget {
     return ListTile(
       title: Text(identity.username ?? 'Anonymous'),
       subtitle: Text(linkToDisplay(identity.host)),
-      onTap: onTap,
-      leading: leading ?? const Icon(Icons.person),
+      leading: IdentityAvatar(identity.id),
       trailing: trailing,
+      onTap: onTap,
     );
   }
 }
@@ -53,10 +51,10 @@ class CurrentIdentityTile extends StatelessWidget {
                 padding: const EdgeInsets.all(8),
                 child: Row(
                   children: [
-                    const SizedBox(
+                    SizedBox(
                       height: 64,
                       width: 64,
-                      child: IgnorePointer(child: AccountAvatar()),
+                      child: IdentityAvatar(identity.id),
                     ),
                     const SizedBox(width: 16),
                     Expanded(

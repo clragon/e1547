@@ -65,7 +65,6 @@ class App extends StatelessWidget {
                           CacheManagerProvider(),
                           FollowsProvider(),
                           HistoriesServiceProvider(),
-                          AccountAvatarProvider(),
                         ],
                         child: TraitsSync(
                           child: AppLoadingScreenEnd(

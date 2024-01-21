@@ -7,7 +7,6 @@ import 'package:e1547/interface/interface.dart';
 import 'package:e1547/logs/logs.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:e1547/settings/widgets/grid.dart';
-import 'package:e1547/user/user.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sub/flutter_sub.dart';
 
@@ -36,9 +35,6 @@ class SettingsPage extends StatelessWidget {
                     MaterialPageRoute(
                       builder: (context) => const IdentitiesPage(),
                     ),
-                  ),
-                  leading: const IgnorePointer(
-                    child: AccountAvatar(),
                   ),
                   trailing: const Icon(Icons.swap_horiz),
                 ),

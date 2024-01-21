@@ -21,7 +21,7 @@ class AppDatabase extends $AppDatabase {
   AppDatabase(super.e);
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -43,6 +43,11 @@ class AppDatabase extends $AppDatabase {
               END;
             ''');
           });
+        },
+        onUpgrade: (m, from, to) async {
+          if (from < 2) {
+            await m.addColumn(traitsTable, traitsTable.avatar);
+          }
         },
       );
 }

@@ -42,8 +42,14 @@ class $TraitsTableTable extends i6.TraitsTable
   late final i0.GeneratedColumn<String> homeTags = i0.GeneratedColumn<String>(
       'home_tags', aliasedName, false,
       type: i0.DriftSqlType.string, requiredDuringInsert: true);
+  static const i0.VerificationMeta _avatarMeta =
+      const i0.VerificationMeta('avatar');
   @override
-  List<i0.GeneratedColumn> get $columns => [id, denylist, homeTags];
+  late final i0.GeneratedColumn<String> avatar = i0.GeneratedColumn<String>(
+      'avatar', aliasedName, true,
+      type: i0.DriftSqlType.string, requiredDuringInsert: false);
+  @override
+  List<i0.GeneratedColumn> get $columns => [id, denylist, homeTags, avatar];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -64,6 +70,10 @@ class $TraitsTableTable extends i6.TraitsTable
     } else if (isInserting) {
       context.missing(_homeTagsMeta);
     }
+    if (data.containsKey('avatar')) {
+      context.handle(_avatarMeta,
+          avatar.isAcceptableOrUnknown(data['avatar']!, _avatarMeta));
+    }
     return context;
   }
 
@@ -80,6 +90,8 @@ class $TraitsTableTable extends i6.TraitsTable
           .read(i0.DriftSqlType.string, data['${effectivePrefix}denylist'])!),
       homeTags: attachedDatabase.typeMapping
           .read(i0.DriftSqlType.string, data['${effectivePrefix}home_tags'])!,
+      avatar: attachedDatabase.typeMapping
+          .read(i0.DriftSqlType.string, data['${effectivePrefix}avatar']),
     );
   }
 
@@ -96,37 +108,44 @@ class TraitsCompanion extends i0.UpdateCompanion<i5.Traits> {
   final i0.Value<int> id;
   final i0.Value<List<String>> denylist;
   final i0.Value<String> homeTags;
+  final i0.Value<String?> avatar;
   const TraitsCompanion({
     this.id = const i0.Value.absent(),
     this.denylist = const i0.Value.absent(),
     this.homeTags = const i0.Value.absent(),
+    this.avatar = const i0.Value.absent(),
   });
   TraitsCompanion.insert({
     this.id = const i0.Value.absent(),
     required List<String> denylist,
     required String homeTags,
+    this.avatar = const i0.Value.absent(),
   })  : denylist = i0.Value(denylist),
         homeTags = i0.Value(homeTags);
   static i0.Insertable<i5.Traits> custom({
     i0.Expression<int>? id,
     i0.Expression<String>? denylist,
     i0.Expression<String>? homeTags,
+    i0.Expression<String>? avatar,
   }) {
     return i0.RawValuesInsertable({
       if (id != null) 'id': id,
       if (denylist != null) 'denylist': denylist,
       if (homeTags != null) 'home_tags': homeTags,
+      if (avatar != null) 'avatar': avatar,
     });
   }
 
   i4.TraitsCompanion copyWith(
       {i0.Value<int>? id,
       i0.Value<List<String>>? denylist,
-      i0.Value<String>? homeTags}) {
+      i0.Value<String>? homeTags,
+      i0.Value<String?>? avatar}) {
     return i4.TraitsCompanion(
       id: id ?? this.id,
       denylist: denylist ?? this.denylist,
       homeTags: homeTags ?? this.homeTags,
+      avatar: avatar ?? this.avatar,
     );
   }
 
@@ -144,6 +163,9 @@ class TraitsCompanion extends i0.UpdateCompanion<i5.Traits> {
     if (homeTags.present) {
       map['home_tags'] = i0.Variable<String>(homeTags.value);
     }
+    if (avatar.present) {
+      map['avatar'] = i0.Variable<String>(avatar.value);
+    }
     return map;
   }
 
@@ -152,7 +174,8 @@ class TraitsCompanion extends i0.UpdateCompanion<i5.Traits> {
     return (StringBuffer('TraitsCompanion(')
           ..write('id: $id, ')
           ..write('denylist: $denylist, ')
-          ..write('homeTags: $homeTags')
+          ..write('homeTags: $homeTags, ')
+          ..write('avatar: $avatar')
           ..write(')'))
         .toString();
   }
@@ -167,6 +190,7 @@ class _$TraitsInsertable implements i0.Insertable<i5.Traits> {
       id: i0.Value(_object.id),
       denylist: i0.Value(_object.denylist),
       homeTags: i0.Value(_object.homeTags),
+      avatar: i0.Value(_object.avatar),
     ).toColumns(false);
   }
 }

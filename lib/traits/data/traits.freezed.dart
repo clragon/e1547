@@ -23,6 +23,7 @@ mixin _$Traits {
   int get id => throw _privateConstructorUsedError;
   List<String> get denylist => throw _privateConstructorUsedError;
   String get homeTags => throw _privateConstructorUsedError;
+  String? get avatar => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -34,7 +35,7 @@ abstract class $TraitsCopyWith<$Res> {
   factory $TraitsCopyWith(Traits value, $Res Function(Traits) then) =
       _$TraitsCopyWithImpl<$Res, Traits>;
   @useResult
-  $Res call({int id, List<String> denylist, String homeTags});
+  $Res call({int id, List<String> denylist, String homeTags, String? avatar});
 }
 
 /// @nodoc
@@ -53,6 +54,7 @@ class _$TraitsCopyWithImpl<$Res, $Val extends Traits>
     Object? id = null,
     Object? denylist = null,
     Object? homeTags = null,
+    Object? avatar = freezed,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -67,6 +69,10 @@ class _$TraitsCopyWithImpl<$Res, $Val extends Traits>
           ? _value.homeTags
           : homeTags // ignore: cast_nullable_to_non_nullable
               as String,
+      avatar: freezed == avatar
+          ? _value.avatar
+          : avatar // ignore: cast_nullable_to_non_nullable
+              as String?,
     ) as $Val);
   }
 }
@@ -78,7 +84,7 @@ abstract class _$$TraitsImplCopyWith<$Res> implements $TraitsCopyWith<$Res> {
       __$$TraitsImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({int id, List<String> denylist, String homeTags});
+  $Res call({int id, List<String> denylist, String homeTags, String? avatar});
 }
 
 /// @nodoc
@@ -95,6 +101,7 @@ class __$$TraitsImplCopyWithImpl<$Res>
     Object? id = null,
     Object? denylist = null,
     Object? homeTags = null,
+    Object? avatar = freezed,
   }) {
     return _then(_$TraitsImpl(
       id: null == id
@@ -109,6 +116,10 @@ class __$$TraitsImplCopyWithImpl<$Res>
           ? _value.homeTags
           : homeTags // ignore: cast_nullable_to_non_nullable
               as String,
+      avatar: freezed == avatar
+          ? _value.avatar
+          : avatar // ignore: cast_nullable_to_non_nullable
+              as String?,
     ));
   }
 }
@@ -119,7 +130,8 @@ class _$TraitsImpl implements _Traits {
   const _$TraitsImpl(
       {required this.id,
       required final List<String> denylist,
-      required this.homeTags})
+      required this.homeTags,
+      required this.avatar})
       : _denylist = denylist;
 
   factory _$TraitsImpl.fromJson(Map<String, dynamic> json) =>
@@ -137,10 +149,12 @@ class _$TraitsImpl implements _Traits {
 
   @override
   final String homeTags;
+  @override
+  final String? avatar;
 
   @override
   String toString() {
-    return 'Traits(id: $id, denylist: $denylist, homeTags: $homeTags)';
+    return 'Traits(id: $id, denylist: $denylist, homeTags: $homeTags, avatar: $avatar)';
   }
 
   @override
@@ -151,13 +165,14 @@ class _$TraitsImpl implements _Traits {
             (identical(other.id, id) || other.id == id) &&
             const DeepCollectionEquality().equals(other._denylist, _denylist) &&
             (identical(other.homeTags, homeTags) ||
-                other.homeTags == homeTags));
+                other.homeTags == homeTags) &&
+            (identical(other.avatar, avatar) || other.avatar == avatar));
   }
 
   @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(runtimeType, id,
-      const DeepCollectionEquality().hash(_denylist), homeTags);
+      const DeepCollectionEquality().hash(_denylist), homeTags, avatar);
 
   @JsonKey(ignore: true)
   @override
@@ -177,7 +192,8 @@ abstract class _Traits implements Traits {
   const factory _Traits(
       {required final int id,
       required final List<String> denylist,
-      required final String homeTags}) = _$TraitsImpl;
+      required final String homeTags,
+      required final String? avatar}) = _$TraitsImpl;
 
   factory _Traits.fromJson(Map<String, dynamic> json) = _$TraitsImpl.fromJson;
 
@@ -187,6 +203,8 @@ abstract class _Traits implements Traits {
   List<String> get denylist;
   @override
   String get homeTags;
+  @override
+  String? get avatar;
   @override
   @JsonKey(ignore: true)
   _$$TraitsImplCopyWith<_$TraitsImpl> get copyWith =>
@@ -202,6 +220,7 @@ mixin _$TraitsRequest {
   int get identity => throw _privateConstructorUsedError;
   List<String> get denylist => throw _privateConstructorUsedError;
   String get homeTags => throw _privateConstructorUsedError;
+  String? get avatar => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -215,7 +234,8 @@ abstract class $TraitsRequestCopyWith<$Res> {
           TraitsRequest value, $Res Function(TraitsRequest) then) =
       _$TraitsRequestCopyWithImpl<$Res, TraitsRequest>;
   @useResult
-  $Res call({int identity, List<String> denylist, String homeTags});
+  $Res call(
+      {int identity, List<String> denylist, String homeTags, String? avatar});
 }
 
 /// @nodoc
@@ -234,6 +254,7 @@ class _$TraitsRequestCopyWithImpl<$Res, $Val extends TraitsRequest>
     Object? identity = null,
     Object? denylist = null,
     Object? homeTags = null,
+    Object? avatar = freezed,
   }) {
     return _then(_value.copyWith(
       identity: null == identity
@@ -248,6 +269,10 @@ class _$TraitsRequestCopyWithImpl<$Res, $Val extends TraitsRequest>
           ? _value.homeTags
           : homeTags // ignore: cast_nullable_to_non_nullable
               as String,
+      avatar: freezed == avatar
+          ? _value.avatar
+          : avatar // ignore: cast_nullable_to_non_nullable
+              as String?,
     ) as $Val);
   }
 }
@@ -260,7 +285,8 @@ abstract class _$$TraitsRequestImplCopyWith<$Res>
       __$$TraitsRequestImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({int identity, List<String> denylist, String homeTags});
+  $Res call(
+      {int identity, List<String> denylist, String homeTags, String? avatar});
 }
 
 /// @nodoc
@@ -277,6 +303,7 @@ class __$$TraitsRequestImplCopyWithImpl<$Res>
     Object? identity = null,
     Object? denylist = null,
     Object? homeTags = null,
+    Object? avatar = freezed,
   }) {
     return _then(_$TraitsRequestImpl(
       identity: null == identity
@@ -291,6 +318,10 @@ class __$$TraitsRequestImplCopyWithImpl<$Res>
           ? _value.homeTags
           : homeTags // ignore: cast_nullable_to_non_nullable
               as String,
+      avatar: freezed == avatar
+          ? _value.avatar
+          : avatar // ignore: cast_nullable_to_non_nullable
+              as String?,
     ));
   }
 }
@@ -301,7 +332,8 @@ class _$TraitsRequestImpl implements _TraitsRequest {
   const _$TraitsRequestImpl(
       {required this.identity,
       final List<String> denylist = const [],
-      this.homeTags = ''})
+      this.homeTags = '',
+      this.avatar})
       : _denylist = denylist;
 
   factory _$TraitsRequestImpl.fromJson(Map<String, dynamic> json) =>
@@ -321,10 +353,12 @@ class _$TraitsRequestImpl implements _TraitsRequest {
   @override
   @JsonKey()
   final String homeTags;
+  @override
+  final String? avatar;
 
   @override
   String toString() {
-    return 'TraitsRequest(identity: $identity, denylist: $denylist, homeTags: $homeTags)';
+    return 'TraitsRequest(identity: $identity, denylist: $denylist, homeTags: $homeTags, avatar: $avatar)';
   }
 
   @override
@@ -336,13 +370,14 @@ class _$TraitsRequestImpl implements _TraitsRequest {
                 other.identity == identity) &&
             const DeepCollectionEquality().equals(other._denylist, _denylist) &&
             (identical(other.homeTags, homeTags) ||
-                other.homeTags == homeTags));
+                other.homeTags == homeTags) &&
+            (identical(other.avatar, avatar) || other.avatar == avatar));
   }
 
   @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(runtimeType, identity,
-      const DeepCollectionEquality().hash(_denylist), homeTags);
+      const DeepCollectionEquality().hash(_denylist), homeTags, avatar);
 
   @JsonKey(ignore: true)
   @override
@@ -362,7 +397,8 @@ abstract class _TraitsRequest implements TraitsRequest {
   const factory _TraitsRequest(
       {required final int identity,
       final List<String> denylist,
-      final String homeTags}) = _$TraitsRequestImpl;
+      final String homeTags,
+      final String? avatar}) = _$TraitsRequestImpl;
 
   factory _TraitsRequest.fromJson(Map<String, dynamic> json) =
       _$TraitsRequestImpl.fromJson;
@@ -373,6 +409,8 @@ abstract class _TraitsRequest implements TraitsRequest {
   List<String> get denylist;
   @override
   String get homeTags;
+  @override
+  String? get avatar;
   @override
   @JsonKey(ignore: true)
   _$$TraitsRequestImplCopyWith<_$TraitsRequestImpl> get copyWith =>

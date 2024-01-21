@@ -553,8 +553,19 @@ class Client {
 
     Account result = E621Account.fromJson(body);
 
+    Post? avatar;
+
+    if (result.avatarId != null) {
+      avatar = await post(
+        result.avatarId!,
+        force: force,
+        cancelToken: cancelToken,
+      );
+    }
+
     traits.value = traits.value.copyWith(
       denylist: result.blacklistedTags?.split('\n').trim() ?? [],
+      avatar: avatar?.file,
     );
 
     return result;

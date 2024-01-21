@@ -1,81 +1,33 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:e1547/client/client.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
+import 'package:e1547/traits/data/service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_sub/flutter_sub.dart';
 
-class AccountAvatar extends StatelessWidget {
-  const AccountAvatar({super.key});
+class IdentityAvatar extends StatelessWidget {
+  const IdentityAvatar(
+    this.id, {
+    super.key,
+    this.radius = 20,
+  });
+
+  final int id;
+  final double radius;
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<AccountAvatarController>(
-      builder: (context, controller, child) {
-        if (controller.error != null) {
-          return CircleAvatar(
-            backgroundColor: Theme.of(context).colorScheme.surface,
-            child: const Icon(Icons.warning_amber),
-          );
-        }
-
-        return UserAvatar(
-          id: controller.items?.firstOrNull?.id,
-          controller: controller,
-        );
-      },
+    return Consumer<TraitsService>(
+      builder: (context, service, child) => SubStream(
+        create: () => service.get(id).stream,
+        builder: (context, snapshot) => Avatar(
+          snapshot.data?.avatar,
+          radius: radius,
+        ),
+      ),
     );
   }
-}
-
-class AccountAvatarController extends PostsController {
-  AccountAvatarController({
-    required super.client,
-  }) : super(filterMode: PostFilterMode.unavailable);
-
-  @override
-  Future<List<Post>> fetch(int page, bool force) async {
-    if (page != firstPageKey) return [];
-    int? id = (await client.account())?.avatarId;
-    if (id == null) return [];
-    return [
-      await client.post(
-        id,
-        force: force,
-        cancelToken: cancelToken,
-      ),
-    ];
-  }
-}
-
-class AccountAvatarProvider
-    extends SubChangeNotifierProvider<Client, AccountAvatarController> {
-  AccountAvatarProvider({super.child, TransitionBuilder? builder})
-      : super(
-          create: (context, client) =>
-              AccountAvatarController(client: client)..getNextPage(),
-          builder: (context, child) => SubEffect(
-            effect: () {
-              Future(() async {
-                PostsController? controller =
-                    context.read<AccountAvatarController>();
-                await controller.waitForNextPage();
-                Post? avatar = controller.items?.firstOrNull;
-                if (avatar?.sample != null && context.mounted) {
-                  await preloadPostImage(
-                    context: context,
-                    post: avatar!,
-                    size: PostImageSize.sample,
-                  );
-                }
-              });
-              return null;
-            },
-            keys: [context.watch<AccountAvatarController>()],
-            child: builder?.call(context, child) ?? child!,
-          ),
-        );
 }
 
 class UserAvatar extends StatelessWidget {
@@ -101,21 +53,19 @@ class UserAvatar extends StatelessWidget {
         id: id,
         controller: controller,
         builder: (context, post) => Avatar(
-          post,
-          onTap: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => PostsControllerConnector(
-                  id: id,
+          post?.sample,
+          onTap: () => Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => PostsControllerConnector(
+                id: id,
+                controller: controller,
+                builder: (context, post) => PostsRouteConnector(
                   controller: controller,
-                  builder: (context, post) => PostsRouteConnector(
-                    controller: controller,
-                    child: PostDetail(post: post!),
-                  ),
+                  child: PostDetail(post: post!),
                 ),
               ),
-            );
-          },
+            ),
+          ),
         ),
       ),
     );
@@ -145,44 +95,41 @@ class PostAvatar extends StatelessWidget {
 
 class Avatar extends StatelessWidget {
   const Avatar(
-    this.post, {
+    this.url, {
     super.key,
     this.onTap,
     this.radius = 20,
   });
 
-  final Post? post;
+  final String? url;
   final double radius;
   final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
-    if (post?.sample != null) {
+    if (url case final url?) {
       return MouseCursorRegion(
         onTap: onTap,
-        child: PostTileOverlay(
-          post: post!,
-          child: Container(
-            decoration: const BoxDecoration(shape: BoxShape.circle),
-            clipBehavior: Clip.antiAlias,
-            width: radius * 2,
-            height: radius * 2,
-            child: CachedNetworkImage(
-              fadeInDuration: Duration.zero,
-              fadeOutDuration: Duration.zero,
-              imageUrl: post!.sample!,
-              fit: BoxFit.cover,
-              cacheManager: context.read<BaseCacheManager>(),
-              placeholder: (context, url) => const EmptyAvatar(),
-              errorWidget: (context, url, error) => const Center(
-                child: Icon(Icons.warning_amber),
-              ),
+        child: Container(
+          decoration: const BoxDecoration(shape: BoxShape.circle),
+          clipBehavior: Clip.antiAlias,
+          width: radius * 2,
+          height: radius * 2,
+          child: CachedNetworkImage(
+            imageUrl: url,
+            fit: BoxFit.cover,
+            cacheManager: context.read<BaseCacheManager>(),
+            placeholder: (context, url) => EmptyAvatar(radius: radius),
+            errorWidget: (context, url, error) => const Center(
+              child: Icon(Icons.warning_amber),
             ),
+            fadeInDuration: Duration.zero,
+            fadeOutDuration: Duration.zero,
           ),
         ),
       );
     } else {
-      return const EmptyAvatar();
+      return EmptyAvatar(radius: radius);
     }
   }
 }
