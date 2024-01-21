@@ -92,7 +92,6 @@ final List<RouterDrawerDestination> rootDestintations = [
     name: 'History',
     icon: const Icon(Icons.history),
     builder: (context) => const HistoriesPage(),
-    visible: (context) => context.watch<HistoriesService>().enabled,
     enabled: _nonRecursive<HistoriesPage>,
     group: _drawerSettingsGroup,
   ),
