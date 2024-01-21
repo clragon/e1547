@@ -15,12 +15,14 @@ class TileLayoutData extends InheritedWidget {
     required super.child,
     required this.tileHeightFactor,
     required this.tileSize,
+    required this.mainAxisCount,
     required this.crossAxisCount,
     required this.stagger,
   });
 
   final double tileHeightFactor;
   final int tileSize;
+  final int mainAxisCount;
   final int crossAxisCount;
   final GridQuilt stagger;
 
@@ -63,9 +65,12 @@ class TileLayout extends StatelessWidget {
             stagger = this.stagger ?? stagger;
             int crossAxisCount =
                 max(1, constraints.maxWidth / tileSize).round();
+            int mainAxisCount =
+                max(1, constraints.maxHeight / tileSize).round();
             return TileLayoutData(
               tileHeightFactor: tileHeightFactor,
               tileSize: tileSize,
+              mainAxisCount: mainAxisCount,
               crossAxisCount: crossAxisCount,
               stagger: stagger,
               child: this.child,
