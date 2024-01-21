@@ -31,6 +31,7 @@ class _DenyListPageState extends State<DenyListPage> {
         builder: (context, controller, submit) => TagInput(
           controller: controller,
           textInputAction: TextInputAction.done,
+          direction: VerticalDirection.up,
           labelText: title,
           submit: submit,
           readOnly: sheetController.isLoading,
