@@ -168,6 +168,8 @@ class Avatar extends StatelessWidget {
             width: radius * 2,
             height: radius * 2,
             child: CachedNetworkImage(
+              fadeInDuration: Duration.zero,
+              fadeOutDuration: Duration.zero,
               imageUrl: post!.sample!,
               fit: BoxFit.cover,
               cacheManager: context.read<BaseCacheManager>(),
