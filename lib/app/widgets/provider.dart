@@ -68,7 +68,7 @@ class TraitsServiceProvider extends SubChangeNotifierProvider3<AppStorage,
               Consumer2<TraitsService, IdentitiesService>(
             builder: (context, traits, identities, child) => SubFuture<void>(
               create: () => traits.activate(identities.identity.id),
-              keys: [traits, identities],
+              keys: [traits, identities, identities.identity],
               builder: (context, snapshot) {
                 if (snapshot.connectionState != ConnectionState.done) {
                   return Container(
