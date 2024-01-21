@@ -564,6 +564,10 @@ class Client {
     required Traits traits,
     CancelToken? cancelToken,
   }) async {
+    if (identity.username == null) {
+      this.traits.value = traits;
+      return;
+    }
     Traits previous = this.traits.value;
     try {
       if (!listEquals(traits.denylist, this.traits.value.denylist)) {
