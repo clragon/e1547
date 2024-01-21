@@ -564,7 +564,7 @@ class Client {
     required Traits traits,
     CancelToken? cancelToken,
   }) async {
-    if (identity.username == null) {
+    if (!hasLogin) {
       this.traits.value = traits;
       return;
     }
