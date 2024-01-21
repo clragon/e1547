@@ -12,6 +12,7 @@ _$TraitsImpl _$$TraitsImplFromJson(Map<String, dynamic> json) => _$TraitsImpl(
           (json['denylist'] as List<dynamic>).map((e) => e as String).toList(),
       homeTags: json['home_tags'] as String,
       avatar: json['avatar'] as String?,
+      favicon: json['favicon'] as String?,
     );
 
 Map<String, dynamic> _$$TraitsImplToJson(_$TraitsImpl instance) =>
@@ -20,6 +21,7 @@ Map<String, dynamic> _$$TraitsImplToJson(_$TraitsImpl instance) =>
       'denylist': instance.denylist,
       'home_tags': instance.homeTags,
       'avatar': instance.avatar,
+      'favicon': instance.favicon,
     };
 
 _$TraitsRequestImpl _$$TraitsRequestImplFromJson(Map<String, dynamic> json) =>
@@ -31,6 +33,7 @@ _$TraitsRequestImpl _$$TraitsRequestImplFromJson(Map<String, dynamic> json) =>
           const [],
       homeTags: json['home_tags'] as String? ?? '',
       avatar: json['avatar'] as String?,
+      favicon: json['favicon'] as String?,
     );
 
 Map<String, dynamic> _$$TraitsRequestImplToJson(_$TraitsRequestImpl instance) =>
@@ -39,4 +42,5 @@ Map<String, dynamic> _$$TraitsRequestImplToJson(_$TraitsRequestImpl instance) =>
       'denylist': instance.denylist,
       'home_tags': instance.homeTags,
       'avatar': instance.avatar,
+      'favicon': instance.favicon,
     };

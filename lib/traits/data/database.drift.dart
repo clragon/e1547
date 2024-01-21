@@ -48,8 +48,15 @@ class $TraitsTableTable extends i6.TraitsTable
   late final i0.GeneratedColumn<String> avatar = i0.GeneratedColumn<String>(
       'avatar', aliasedName, true,
       type: i0.DriftSqlType.string, requiredDuringInsert: false);
+  static const i0.VerificationMeta _faviconMeta =
+      const i0.VerificationMeta('favicon');
   @override
-  List<i0.GeneratedColumn> get $columns => [id, denylist, homeTags, avatar];
+  late final i0.GeneratedColumn<String> favicon = i0.GeneratedColumn<String>(
+      'favicon', aliasedName, true,
+      type: i0.DriftSqlType.string, requiredDuringInsert: false);
+  @override
+  List<i0.GeneratedColumn> get $columns =>
+      [id, denylist, homeTags, avatar, favicon];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -74,6 +81,10 @@ class $TraitsTableTable extends i6.TraitsTable
       context.handle(_avatarMeta,
           avatar.isAcceptableOrUnknown(data['avatar']!, _avatarMeta));
     }
+    if (data.containsKey('favicon')) {
+      context.handle(_faviconMeta,
+          favicon.isAcceptableOrUnknown(data['favicon']!, _faviconMeta));
+    }
     return context;
   }
 
@@ -92,6 +103,8 @@ class $TraitsTableTable extends i6.TraitsTable
           .read(i0.DriftSqlType.string, data['${effectivePrefix}home_tags'])!,
       avatar: attachedDatabase.typeMapping
           .read(i0.DriftSqlType.string, data['${effectivePrefix}avatar']),
+      favicon: attachedDatabase.typeMapping
+          .read(i0.DriftSqlType.string, data['${effectivePrefix}favicon']),
     );
   }
 
@@ -109,17 +122,20 @@ class TraitsCompanion extends i0.UpdateCompanion<i5.Traits> {
   final i0.Value<List<String>> denylist;
   final i0.Value<String> homeTags;
   final i0.Value<String?> avatar;
+  final i0.Value<String?> favicon;
   const TraitsCompanion({
     this.id = const i0.Value.absent(),
     this.denylist = const i0.Value.absent(),
     this.homeTags = const i0.Value.absent(),
     this.avatar = const i0.Value.absent(),
+    this.favicon = const i0.Value.absent(),
   });
   TraitsCompanion.insert({
     this.id = const i0.Value.absent(),
     required List<String> denylist,
     required String homeTags,
     this.avatar = const i0.Value.absent(),
+    this.favicon = const i0.Value.absent(),
   })  : denylist = i0.Value(denylist),
         homeTags = i0.Value(homeTags);
   static i0.Insertable<i5.Traits> custom({
@@ -127,12 +143,14 @@ class TraitsCompanion extends i0.UpdateCompanion<i5.Traits> {
     i0.Expression<String>? denylist,
     i0.Expression<String>? homeTags,
     i0.Expression<String>? avatar,
+    i0.Expression<String>? favicon,
   }) {
     return i0.RawValuesInsertable({
       if (id != null) 'id': id,
       if (denylist != null) 'denylist': denylist,
       if (homeTags != null) 'home_tags': homeTags,
       if (avatar != null) 'avatar': avatar,
+      if (favicon != null) 'favicon': favicon,
     });
   }
 
@@ -140,12 +158,14 @@ class TraitsCompanion extends i0.UpdateCompanion<i5.Traits> {
       {i0.Value<int>? id,
       i0.Value<List<String>>? denylist,
       i0.Value<String>? homeTags,
-      i0.Value<String?>? avatar}) {
+      i0.Value<String?>? avatar,
+      i0.Value<String?>? favicon}) {
     return i4.TraitsCompanion(
       id: id ?? this.id,
       denylist: denylist ?? this.denylist,
       homeTags: homeTags ?? this.homeTags,
       avatar: avatar ?? this.avatar,
+      favicon: favicon ?? this.favicon,
     );
   }
 
@@ -166,6 +186,9 @@ class TraitsCompanion extends i0.UpdateCompanion<i5.Traits> {
     if (avatar.present) {
       map['avatar'] = i0.Variable<String>(avatar.value);
     }
+    if (favicon.present) {
+      map['favicon'] = i0.Variable<String>(favicon.value);
+    }
     return map;
   }
 
@@ -175,7 +198,8 @@ class TraitsCompanion extends i0.UpdateCompanion<i5.Traits> {
           ..write('id: $id, ')
           ..write('denylist: $denylist, ')
           ..write('homeTags: $homeTags, ')
-          ..write('avatar: $avatar')
+          ..write('avatar: $avatar, ')
+          ..write('favicon: $favicon')
           ..write(')'))
         .toString();
   }
@@ -191,6 +215,7 @@ class _$TraitsInsertable implements i0.Insertable<i5.Traits> {
       denylist: i0.Value(_object.denylist),
       homeTags: i0.Value(_object.homeTags),
       avatar: i0.Value(_object.avatar),
+      favicon: i0.Value(_object.favicon),
     ).toColumns(false);
   }
 }

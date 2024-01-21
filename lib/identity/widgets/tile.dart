@@ -51,10 +51,9 @@ class CurrentIdentityTile extends StatelessWidget {
                 padding: const EdgeInsets.all(8),
                 child: Row(
                   children: [
-                    SizedBox(
-                      height: 64,
-                      width: 64,
-                      child: IdentityAvatar(identity.id),
+                    IdentityAvatar(
+                      identity.id,
+                      radius: 32,
                     ),
                     const SizedBox(width: 16),
                     Expanded(

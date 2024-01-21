@@ -47,6 +47,7 @@ class AppDatabase extends $AppDatabase {
         onUpgrade: (m, from, to) async {
           if (from < 2) {
             await m.addColumn(traitsTable, traitsTable.avatar);
+            await m.addColumn(traitsTable, traitsTable.favicon);
           }
         },
       );

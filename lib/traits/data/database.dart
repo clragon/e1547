@@ -13,6 +13,7 @@ class TraitsTable extends Table {
   TextColumn get denylist => text().map(JsonSqlConverter.list<String>())();
   TextColumn get homeTags => text()();
   TextColumn get avatar => text().nullable()();
+  TextColumn get favicon => text().nullable()();
 
   @override
   Set<Column<Object>>? get primaryKey => {id};
@@ -23,11 +24,14 @@ class TraitsDao extends DatabaseAccessor<GeneratedDatabase>
     with $TraitsDaoMixin {
   TraitsDao(super.db);
 
-  StreamFuture<Traits> get(int id) {
+  StreamFuture<Traits?> getOrNull(int id) {
     return (select(traitsTable)..where((t) => t.id.equals(id)))
-        .watchSingle()
+        .watchSingleOrNull()
         .future;
   }
+
+  StreamFuture<Traits> get(int id) =>
+      getOrNull(id).stream.map((event) => event!).future;
 
   Future<Traits> add(TraitsRequest value) {
     return into(traitsTable).insertReturning(

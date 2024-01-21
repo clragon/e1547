@@ -102,7 +102,15 @@ class Client {
         .toString();
   }
 
-  Future<void> availability() async => _dio.get('');
+  Future<void> availability() async {
+    String body = await _dio.get('').then((response) => response.data);
+    String? favicon = findFavicon(body);
+    if (favicon != null) {
+      traits.value = traits.value.copyWith(
+        favicon: withHost(favicon),
+      );
+    }
+  }
 
   Future<List<Post>> posts({
     int? page,

@@ -10,6 +10,7 @@ class Traits with _$Traits {
     required List<String> denylist,
     required String homeTags,
     required String? avatar,
+    required String? favicon,
   }) = _Traits;
 
   factory Traits.fromJson(Map<String, dynamic> json) => _$TraitsFromJson(json);
@@ -22,6 +23,7 @@ class TraitsRequest with _$TraitsRequest {
     @Default([]) List<String> denylist,
     @Default('') String homeTags,
     String? avatar,
+    String? favicon,
   }) = _TraitsRequest;
 
   factory TraitsRequest.fromJson(Map<String, dynamic> json) =>
