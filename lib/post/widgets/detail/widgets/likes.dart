@@ -64,9 +64,12 @@ class LikeDisplay extends StatelessWidget {
             Row(
               children: [
                 Text(post.favCount.toString()),
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 8),
-                  child: Icon(Icons.favorite),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: Icon(
+                    Icons.favorite,
+                    color: post.isFavorited ? Colors.pinkAccent : IconTheme.of(context).color,
+                  ),
                 ),
               ],
             ),
