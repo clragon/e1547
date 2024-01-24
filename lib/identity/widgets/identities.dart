@@ -8,53 +8,68 @@ class IdentitiesPage extends StatelessWidget {
   const IdentitiesPage({super.key});
 
   Widget tile(BuildContext context, Identity identity) {
-    return IdentityTile(
-      identity: identity,
-      onTap: () {
-        context.read<IdentitiesService>().activate(identity.id);
-        Navigator.of(context).maybePop();
-      },
-      trailing: PopupMenuButton<VoidCallback>(
-        icon: const Dimmed(child: Icon(Icons.more_vert)),
-        onSelected: (value) => value(),
-        itemBuilder: (context) => [
-          PopupMenuTile(
-            title: 'Edit',
-            icon: Icons.edit,
-            value: () => Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => IdentityPage(identity: identity),
-              ),
-            ),
+    bool selected = context.watch<IdentitiesService>().identity == identity;
+    return Row(
+      children: [
+        Container(
+          height: 8,
+          width: 8,
+          decoration: BoxDecoration(
+            color: selected ? Theme.of(context).colorScheme.primary : null,
+            shape: BoxShape.circle,
           ),
-          PopupMenuTile(
-            title: 'Delete',
-            icon: Icons.delete,
-            value: () => showDialog(
-              context: context,
-              builder: (context) => AlertDialog(
-                title: const Text('Delete identity?'),
-                content: const Text(
-                  'All your data will be permanently removed, including history and follows.',
+        ),
+        Expanded(
+          child: IdentityTile(
+            identity: identity,
+            onTap: () {
+              context.read<IdentitiesService>().activate(identity.id);
+              Navigator.of(context).maybePop();
+            },
+            trailing: PopupMenuButton<VoidCallback>(
+              icon: const Dimmed(child: Icon(Icons.more_vert)),
+              onSelected: (value) => value(),
+              itemBuilder: (context) => [
+                PopupMenuTile(
+                  title: 'Edit',
+                  icon: Icons.edit,
+                  value: () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => IdentityPage(identity: identity),
+                    ),
+                  ),
                 ),
-                actions: [
-                  TextButton(
-                    onPressed: Navigator.of(context).maybePop,
-                    child: const Text('CANCEL'),
+                PopupMenuTile(
+                  title: 'Delete',
+                  icon: Icons.delete,
+                  value: () => showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: const Text('Delete identity?'),
+                      content: const Text(
+                        'All your data will be permanently removed, including history and follows.',
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: Navigator.of(context).maybePop,
+                          child: const Text('CANCEL'),
+                        ),
+                        ElevatedButton(
+                          child: const Text('DELETE'),
+                          onPressed: () {
+                            Navigator.of(context).maybePop();
+                            context.read<IdentitiesService>().remove(identity);
+                          },
+                        ),
+                      ],
+                    ),
                   ),
-                  ElevatedButton(
-                    child: const Text('DELETE'),
-                    onPressed: () {
-                      Navigator.of(context).maybePop();
-                      context.read<IdentitiesService>().remove(identity);
-                    },
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
