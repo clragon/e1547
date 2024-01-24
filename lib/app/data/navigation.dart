@@ -1,6 +1,5 @@
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/history/history.dart';
-import 'package:e1547/identity/identity.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/pool/pool.dart';
 import 'package:e1547/post/post.dart';
@@ -108,10 +107,6 @@ final List<RouterDrawerDestination> rootDestintations = [
     icon: const DrawerUpdateIcon(),
     builder: (context) => const AboutPage(),
     group: _drawerSettingsGroup,
-  ),
-  RouterDrawerDestination(
-    path: '/login',
-    builder: (context) => const IdentityPage(),
   ),
   RouterDrawerDestination(
     path: '/blacklist',
