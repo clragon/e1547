@@ -49,8 +49,10 @@ class _DenyListPageState extends State<DenyListPage> {
           builder: (context, traits, child) {
             List<String> denylist = traits.denylist.toList();
             return RefreshableLoadingPage(
-              onEmptyIcon: const Icon(Icons.check),
-              onEmpty: const Text('Your blacklist is empty'),
+              onEmpty: const IconMessage(
+                icon: Icon(Icons.check),
+                title: Text('Your blacklist is empty'),
+              ),
               onError: const Text('Failed to load blacklist'),
               isError: false,
               isLoading: false,

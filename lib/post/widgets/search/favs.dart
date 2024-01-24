@@ -24,19 +24,10 @@ class FavPage extends StatelessWidget {
             child: LoadingPage(
               isEmpty: controller.error is NoUserLoginException,
               isError: controller.error is NoUserLoginException,
-              onError: Column(
-                children: [
-                  const Padding(
-                    padding: EdgeInsets.all(16),
-                    child: Text('You are not logged in'),
-                  ),
-                  TextButton(
-                    onPressed: () => Navigator.of(context).pushNamed('/login'),
-                    child: const Text('LOGIN'),
-                  ),
-                ],
+              onError: const IconMessage(
+                icon: Icon(Icons.person_search),
+                title: Text('Favorites are unavailable for anonymous users'),
               ),
-              onErrorIcon: const Icon(Icons.login),
               loadingBuilder: (context, child) => AdaptiveScaffold(
                 appBar: const DefaultAppBar(title: Text('Favorites')),
                 body: Center(child: child(context)),

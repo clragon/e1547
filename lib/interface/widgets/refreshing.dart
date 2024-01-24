@@ -82,9 +82,7 @@ class RefreshableLoadingPage extends StatelessWidget {
     this.refreshHeader,
     this.initial,
     this.onEmpty,
-    this.onEmptyIcon,
     this.onError,
-    this.onErrorIcon,
     this.drawer,
     this.endDrawer,
     this.floatingActionButton,
@@ -99,9 +97,7 @@ class RefreshableLoadingPage extends StatelessWidget {
   final bool? initial;
   final Widget? refreshHeader;
   final Widget? onEmpty;
-  final Widget? onEmptyIcon;
   final Widget? onError;
-  final Widget? onErrorIcon;
   final Widget? drawer;
   final Widget? endDrawer;
   final Widget? floatingActionButton;
@@ -114,9 +110,7 @@ class RefreshableLoadingPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return LoadingPage(
       onEmpty: onEmpty,
-      onEmptyIcon: onEmptyIcon,
       onError: onError,
-      onErrorIcon: onErrorIcon,
       isLoading: isLoading,
       isEmpty: isEmpty,
       isError: isError,

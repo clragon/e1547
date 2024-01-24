@@ -70,8 +70,14 @@ class RepliesPage extends StatelessWidget {
                   pagingController: controller.paging,
                   itemBuilder: (context, item, index) =>
                       ReplyTile(reply: item, topic: topic),
-                  onEmpty: const Text('No replies'),
-                  onError: const Text('Failed to load replies'),
+                  onEmpty: const IconMessage(
+                    icon: Icon(Icons.clear),
+                    title: Text('No replies'),
+                  ),
+                  onError: const IconMessage(
+                    icon: Icon(Icons.warning_amber_outlined),
+                    title: Text('Failed to load replies'),
+                  ),
                 ),
               ),
             ),

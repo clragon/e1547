@@ -57,8 +57,14 @@ class TopicsPage extends StatelessWidget {
                       ),
                     ),
                   ),
-                  onEmpty: const Text('No topics'),
-                  onError: const Text('Failed to load topics'),
+                  onEmpty: const IconMessage(
+                    icon: Icon(Icons.clear),
+                    title: Text('No topics'),
+                  ),
+                  onError: const IconMessage(
+                    icon: Icon(Icons.warning_amber_outlined),
+                    title: Text('Failed to load topics'),
+                  ),
                 ),
               ),
             ),

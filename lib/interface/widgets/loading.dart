@@ -45,22 +45,28 @@ class IconMessage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Flex(
-        direction: direction,
+      child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Padding(
-            padding: const EdgeInsets.all(20),
-            child: Theme(
-              data: Theme.of(context).copyWith(
-                iconTheme: Theme.of(context).iconTheme.copyWith(size: 32),
+          Flex(
+            direction: direction,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: Theme(
+                  data: Theme.of(context).copyWith(
+                    iconTheme: Theme.of(context).iconTheme.copyWith(size: 32),
+                  ),
+                  child: icon,
+                ),
               ),
-              child: icon,
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(bottom: 8),
-            child: title,
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: title,
+              ),
+            ],
           ),
           if (action != null) action!,
         ],
@@ -91,9 +97,7 @@ class LoadingPage extends StatelessWidget {
     this.pageBuilder,
     this.loadingBuilder,
     this.onEmpty,
-    this.onEmptyIcon,
     this.onError,
-    this.onErrorIcon,
   });
 
   final WidgetBuilder child;
@@ -101,9 +105,7 @@ class LoadingPage extends StatelessWidget {
   final Widget Function(BuildContext context, WidgetBuilder child)?
       loadingBuilder;
   final Widget? onEmpty;
-  final Widget? onEmptyIcon;
   final Widget? onError;
-  final Widget? onErrorIcon;
   final bool isLoading;
   final bool isEmpty;
   final bool isError;
@@ -128,15 +130,17 @@ class LoadingPage extends StatelessWidget {
         case LoadingPageState.loading:
           return const Center(child: CircularProgressIndicator());
         case LoadingPageState.error:
-          return IconMessage(
-            icon: onErrorIcon ?? const Icon(Icons.warning_amber_outlined),
-            title: onError ?? const Text('Failed to load'),
-          );
+          return onError ??
+              const IconMessage(
+                icon: Icon(Icons.warning_amber_outlined),
+                title: Text('Failed to load'),
+              );
         case LoadingPageState.empty:
-          return IconMessage(
-            icon: onEmptyIcon ?? const Icon(Icons.clear),
-            title: onEmpty ?? const Text('Nothing to see here'),
-          );
+          return onEmpty ??
+              const IconMessage(
+                icon: Icon(Icons.clear),
+                title: Text('Nothing to see here'),
+              );
         case LoadingPageState.done:
           return child(context);
       }

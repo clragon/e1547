@@ -41,8 +41,14 @@ class _FollowsSubscriptionsPageState extends State<FollowsSubscriptionsPage>
               items: follows,
               child: PromptActions(
                 child: RefreshableLoadingPage(
-                  onEmpty: const Text('No subscriptions'),
-                  onError: const Text('Failed to load subscriptions'),
+                  onEmpty: const IconMessage(
+                    icon: Icon(Icons.clear),
+                    title: Text('No subscriptions'),
+                  ),
+                  onError: const IconMessage(
+                    icon: Icon(Icons.warning_amber),
+                    title: Text('Failed to load subscriptions'),
+                  ),
                   isError: snapshot.hasError,
                   isBuilt: follows != null,
                   isLoading: follows == null,
