@@ -8,8 +8,6 @@ import 'package:e1547/logs/logs.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sub/flutter_sub.dart';
 
-typedef LogLoader = Stream<List<LogString>> Function(List<int> levels);
-
 class LogsPage extends StatefulWidget {
   const LogsPage({super.key});
 
@@ -18,117 +16,58 @@ class LogsPage extends StatefulWidget {
 }
 
 class _LogsPageState extends State<LogsPage> {
-  HeroController heroController = MaterialApp.createMaterialHeroController();
-  (DateTime?, LogLoader)? entry;
-  (DateTime?, LogLoader)? inactiveEntry;
+  late LogLoader loader;
 
   @override
   void initState() {
     super.initState();
-    entry = (null, (levels) => loadLogs(levels));
+    loader = liveLoader();
   }
 
-  Stream<List<LogString>> loadLogs(List<int> levels) {
-    return context
-        .read<Logs>()
-        .stream(filter: (level, type) => levels.contains(level.value))
-        .map((e) => e.reversed.map((e) => LogString.fromRecord(e)).toList());
-  }
-
-  Stream<List<LogString>> loadFile(String path, List<int> levels) {
-    File file = File(path);
-    late StreamController<List<LogString>> controller;
-    controller = StreamController(
-      onListen: () async {
-        controller.add(await _read(file, levels));
-        try {
-          controller.addStream(
-            file.watch(events: FileSystemEvent.modify).asyncMap(
-                  (_) async => _read(file, levels),
-                ),
-          );
-        } on FileSystemException {
-          controller.addStream(Stream.value(await _read(file, levels)));
-        }
-      },
-      onCancel: () => controller.close(),
-    );
-    return controller.stream;
-  }
-
-  Future<List<LogString>> _read(File file, List<int> levels) async =>
-      LogString.parse(await file.readAsString())
-          .where((e) => levels.contains(e.level.value))
-          .toList()
-          .reversed
-          .toList();
+  LogLoader liveLoader() => LogLoader(
+        load: () => context.read<Logs>().stream().map(
+            (records) => records.map((e) => LogString.fromRecord(e)).toList()),
+      );
 
   @override
   Widget build(BuildContext context) {
-    NavigatorState navigator = Navigator.of(context);
-    return TileLayout(
-      tileSize: 160,
-      child: Navigator(
-        pages: [
-          MaterialPage(
-            child: AppBarDismissalProxy(
-              child: LogFileList(
-                onSelected: (file) => setState(
-                  () => entry =
-                      (file.date, (levels) => loadFile(file.path, levels)),
-                ),
-                onCurrentSelected: () => setState(
-                  () => entry = (null, (levels) => loadLogs(levels)),
-                ),
-              ),
-            ),
+    return LogPage(
+      date: loader.date,
+      load: (levels) => loader.load().map(
+            (records) =>
+                records.where((e) => levels.contains(e.level.value)).toList(),
           ),
-          if (entry != null)
-            MaterialPage(
-              child: PopScope(
-                canPop: false,
-                onPopInvoked: (didPop) {
-                  if (!didPop) {
-                    navigator.maybePop();
-                  }
-                },
-                child: LogPage(
-                  date: entry!.$1,
-                  load: entry!.$2,
-                  onShowAll: () => setState(() {
-                    inactiveEntry = entry;
-                    entry = null;
-                  }),
-                ),
-              ),
-            ),
-        ],
-        observers: [heroController],
-        onPopPage: (route, result) {
-          if (inactiveEntry != null) {
-            setState(() {
-              entry = inactiveEntry;
-              inactiveEntry = null;
-            });
-            return false;
-          }
-          navigator.maybePop();
-          return false;
-        },
+      onShowAll: () => Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => LogFileList(
+            onSelected: (loader) {
+              setState(() => this.loader = loader);
+              Navigator.of(context).pop();
+            },
+          ),
+        ),
       ),
     );
   }
+}
+
+class LogLoader {
+  const LogLoader({
+    this.date,
+    required this.load,
+  });
+
+  final DateTime? date;
+  final Stream<List<LogString>> Function() load;
 }
 
 class LogFileList extends StatefulWidget {
   const LogFileList({
     super.key,
     required this.onSelected,
-    this.onCurrentSelected,
   });
 
-  final void Function(LogFileInfo file) onSelected;
-  final VoidCallback? onCurrentSelected;
+  final ValueSetter<LogLoader> onSelected;
 
   @override
   State<LogFileList> createState() => _LogFileListState();
@@ -154,102 +93,135 @@ class _LogFileListState extends State<LogFileList> {
     setState(() {});
   }
 
+  LogLoader liveLoader() => LogLoader(
+        load: () => context.read<Logs>().stream().map(
+            (records) => records.map((e) => LogString.fromRecord(e)).toList()),
+      );
+
+  Stream<List<LogString>> loadFile(String path) {
+    File file = File(path);
+    late StreamController<List<LogString>> controller;
+    controller = StreamController(
+      onListen: () async {
+        controller.add(await _read(file));
+        try {
+          controller.addStream(
+            file.watch(events: FileSystemEvent.modify).asyncMap(
+                  (_) async => _read(file),
+                ),
+          );
+        } on FileSystemException {
+          controller.addStream(Stream.value(await _read(file)));
+        }
+      },
+      onCancel: () => controller.close(),
+    );
+    return controller.stream;
+  }
+
+  Future<List<LogString>> _read(File file) async =>
+      LogString.parse(await file.readAsString()).reversed.toList();
+
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: files,
-      builder: (context, snapshot) {
-        List<LogFileInfo>? files = snapshot.data
-            ?.map((e) => LogFileInfo.parse(e.path))
-            .sorted((a, b) => b.date.compareTo(a.date))
-            .toList();
-        return SelectionLayout<LogFileInfo>(
-          items: files,
-          child: Scaffold(
-            appBar: LogFileSelectionAppBar(
-              child: const DefaultAppBar(
-                title: Text('Log Files'),
+    return TileLayout(
+      tileSize: 160,
+      child: FutureBuilder(
+        future: files,
+        builder: (context, snapshot) {
+          List<LogFileInfo>? files = snapshot.data
+              ?.map((e) => LogFileInfo.parse(e.path))
+              .sorted((a, b) => b.date.compareTo(a.date))
+              .toList();
+          return SelectionLayout<LogFileInfo>(
+            items: files,
+            child: Scaffold(
+              appBar: LogFileSelectionAppBar(
+                child: const DefaultAppBar(
+                  title: Text('Log Files'),
+                ),
+                onDelete: (files) {
+                  for (final file in files) {
+                    File(file.path).delete();
+                  }
+                  load();
+                },
               ),
-              onDelete: (files) {
-                for (final file in files) {
-                  File(file.path).delete();
-                }
-                load();
-              },
-            ),
-            body: Builder(
-              builder: (context) {
-                if (snapshot.hasError) {
-                  return const IconMessage(
-                    icon: Icon(Icons.warning_amber),
-                    title: Text('Failed to load log files!'),
-                  );
-                }
-                if (files == null) {
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
-                }
-                if (files.isEmpty) {
-                  return const IconMessage(
-                    icon: Icon(Icons.close),
-                    title: Text('No log files available!'),
-                  );
-                }
-                return GridView.custom(
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: TileLayout.of(context).crossAxisCount,
-                    childAspectRatio:
-                        1 / TileLayout.of(context).tileHeightFactor,
-                  ),
-                  childrenDelegate: SliverChildBuilderDelegate(
-                    childCount: files.length + 1,
-                    (context, index) {
-                      if (index == 0) {
-                        return InkWell(
-                          onTap: SelectionLayout.of<LogFileInfo>(context)
-                                  .selections
-                                  .isEmpty
-                              ? widget.onCurrentSelected
-                              : null,
-                          child: Column(
-                            children: [
-                              Expanded(
-                                child: Center(
-                                  child: Icon(
-                                    Icons.note_add,
-                                    size: 38,
-                                    color: dimTextColor(context),
+              body: Builder(
+                builder: (context) {
+                  if (snapshot.hasError) {
+                    return const IconMessage(
+                      icon: Icon(Icons.warning_amber),
+                      title: Text('Failed to load log files!'),
+                    );
+                  }
+                  if (files == null) {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+                  if (files.isEmpty) {
+                    return const IconMessage(
+                      icon: Icon(Icons.close),
+                      title: Text('No log files available!'),
+                    );
+                  }
+                  return GridView.custom(
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: TileLayout.of(context).crossAxisCount,
+                      childAspectRatio:
+                          1 / TileLayout.of(context).tileHeightFactor,
+                    ),
+                    childrenDelegate: SliverChildBuilderDelegate(
+                      childCount: files.length + 1,
+                      (context, index) {
+                        if (index == 0) {
+                          return InkWell(
+                            onTap: () => widget.onSelected(liveLoader()),
+                            child: Column(
+                              children: [
+                                Expanded(
+                                  child: Center(
+                                    child: Icon(
+                                      Icons.note_add,
+                                      size: 38,
+                                      color: dimTextColor(context),
+                                    ),
                                   ),
                                 ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(16),
-                                child: Text(
-                                  'Current\n',
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                  style:
-                                      Theme.of(context).textTheme.titleMedium,
+                                Padding(
+                                  padding: const EdgeInsets.all(16),
+                                  child: Text(
+                                    'Current\n',
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    style:
+                                        Theme.of(context).textTheme.titleMedium,
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
+                          );
+                        }
+                        index--;
+                        return LogFileTile(
+                          file: files[index],
+                          onSelected: (file) => widget.onSelected(
+                            LogLoader(
+                              date: file.date,
+                              load: () => loadFile(file.path),
+                            ),
                           ),
                         );
-                      }
-                      index--;
-                      return LogFileTile(
-                        file: files[index],
-                        onSelected: widget.onSelected,
-                      );
-                    },
-                  ),
-                );
-              },
+                      },
+                    ),
+                  );
+                },
+              ),
             ),
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 }
