@@ -18,6 +18,7 @@ class IdentityTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
+      key: ValueKey(identity.id),
       title: Text(identity.username ?? 'Anonymous'),
       subtitle: Text(linkToDisplay(identity.host)),
       leading: IdentityAvatar(identity.id),
@@ -52,7 +53,6 @@ class CurrentIdentityTile extends StatelessWidget {
                 child: Row(
                   children: [
                     IdentityAvatar(
-                      key: ValueKey(identity.id),
                       identity.id,
                       radius: 32,
                     ),
