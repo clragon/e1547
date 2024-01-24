@@ -52,6 +52,7 @@ class CurrentIdentityTile extends StatelessWidget {
                 child: Row(
                   children: [
                     IdentityAvatar(
+                      key: ValueKey(identity.id),
                       identity.id,
                       radius: 32,
                     ),

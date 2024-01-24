@@ -66,6 +66,7 @@ class _IdentityPageState extends State<IdentityPage> {
   void saveAndTest(BuildContext context) {
     FormState form = Form.of(context);
     if (form.validate()) {
+      final navigator = Navigator.of(context);
       showDialog(
         context: context,
         barrierDismissible: false,
@@ -81,7 +82,7 @@ class _IdentityPageState extends State<IdentityPage> {
             });
             form.validate();
           },
-          onDone: Navigator.of(context).maybePop,
+          onDone: navigator.maybePop,
         ),
       );
     }
@@ -346,6 +347,7 @@ class _LoginLoadingDialogState extends State<LoginLoadingDialog> {
         }
         if (type == null) {
           await navigator.maybePop();
+          widget.onDone?.call();
           return;
         }
         await service.add(
@@ -364,8 +366,8 @@ class _LoginLoadingDialogState extends State<LoginLoadingDialog> {
       if (error is SqliteException && error.extendedResultCode == 2067) {
         reason = 'You already have an identity under this host and username.';
       }
-      widget.onError?.call(reason);
       await navigator.maybePop();
+      widget.onError?.call(reason);
       return;
     }
     await navigator.maybePop();

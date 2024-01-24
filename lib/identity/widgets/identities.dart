@@ -105,7 +105,11 @@ class IdentitiesPage extends StatelessWidget {
               ),
               floatingActionButton: FloatingActionButton(
                 child: const Icon(Icons.add),
-                onPressed: () => Navigator.of(context).pushNamed('/login'),
+                onPressed: () => Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const IdentityPage(),
+                  ),
+                ),
               ),
               body: LayoutBuilder(
                 builder: (context, constraints) {
