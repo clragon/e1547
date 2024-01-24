@@ -48,10 +48,13 @@ class IdentitiesDao extends DatabaseAccessor<GeneratedDatabase>
         .future;
   }
 
-  StreamFuture<Identity> get(int id) =>
+  StreamFuture<Identity?> getOrNull(int id) =>
       (select(identitiesTable)..where((tbl) => tbl.id.equals(id)))
-          .watchSingle()
+          .watchSingleOrNull()
           .future;
+
+  StreamFuture<Identity> get(int id) =>
+      getOrNull(id).stream.map((e) => e!).future;
 
   SimpleSelectStatement<IdentitiesTable, Identity> _queryExpression({
     String? nameRegex,

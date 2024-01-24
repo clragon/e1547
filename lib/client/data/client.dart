@@ -105,11 +105,9 @@ class Client {
   Future<void> availability() async {
     String body = await _dio.get('').then((response) => response.data);
     String? favicon = findFavicon(body);
-    if (favicon != null) {
-      traits.value = traits.value.copyWith(
-        favicon: withHost(favicon),
-      );
-    }
+    traits.value = traits.value.copyWith(
+      favicon: favicon != null ? withHost(favicon) : null,
+    );
   }
 
   Future<List<Post>> posts({

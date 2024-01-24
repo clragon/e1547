@@ -13,7 +13,7 @@ class TraitsService extends TraitsDao with ChangeNotifier {
 
   StreamSubscription<Traits?>? _subscription;
 
-  final FutureOr<TraitsRequest> Function(int identity)? onCreate;
+  final FutureOr<TraitsRequest?> Function(int identity)? onCreate;
 
   bool _disposed = false;
 
@@ -31,7 +31,9 @@ class TraitsService extends TraitsDao with ChangeNotifier {
         );
       }
       if (_disposed) return;
-      result = await add(await onCreate!(id));
+      TraitsRequest? request = await onCreate!(id);
+      if (request == null) return; // assuming the identity was deleted
+      result = await add(request);
     }
     _traits = result;
     _subscription = stream.listen(_onChanged);

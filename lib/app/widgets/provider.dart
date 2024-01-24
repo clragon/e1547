@@ -60,9 +60,11 @@ class TraitsServiceProvider extends SubChangeNotifierProvider3<AppStorage,
   }) : super(
           create: (context, storage, identities, factory) => TraitsService(
             database: storage.sqlite,
-            onCreate: (id) async => factory.createDefaultTraits(
-              await identities.get(id),
-            ),
+            onCreate: (id) async {
+              Identity? identity = await identities.getOrNull(id);
+              if (identity == null) return null;
+              return factory.createDefaultTraits(identity);
+            },
           ),
           builder: (context, child) =>
               Consumer2<TraitsService, IdentitiesService>(

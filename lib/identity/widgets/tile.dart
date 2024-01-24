@@ -17,13 +17,28 @@ class IdentityTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      key: ValueKey(identity.id),
-      title: Text(identity.username ?? 'Anonymous'),
-      subtitle: Text(linkToDisplay(identity.host)),
-      leading: IdentityAvatar(identity.id),
-      trailing: trailing,
-      onTap: onTap,
+    bool selected = context.watch<IdentitiesService>().identity == identity;
+    return Row(
+      children: [
+        Container(
+          height: 8,
+          width: 8,
+          decoration: BoxDecoration(
+            color: selected ? Theme.of(context).colorScheme.primary : null,
+            shape: BoxShape.circle,
+          ),
+        ),
+        Expanded(
+          child: ListTile(
+            key: ValueKey(identity.id),
+            title: Text(identity.username ?? 'Anonymous'),
+            subtitle: Text(linkToDisplay(identity.host)),
+            leading: IdentityAvatar(identity.id),
+            trailing: trailing,
+            onTap: onTap,
+          ),
+        ),
+      ],
     );
   }
 }
