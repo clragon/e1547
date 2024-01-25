@@ -25,18 +25,14 @@ class _LogsPageState extends State<LogsPage> {
   }
 
   LogLoader liveLoader() => LogLoader(
-        load: () => context.read<Logs>().stream().map(
-            (records) => records.map((e) => LogString.fromRecord(e)).toList()),
+        load: () => context.read<Logs>().stream().map((records) =>
+            records.reversed.map((e) => LogString.fromRecord(e)).toList()),
       );
 
   @override
   Widget build(BuildContext context) {
     return LogPage(
-      date: loader.date,
-      load: (levels) => loader.load().map(
-            (records) =>
-                records.where((e) => levels.contains(e.level.value)).toList(),
-          ),
+      loader: loader,
       onShowAll: () => Navigator.of(context).push(
         MaterialPageRoute(
           builder: (context) => LogFileList(
@@ -282,13 +278,11 @@ class LogFileTile extends StatelessWidget {
 class LogPage extends StatefulWidget {
   const LogPage({
     super.key,
-    required this.load,
-    this.date,
+    required this.loader,
     this.onShowAll,
   });
 
-  final Stream<List<LogString>> Function(List<int> levels) load;
-  final DateTime? date;
+  final LogLoader loader;
   final VoidCallback? onShowAll;
 
   @override
@@ -301,8 +295,11 @@ class _LogPageState extends State<LogPage> {
   @override
   Widget build(BuildContext context) {
     return SubStream<List<LogString>>(
-      create: () => widget.load(levels),
-      keys: [levels],
+      create: () => widget.loader.load().map(
+            (records) =>
+                records.where((e) => levels.contains(e.level.value)).toList(),
+          ),
+      keys: [widget.loader, levels],
       builder: (context, snapshot) {
         List<LogString>? logs = snapshot.data;
         return SelectionLayout<LogString>(
@@ -312,7 +309,7 @@ class _LogPageState extends State<LogPage> {
               appBar: LogSelectionAppBar(
                 child: DefaultAppBar(
                   title: Text(
-                      'Logs${widget.date != null ? ' - ${formatDate(widget.date!)}' : ''}'),
+                      'Logs${widget.loader.date != null ? ' - ${formatDate(widget.loader.date!)}' : ''}'),
                   actions: [
                     if (widget.onShowAll != null)
                       IconButton(
