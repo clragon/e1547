@@ -66,9 +66,4 @@ class AppStorage {
   final String temporaryFiles;
   final CacheStore? httpCache;
   final AppDatabase sqlite;
-
-  void dispose() {
-    httpCache?.close();
-    sqlite.executor.close();
-  }
 }
