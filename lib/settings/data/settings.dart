@@ -28,20 +28,10 @@ class Settings extends NotifiedSettings {
     values: AppTheme.values,
   );
 
-  late final ValueNotifier<List<String>> denylist =
-      createSetting(key: 'blacklist', initialValue: []);
-
   late final ValueNotifier<bool> writeHistory =
       createSetting(key: 'writeHistory', initialValue: true);
   late final ValueNotifier<bool> trimHistory =
       createSetting(key: 'trimHistory', initialValue: false);
-
-  late final ValueNotifier<String> host =
-      createSetting(key: 'currentHost', initialValue: 'e926.net');
-  late final ValueNotifier<String?> customHost =
-      createSetting(key: 'customHost', initialValue: null);
-  late final ValueNotifier<String> homeTags =
-      createSetting(key: 'homeTags', initialValue: 'score:>=20');
 
   late final ValueNotifier<int> tileSize =
       createSetting(key: 'tileSize', initialValue: 200);
