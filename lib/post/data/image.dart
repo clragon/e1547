@@ -30,7 +30,7 @@ Future<void> preloadPostImages({
   required int index,
   required List<Post> posts,
   required PostImageSize size,
-  int reach = 2,
+  int reach = 1,
 }) async {
   for (int i = -(reach + 1); i < reach; i++) {
     int target = index + 1 + i;
