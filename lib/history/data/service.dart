@@ -244,12 +244,10 @@ class HistoriesService extends HistoriesDao with ChangeNotifier {
 
   @override
   Future<void> trim({
-    String? host,
     int? maxAmount,
     Duration? maxAge,
   }) =>
-      trim(
-        host: host,
+      super.trim(
         maxAmount: maxAmount ?? trimAmount,
         maxAge: maxAge ?? trimAge,
       );
