@@ -84,7 +84,7 @@ class HistoriesService extends HistoriesDao with ChangeNotifier {
       if (trimming) {
         await trim();
       }
-      return super.add(item);
+      return super.add(item, identity: identity);
     });
   }
 
