@@ -19,16 +19,6 @@ class PostDetail extends StatefulWidget {
 class _PostDetailState extends State<PostDetail> {
   Post get post => widget.post;
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    preloadPostImage(
-      context: context,
-      post: post,
-      size: PostImageSize.file,
-    );
-  }
-
   Widget image(BuildContext context, BoxConstraints constraints) => Padding(
         padding: const EdgeInsets.only(bottom: 10),
         child: ConstrainedBox(
