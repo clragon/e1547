@@ -3,7 +3,7 @@ import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sub/flutter_sub.dart';
 
-class PostDetailGallery extends StatefulWidget {
+class PostDetailGallery extends StatelessWidget {
   const PostDetailGallery({
     super.key,
     required this.controller,
@@ -21,44 +21,41 @@ class PostDetailGallery extends StatefulWidget {
   final ValueChanged<int>? onPageChanged;
 
   @override
-  State<PostDetailGallery> createState() => _PostDetailGalleryState();
-}
-
-class _PostDetailGalleryState extends State<PostDetailGallery> {
-  late PageController pageController = widget.pageController ??
-      PageController(initialPage: widget.initialPage ?? 0);
-
-  @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider.value(
-      value: widget.controller,
-      child: Consumer<PostsController>(
-        builder: (context, controller, child) => GalleryButtons(
-          controller: pageController,
-          child: PagedPageView(
-            pageController: pageController,
-            pagingController: widget.controller.paging,
-            builderDelegate: defaultPagedChildBuilderDelegate<Post>(
+    return SubDefault<PageController>(
+      value: pageController,
+      create: () => PageController(initialPage: initialPage ?? 0),
+      builder: (context, pageController) => ChangeNotifierProvider.value(
+        value: controller,
+        child: Consumer<PostsController>(
+          builder: (context, controller, child) => GalleryButtons(
+            controller: pageController,
+            child: PagedPageView(
+              pageController: pageController,
               pagingController: controller.paging,
-              pageBuilder: (context, child) => Scaffold(
-                appBar: const TransparentAppBar(child: DefaultAppBar()),
-                body: child,
-              ),
-              onEmpty: const Text('No posts'),
-              onError: const Text('Failed to load posts'),
-              itemBuilder: (context, item, index) => SubScrollController(
-                builder: (context, scrollController) => PrimaryScrollController(
-                  controller: scrollController,
-                  child: PostDetail(
-                    post: item,
-                    onTapImage: () => Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => PostsRouteConnector(
-                          controller: controller,
-                          child: PostFullscreenGallery(
+              builderDelegate: defaultPagedChildBuilderDelegate<Post>(
+                pagingController: controller.paging,
+                pageBuilder: (context, child) => Scaffold(
+                  appBar: const TransparentAppBar(child: DefaultAppBar()),
+                  body: child,
+                ),
+                onEmpty: const Text('No posts'),
+                onError: const Text('Failed to load posts'),
+                itemBuilder: (context, item, index) => SubScrollController(
+                  builder: (context, scrollController) =>
+                      PrimaryScrollController(
+                    controller: scrollController,
+                    child: PostDetail(
+                      post: item,
+                      onTapImage: () => Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => PostsRouteConnector(
                             controller: controller,
-                            initialPage: index,
-                            onPageChanged: pageController.jumpToPage,
+                            child: PostFullscreenGallery(
+                              controller: controller,
+                              initialPage: index,
+                              onPageChanged: pageController.jumpToPage,
+                            ),
                           ),
                         ),
                       ),
@@ -66,16 +63,16 @@ class _PostDetailGalleryState extends State<PostDetailGallery> {
                   ),
                 ),
               ),
+              onPageChanged: (index) {
+                onPageChanged?.call(index);
+                preloadPostImages(
+                  context: context,
+                  index: index,
+                  posts: controller.items!,
+                  size: PostImageSize.sample,
+                );
+              },
             ),
-            onPageChanged: (index) {
-              widget.onPageChanged?.call(index);
-              preloadPostImages(
-                context: context,
-                index: index,
-                posts: controller.items!,
-                size: PostImageSize.sample,
-              );
-            },
           ),
         ),
       ),
