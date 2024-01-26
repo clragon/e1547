@@ -83,6 +83,7 @@ class _AppLoadingScreenEndState extends State<AppLoadingScreenEnd> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
       state = AppLoadingScreen.of(context);
       state.loading = false;
     });
@@ -93,6 +94,7 @@ class _AppLoadingScreenEndState extends State<AppLoadingScreenEnd> {
     super.didChangeDependencies();
     AppLoadingScreenState newState = AppLoadingScreen.of(context);
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
       if (newState != state) {
         state = newState;
         state.loading = false;
@@ -103,6 +105,7 @@ class _AppLoadingScreenEndState extends State<AppLoadingScreenEnd> {
   @override
   void dispose() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!state.mounted) return;
       state.loading = true;
     });
     super.dispose();
