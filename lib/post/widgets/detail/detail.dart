@@ -6,18 +6,15 @@ import 'package:e1547/post/post.dart';
 import 'package:e1547/post/widgets/detail/appbar.dart';
 import 'package:flutter/material.dart';
 
-class PostDetail extends StatefulWidget {
-  const PostDetail({super.key, required this.post, this.onTapImage});
+class PostDetail extends StatelessWidget {
+  const PostDetail({
+    super.key,
+    required this.post,
+    this.onTapImage,
+  });
 
   final Post post;
   final VoidCallback? onTapImage;
-
-  @override
-  State<StatefulWidget> createState() => _PostDetailState();
-}
-
-class _PostDetailState extends State<PostDetail> {
-  Post get post => widget.post;
 
   Widget image(BuildContext context, BoxConstraints constraints) => Padding(
         padding: const EdgeInsets.only(bottom: 10),
@@ -35,8 +32,8 @@ class _PostDetailState extends State<PostDetail> {
               onTap: () {
                 PostVideoRoute.of(context).keepPlaying();
                 if (!(context.read<PostEditingController>().editing) &&
-                    widget.onTapImage != null) {
-                  widget.onTapImage!();
+                    onTapImage != null) {
+                  onTapImage!();
                 } else {
                   Navigator.of(context).push(
                     MaterialPageRoute(
