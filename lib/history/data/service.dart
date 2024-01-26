@@ -92,8 +92,7 @@ class HistoriesService extends HistoriesDao with ChangeNotifier {
       posts
           ?.where((e) => denylist == null || !e.isDeniedBy(denylist))
           .map((e) => e.sample)
-          .where((e) => e != null)
-          .cast<String>()
+          .whereNotNull()
           .take(4)
           .toList() ??
       [];

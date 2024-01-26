@@ -176,7 +176,7 @@ class HistoriesDao extends DatabaseAccessor<GeneratedDatabase>
       _recentSelect(limit: limit, maxAge: maxAge).watch();
 
   Future<void> add(HistoryRequest item, {int? identity}) async {
-    if (this.identity == null && identity == null) {
+    if (identity == null && this.identity == null) {
       throw ArgumentError('Cannot add history without identity!');
     }
     History history = await into(historiesTable).insertReturning(
@@ -190,7 +190,7 @@ class HistoriesDao extends DatabaseAccessor<GeneratedDatabase>
     );
     await into(historiesIdentitiesTable).insert(
       HistoryIdentityCompanion(
-        identity: Value(this.identity ?? identity!),
+        identity: Value(identity ?? this.identity!),
         history: Value(history.id),
       ),
     );
