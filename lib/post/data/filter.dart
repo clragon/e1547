@@ -8,6 +8,8 @@ mixin PostFilterableController<KeyType> on DataController<KeyType, Post> {
   Client get client;
   PostFilterMode get filterMode;
 
+  List<String> _denylist = [];
+
   Map<Post, List<String>>? _deniedPosts;
   Map<Post, List<String>>? get deniedPosts {
     if (_deniedPosts == null) return null;
@@ -67,6 +69,13 @@ mixin PostFilterableController<KeyType> on DataController<KeyType, Post> {
           client.traits.value.denylist.whereNot(_allowedTags.contains).toList();
     }
 
+    Map<Post, List<String>>? previousDeniedPosts;
+    if (listEquals(_denylist, denylist)) {
+      previousDeniedPosts = _deniedPosts;
+    } else {
+      _denylist = denylist;
+    }
+
     _deniedPosts = {};
     List<Post>? result = super.filter(items);
     if (result != null) {
@@ -75,7 +84,12 @@ mixin PostFilterableController<KeyType> on DataController<KeyType, Post> {
 
     result?.removeWhere((item) {
       if (_allowedPosts.contains(item.id)) return false;
-      List<String>? deniers = item.getDeniers(denylist);
+      List<String>? deniers;
+      if (previousDeniedPosts?.containsKey(item) ?? false) {
+        deniers = previousDeniedPosts![item]!;
+      } else {
+        deniers = item.getDeniers(denylist);
+      }
       if (deniers != null) {
         _deniedPosts![item] = deniers;
         if (filterMode != PostFilterMode.plain) return true;
