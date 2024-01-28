@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:logging/logging.dart';
@@ -83,16 +81,14 @@ extension LogStringRecord on LogRecord {
   String toFullString() => LogString.fromRecord(this).toString();
 }
 
-String prettyLogObject(Object data, {String? header}) {
+String prettyLogObject(Object data, {String? header, int? chars}) {
   StringBuffer buffer = StringBuffer();
   String value;
 
-  try {
-    final Object object = const JsonDecoder().convert(data.toString());
-    const JsonEncoder json = JsonEncoder.withIndent('  ');
-    value = '║  ${json.convert(object).replaceAll('\n', '\n║  ')}';
-  } on Exception {
-    value = '║  ${data.toString().replaceAll('\n', '\n║  ')}';
+  value = '║  ${data.toString().replaceAll('\n', '\n║  ')}';
+
+  if (chars != null) {
+    value = value.split('').take(chars).join();
   }
 
   String fullHeader = header != null ? ' $header ' : '';

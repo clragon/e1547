@@ -74,7 +74,7 @@ class LoggingDioInterceptor extends Interceptor {
     final Object? data = response.data;
 
     if (responseBody && data != null) {
-      buffer.write(prettyLogObject(data, header: 'Body'));
+      buffer.write(prettyLogObject(data, header: 'Body', chars: 1000));
     }
 
     logger.fine(buffer.toString());
