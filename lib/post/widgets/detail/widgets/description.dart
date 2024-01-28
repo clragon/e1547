@@ -17,13 +17,13 @@ class DescriptionDisplay extends StatelessWidget {
     bool canEdit = context.select<PostEditingController?, bool>(
         (value) => value?.canEdit ?? false);
 
-    return CrossFade.builder(
-      showChild: description.trim().isNotEmpty || editing,
-      builder: (context) => Column(
+    return HiddenWidget(
+      show: description.trim().isNotEmpty || editing,
+      child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          CrossFade(
-            showChild: editing,
+          HiddenWidget(
+            show: editing,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [

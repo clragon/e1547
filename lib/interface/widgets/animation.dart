@@ -76,3 +76,36 @@ class CrossFade extends StatelessWidget {
     }
   }
 }
+
+class HiddenWidget extends StatelessWidget {
+  const HiddenWidget({
+    super.key,
+    required this.child,
+    required this.show,
+    this.duration = defaultAnimationDuration,
+    this.axis = Axis.horizontal,
+  });
+
+  final Duration duration;
+  final Axis axis;
+  final Widget child;
+  final bool show;
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedSize(
+      duration: duration,
+      child: Flex(
+        direction: switch (axis) {
+          Axis.horizontal => Axis.vertical,
+          Axis.vertical => Axis.horizontal,
+        },
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          if (show) child else const SizedBox(),
+        ],
+      ),
+    );
+  }
+}

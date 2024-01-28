@@ -48,8 +48,8 @@ class PostEditorChild extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CrossFade(
-      showChild:
+    return HiddenWidget(
+      show:
           shown == (context.watch<PostEditingController?>()?.editing ?? false),
       child: child,
     );

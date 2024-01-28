@@ -18,8 +18,8 @@ class SourceDisplay extends StatelessWidget {
     bool canEdit = context.select<PostEditingController?, bool>(
         (value) => value?.canEdit ?? false);
 
-    return CrossFade(
-      showChild: sources.isNotEmpty || editing,
+    return HiddenWidget(
+      show: sources.isNotEmpty || editing,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -35,9 +35,8 @@ class SourceDisplay extends StatelessWidget {
                   ),
                 ),
               ),
-              CrossFade.builder(
-                showChild: editing,
-                builder: (context) => IconButton(
+              if (editing)
+                IconButton(
                   icon: const Icon(Icons.edit),
                   onPressed: canEdit
                       ? () {
@@ -62,8 +61,7 @@ class SourceDisplay extends StatelessWidget {
                           );
                         }
                       : null,
-                ),
-              ),
+                )
             ],
           ),
           Padding(
