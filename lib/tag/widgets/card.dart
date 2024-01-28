@@ -1,4 +1,3 @@
-import 'package:e1547/interface/interface.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
 
@@ -47,16 +46,14 @@ class TagCard extends StatelessWidget {
                     bottomLeft: Radius.circular(4),
                   ),
                 ),
-                child: CrossFade(
-                  showChild: editing,
-                  secondChild: const SizedBox(width: 5),
-                  child: IconButton(
-                    constraints: const BoxConstraints(),
-                    padding: EdgeInsets.zero,
-                    icon: const Icon(Icons.clear, size: 16),
-                    onPressed: onRemove,
-                  ),
-                ),
+                child: editing
+                    ? IconButton(
+                        constraints: const BoxConstraints(),
+                        padding: EdgeInsets.zero,
+                        icon: const Icon(Icons.clear, size: 16),
+                        onPressed: onRemove,
+                      )
+                    : const SizedBox(width: 5),
               ),
             Flexible(
               child: Padding(
