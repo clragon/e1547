@@ -30,9 +30,9 @@ class DeletionDisplay extends StatelessWidget {
             );
         return flags.first;
       },
-      builder: (context, value) => CrossFade.builder(
-        showChild: value.data != null,
-        builder: (context) => Column(
+      builder: (context, value) => HiddenWidget(
+        show: value.data != null,
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Padding(
@@ -53,7 +53,7 @@ class DeletionDisplay extends StatelessWidget {
                     child: Padding(
                       padding: const EdgeInsets.all(16),
                       child: DText(
-                        value.data!.reason,
+                        value.data?.reason ?? '',
                       ),
                     ),
                   ),
