@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:e1547/app/app.dart';
 import 'package:e1547/client/client.dart';
+import 'package:e1547/follow/follow.dart';
+import 'package:e1547/history/history.dart';
 import 'package:e1547/identity/identity.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/logs/logs.dart';
@@ -39,6 +41,60 @@ class SettingsPage extends StatelessWidget {
                     ),
                   ),
                   trailing: const Icon(Icons.swap_horiz),
+                ),
+              ),
+              const Divider(),
+              const ListTileHeader(title: 'User'),
+              Consumer<Client>(
+                builder: (context, client, child) => ValueListenableBuilder(
+                  valueListenable: client.traits,
+                  builder: (context, traits, child) => ListTile(
+                    title: const Text('Blacklist'),
+                    leading: const Icon(Icons.block),
+                    subtitle: traits.denylist.isNotEmpty
+                        ? Text(
+                            '${traits.denylist.join(' ').split(' ').trim().where((e) => e[0] != '-').length} tags blocked')
+                        : null,
+                    onTap: () => Navigator.pushNamed(context, '/blacklist'),
+                  ),
+                ),
+              ),
+              Consumer2<FollowsService, Client>(
+                builder: (context, service, client, child) => SubStream<int>(
+                  create: () => service.length().stream,
+                  keys: [service, client.host],
+                  builder: (context, snapshot) => ListTile(
+                    title: const Text('Follows'),
+                    subtitle: snapshot.data != null && snapshot.data != 0
+                        ? Text('${snapshot.data} searches followed')
+                        : null,
+                    leading: const Icon(Icons.person_add),
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const FollowEditor(),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              Consumer2<HistoriesService, Client>(
+                builder: (context, service, client, child) => SubStream<int>(
+                  create: () => service.length(),
+                  keys: [service, client.host],
+                  builder: (context, snapshot) => DividerListTile(
+                    title: const Text('History'),
+                    subtitle: service.enabled && snapshot.data != null
+                        ? Text('${snapshot.data} pages visited')
+                        : null,
+                    leading: const Icon(Icons.history),
+                    onTap: () => Navigator.pushNamed(context, '/history'),
+                    onTapSeparated: () => service.enabled = !service.enabled,
+                    separated: Switch(
+                      value: service.enabled,
+                      onChanged: (value) => service.enabled = value,
+                    ),
+                  ),
                 ),
               ),
               const Divider(),
@@ -142,24 +198,6 @@ class SettingsPage extends StatelessWidget {
                     },
                   ),
                 ),
-              Consumer<Client>(
-                builder: (context, client, child) => ValueListenableBuilder(
-                  valueListenable: client.traits,
-                  builder: (context, traits, child) => ListTile(
-                    title: const Text('Blacklist'),
-                    leading: const Icon(Icons.block),
-                    trailing: const Padding(
-                      padding: EdgeInsets.only(right: 16),
-                      child: Icon(Icons.arrow_forward_ios),
-                    ),
-                    subtitle: traits.denylist.isNotEmpty
-                        ? Text(
-                            '${traits.denylist.join(' ').split(' ').trim().where((e) => e[0] != '-').length} tags blocked')
-                        : null,
-                    onTap: () => Navigator.pushNamed(context, '/blacklist'),
-                  ),
-                ),
-              ),
               ValueListenableBuilder<bool>(
                 valueListenable: settings.upvoteFavs,
                 builder: (context, value, child) => SwitchListTile(
