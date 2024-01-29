@@ -14,31 +14,44 @@ void executeBackgroundTasks() => Workmanager().executeTask(
             ControllerBundle bundle = await prepareBackgroundIsolate();
             FlutterLocalNotificationsPlugin notifications =
                 await initializeNotifications();
+
             // this ensures continued scheduling on iOS.
             FollowsService allFollows = FollowsService(
-                database: bundle.databases.sqlite, identity: null);
+              database: bundle.databases.sqlite,
+              identity: null,
+            );
             allFollows
                 .all(types: [FollowType.notify])
                 .stream
                 .listen(registerFollowBackgroundTask);
+
             List<Identity> identities = await bundle.identities.all();
             List<bool> result = [];
-            for (Identity identity in identities) {
+
+            for (final identity in identities) {
               FollowsService follows = FollowsService(
-                  database: bundle.databases.sqlite, identity: identity.id);
-              TraitsService settings =
+                database: bundle.databases.sqlite,
+                identity: identity.id,
+              );
+
+              TraitsService traits =
                   TraitsService(database: bundle.databases.sqlite);
-              await settings.activate(identity.id);
+              await traits.activate(identity.id);
+
               Client client = Client(
                 identity: identity,
-                traits: settings.notifier,
+                traits: traits.notifier,
+                // TODO: figure out why this causes locked database errors.
                 // cache: bundle.databases.httpCache,
               );
-              result.add(await backgroundUpdateFollows(
-                service: follows,
-                client: client,
-                notifications: notifications,
-              ));
+
+              result.add(
+                await backgroundUpdateFollows(
+                  service: follows,
+                  client: client,
+                  notifications: notifications,
+                ),
+              );
             }
             return result.every((e) => e);
           default:
