@@ -69,7 +69,8 @@ class _PostsPageState extends State<PostsPage> {
             drawer: const RouterDrawer(),
             endDrawer: endDrawer(),
             floatingActionButton: floatingActionButton(),
-            builder: (context, child) => TileLayout(child: child),
+            builder: (context, child) =>
+                LimitedWidthLayout(child: TileLayout(child: child)),
             controller: widget.controller,
             child: (context) => postDisplay(
               context: context,
