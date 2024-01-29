@@ -4,7 +4,6 @@ export 'data/settings.dart';
 export 'data/updater.dart';
 // widgets
 export 'widgets/about.dart';
-export 'widgets/advanced.dart';
 export 'widgets/icon.dart';
 export 'widgets/settings.dart';
 export 'widgets/tile.dart';

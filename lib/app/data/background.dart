@@ -32,7 +32,7 @@ void executeBackgroundTasks() => Workmanager().executeTask(
               Client client = Client(
                 identity: identity,
                 traits: settings.notifier,
-                cache: bundle.databases.httpCache,
+                // cache: bundle.databases.httpCache,
               );
               result.add(await backgroundUpdateFollows(
                 service: follows,
