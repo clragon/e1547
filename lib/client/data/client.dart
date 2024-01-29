@@ -581,15 +581,11 @@ class Client {
     required Traits traits,
     CancelToken? cancelToken,
   }) async {
-    if (!hasLogin) {
-      this.traits.value = traits;
-      return;
-    }
     Traits previous = this.traits.value;
+    this.traits.value = traits;
+    if (!hasLogin) return;
     try {
-      if (!listEquals(traits.denylist, this.traits.value.denylist)) {
-        this.traits.value = traits;
-
+      if (!listEquals(previous.denylist, traits.denylist)) {
         Map<String, dynamic> body = {
           'user[blacklisted_tags]': traits.denylist.join('\n'),
         };
@@ -601,7 +597,9 @@ class Client {
         );
       }
     } on DioException {
-      this.traits.value = previous;
+      this.traits.value = this.traits.value.copyWith(
+            denylist: previous.denylist,
+          );
       rethrow;
     }
   }
