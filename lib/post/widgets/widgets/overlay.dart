@@ -30,19 +30,9 @@ class PostImageOverlay extends StatelessWidget {
       return centerText('Post was deleted');
     }
     if (post.file == null) {
-      return IconMessage(
-        title: const Text('Image unavailable in safe mode'),
-        icon: const Icon(Icons.image_not_supported_outlined),
-        action: Padding(
-          padding: const EdgeInsets.all(4),
-          child: TextButton(
-            onPressed: () async {
-              // TODO: Implement safe mode toggle
-              throw UnimplementedError();
-            },
-            child: const Text('Open'),
-          ),
-        ),
+      return const IconMessage(
+        title: Text('Image unavailable on this host'),
+        icon: Icon(Icons.image_not_supported_outlined),
       );
     }
     if ((controller?.isDenied(post) ?? false) && !post.isFavorited) {
