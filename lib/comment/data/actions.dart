@@ -47,6 +47,7 @@ Future<bool> writeComment({
         content: text ?? (comment?.body),
         onSubmit: (text) async {
           NavigatorState navigator = Navigator.of(context);
+          ScaffoldMessengerState messenger = ScaffoldMessenger.of(context);
           if (text.isNotEmpty) {
             try {
               if (comment == null) {
@@ -62,6 +63,12 @@ Future<bool> writeComment({
               }
               sent = true;
               navigator.maybePop();
+              messenger.showSnackBar(
+                const SnackBar(
+                  duration: Duration(seconds: 1),
+                  content: Text('Comment sent!'),
+                ),
+              );
             } on ClientException {
               return 'Failed to send comment!';
             }
