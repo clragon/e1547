@@ -347,7 +347,6 @@ class _LoginLoadingDialogState extends State<LoginLoadingDialog> {
         }
         if (type == null) {
           await navigator.maybePop();
-          widget.onDone?.call();
           return;
         }
         await service.add(
