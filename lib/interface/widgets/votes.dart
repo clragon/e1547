@@ -40,7 +40,7 @@ class VoteInfo {
           case VoteStatus.downvoted:
             return copyWith(score: score - 2, status: status);
           case VoteStatus.unknown:
-            return copyWith(score: score - 1, status: status);
+            return copyWith(score: score + 1, status: status);
         }
       case VoteStatus.downvoted:
         switch (this.status) {
@@ -50,7 +50,7 @@ class VoteInfo {
             if (replace) return this;
             return copyWith(score: score + 1, status: VoteStatus.unknown);
           case VoteStatus.unknown:
-            return copyWith(score: score + 1, status: status);
+            return copyWith(score: score - 1, status: status);
         }
       case VoteStatus.unknown:
         switch (this.status) {
