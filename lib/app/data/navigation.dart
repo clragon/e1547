@@ -93,6 +93,10 @@ final List<RouterDrawerDestination> rootDestintations = [
     builder: (context) => const HistoriesPage(),
     group: _drawerSettingsGroup,
   ),
+  RouterDrawerDestination(
+    path: '/blacklist',
+    builder: (context) => const DenyListPage(),
+  ),
   NamedRouterDrawerDestination(
     path: '/settings',
     name: 'Settings',
@@ -107,10 +111,6 @@ final List<RouterDrawerDestination> rootDestintations = [
     icon: const DrawerUpdateIcon(),
     builder: (context) => const AboutPage(),
     group: _drawerSettingsGroup,
-  ),
-  RouterDrawerDestination(
-    path: '/blacklist',
-    builder: (context) => const DenyListPage(),
   ),
 ];
 

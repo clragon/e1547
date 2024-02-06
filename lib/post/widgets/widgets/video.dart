@@ -420,9 +420,9 @@ class PostVideoRoute extends StatefulWidget {
   State<PostVideoRoute> createState() => PostVideoRouteState();
 }
 
-class PostVideoRouteState extends State<PostVideoRoute> with RouteAware {
+class PostVideoRouteState extends State<PostVideoRoute>
+    with DefaultRouteAware<PostVideoRoute> {
   late VideoPlayer? player;
-  late RouterDrawerController _navigation;
   late final bool _wasPlaying;
   bool _keepPlaying = false;
 
@@ -432,11 +432,9 @@ class PostVideoRouteState extends State<PostVideoRoute> with RouteAware {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        _wasPlaying =
-            widget.post.getVideo(context, listen: false)?.state.playing ??
-                false;
-      }
+      if (!mounted) return;
+      _wasPlaying =
+          widget.post.getVideo(context, listen: false)?.state.playing ?? false;
     });
   }
 
@@ -453,21 +451,11 @@ class PostVideoRouteState extends State<PostVideoRoute> with RouteAware {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _navigation = context.watch<RouterDrawerController>();
-    _navigation.routeObserver.subscribe(this, ModalRoute.of(context)!);
     player = widget.post.getVideo(context);
   }
 
   @override
-  void reassemble() {
-    super.reassemble();
-    _navigation.routeObserver.unsubscribe(this);
-    _navigation.routeObserver.subscribe(this, ModalRoute.of(context)!);
-  }
-
-  @override
   void dispose() {
-    _navigation.routeObserver.unsubscribe(this);
     if (widget.stopOnDispose && !_wasPlaying) {
       WidgetsBinding.instance.addPostFrameCallback(
         (_) => player?.pause(),

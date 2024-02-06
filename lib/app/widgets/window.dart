@@ -201,17 +201,23 @@ class TitleBarButton extends StatelessWidget {
 
 class WindowShortcuts extends StatelessWidget {
   /// Provides common shortcuts for desktop apps.
-  const WindowShortcuts({super.key, required this.child});
+  const WindowShortcuts({
+    super.key,
+    required this.child,
+    required this.navigatorKey,
+  });
 
   /// The child in which these shortcuts should be valid.
   final Widget child;
+
+  final GlobalKey<NavigatorState> navigatorKey;
 
   @override
   Widget build(BuildContext context) {
     return CallbackShortcuts(
       bindings: {
         const SingleActivator(LogicalKeyboardKey.escape): () =>
-            context.read<RouterDrawerController>().navigator?.maybePop(),
+            navigatorKey.currentState!.maybePop(),
         const SingleActivator(LogicalKeyboardKey.f11): () async {
           WindowManager? manager = context.read<WindowManager?>();
           if (manager == null) return;

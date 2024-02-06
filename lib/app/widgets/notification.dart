@@ -10,9 +10,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_sub/flutter_sub.dart';
 
 class NotificationHandler extends StatefulWidget {
-  const NotificationHandler({super.key, required this.child});
+  const NotificationHandler({
+    super.key,
+    required this.child,
+    required this.navigatorKey,
+    required this.routes,
+  });
 
   final Widget child;
+  final GlobalKey<NavigatorState> navigatorKey;
+  final Map<String, bool> routes;
 
   @override
   State<NotificationHandler> createState() => _NotificationHandlerState();
@@ -76,24 +83,23 @@ class _NotificationHandlerState extends State<NotificationHandler> {
 
   Future<void> handle(NotificationResponse response) async {
     if (!context.mounted) return;
-    RouterDrawerController controller = context.read<RouterDrawerController>();
     String? payload = response.payload;
     if (payload == null) return;
     Uri? url = Uri.tryParse(payload);
     if (url == null) return;
-    RouterDrawerDestination? destination =
-        controller.destinations.firstWhereOrNull((e) => e.path == url.path);
+    MapEntry<String, bool>? destination =
+        widget.routes.entries.firstWhereOrNull((e) => e.key == url.path);
     if (destination != null) {
-      if (destination.unique) {
-        controller.navigator!
-            .pushNamedAndRemoveUntil(destination.path, (_) => false);
+      if (destination.value) {
+        widget.navigatorKey.currentState!
+            .pushNamedAndRemoveUntil(destination.key, (_) => false);
 
         // This is very specific. Find a way to make it more systematic.
         String? tags = url.queryParameters['tags'];
         int? id = int.tryParse(url.queryParameters['id'] ?? '');
         if (url.path == '/subscriptions') {
           if (tags != null) {
-            controller.navigator!.push(
+            widget.navigatorKey.currentState!.push(
               MaterialPageRoute(
                 builder: (context) => PostsSearchPage(
                   query: TagMap({'tags': tags}),
@@ -104,7 +110,7 @@ class _NotificationHandlerState extends State<NotificationHandler> {
             );
           }
           if (id != null) {
-            controller.navigator!.push(
+            widget.navigatorKey.currentState!.push(
               MaterialPageRoute(
                 builder: (context) => PostLoadingPage(id),
               ),
@@ -112,7 +118,7 @@ class _NotificationHandlerState extends State<NotificationHandler> {
           }
         }
       } else {
-        controller.navigator!.pushNamed(destination.path);
+        widget.navigatorKey.currentState!.pushNamed(destination.key);
       }
     }
   }

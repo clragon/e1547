@@ -6,14 +6,18 @@ import 'package:e1547/interface/interface.dart';
 import 'package:e1547/logs/logs.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_sub/flutter_sub.dart';
 import 'package:webview_cookie_manager/webview_cookie_manager.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class ClientAvailabilityCheck extends StatefulWidget {
-  const ClientAvailabilityCheck({super.key, required this.child});
+  const ClientAvailabilityCheck({
+    super.key,
+    required this.child,
+    required this.navigatorKey,
+  });
 
   final Widget child;
+  final GlobalKey<NavigatorState> navigatorKey;
 
   @override
   State<ClientAvailabilityCheck> createState() =>
@@ -21,13 +25,11 @@ class ClientAvailabilityCheck extends StatefulWidget {
 }
 
 class _ClientAvailabilityCheckState extends State<ClientAvailabilityCheck> {
-  GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
   final Logger logger = Logger('ClientAvailability');
 
   Future<void> check(BuildContext context) async {
     bool? offerResolve;
     Client client = context.read<Client>();
-
     try {
       await client.availability();
       logger.info('Client is available!');
@@ -59,7 +61,7 @@ class _ClientAvailabilityCheckState extends State<ClientAvailabilityCheck> {
     }
 
     if (offerResolve case final bool offerResolve) {
-      navigatorKey.currentState?.push(
+      widget.navigatorKey.currentState?.push(
         MaterialPageRoute(
           builder: (context) => HostUnvailablePage(offerResolve: offerResolve),
         ),
@@ -68,28 +70,7 @@ class _ClientAvailabilityCheckState extends State<ClientAvailabilityCheck> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return SubEffect(
-      effect: () {
-        check(context);
-        return null;
-      },
-      keys: [context.watch<Client>()],
-      child: HeroControllerScopePassThrough(
-        child: widget.child,
-        builder: (context, child) => Navigator(
-          key: navigatorKey,
-          pages: [
-            MaterialPage(child: child),
-          ],
-          onPopPage: (route, result) {
-            if (route.didPop(result)) return true;
-            return false;
-          },
-        ),
-      ),
-    );
-  }
+  Widget build(BuildContext context) => widget.child;
 }
 
 class HostUnvailablePage extends StatelessWidget {

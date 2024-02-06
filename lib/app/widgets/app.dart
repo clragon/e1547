@@ -8,6 +8,7 @@ import 'package:e1547/user/user.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_sub/flutter_sub.dart';
 import 'package:relative_time/relative_time.dart';
 
 class App extends StatelessWidget {
@@ -24,56 +25,71 @@ class App extends StatelessWidget {
         AdaptiveScaffoldScope(
           isEndDrawerOpen: false,
         ),
+        DefaultRouteObserver(),
         NavigationProvider(
           destinations: rootDestintations,
           drawerHeader: (context) => const UserDrawerHeader(),
         ),
       ],
-      child: Consumer2<Settings, RouterDrawerController>(
-        builder: (context, settings, navigation, child) =>
-            ValueListenableBuilder<AppTheme>(
+      child: Consumer<Settings>(
+        builder: (context, settings, child) => ValueListenableBuilder<AppTheme>(
           valueListenable: settings.theme,
           builder: (context, value, child) => ExcludeSemantics(
             child: AnnotatedRegion<SystemUiOverlayStyle>(
               value: value.data.appBarTheme.systemOverlayStyle ??
                   const SystemUiOverlayStyle(),
-              child: MaterialApp(
-                title: AppInfo.instance.appName,
-                theme: value.data,
-                routes: navigation.routes,
-                navigatorObservers: [
-                  navigation.routeObserver,
-                  RouteLoggerObserver(),
-                ],
-                navigatorKey: navigation.navigatorKey,
-                scrollBehavior: AndroidStretchScrollBehaviour(),
-                localizationsDelegates: const [
-                  GlobalWidgetsLocalizations.delegate,
-                  GlobalMaterialLocalizations.delegate,
-                  GlobalCupertinoLocalizations.delegate,
-                  RelativeTimeLocalizations.delegate,
-                ],
-                builder: (context, child) => WindowFrame(
-                  child: WindowShortcuts(
-                    child: AppLoadingScreen(
-                      child: MultiProvider(
-                        providers: [
-                          const DatabaseMigrationProvider(),
-                          IdentitiesServiceProvider(),
-                          TraitsServiceProvider(),
-                          ClientProvider(),
-                          CacheManagerProvider(),
-                          FollowsProvider(),
-                          HistoriesServiceProvider(),
-                        ],
-                        child: TraitsSync(
-                          child: AppLoadingScreenEnd(
-                            child: ErrorNotifier(
-                              child: LockScreen(
-                                child: ClientAvailabilityCheck(
-                                  child: AppLinkHandler(
-                                    child: NotificationHandler(
-                                      child: child!,
+              child: SubValue<GlobalKey<NavigatorState>>(
+                create: () => GlobalKey<NavigatorState>(),
+                builder: (context, navigatorKey) => MaterialApp(
+                  title: AppInfo.instance.appName,
+                  theme: value.data,
+                  scrollBehavior: AndroidStretchScrollBehaviour(),
+                  localizationsDelegates: const [
+                    GlobalWidgetsLocalizations.delegate,
+                    GlobalMaterialLocalizations.delegate,
+                    GlobalCupertinoLocalizations.delegate,
+                    RelativeTimeLocalizations.delegate,
+                  ],
+                  navigatorKey: navigatorKey,
+                  navigatorObservers: [
+                    DefaultRouteObserver.of(context),
+                    RouteLoggerObserver(),
+                    MaterialApp.createMaterialHeroController(),
+                  ],
+                  routes: context.watch<RouterDrawerController>().routes,
+                  builder: (context, child) => WindowFrame(
+                    child: WindowShortcuts(
+                      navigatorKey: navigatorKey,
+                      child: AppLoadingScreen(
+                        child: MultiProvider(
+                          providers: [
+                            const DatabaseMigrationProvider(),
+                            IdentitiesServiceProvider(),
+                            TraitsServiceProvider(),
+                            ClientProvider(),
+                            CacheManagerProvider(),
+                            FollowsProvider(),
+                            HistoriesServiceProvider(),
+                          ],
+                          child: TraitsSync(
+                            child: AppLoadingScreenEnd(
+                              child: ErrorNotifier(
+                                navigatorKey: navigatorKey,
+                                child: LockScreen(
+                                  child: ClientAvailabilityCheck(
+                                    navigatorKey: navigatorKey,
+                                    child: AppLinkHandler(
+                                      navigatorKey: navigatorKey,
+                                      child: NotificationHandler(
+                                        navigatorKey: navigatorKey,
+                                        routes: {
+                                          for (final destination in context
+                                              .watch<RouterDrawerController>()
+                                              .destinations)
+                                            destination.path: destination.unique
+                                        },
+                                        child: child!,
+                                      ),
                                     ),
                                   ),
                                 ),

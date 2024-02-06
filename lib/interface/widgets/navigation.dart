@@ -46,14 +46,6 @@ class RouterDrawerController extends ChangeNotifier {
 
   final WidgetBuilder? drawerHeader;
 
-  final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
-  final RouteObserver<Route<Object?>> routeObserver =
-      RouteObserver<Route<Object?>>();
-
-  NavigatorState? get navigator => navigatorKey.currentState;
-
-  BuildContext? get context => navigatorKey.currentContext;
-
   String? _drawerSelection;
 
   String? get drawerSelection => _drawerSelection;
@@ -178,90 +170,59 @@ class _RouterDrawerEntryState<T extends Widget>
   }
 
   @override
-  Widget build(BuildContext context) {
-    return widget.child;
-  }
+  Widget build(BuildContext context) => widget.child;
 }
 
-class AppBarDismissalProxy extends StatefulWidget {
-  /// Tricks the enclosed Route into thinking it can be popped.
-  ///
-  /// This is necessary to escape nested navigators.
-  /// The enclosing navigator has to appropriately handle the pop.
-  const AppBarDismissalProxy({
+class AnyRouteObserver extends RouteObserver<Route<Object?>> {}
+
+class DefaultRouteObserver extends Provider<AnyRouteObserver> {
+  DefaultRouteObserver({
     super.key,
-    this.enabled = true,
-    required this.child,
-  });
+    super.child,
+  }) : super(create: (context) => AnyRouteObserver());
 
-  /// Whether the enclosed Route can be popped.
-  final bool enabled;
+  static AnyRouteObserver of(BuildContext context) =>
+      context.watch<AnyRouteObserver>();
 
-  /// The widget below this widget in the tree.
-  final Widget child;
-
-  @override
-  State<AppBarDismissalProxy> createState() => _AppBarDismissalProxyState();
+  static AnyRouteObserver? maybeOf(BuildContext context) =>
+      context.watch<AnyRouteObserver?>();
 }
 
-class _AppBarDismissalProxyState extends State<AppBarDismissalProxy> {
-  LocalHistoryEntry? _entry;
-
-  late ModalRoute<dynamic> _modalRoute = ModalRoute.of<dynamic>(context)!;
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (widget.enabled) {
-        _modalRoute.addLocalHistoryEntry(createEntry());
-      }
-    });
-  }
-
-  LocalHistoryEntry createEntry() {
-    return _entry = LocalHistoryEntry(
-      onRemove: () => _entry = null,
-    );
-  }
-
-  @override
-  void didUpdateWidget(covariant AppBarDismissalProxy oldWidget) {
-    if (widget.enabled != oldWidget.enabled) {
-      if (widget.enabled) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          _modalRoute.addLocalHistoryEntry(createEntry());
-        });
-      } else {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          _modalRoute.removeLocalHistoryEntry(_entry!);
-        });
-      }
-    }
-    super.didUpdateWidget(oldWidget);
-  }
+mixin DefaultRouteAware<T extends StatefulWidget> on State<T>
+    implements RouteAware {
+  AnyRouteObserver? _routeObserver;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    ModalRoute route = ModalRoute.of<dynamic>(context)!;
-    if (route != _modalRoute) {
-      _modalRoute.removeLocalHistoryEntry(_entry!);
-      _modalRoute = route;
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _modalRoute.addLocalHistoryEntry(createEntry());
-      });
-    }
+    _routeObserver?.unsubscribe(this);
+    _routeObserver = DefaultRouteObserver.of(context);
+    _routeObserver!.subscribe(this, ModalRoute.of(context)!);
+  }
+
+  @override
+  void reassemble() {
+    super.reassemble();
+    _routeObserver?.unsubscribe(this);
+    _routeObserver = DefaultRouteObserver.of(context);
+    _routeObserver!.subscribe(this, ModalRoute.of(context)!);
   }
 
   @override
   void dispose() {
-    if (_entry != null) {
-      _modalRoute.removeLocalHistoryEntry(_entry!);
-    }
+    _routeObserver?.unsubscribe(this);
     super.dispose();
   }
 
   @override
-  Widget build(BuildContext context) => widget.child;
+  void didPopNext() {}
+
+  @override
+  void didPush() {}
+
+  @override
+  void didPop() {}
+
+  @override
+  void didPushNext() {}
 }

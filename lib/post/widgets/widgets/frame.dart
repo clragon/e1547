@@ -129,7 +129,7 @@ class ScaffoldFrameSystemUI extends StatefulWidget {
 }
 
 class _ScaffoldFrameSystemUIState extends State<ScaffoldFrameSystemUI>
-    with RouteAware {
+    with DefaultRouteAware<ScaffoldFrameSystemUI> {
   late RouterDrawerController navigation;
 
   Future<void> toggleFrame(bool shown) async {
@@ -157,15 +157,7 @@ class _ScaffoldFrameSystemUIState extends State<ScaffoldFrameSystemUI>
   void didPop() => SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    navigation = context.watch<RouterDrawerController>();
-    navigation.routeObserver.subscribe(this, ModalRoute.of(context)!);
-  }
-
-  @override
   void dispose() {
-    navigation.routeObserver.unsubscribe(this);
     SystemChrome.setSystemUIChangeCallback(null);
     super.dispose();
   }

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:animations/animations.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
@@ -65,21 +66,24 @@ class _LockScreenState extends State<LockScreen> {
         context.read<Settings>().appPin,
         context.read<Settings>().biometricAuth
       ]),
-      builder: (context) => HeroControllerScopePassThrough(
-        child: widget.child,
-        builder: (context, child) => Navigator(
-          pages: [
-            MaterialPage(
-              child: Visibility(
-                visible: !showLock,
-                maintainState: true,
-                child: child,
-              ),
+      builder: (context) => Stack(
+        fit: StackFit.passthrough,
+        children: [
+          Visibility(
+            visible: !showLock,
+            maintainState: true,
+            child: widget.child,
+          ),
+          PageTransitionSwitcher(
+            transitionBuilder: (child, primaryAnimation, secondaryAnimation) =>
+                FadeThroughTransition(
+              animation: primaryAnimation,
+              secondaryAnimation: secondaryAnimation,
+              child: child,
             ),
-            if (showLock) MaterialPage(child: lock!),
-          ],
-          onPopPage: (route, result) => false,
-        ),
+            child: showLock ? lock! : null,
+          ),
+        ],
       ),
     );
   }

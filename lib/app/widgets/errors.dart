@@ -3,9 +3,14 @@ import 'package:e1547/logs/logs.dart';
 import 'package:flutter/material.dart';
 
 class ErrorNotifier extends StatelessWidget {
-  const ErrorNotifier({super.key, required this.child});
+  const ErrorNotifier({
+    super.key,
+    required this.child,
+    required this.navigatorKey,
+  });
 
   final Widget child;
+  final GlobalKey<NavigatorState> navigatorKey;
 
   @override
   Widget build(BuildContext context) {
@@ -13,15 +18,11 @@ class ErrorNotifier extends StatelessWidget {
     if (logs == null) return child;
     return LoggerErrorNotifier(
       logs: logs,
-      onOpenLogs: () => context
-          .read<RouterDrawerController>()
-          .navigatorKey
-          .currentState!
-          .push(
-            MaterialPageRoute(
-              builder: (context) => const LogsPage(),
-            ),
-          ),
+      onOpenLogs: () => navigatorKey.currentState!.push(
+        MaterialPageRoute(
+          builder: (context) => const LogsPage(),
+        ),
+      ),
       child: child,
     );
   }

@@ -3,15 +3,19 @@ import 'dart:io';
 
 import 'package:app_links/app_links.dart';
 import 'package:e1547/app/app.dart';
-import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
 
 typedef LinkCallback = FutureOr<void> Function(Uri? url);
 
 class AppLinkHandler extends StatefulWidget {
-  const AppLinkHandler({super.key, required this.child});
+  const AppLinkHandler({
+    super.key,
+    required this.child,
+    required this.navigatorKey,
+  });
 
   final Widget child;
+  final GlobalKey<NavigatorState> navigatorKey;
 
   @override
   State<AppLinkHandler> createState() => _AppLinkHandlerState();
@@ -22,14 +26,13 @@ class _AppLinkHandlerState extends State<AppLinkHandler> {
   StreamSubscription<Uri>? linkListener;
 
   Future<void> onInitialLink(Uri? url) async {
-    RouterDrawerController controller = context.read<RouterDrawerController>();
     if (url != null) {
       VoidCallback? action = const E621LinkParser().parseOnTap(
-        controller.context!,
+        widget.navigatorKey.currentContext!,
         url.toString(),
       );
       if (action != null) {
-        controller.navigator!.popUntil((route) => false);
+        widget.navigatorKey.currentState!.popUntil((route) => false);
         action();
       } else {
         await launch(url.toString());
@@ -40,7 +43,7 @@ class _AppLinkHandlerState extends State<AppLinkHandler> {
   Future<void> onLink(Uri? url) async {
     if (url != null) {
       if (!const E621LinkParser().open(
-        context.read<RouterDrawerController>().context!,
+        widget.navigatorKey.currentContext!,
         url.toString(),
       )) {
         await launch(url.toString());
@@ -65,7 +68,5 @@ class _AppLinkHandlerState extends State<AppLinkHandler> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return widget.child;
-  }
+  Widget build(BuildContext context) => widget.child;
 }
