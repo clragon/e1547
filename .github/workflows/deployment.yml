@@ -62,7 +62,7 @@ jobs:
         if: ${{ github.event.inputs.version != 'none' }}
         run: |
           dart pub global activate cider
-          cider bump --bump-build ${{ env.VERSION_BUMP }}
+          cider bump ${{ env.VERSION_BUMP }} --bump-build 
 
       - name: configure release keys
         env:
@@ -127,7 +127,7 @@ jobs:
         if: ${{ github.event.inputs.version != 'none' }}
         run: |
           dart pub global activate cider
-          cider bump --bump-build ${{ env.VERSION_BUMP }}
+          cider bump ${{ env.VERSION_BUMP }} --bump-build
 
       - name: build IPA
         run: flutter build ios --no-codesign
@@ -176,7 +176,7 @@ jobs:
 
       - name: bump and release version
         run: |
-          cider bump --bump-build ${{ env.VERSION_BUMP }}
+          cider bump ${{ env.VERSION_BUMP }} --bump-build
           cider release
 
       - name: get new version
