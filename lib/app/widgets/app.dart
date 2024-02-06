@@ -60,22 +60,22 @@ class App extends StatelessWidget {
                   builder: (context, child) => WindowFrame(
                     child: WindowShortcuts(
                       navigatorKey: navigatorKey,
-                      child: AppLoadingScreen(
-                        child: MultiProvider(
-                          providers: [
-                            const DatabaseMigrationProvider(),
-                            IdentitiesServiceProvider(),
-                            TraitsServiceProvider(),
-                            ClientProvider(),
-                            CacheManagerProvider(),
-                            FollowsProvider(),
-                            HistoriesServiceProvider(),
-                          ],
-                          child: TraitsSync(
-                            child: AppLoadingScreenEnd(
-                              child: ErrorNotifier(
-                                navigatorKey: navigatorKey,
-                                child: LockScreen(
+                      child: LockScreen(
+                        child: AppLoadingScreen(
+                          child: MultiProvider(
+                            providers: [
+                              const DatabaseMigrationProvider(),
+                              IdentitiesServiceProvider(),
+                              TraitsServiceProvider(),
+                              ClientProvider(),
+                              CacheManagerProvider(),
+                              FollowsProvider(),
+                              HistoriesServiceProvider(),
+                            ],
+                            child: TraitsSync(
+                              child: AppLoadingScreenEnd(
+                                child: ErrorNotifier(
+                                  navigatorKey: navigatorKey,
                                   child: ClientAvailabilityCheck(
                                     navigatorKey: navigatorKey,
                                     child: AppLinkHandler(
