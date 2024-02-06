@@ -1,0 +1,9 @@
+### Added
+- multiple logins (identities)
+
+### Changed
+- settings layout
+- log messages format
+
+### Fixed
+- cache size bloat
