@@ -26,12 +26,11 @@
 - Comment on posts
 - Download Images
 - Favorite, Up and down vote posts
-- Follow tags and receive notifications
+- Follow tags with notifications
 - Local blacklist
 - DText parsing
 - Video support
 - Multiple logins
-- Automatic update check
 - Multiple App Themes
 
 ## Screenshots
@@ -107,7 +106,7 @@ If you notice something not working, feel free to open a github issue:
 
 I am [clragon](https://github.com/clragon)! I write the code for this app.
 
-I love open source and I love good software and this project is my passion.  
+This is a passion project!  
 If you like the app, you can support me by buying me a coffee:
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/Q5Q22W6FW)
