@@ -31,7 +31,8 @@ class LoggerErrorNotifier extends StatelessWidget {
             content: Builder(
               builder: (context) {
                 TextStyle style = Theme.of(context).textTheme.bodyMedium!;
-                Color textColor = style.color!;
+                Color textColor =
+                    style.color ?? Theme.of(context).colorScheme.onSurface;
                 double textLuminance = textColor.computeLuminance();
                 double colorDifference =
                     background.computeLuminance() - textLuminance;
