@@ -19,7 +19,7 @@ extension PostDownloading on Post {
     required BaseCacheManager cache,
   }) async {
     try {
-      File download = await DefaultCacheManager().getSingleFile(file!);
+      File download = await cache.getSingleFile(file!);
       if (Platform.isAndroid) {
         Uint8List downloadBytes = await download.readAsBytes();
         String downloadMime = await _throwOnNull(
