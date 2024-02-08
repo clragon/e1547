@@ -1,7 +1,6 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="net.e1547">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <uses-permission android:name="android.permission.INTERNET"/>
-   <application
+    <application
         android:label="e1547"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
