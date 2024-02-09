@@ -180,12 +180,6 @@ class DefaultRouteObserver extends Provider<AnyRouteObserver> {
     super.key,
     super.child,
   }) : super(create: (context) => AnyRouteObserver());
-
-  static AnyRouteObserver of(BuildContext context) =>
-      context.watch<AnyRouteObserver>();
-
-  static AnyRouteObserver? maybeOf(BuildContext context) =>
-      context.watch<AnyRouteObserver?>();
 }
 
 mixin DefaultRouteAware<T extends StatefulWidget> on State<T>
@@ -196,7 +190,7 @@ mixin DefaultRouteAware<T extends StatefulWidget> on State<T>
   void didChangeDependencies() {
     super.didChangeDependencies();
     _routeObserver?.unsubscribe(this);
-    _routeObserver = DefaultRouteObserver.of(context);
+    _routeObserver = context.watch<AnyRouteObserver>();
     _routeObserver!.subscribe(this, ModalRoute.of(context)!);
   }
 
@@ -204,7 +198,7 @@ mixin DefaultRouteAware<T extends StatefulWidget> on State<T>
   void reassemble() {
     super.reassemble();
     _routeObserver?.unsubscribe(this);
-    _routeObserver = DefaultRouteObserver.of(context);
+    _routeObserver = context.read<AnyRouteObserver>();
     _routeObserver!.subscribe(this, ModalRoute.of(context)!);
   }
 

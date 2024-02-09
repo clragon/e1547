@@ -52,7 +52,7 @@ class App extends StatelessWidget {
                   ],
                   navigatorKey: navigatorKey,
                   navigatorObservers: [
-                    DefaultRouteObserver.of(context),
+                    context.watch<AnyRouteObserver>(),
                     RouteLoggerObserver(),
                     MaterialApp.createMaterialHeroController(),
                   ],
