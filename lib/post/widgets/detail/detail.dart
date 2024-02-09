@@ -56,26 +56,16 @@ class PostDetail extends StatelessWidget {
           children: [
             ArtistDisplay(post: post),
             DeletionDisplay(post: post),
+            LikeDisplay(post: post),
             DescriptionDisplay(post: post),
           ],
         ),
-      );
-
-  Widget upperBodyExtension(BuildContext context) => Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 20,
-        ),
-        child: LikeDisplay(post: post),
       );
 
   Widget middleBody(BuildContext context) => Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Column(
           children: [
-            PostEditorChild(
-              shown: false,
-              child: LikeDisplay(post: post),
-            ),
             PostEditorChild(
               shown: false,
               child: CommentDisplay(post: post),
@@ -163,7 +153,6 @@ class PostDetail extends StatelessWidget {
                             children: [
                               image(context, constraints),
                               upperBody(context),
-                              upperBodyExtension(context),
                             ],
                           ),
                         ),
