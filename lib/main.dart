@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 Future<void> main() async {
-  await initializeDateFormatting();
+  await DateFormatting.ensureInitialized();
   WidgetsFlutterBinding.ensureInitialized();
   VideoService.ensureInitialized();
   await initializeAppInfo();

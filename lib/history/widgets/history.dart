@@ -26,7 +26,7 @@ class HistoriesPage extends StatelessWidget {
                     CrossFade.builder(
                       showChild: controller.search.date != null,
                       builder: (context) => Text(
-                        dateOrName(controller.search.date!),
+                        DateFormatting.named(controller.search.date!),
                         style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                               color:
                                   Theme.of(context).textTheme.bodySmall!.color,
@@ -219,8 +219,8 @@ class HistoriesPage extends StatelessWidget {
               order: GroupedListOrder.DESC,
               controller: PrimaryScrollController.of(context),
               groupBy: (element) => DateUtils.dateOnly(element.visitedAt),
-              groupHeaderBuilder: (element) =>
-                  ListTileHeader(title: dateOrName(element.visitedAt)),
+              groupHeaderBuilder: (element) => ListTileHeader(
+                  title: DateFormatting.named(element.visitedAt)),
               itemComparator: (a, b) => a.visitedAt.compareTo(b.visitedAt),
               builderDelegate: defaultPagedChildBuilderDelegate<History>(
                 pagingController: controller.paging,

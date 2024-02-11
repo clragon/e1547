@@ -254,13 +254,13 @@ class LogFileTile extends StatelessWidget {
               child: Column(
                 children: [
                   Text(
-                    formatDate(file.date),
+                    DateFormatting.date(file.date),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                   Text(
-                    formatTime(file.date),
+                    DateFormatting.time(file.date),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: Theme.of(context).textTheme.titleMedium,
@@ -309,7 +309,7 @@ class _LogPageState extends State<LogPage> {
               appBar: LogSelectionAppBar(
                 child: DefaultAppBar(
                   title: Text(
-                      'Logs${widget.loader.date != null ? ' - ${formatDate(widget.loader.date!)}' : ''}'),
+                      'Logs${widget.loader.date != null ? ' - ${DateFormatting.date(widget.loader.date!)}' : ''}'),
                   actions: [
                     if (widget.onShowAll != null)
                       IconButton(

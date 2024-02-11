@@ -30,5 +30,5 @@ class LogFileInfo {
 
   @override
   String toString() =>
-      '${formatDateTime(date)} ${type != null ? ' ($type)' : ''}';
+      '${DateFormatting.dateTime(date)} ${type != null ? ' ($type)' : ''}';
 }

@@ -60,11 +60,11 @@ class WikiInfo extends StatelessWidget {
             ),
           textInfoRow(
             'created',
-            formatDateTime(wiki.createdAt.toLocal()),
+            DateFormatting.dateTime(wiki.createdAt.toLocal()),
           ),
           textInfoRow(
             'updated',
-            formatDateTime(
+            DateFormatting.dateTime(
               (wiki.updatedAt ?? wiki.createdAt).toLocal(),
             ),
           ),
