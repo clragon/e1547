@@ -38,21 +38,25 @@ abstract final class DateFormatting {
 class LowercaseTextInputFormatter extends TextInputFormatter {
   @override
   TextEditingValue formatEditUpdate(
-      TextEditingValue oldValue, TextEditingValue newValue) {
-    return newValue.copyWith(text: newValue.text.toLowerCase());
-  }
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) =>
+      newValue.copyWith(text: newValue.text.toLowerCase());
 }
 
-extension Selection on TextEditingController {
-  void setFocusToEnd() {
-    selection = TextSelection(
-      baseOffset: text.length,
-      extentOffset: text.length,
-    );
-  }
+extension TextEditingSelectionMovement on TextEditingController {
+  void setFocusToStart() => selection = const TextSelection(
+        baseOffset: 0,
+        extentOffset: 0,
+      );
+
+  void setFocusToEnd() => selection = TextSelection(
+        baseOffset: text.length,
+        extentOffset: text.length,
+      );
 }
 
-extension Ellipse on String {
+extension StringEllipsing on String {
   String ellipse(int limit) {
     if (length > limit) {
       return '${split('').take(limit).join()}...';
@@ -62,7 +66,7 @@ extension Ellipse on String {
   }
 }
 
-extension Nullifying on String {
+extension StringNullifying on String {
   String? get nullWhenEmpty {
     if (isEmpty) {
       return null;
@@ -71,7 +75,7 @@ extension Nullifying on String {
   }
 }
 
-extension Trimming on List<String> {
+extension StringListTrimming on List<String> {
   /// Trims all strings in the list and removes empty strings.
   List<String> trim() =>
       map((e) => e.trim()).toList()..removeWhere((element) => element.isEmpty);
