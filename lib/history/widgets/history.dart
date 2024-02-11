@@ -44,8 +44,7 @@ class HistoriesPage extends StatelessWidget {
                 Locale locale = Localizations.localeOf(context);
 
                 // awaiting this here means the UI might not react immediately
-                List<DateTime> dates =
-                    await controller.service.dates(host: controller.host).first;
+                List<DateTime> dates = await controller.service.dates().first;
                 if (dates.isEmpty) {
                   dates.add(DateTime.now());
                 }

@@ -63,7 +63,7 @@ class HistoriesDao extends DatabaseAccessor<GeneratedDatabase>
         .watchSingle();
   }
 
-  Stream<List<DateTime>> dates({String? host}) {
+  Stream<List<DateTime>> dates() {
     final Expression<DateTime> time = historiesTable.visitedAt;
     final Expression<String> date = historiesTable.visitedAt.date;
     final Expression<bool> hosted = _identityQuery(historiesTable);

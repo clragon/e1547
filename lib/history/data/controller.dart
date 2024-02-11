@@ -1,13 +1,11 @@
 import 'package:drift/drift.dart';
 import 'package:drift/isolate.dart';
-import 'package:e1547/client/client.dart';
 import 'package:e1547/history/history.dart';
 import 'package:e1547/interface/interface.dart';
 
 class HistoriesController extends DataController<int, History> {
   HistoriesController({
     required this.service,
-    required this.host,
     HistoriesSearch? search,
   })  : _search = search ??
             HistoriesSearch(
@@ -17,7 +15,6 @@ class HistoriesController extends DataController<int, History> {
         super(firstPageKey: 1);
 
   final HistoriesService service;
-  final String host;
 
   HistoriesSearch _search;
   HistoriesSearch get search => _search;
@@ -66,16 +63,15 @@ class HistoriesController extends DataController<int, History> {
   }
 }
 
-class HistoriesProvider extends SubChangeNotifierProvider2<HistoriesService,
-    Client, HistoriesController> {
+class HistoriesProvider
+    extends SubChangeNotifierProvider<HistoriesService, HistoriesController> {
   HistoriesProvider({HistoriesSearch? search, super.child, super.builder})
       : super(
-          create: (context, service, client) => HistoriesController(
+          create: (context, service) => HistoriesController(
             service: service,
-            host: client.host,
             search: search,
           ),
-          update: (context, service, client, controller) {
+          update: (context, service, controller) {
             if (search != null) {
               controller.search = search;
             }
