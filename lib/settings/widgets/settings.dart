@@ -180,6 +180,17 @@ class SettingsPage extends StatelessWidget {
                   ),
                 ],
               ),
+              ValueListenableBuilder<bool>(
+                valueListenable: settings.showPostInfo,
+                builder: (context, value, child) => SwitchListTile(
+                  title: const Text('Post info'),
+                  subtitle:
+                  Text(value ? 'info on post tiles' : 'image tiles only'),
+                  secondary: const Icon(Icons.subtitles),
+                  value: value,
+                  onChanged: (value) => settings.showPostInfo.value = value,
+                ),
+              ),
               const Divider(),
               const ListTileHeader(title: 'Interactions'),
               if (Platform.isAndroid)
