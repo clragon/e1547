@@ -18,7 +18,7 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        AppUpdateProvider(),
+        AppInfoClientProvider(),
         ClientFactoryProvider(),
         SettingsProvider(),
         VideoServiceProvider(),

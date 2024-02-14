@@ -264,9 +264,8 @@ class FollowCompanion extends i0.UpdateCompanion<i5.Follow> {
       map['alias'] = i0.Variable<String>(alias.value);
     }
     if (type.present) {
-      final converter = i2.$FollowsTableTable.$convertertype;
-
-      map['type'] = i0.Variable<String>(converter.toSql(type.value));
+      map['type'] = i0.Variable<String>(
+          i2.$FollowsTableTable.$convertertype.toSql(type.value));
     }
     if (latest.present) {
       map['latest'] = i0.Variable<int>(latest.value);

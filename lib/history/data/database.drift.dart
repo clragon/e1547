@@ -209,10 +209,8 @@ class HistoryCompanion extends i0.UpdateCompanion<i5.History> {
       map['link'] = i0.Variable<String>(link.value);
     }
     if (thumbnails.present) {
-      final converter = i2.$HistoriesTableTable.$converterthumbnails;
-
-      map['thumbnails'] =
-          i0.Variable<String>(converter.toSql(thumbnails.value));
+      map['thumbnails'] = i0.Variable<String>(
+          i2.$HistoriesTableTable.$converterthumbnails.toSql(thumbnails.value));
     }
     if (title.present) {
       map['title'] = i0.Variable<String>(title.value);

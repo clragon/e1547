@@ -174,8 +174,8 @@ class OldHistoriesTableData extends i0.DataClass
     map['visited_at'] = i0.Variable<DateTime>(visitedAt);
     map['link'] = i0.Variable<String>(link);
     {
-      final converter = i1.$OldHistoriesTableTable.$converterthumbnails;
-      map['thumbnails'] = i0.Variable<String>(converter.toSql(thumbnails));
+      map['thumbnails'] = i0.Variable<String>(
+          i1.$OldHistoriesTableTable.$converterthumbnails.toSql(thumbnails));
     }
     if (!nullToAbsent || title != null) {
       map['title'] = i0.Variable<String>(title);
@@ -361,10 +361,9 @@ class OldHistoriesTableDataCompanion
       map['link'] = i0.Variable<String>(link.value);
     }
     if (thumbnails.present) {
-      final converter = i1.$OldHistoriesTableTable.$converterthumbnails;
-
-      map['thumbnails'] =
-          i0.Variable<String>(converter.toSql(thumbnails.value));
+      map['thumbnails'] = i0.Variable<String>(i1
+          .$OldHistoriesTableTable.$converterthumbnails
+          .toSql(thumbnails.value));
     }
     if (title.present) {
       map['title'] = i0.Variable<String>(title.value);

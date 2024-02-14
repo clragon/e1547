@@ -113,6 +113,7 @@ flutter:
   assets:
     - assets/icon/app/round.png
     - assets/icon/app/user.png
+    - assets/static/
   fonts:
     - family: JetBrains Mono
       fonts:

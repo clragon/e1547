@@ -1,0 +1,286 @@
+[
+  {
+    "name": "wesleyote",
+    "handles": {
+      "ko-fi": "wesleyote"
+    },
+    "donations": [
+      {
+        "amount": 6.0,
+        "currency": "USD",
+        "date": "2024-02-13T00:00:00",
+        "platform": "ko-fi"
+      },
+      {
+        "amount": 6.0,
+        "currency": "USD",
+        "date": "2024-01-19T00:00:00",
+        "platform": "ko-fi"
+      },
+      {
+        "amount": 6.0,
+        "currency": "USD",
+        "date": "2023-11-28T00:00:00",
+        "platform": "ko-fi"
+      },
+      {
+        "amount": 5.0,
+        "currency": "USD",
+        "date": "2023-10-04T00:00:00",
+        "platform": "ko-fi"
+      },
+      {
+        "amount": 5.0,
+        "currency": "USD",
+        "date": "2023-09-08T00:00:00",
+        "platform": "ko-fi"
+      }
+    ]
+  },
+  {
+    "name": "adAP",
+    "handles": {
+      "ko-fi": "adAP"
+    },
+    "donations": [
+      {
+        "amount": 10.0,
+        "currency": "USD",
+        "date": "2023-08-24T00:00:00",
+        "platform": "ko-fi"
+      },
+      {
+        "amount": 10.0,
+        "currency": "USD",
+        "date": "2022-09-30T00:00:00",
+        "platform": "ko-fi"
+      }
+    ]
+  },
+  {
+    "name": "bork",
+    "handles": {
+      "ko-fi": "bork"
+    },
+    "donations": [
+      {
+        "amount": 3.0,
+        "currency": "USD",
+        "date": "2023-05-07T00:00:00",
+        "platform": "ko-fi"
+      }
+    ]
+  },
+  {
+    "name": "TimeMasterDM",
+    "handles": {
+      "ko-fi": "TimeMasterDM"
+    },
+    "donations": [
+      {
+        "amount": 3.0,
+        "currency": "USD",
+        "date": "2023-02-25T00:00:00",
+        "platform": "ko-fi"
+      }
+    ]
+  },
+  {
+    "name": "kannthus",
+    "avatar": "https://github.com/kannthus.png",
+    "handles": {
+      "ko-fi": "kannthus",
+      "github": "kannthus"
+    },
+    "donations": [
+      {
+        "amount": 3.0,
+        "currency": "USD",
+        "date": "2022-11-06T00:00:00",
+        "platform": "ko-fi"
+      }
+    ]
+  },
+  {
+    "name": "Zylysh",
+    "handles": {
+      "ko-fi": "Zylysh"
+    },
+    "donations": [
+      {
+        "amount": 15.0,
+        "currency": "USD",
+        "date": "2022-10-23T00:00:00",
+        "platform": "ko-fi"
+      },
+      {
+        "amount": 15.0,
+        "currency": "USD",
+        "date": "2022-04-30T00:00:00",
+        "platform": "ko-fi"
+      }
+    ]
+  },
+  {
+    "name": "SUDA_IDU",
+    "avatar": "https://github.com/KOMBINE.png",
+    "handles": {
+      "e621": "SUDA_IDU",
+      "ko-fi": "\u0421\u0430\u0448\u0430 \u041c\u0430\u0437\u0443\u0440\u0435\u043d\u043a\u043e",
+      "github": "KOMBINE"
+    },
+    "donations": [
+      {
+        "amount": 3.0,
+        "currency": "USD",
+        "date": "2021-10-12T00:00:00",
+        "platform": "ko-fi"
+      },
+      {
+        "amount": 1.0,
+        "currency": "USD",
+        "date": "2023-02-17T12:41:33+00:00",
+        "platform": "github"
+      }
+    ]
+  },
+  {
+    "name": "JaxiiRuff",
+    "avatar": "https://github.com/JaxiiRuff.png",
+    "handles": {
+      "github": "JaxiiRuff"
+    },
+    "donations": [
+      {
+        "amount": 2.0,
+        "currency": "USD",
+        "date": "2023-10-12T17:00:42+00:00",
+        "platform": "github"
+      },
+      {
+        "amount": 2.0,
+        "currency": "USD",
+        "date": "2023-09-12T16:54:07+00:00",
+        "platform": "github"
+      },
+      {
+        "amount": 2.0,
+        "currency": "USD",
+        "date": "2023-08-12T16:31:42+00:00",
+        "platform": "github"
+      },
+      {
+        "amount": 2.0,
+        "currency": "USD",
+        "date": "2023-07-12T07:13:39+00:00",
+        "platform": "github"
+      },
+      {
+        "amount": 1.8,
+        "currency": "USD",
+        "date": "2023-06-15T23:15:01+00:00",
+        "platform": "github"
+      },
+      {
+        "amount": -0.9,
+        "currency": "USD",
+        "date": "2023-06-15T23:15:01+00:00",
+        "platform": "github"
+      },
+      {
+        "amount": 1.0,
+        "currency": "USD",
+        "date": "2023-06-12T17:29:20+00:00",
+        "platform": "github"
+      },
+      {
+        "amount": 1.0,
+        "currency": "USD",
+        "date": "2023-05-12T17:01:18+00:00",
+        "platform": "github"
+      },
+      {
+        "amount": 1.0,
+        "currency": "USD",
+        "date": "2023-04-12T16:48:26+00:00",
+        "platform": "github"
+      },
+      {
+        "amount": 1.0,
+        "currency": "USD",
+        "date": "2023-03-12T17:06:04+00:00",
+        "platform": "github"
+      },
+      {
+        "amount": 0.75,
+        "currency": "USD",
+        "date": "2023-02-19T18:22:43+00:00",
+        "platform": "github"
+      }
+    ]
+  },
+  {
+    "name": "Vuldora",
+    "avatar": "https://github.com/Vuldora.png",
+    "handles": {
+      "ko-fi": "Vuldozer",
+      "github": "Vuldora"
+    },
+    "donations": [
+      {
+        "amount": 3.0,
+        "currency": "USD",
+        "date": "2022-11-27T00:00:00",
+        "platform": "ko-fi"
+      },
+      {
+        "amount": 3.0,
+        "currency": "USD",
+        "date": "2023-09-17T16:59:45+00:00",
+        "platform": "github"
+      },
+      {
+        "amount": 3.0,
+        "currency": "USD",
+        "date": "2023-08-17T16:48:48+00:00",
+        "platform": "github"
+      },
+      {
+        "amount": 3.0,
+        "currency": "USD",
+        "date": "2023-07-17T16:41:45+00:00",
+        "platform": "github"
+      },
+      {
+        "amount": 3.0,
+        "currency": "USD",
+        "date": "2023-06-17T17:24:00+00:00",
+        "platform": "github"
+      },
+      {
+        "amount": 3.0,
+        "currency": "USD",
+        "date": "2023-05-17T16:41:54+00:00",
+        "platform": "github"
+      },
+      {
+        "amount": 3.0,
+        "currency": "USD",
+        "date": "2023-04-17T16:37:08+00:00",
+        "platform": "github"
+      },
+      {
+        "amount": 3.0,
+        "currency": "USD",
+        "date": "2023-03-17T17:35:48+00:00",
+        "platform": "github"
+      },
+      {
+        "amount": 3.0,
+        "currency": "USD",
+        "date": "2023-02-17T12:48:31+00:00",
+        "platform": "github"
+      }
+    ]
+  }
+]

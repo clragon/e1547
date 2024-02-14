@@ -15,7 +15,6 @@ import 'package:e1547/identity/identity.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:e1547/traits/traits.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_sub/flutter_sub.dart';
@@ -207,14 +206,9 @@ class _IdentityHttpFileService extends HttpFileService {
   }
 }
 
-class AppUpdateProvider extends SubProvider<AppStorage, AppUpdater?> {
-  AppUpdateProvider({super.child, super.builder})
+class AppInfoClientProvider extends SubProvider<AppStorage, AppInfoClient?> {
+  AppInfoClientProvider({super.child, super.builder})
       : super(
-          create: (context, storage) {
-            if (kDebugMode) return null;
-            return GithubAppUpdater(
-              cache: storage.httpCache,
-            );
-          },
+          create: (context, storage) => AppInfoClient(cache: storage.httpCache),
         );
 }

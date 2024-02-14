@@ -176,9 +176,8 @@ class TraitsCompanion extends i0.UpdateCompanion<i5.Traits> {
       map['id'] = i0.Variable<int>(id.value);
     }
     if (denylist.present) {
-      final converter = i4.$TraitsTableTable.$converterdenylist;
-
-      map['denylist'] = i0.Variable<String>(converter.toSql(denylist.value));
+      map['denylist'] = i0.Variable<String>(
+          i4.$TraitsTableTable.$converterdenylist.toSql(denylist.value));
     }
     if (homeTags.present) {
       map['home_tags'] = i0.Variable<String>(homeTags.value);

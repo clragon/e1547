@@ -15,26 +15,20 @@ class AboutPage extends StatefulWidget {
 }
 
 class _AboutPageState extends State<AboutPage> {
-  late Future<List<AppVersion>> versions =
-      context.read<AppUpdater?>()?.getNewVersions() ?? Future.value([]);
+  late AppInfoClient? client;
 
-  Widget linkListTile({
-    Widget? leading,
-    required Widget title,
-    required String link,
-    String? extra,
-  }) {
-    return ListTile(
-      leading: leading,
-      title: title,
-      subtitle: Text(extra ?? link),
-      onTap: () => launch(link + (extra ?? '')),
-    );
+  late Future<List<AppVersion>>? versions = client?.getNewVersions();
+  late Future<List<Donor>>? bundledDonors = client?.getBundledDonors();
+  late Future<List<Donor>>? donors = client?.getDonors();
+
+  @override
+  void didChangeDependencies() {
+    client = context.read<AppInfoClient?>();
+    super.didChangeDependencies();
   }
 
   @override
   Widget build(BuildContext context) {
-    AppInfo appInfo = AppInfo.instance;
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: const TransparentAppBar(
@@ -45,8 +39,11 @@ class _AboutPageState extends State<AboutPage> {
       body: RefreshablePage(
         refresh: (refreshController) async {
           try {
-            setState(() => versions =
-                context.read<AppUpdater>().getNewVersions(force: true));
+            setState(() {
+              versions = client?.getNewVersions(force: true);
+              bundledDonors = client?.getBundledDonors();
+              donors = client?.getDonors(force: true);
+            });
             await versions;
             refreshController.refreshCompleted();
           } on AppUpdaterException {
@@ -58,89 +55,29 @@ class _AboutPageState extends State<AboutPage> {
           padding: LimitedWidthLayout.of(context).padding,
           children: [
             const SizedBox(height: 100),
-            SizedBox(
-              height: 300,
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const AppIcon(radius: 64),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 24, bottom: 12),
-                      child: Text(
-                        appInfo.appName,
-                        style: const TextStyle(
-                          fontSize: 22,
-                        ),
-                      ),
-                    ),
-                    Text(
-                      appInfo.version,
-                      style: const TextStyle(
-                        fontSize: 16,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+            const AboutLogo(),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 32),
               child: Card(
                 child: Column(
                   children: [
-                    _VersionTile(newVersions: versions),
-                    linkListTile(
-                      leading: const FaIcon(FontAwesomeIcons.github),
-                      title: const Text('GitHub'),
-                      link: 'https://github.com/',
-                      extra: appInfo.github,
-                    ),
-                    linkListTile(
-                      leading: const FaIcon(FontAwesomeIcons.discord),
-                      title: const Text('Discord'),
-                      link: 'https://discord.gg/',
-                      extra: appInfo.discord,
-                    ),
-                    if (appInfo.website != null)
-                      linkListTile(
-                        leading: const FaIcon(FontAwesomeIcons.house),
-                        title: const Text('Website'),
-                        link: 'https://',
-                        extra: appInfo.website,
-                      ),
-                    if (appInfo.kofi != null &&
-                        ![
-                          Source.IS_INSTALLED_FROM_PLAY_STORE,
-                          Source.IS_INSTALLED_FROM_APP_STORE,
-                        ].contains(appInfo.source))
-                      linkListTile(
-                        leading: const FaIcon(FontAwesomeIcons.mugSaucer),
-                        title: const Text('Ko-fi'),
-                        link: 'https://ko-fi.com/',
-                        extra: appInfo.kofi,
-                      ),
-                    if (appInfo.email != null)
-                      linkListTile(
-                        leading: const FaIcon(FontAwesomeIcons.solidEnvelope),
-                        title: const Text('Email'),
-                        link: 'mailto:',
-                        extra: appInfo.email,
-                      ),
-                    const Divider(),
-                    linkListTile(
-                      leading: const FaIcon(FontAwesomeIcons.googlePlay),
-                      title: const Text('Playstore'),
-                      link: Platform.isAndroid
-                          ? 'https://play.google.com/store/apps/details?id='
-                          : 'https://play.google.com/store/search?q=',
-                      extra: AppInfo.instance.packageName,
-                    ),
+                    AboutVersion(newVersions: versions),
+                    const AboutLinks(),
                   ],
                 ),
               ),
             ),
             const SizedBox(height: 30),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 32),
+              child: Card(
+                child: AboutDonations(
+                  bundledDonors: bundledDonors,
+                  donors: donors,
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
           ],
         ),
       ),
@@ -148,16 +85,51 @@ class _AboutPageState extends State<AboutPage> {
   }
 }
 
-class _VersionTile extends StatelessWidget {
-  // ignore: unused_element
-  const _VersionTile({super.key, required this.newVersions});
+class AboutLogo extends StatelessWidget {
+  const AboutLogo({super.key});
 
-  final Future<List<AppVersion>> newVersions;
+  @override
+  Widget build(BuildContext context) {
+    AppInfo appInfo = AppInfo.instance;
+    return SizedBox(
+      height: 300,
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const AppIcon(radius: 64),
+            Padding(
+              padding: const EdgeInsets.only(top: 24, bottom: 12),
+              child: Text(
+                appInfo.appName,
+                style: const TextStyle(
+                  fontSize: 22,
+                ),
+              ),
+            ),
+            Text(
+              appInfo.version,
+              style: const TextStyle(
+                fontSize: 16,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class AboutVersion extends StatelessWidget {
+  // ignore: unused_element
+  const AboutVersion({super.key, required this.newVersions});
+
+  final Future<List<AppVersion>>? newVersions;
 
   @override
   Widget build(BuildContext context) {
     void openGithub() {
-      AppUpdater? updater = context.read<AppUpdater?>();
+      AppInfoClient? updater = context.read<AppInfoClient?>();
       if (updater == null) return;
       launch(updater.latestReleaseUrl());
     }
@@ -267,6 +239,144 @@ class _VersionTile extends StatelessWidget {
   }
 }
 
+class AboutLinks extends StatelessWidget {
+  const AboutLinks({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    AppInfo appInfo = AppInfo.instance;
+
+    Widget linkListTile({
+      Widget? leading,
+      required Widget title,
+      required String link,
+      String? extra,
+    }) {
+      return ListTile(
+        leading: leading,
+        title: title,
+        subtitle: Text(extra ?? link),
+        onTap: () => launch(link + (extra ?? '')),
+      );
+    }
+
+    return Column(
+      children: [
+        linkListTile(
+          leading: const FaIcon(FontAwesomeIcons.github),
+          title: const Text('GitHub'),
+          link: 'https://github.com/',
+          extra: appInfo.github,
+        ),
+        linkListTile(
+          leading: const FaIcon(FontAwesomeIcons.discord),
+          title: const Text('Discord'),
+          link: 'https://discord.gg/',
+          extra: appInfo.discord,
+        ),
+        if (appInfo.website != null)
+          linkListTile(
+            leading: const FaIcon(FontAwesomeIcons.house),
+            title: const Text('Website'),
+            link: 'https://',
+            extra: appInfo.website,
+          ),
+        if (appInfo.kofi != null &&
+            ![
+              Source.IS_INSTALLED_FROM_PLAY_STORE,
+              Source.IS_INSTALLED_FROM_APP_STORE,
+            ].contains(appInfo.source))
+          linkListTile(
+            leading: const FaIcon(FontAwesomeIcons.mugSaucer),
+            title: const Text('Ko-fi'),
+            link: 'https://ko-fi.com/',
+            extra: appInfo.kofi,
+          ),
+        if (appInfo.email != null)
+          linkListTile(
+            leading: const FaIcon(FontAwesomeIcons.solidEnvelope),
+            title: const Text('Email'),
+            link: 'mailto:',
+            extra: appInfo.email,
+          ),
+        const Divider(),
+        linkListTile(
+          leading: const FaIcon(FontAwesomeIcons.googlePlay),
+          title: const Text('Playstore'),
+          link: Platform.isAndroid
+              ? 'https://play.google.com/store/apps/details?id='
+              : 'https://play.google.com/store/search?q=',
+          extra: AppInfo.instance.packageName,
+        ),
+      ],
+    );
+  }
+}
+
+class AboutDonations extends StatelessWidget {
+  const AboutDonations({
+    super.key,
+    this.bundledDonors,
+    this.donors,
+  });
+
+  final Future<List<Donor>>? bundledDonors;
+  final Future<List<Donor>>? donors;
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder(
+      future: bundledDonors,
+      builder: (context, assetDonations) => FutureBuilder(
+        future: donors,
+        builder: (context, githubDonations) {
+          List<Donor>? donors;
+
+          if (githubDonations.hasData) {
+            donors = githubDonations.data;
+          } else if (assetDonations.hasData) {
+            donors = assetDonations.data;
+          }
+
+          if (githubDonations.hasError && assetDonations.hasError) {
+            return const IconMessage(
+              icon: Icon(Icons.warning_amber),
+              title: Text('Failed to fetch donors'),
+            );
+          }
+
+          return Column(
+            children: [
+              const ListTile(
+                title: Text('Donors'),
+                leading: FaIcon(FontAwesomeIcons.handHoldingHeart),
+                subtitle: Text('Thanks for helping me keep up development!'),
+              ),
+              const Divider(),
+              const SizedBox(height: 8),
+              if (donors == null ||
+                  (bundledDonors == null && this.donors == null))
+                const Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(8),
+                    child: CircularProgressIndicator(),
+                  ),
+                )
+              else if (donors.isEmpty)
+                const ListTile(
+                  title: Text('No donors yet'),
+                  leading: FaIcon(FontAwesomeIcons.faceSadTear),
+                )
+              else
+                Donors(donors: donors)
+            ],
+          );
+        },
+      ),
+    );
+  }
+}
+
 class DrawerUpdateIcon extends StatelessWidget {
   const DrawerUpdateIcon({super.key});
 
@@ -274,7 +384,7 @@ class DrawerUpdateIcon extends StatelessWidget {
   Widget build(BuildContext context) {
     return SubFuture<List<AppVersion>>(
       create: () =>
-          context.read<AppUpdater?>()?.getNewVersions() ?? Future.value([]),
+          context.read<AppInfoClient?>()?.getNewVersions() ?? Future.value([]),
       builder: (context, snapshot) {
         if (snapshot.hasData && snapshot.data!.isNotEmpty) {
           return Stack(

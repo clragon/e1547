@@ -188,19 +188,16 @@ class IdentityCompanion extends i0.UpdateCompanion<i4.Identity> {
       map['host'] = i0.Variable<String>(host.value);
     }
     if (type.present) {
-      final converter = i2.$IdentitiesTableTable.$convertertype;
-
-      map['type'] = i0.Variable<String>(converter.toSql(type.value));
+      map['type'] = i0.Variable<String>(
+          i2.$IdentitiesTableTable.$convertertype.toSql(type.value));
     }
     if (username.present) {
-      final converter = i2.$IdentitiesTableTable.$converterusername;
-
-      map['username'] = i0.Variable<String>(converter.toSql(username.value));
+      map['username'] = i0.Variable<String>(
+          i2.$IdentitiesTableTable.$converterusername.toSql(username.value));
     }
     if (headers.present) {
-      final converter = i2.$IdentitiesTableTable.$converterheadersn;
-
-      map['headers'] = i0.Variable<String>(converter.toSql(headers.value));
+      map['headers'] = i0.Variable<String>(
+          i2.$IdentitiesTableTable.$converterheadersn.toSql(headers.value));
     }
     return map;
   }

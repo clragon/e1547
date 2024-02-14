@@ -222,8 +222,8 @@ class OldFollowsTableData extends i0.DataClass
       map['alias'] = i0.Variable<String>(alias);
     }
     {
-      final converter = i1.$OldFollowsTableTable.$convertertype;
-      map['type'] = i0.Variable<String>(converter.toSql(type));
+      map['type'] = i0.Variable<String>(
+          i1.$OldFollowsTableTable.$convertertype.toSql(type));
     }
     if (!nullToAbsent || latest != null) {
       map['latest'] = i0.Variable<int>(latest);
@@ -469,9 +469,8 @@ class OldFollowsTableDataCompanion
       map['alias'] = i0.Variable<String>(alias.value);
     }
     if (type.present) {
-      final converter = i1.$OldFollowsTableTable.$convertertype;
-
-      map['type'] = i0.Variable<String>(converter.toSql(type.value));
+      map['type'] = i0.Variable<String>(
+          i1.$OldFollowsTableTable.$convertertype.toSql(type.value));
     }
     if (latest.present) {
       map['latest'] = i0.Variable<int>(latest.value);
