@@ -283,5 +283,19 @@
         "platform": "github"
       }
     ]
+  },
+  {
+    "name": "fiire",
+    "handles": {
+      "ko-fi": "fiire"
+    },
+    "donations": [
+      {
+        "amount": 5.0,
+        "currency": "USD",
+        "date": "2024-02-15T00:07:00",
+        "platform": "ko-fi"
+      }
+    ]
   }
 ]
