@@ -45,9 +45,9 @@ class PostCommentsPage extends StatelessWidget {
                 builder: (context, child) => SwitchListTile(
                   secondary: const Icon(Icons.sort),
                   title: const Text('Comment order'),
-                  subtitle: Text(controller.orderByOldest
-                      ? 'oldest first'
-                      : 'newest first'),
+                  subtitle: Text(
+                    controller.orderByOldest ? 'oldest first' : 'newest first',
+                  ),
                   value: controller.orderByOldest,
                   onChanged: (value) {
                     controller.orderByOldest = value;
@@ -64,14 +64,8 @@ class PostCommentsPage extends StatelessWidget {
             builderDelegate: defaultPagedChildBuilderDelegate(
               pagingController: controller.paging,
               itemBuilder: (context, item, index) => CommentTile(comment: item),
-              onEmpty: const IconMessage(
-                icon: Icon(Icons.clear),
-                title: Text('No comments'),
-              ),
-              onError: const IconMessage(
-                icon: Icon(Icons.warning_amber),
-                title: Text('Failed to load comments'),
-              ),
+              onEmpty: const Text('No comments'),
+              onError: const Text('Failed to load comments'),
             ),
           ),
         ),
