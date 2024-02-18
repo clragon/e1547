@@ -45,6 +45,8 @@ class _AboutPageState extends State<AboutPage> {
               donors = client?.getDonors(force: true);
             });
             await versions;
+            await bundledDonors;
+            await donors;
             refreshController.refreshCompleted();
           } on AppUpdaterException {
             refreshController.refreshFailed();
@@ -345,6 +347,10 @@ class AboutDonations extends StatelessWidget {
             );
           }
 
+          if (donors?.isEmpty ?? false) {
+            return const SizedBox();
+          }
+
           return Column(
             children: [
               const ListTile(
@@ -363,9 +369,10 @@ class AboutDonations extends StatelessWidget {
                   ),
                 )
               else if (donors.isEmpty)
+                // I dont like whining about no donors
                 const ListTile(
                   title: Text('No donors yet'),
-                  leading: FaIcon(FontAwesomeIcons.faceSadTear),
+                  leading: FaIcon(FontAwesomeIcons.heartCrack),
                 )
               else
                 Donors(donors: donors)

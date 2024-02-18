@@ -126,13 +126,13 @@ class AppInfoClient {
   Future<List<Donor>> getDonors({bool force = false}) async {
     List<dynamic> donors = await _dio
         .get(
-          'https://api.github.com/repos/${info.github}/contents/assets/static/donations.json',
+          'https://raw.githubusercontent.com/${AppInfo.instance.github}/master/assets/static/donations.json',
           options: ClientCacheConfig(
             store: cache,
             policy: force ? CachePolicy.refresh : CachePolicy.request,
           ).toOptions(),
         )
-        .then((e) => e.data);
+        .then((e) => jsonDecode(e.data));
     return donors.map((e) => Donor.fromJson(e)).toList();
   }
 }
