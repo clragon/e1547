@@ -15,8 +15,7 @@ class ReplyLoadingPage extends StatefulWidget {
 }
 
 class _ReplyLoadingPageState extends State<ReplyLoadingPage> {
-  late Future<Reply> reply =
-      context.read<Client>().replies.reply(id: widget.id);
+  late Future<Reply> reply = context.read<Client>().replies.get(id: widget.id);
 
   @override
   Widget build(BuildContext context) {

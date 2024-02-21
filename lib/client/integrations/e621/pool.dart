@@ -14,7 +14,7 @@ class E621PoolsClient extends PoolsClient {
   final PostsClient postsClient;
 
   @override
-  Future<Pool> pool({
+  Future<Pool> get({
     required int id,
     bool? force,
     CancelToken? cancelToken,
@@ -31,7 +31,7 @@ class E621PoolsClient extends PoolsClient {
   }
 
   @override
-  Future<List<Pool>> pools({
+  Future<List<Pool>> page({
     int? page,
     int? limit,
     QueryMap? query,
@@ -61,7 +61,7 @@ class E621PoolsClient extends PoolsClient {
   }
 
   @override
-  Future<List<Post>> postsByPool({
+  Future<List<Post>> byPool({
     required int id,
     int? page,
     int? limit,
@@ -75,13 +75,13 @@ class E621PoolsClient extends PoolsClient {
     int limit = user?.perPage ?? 75;
      */
     int limit = 75; // store per page count in Traits
-    Pool pool = await this.pool(id: id, force: force, cancelToken: cancelToken);
+    Pool pool = await this.get(id: id, force: force, cancelToken: cancelToken);
     List<int> ids = pool.postIds;
     if (!orderByOldest) ids = ids.reversed.toList();
     int lower = (page - 1) * limit;
     if (lower > ids.length) return [];
     ids = ids.sublist(lower).take(limit).toList();
-    return postsClient.postsByIds(
+    return postsClient.byIds(
       ids: ids,
       limit: limit,
       force: force,

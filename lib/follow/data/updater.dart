@@ -194,7 +194,7 @@ class FollowUpdate {
     _assertNoDuplicates(tags);
 
     int limit = follows.length * refreshAmount;
-    List<Post> allPosts = await rateLimit(client.posts.postsByTags(
+    List<Post> allPosts = await rateLimit(client.posts.byTags(
       tags: tags,
       page: 1,
       limit: limit,
@@ -236,7 +236,7 @@ class FollowUpdate {
         Follow follow = update.key;
         List<Post> posts = update.value;
         if (posts.isNotEmpty) continue;
-        String? alias = await rateLimit(client.tags.tagAliases(
+        String? alias = await rateLimit(client.tags.aliases(
           query: TagMap({'search[antecedent_name]': follow.tags}),
         ));
         if (alias != follow.alias) {
@@ -271,7 +271,7 @@ class FollowUpdate {
     Follow follow = multiples.first;
     _assertNoDuplicates([follow.tags]);
 
-    List<Post> posts = await rateLimit(client.posts.posts(
+    List<Post> posts = await rateLimit(client.posts.page(
       query: TagMap({'tags': follow.tags}),
       limit: refreshAmount,
       // TODO: ordered
@@ -284,7 +284,7 @@ class FollowUpdate {
     if (follow.title == null && match != null) {
       try {
         follow = follow.withPool(
-          await client.pools.pool(
+          await client.pools.get(
             id: int.parse(match.namedGroup('id')!),
             force: force,
           ),

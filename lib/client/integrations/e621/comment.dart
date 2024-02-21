@@ -16,7 +16,7 @@ class E621CommentsClient extends CommentsClient {
       };
 
   @override
-  Future<Comment> comment({
+  Future<Comment> get({
     required int id,
     bool? force,
     CancelToken? cancelToken,
@@ -33,7 +33,7 @@ class E621CommentsClient extends CommentsClient {
   }
 
   @override
-  Future<List<Comment>> comments({
+  Future<List<Comment>> page({
     int? page,
     int? limit,
     QueryMap? query,
@@ -64,29 +64,28 @@ class E621CommentsClient extends CommentsClient {
   }
 
   @override
-  Future<List<Comment>> commentsByPost({
+  Future<List<Comment>> byPost({
     required int id,
     int? page,
     int? limit,
     bool? ascending,
     bool? force,
     CancelToken? cancelToken,
-  }) async {
-    return comments(
-      page: page,
-      limit: limit,
-      query: {
-        'group_by': 'comment',
-        'search[post_id]': id,
-        'search[order]': ascending ?? false ? 'id_asc' : 'id_desc',
-      }.toQuery(),
-      force: force,
-      cancelToken: cancelToken,
-    );
-  }
+  }) =>
+      this.page(
+        page: page,
+        limit: limit,
+        query: {
+          'group_by': 'comment',
+          'search[post_id]': id,
+          'search[order]': ascending ?? false ? 'id_asc' : 'id_desc',
+        }.toQuery(),
+        force: force,
+        cancelToken: cancelToken,
+      );
 
   @override
-  Future<void> postComment({
+  Future<void> create({
     required int postId,
     required String content,
   }) async {
@@ -108,7 +107,7 @@ class E621CommentsClient extends CommentsClient {
   }
 
   @override
-  Future<void> updateComment({
+  Future<void> update({
     required int id,
     required int postId,
     required String content,
@@ -134,7 +133,7 @@ class E621CommentsClient extends CommentsClient {
   }
 
   @override
-  Future<void> voteComment({
+  Future<void> vote({
     required int id,
     required bool upvote,
     required bool replace,
@@ -149,7 +148,7 @@ class E621CommentsClient extends CommentsClient {
   }
 
   @override
-  Future<void> reportComment({
+  Future<void> report({
     required int id,
     required String reason,
   }) async {

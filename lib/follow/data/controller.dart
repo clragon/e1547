@@ -11,7 +11,7 @@ class FollowTimelineController extends PostsController {
 
   @override
   Future<List<Post>> fetch(int page, bool force) async {
-    return client.posts.postsByTags(
+    return client.posts.byTags(
       tags: await (follows.all(
         types: [FollowType.update, FollowType.notify],
       ).then((e) => e.map((e) => e.tags).toList())),

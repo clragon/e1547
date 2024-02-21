@@ -10,13 +10,13 @@ enum CommentFeature {
 
 // TODO: rename all the methods to be type agnostic
 abstract class CommentsClient with FeatureFlagging<CommentFeature> {
-  Future<Comment> comment({
+  Future<Comment> get({
     required int id,
     bool? force,
     CancelToken? cancelToken,
   });
 
-  Future<List<Comment>> comments({
+  Future<List<Comment>> page({
     int? page,
     int? limit,
     QueryMap? query,
@@ -24,7 +24,7 @@ abstract class CommentsClient with FeatureFlagging<CommentFeature> {
     CancelToken? cancelToken,
   });
 
-  Future<List<Comment>> commentsByPost({
+  Future<List<Comment>> byPost({
     required int id,
     int? page,
     int? limit,
@@ -33,27 +33,27 @@ abstract class CommentsClient with FeatureFlagging<CommentFeature> {
     CancelToken? cancelToken,
   });
 
-  Future<void> postComment({
+  Future<void> create({
     required int postId,
     required String content,
   }) =>
       throwUnsupported(CommentFeature.post);
 
-  Future<void> updateComment({
+  Future<void> update({
     required int id,
     required int postId,
     required String content,
   }) =>
       throwUnsupported(CommentFeature.update);
 
-  Future<void> voteComment({
+  Future<void> vote({
     required int id,
     required bool upvote,
     required bool replace,
   }) =>
       throwUnsupported(CommentFeature.vote);
 
-  Future<void> reportComment({
+  Future<void> report({
     required int id,
     required String reason,
   }) =>

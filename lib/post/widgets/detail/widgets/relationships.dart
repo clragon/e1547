@@ -159,7 +159,7 @@ class _ParentEditorState extends State<ParentEditor> {
       Post parent = await context
           .read<Client>()
           .posts
-          .post(int.parse(textController.text));
+          .get(int.parse(textController.text));
       widget.editingController.value = widget.editingController.value!.copyWith(
         parentId: parent.id,
       );

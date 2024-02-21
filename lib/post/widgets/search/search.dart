@@ -72,7 +72,7 @@ class _PostsSearchPageState extends State<PostsSearchPage> {
             if (match != null) {
               if (match.namedGroup('id')! != pool?.id.toString()) {
                 try {
-                  pool = await client.pools.pool(
+                  pool = await client.pools.get(
                     id: int.parse(match.namedGroup('id')!),
                   );
                 } on ClientException {

@@ -129,7 +129,7 @@ class TagListActions extends StatelessWidget {
                                   : const Text('Block'),
                               onTap: () {
                                 if (denied) {
-                                  client.traits.pushTraits(
+                                  client.traits.push(
                                     traits: traits.copyWith(
                                       denylist: traits.denylist
                                           .whereNot((element) => element == tag)
@@ -140,7 +140,7 @@ class TagListActions extends StatelessWidget {
                                   if (hasFollow) {
                                     follows.removeTag(tag);
                                   }
-                                  client.traits.pushTraits(
+                                  client.traits.push(
                                     traits: traits.copyWith(
                                       denylist: [...traits.denylist, tag],
                                     ),

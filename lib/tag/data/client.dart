@@ -3,7 +3,7 @@ import 'package:e1547/tag/tag.dart';
 
 abstract class TagsClient {
   // Technically missing tags()
-  Future<List<Tag>> tags({
+  Future<List<Tag>> page({
     int? page,
     int? limit,
     QueryMap? query,
@@ -18,7 +18,7 @@ abstract class TagsClient {
     CancelToken? cancelToken,
   });
 
-  Future<String?> tagAliases({
+  Future<String?> aliases({
     int? page,
     int? limit,
     QueryMap? query,

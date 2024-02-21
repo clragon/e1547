@@ -7,13 +7,13 @@ enum UserFeature {
 
 abstract class UsersClient with FeatureFlagging<UserFeature> {
   // Technically missing users()
-  Future<User> user({
+  Future<User> get({
     required String id,
     bool? force,
     CancelToken? cancelToken,
   });
 
-  Future<void> reportUser({
+  Future<void> report({
     required int id,
     required String reason,
   }) =>
@@ -22,7 +22,7 @@ abstract class UsersClient with FeatureFlagging<UserFeature> {
 
 // ignore: one_member_abstracts
 abstract class AccountsClient {
-  Future<Account?> account({
+  Future<Account?> get({
     bool? force,
     CancelToken? cancelToken,
   });

@@ -8,7 +8,7 @@ class E621TagsClient extends TagsClient {
   final Dio dio;
 
   @override
-  Future<List<Tag>> tags({
+  Future<List<Tag>> page({
     int? page,
     int? limit,
     QueryMap? query,
@@ -66,7 +66,7 @@ class E621TagsClient extends TagsClient {
       return tags;
     } else {
       List<TagSuggestion> tags = [];
-      for (final tag in await this.tags(
+      for (final tag in await this.page(
         limit: 3,
         query: {
           'search[name_matches]': '$search*',
@@ -90,7 +90,7 @@ class E621TagsClient extends TagsClient {
   }
 
   @override
-  Future<String?> tagAliases({
+  Future<String?> aliases({
     int? page,
     int? limit,
     QueryMap? query,

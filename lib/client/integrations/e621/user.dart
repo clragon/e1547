@@ -11,7 +11,7 @@ class E621UsersClient extends UsersClient {
   Set<UserFeature> get features => {UserFeature.report};
 
   @override
-  Future<User> user({
+  Future<User> get({
     required String id,
     bool? force,
     CancelToken? cancelToken,
@@ -27,7 +27,7 @@ class E621UsersClient extends UsersClient {
           );
 
   @override
-  Future<void> reportUser({
+  Future<void> report({
     required int id,
     required String reason,
   }) =>

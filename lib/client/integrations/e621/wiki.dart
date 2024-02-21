@@ -9,7 +9,7 @@ class E621WikisClient extends WikisClient {
   final Dio dio;
 
   @override
-  Future<Wiki> wiki({
+  Future<Wiki> get({
     required String id,
     bool? force,
     CancelToken? cancelToken,
@@ -25,7 +25,7 @@ class E621WikisClient extends WikisClient {
           );
 
   @override
-  Future<List<Wiki>> wikis({
+  Future<List<Wiki>> page({
     int? page,
     int? limit,
     QueryMap? query,

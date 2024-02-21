@@ -2,13 +2,13 @@ import 'package:e1547/interface/interface.dart';
 import 'package:e1547/reply/reply.dart';
 
 abstract class RepliesClient {
-  Future<Reply> reply({
+  Future<Reply> get({
     required int id,
     bool? force,
     CancelToken? cancelToken,
   });
 
-  Future<List<Reply>> replies({
+  Future<List<Reply>> page({
     required int id,
     int? page,
     int? limit,
@@ -17,7 +17,7 @@ abstract class RepliesClient {
     CancelToken? cancelToken,
   });
 
-  Future<List<Reply>> repliesByTopic({
+  Future<List<Reply>> byTopic({
     required int id,
     int? page,
     int? limit,

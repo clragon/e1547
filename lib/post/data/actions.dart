@@ -246,7 +246,7 @@ mixin PostsActionController<KeyType> on ClientDataController<KeyType, Post> {
     ));
     replacePost(post);
     try {
-      await client.posts.votePost(post.id, upvote, replace);
+      await client.posts.vote(post.id, upvote, replace);
       evictCache();
       return true;
     } on ClientException {
@@ -256,14 +256,14 @@ mixin PostsActionController<KeyType> on ClientDataController<KeyType, Post> {
 
   Future<void> resetPost(Post post) async {
     assertOwnsItem(post);
-    replacePost(await client.posts.post(post.id, force: true));
+    replacePost(await client.posts.get(post.id, force: true));
     evictCache();
   }
 
   // TODO: create a PostUpdate Object instead of a Map
   Future<void> updatePost(Post post, Map<String, String?> body) async {
     assertOwnsItem(post);
-    await client.posts.updatePost(post.id, body);
+    await client.posts.update(post.id, body);
     await resetPost(post);
   }
 }

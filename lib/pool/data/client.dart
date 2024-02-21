@@ -3,13 +3,13 @@ import 'package:e1547/pool/pool.dart';
 import 'package:e1547/post/post.dart';
 
 abstract class PoolsClient {
-  Future<Pool> pool({
+  Future<Pool> get({
     required int id,
     bool? force,
     CancelToken? cancelToken,
   });
 
-  Future<List<Pool>> pools({
+  Future<List<Pool>> page({
     int? page,
     int? limit,
     QueryMap? query,
@@ -17,7 +17,7 @@ abstract class PoolsClient {
     CancelToken? cancelToken,
   });
 
-  Future<List<Post>> postsByPool({
+  Future<List<Post>> byPool({
     required int id,
     int? page,
     int? limit,

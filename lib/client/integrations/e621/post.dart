@@ -27,7 +27,7 @@ class E621PostsClient extends PostsClient {
       };
 
   @override
-  Future<Post> post(int postId, {bool? force, CancelToken? cancelToken}) async {
+  Future<Post> get(int postId, {bool? force, CancelToken? cancelToken}) async {
     Map<String, dynamic> body = await dio
         .get(
           '/posts/$postId.json',
@@ -40,7 +40,7 @@ class E621PostsClient extends PostsClient {
   }
 
   @override
-  Future<List<Post>> posts({
+  Future<List<Post>> page({
     int? page,
     int? limit,
     QueryMap? query,
@@ -103,7 +103,7 @@ class E621PostsClient extends PostsClient {
   }
 
   @override
-  Future<List<Post>> postsByIds({
+  Future<List<Post>> byIds({
     required List<int> ids,
     int? limit,
     bool? force,
@@ -120,7 +120,7 @@ class E621PostsClient extends PostsClient {
     for (final chunk in chunks) {
       if (chunk.isEmpty) continue;
       String filter = 'id:${chunk.join(',')}';
-      List<Post> part = await posts(
+      List<Post> part = await page(
         query: {'tags': filter},
         limit: limit,
         // ordered: false,
@@ -137,7 +137,7 @@ class E621PostsClient extends PostsClient {
   }
 
   @override
-  Future<List<Post>> postsByTags({
+  Future<List<Post>> byTags({
     required List<String> tags,
     int? page,
     int? limit,
@@ -157,7 +157,7 @@ class E621PostsClient extends PostsClient {
     List<String> chunk =
         tags.sublist((tagPage - 1) * chunkSize).take(chunkSize).toList();
     String filter = chunk.map((e) => '~$e').join(' ');
-    return posts(
+    return this.page(
       page: sitePage,
       query: QueryMap()..['tags'] = filter,
       limit: limit,
@@ -168,14 +168,14 @@ class E621PostsClient extends PostsClient {
   }
 
   @override
-  Future<List<Post>> postsByFavoriter({
+  Future<List<Post>> byFavoriter({
     required String username,
     int? page,
     int? limit,
     bool? force,
     CancelToken? cancelToken,
-  }) async =>
-      posts(
+  }) =>
+      this.page(
         page: page,
         query: QueryMap()..['tags'] = 'fav:$username',
         limit: limit,
@@ -185,14 +185,14 @@ class E621PostsClient extends PostsClient {
       );
 
   @override
-  Future<List<Post>> postsByUploader({
+  Future<List<Post>> byUploader({
     required String username,
     int? page,
     int? limit,
     bool? force,
     CancelToken? cancelToken,
-  }) async =>
-      posts(
+  }) =>
+      this.page(
         page: page,
         query: QueryMap()..['tags'] = 'user:$username',
         limit: limit,
@@ -202,7 +202,7 @@ class E621PostsClient extends PostsClient {
       );
 
   @override
-  Future<void> updatePost(int postId, Map<String, String?> body) async {
+  Future<void> update(int postId, Map<String, String?> body) async {
     // TODO: Implement cache invalidation
     /*
     await cache?.deleteFromPath(
@@ -214,7 +214,7 @@ class E621PostsClient extends PostsClient {
   }
 
   @override
-  Future<void> votePost(int postId, bool upvote, bool replace) async {
+  Future<void> vote(int postId, bool upvote, bool replace) async {
     /*
     await cache?.deleteFromPath(RegExp(RegExp.escape('/posts/$postId.json')));
      */
@@ -256,7 +256,7 @@ class E621PostsClient extends PostsClient {
       result.removeWhere((e) => e.isDeleted || e.file == null);
       return result;
     } else {
-      return posts(
+      return this.page(
         page: page,
         query: {
           ...?query,
@@ -284,7 +284,7 @@ class E621PostsClient extends PostsClient {
   }
 
   @override
-  Future<void> reportPost(int postId, int reportId, String reason) async {
+  Future<void> remove(int postId, int reportId, String reason) async {
     await dio.post(
       '/tickets',
       queryParameters: {
@@ -300,7 +300,7 @@ class E621PostsClient extends PostsClient {
   }
 
   @override
-  Future<void> flagPost(int postId, String flag, {int? parent}) async {
+  Future<void> addFlag(int postId, String flag, {int? parent}) async {
     await dio.post(
       '/post_flags.json',
       queryParameters: {

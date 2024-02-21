@@ -88,7 +88,7 @@ class _PostReportScreenState extends State<PostReportScreen> {
       );
       ScaffoldMessengerState messenger = ScaffoldMessenger.of(context);
       try {
-        await context.read<Client>().posts.reportPost(
+        await context.read<Client>().posts.remove(
               widget.post.id,
               type!.id,
               reasonController.text.trim(),
@@ -205,7 +205,7 @@ class _PostFlagScreenState extends State<PostFlagScreen> {
       );
       ScaffoldMessengerState messenger = ScaffoldMessenger.of(context);
       try {
-        await context.read<Client>().posts.flagPost(
+        await context.read<Client>().posts.addFlag(
               widget.post.id,
               type!.title,
               parent: int.tryParse(parentController.text),

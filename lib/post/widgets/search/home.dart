@@ -25,7 +25,7 @@ class _HomePageState extends State<HomePage> with RouterDrawerEntryWidget {
           child: SubListener(
             initialize: true,
             listenable: controller,
-            listener: () => client.traits.pushTraits(
+            listener: () => client.traits.push(
               traits: client.traitsState.value.copyWith(
                 homeTags: controller.query['tags'].toString(),
               ),

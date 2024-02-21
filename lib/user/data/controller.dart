@@ -10,7 +10,7 @@ class UserFavoritesController extends PostsController {
 
   @override
   Future<List<Post>> fetch(int page, bool force) {
-    return client.posts.postsByFavoriter(
+    return client.posts.byFavoriter(
       username: user,
       page: page,
       force: force,
@@ -29,7 +29,7 @@ class UserUploadsController extends PostsController {
 
   @override
   Future<List<Post>> fetch(int page, bool force) {
-    return client.posts.postsByUploader(
+    return client.posts.byUploader(
       username: user,
       page: page,
       force: force,

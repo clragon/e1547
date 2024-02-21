@@ -18,7 +18,7 @@ class E621TraitsClient extends TraitsClient {
   final AccountsClient accountsClient;
 
   @override
-  Future<void> pushTraits({
+  Future<void> push({
     required Traits traits,
     CancelToken? cancelToken,
   }) async {
@@ -46,8 +46,8 @@ class E621TraitsClient extends TraitsClient {
   }
 
   @override
-  Future<void> pullTraits({bool? force, CancelToken? cancelToken}) =>
-      accountsClient.account(
+  Future<void> pull({bool? force, CancelToken? cancelToken}) =>
+      accountsClient.get(
         force: force,
         cancelToken: cancelToken,
       );

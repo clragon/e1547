@@ -11,13 +11,13 @@ enum PostFeature {
 }
 
 abstract class PostsClient with FeatureFlagging {
-  Future<Post> post(
+  Future<Post> get(
     int postId, {
     bool? force,
     CancelToken? cancelToken,
   });
 
-  Future<List<Post>> posts({
+  Future<List<Post>> page({
     int? page,
     int? limit,
     QueryMap? query,
@@ -31,14 +31,14 @@ abstract class PostsClient with FeatureFlagging {
     CancelToken? cancelToken,
   });
 
-  Future<List<Post>> postsByIds({
+  Future<List<Post>> byIds({
     required List<int> ids,
     int? limit,
     bool? force,
     CancelToken? cancelToken,
   });
 
-  Future<List<Post>> postsByTags({
+  Future<List<Post>> byTags({
     required List<String> tags,
     int page,
     int? limit,
@@ -46,7 +46,7 @@ abstract class PostsClient with FeatureFlagging {
     CancelToken? cancelToken,
   });
 
-  Future<List<Post>> postsByFavoriter({
+  Future<List<Post>> byFavoriter({
     required String username,
     int? page,
     int? limit,
@@ -55,7 +55,7 @@ abstract class PostsClient with FeatureFlagging {
   }) =>
       throwUnsupported(PostFeature.favorite);
 
-  Future<List<Post>> postsByUploader({
+  Future<List<Post>> byUploader({
     required String username,
     int? page,
     int? limit,
@@ -64,10 +64,10 @@ abstract class PostsClient with FeatureFlagging {
   }) =>
       throwUnsupported(PostFeature.uploads);
 
-  Future<void> updatePost(int postId, Map<String, String?> body) =>
+  Future<void> update(int postId, Map<String, String?> body) =>
       throwUnsupported(PostFeature.update);
 
-  Future<void> votePost(int postId, bool upvote, bool replace) =>
+  Future<void> vote(int postId, bool upvote, bool replace) =>
       throwUnsupported(PostFeature.update);
 
   Future<List<Post>> favorites({
@@ -86,10 +86,10 @@ abstract class PostsClient with FeatureFlagging {
   Future<void> removeFavorite(int postId) =>
       throwUnsupported(PostFeature.favorite);
 
-  Future<void> reportPost(int postId, int reportId, String reason) =>
+  Future<void> remove(int postId, int reportId, String reason) =>
       throwUnsupported(PostFeature.report);
 
-  Future<void> flagPost(int postId, String flag, {int? parent}) =>
+  Future<void> addFlag(int postId, String flag, {int? parent}) =>
       throwUnsupported(PostFeature.flag);
 
   // Technically missing flag()

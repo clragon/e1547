@@ -31,7 +31,7 @@ class CommentsController extends PageClientDataController<Comment> {
     int page,
     bool force,
   ) =>
-      client.comments.commentsByPost(
+      client.comments.byPost(
         id: postId,
         page: page,
         force: force,
@@ -65,7 +65,7 @@ class CommentsController extends PageClientDataController<Comment> {
       ),
     );
     try {
-      await client.comments.voteComment(
+      await client.comments.vote(
         id: comment.id,
         upvote: upvote,
         replace: replace,

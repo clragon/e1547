@@ -111,7 +111,7 @@ bool onPostTagsEdit(
   Future<void>(() async {
     for (String tag in edited) {
       List<Tag> tags = await rateLimit(
-        client.tags.tags(
+        client.tags.page(
           page: 1,
           limit: 1,
           query: TagMap({'search[name_matches]': tag}),

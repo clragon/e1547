@@ -9,7 +9,7 @@ class E621TopicsClient extends TopicsClient {
   final Dio dio;
 
   @override
-  Future<List<Topic>> topics({
+  Future<List<Topic>> page({
     int? page,
     int? limit,
     QueryMap? query,
@@ -34,7 +34,7 @@ class E621TopicsClient extends TopicsClient {
           );
 
   @override
-  Future<Topic> topic({
+  Future<Topic> get({
     required int id,
     bool? force,
     CancelToken? cancelToken,

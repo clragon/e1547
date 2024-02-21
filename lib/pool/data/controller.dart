@@ -33,7 +33,7 @@ class PoolsController extends PageClientDataController<Pool> {
   @override
   @protected
   Future<List<Pool>> fetch(int page, bool force) async {
-    List<Pool> pools = await client.pools.pools(
+    List<Pool> pools = await client.pools.page(
       page: page,
       query: query,
       force: force,
@@ -82,7 +82,7 @@ class ThumbnailController extends PostsController {
     if (ids == null) return [];
     List<int> available = rawItems?.map((e) => e.id).toList() ?? [];
     ids.removeWhere(available.contains);
-    return client.posts.postsByIds(
+    return client.posts.byIds(
       ids: ids,
       force: force,
       cancelToken: cancelToken,
@@ -104,8 +104,7 @@ class PoolController extends PostsController {
 
   @override
   @protected
-  Future<List<Post>> fetch(int page, bool force) async =>
-      client.pools.postsByPool(
+  Future<List<Post>> fetch(int page, bool force) async => client.pools.byPool(
         id: id,
         page: page,
         orderByOldest: orderPools,

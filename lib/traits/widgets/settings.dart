@@ -79,13 +79,13 @@ class _DenyListPageState extends State<DenyListPage> {
                         value = value.trim();
                         try {
                           if (value.isEmpty) {
-                            await client.traits.pushTraits(
+                            await client.traits.push(
                               traits: traits.copyWith(
                                 denylist: denylist..remove(tag),
                               ),
                             );
                           } else {
-                            await client.traits.pushTraits(
+                            await client.traits.push(
                               traits: traits.copyWith(
                                 denylist: denylist
                                   ..[denylist.indexOf(tag)] = value,
@@ -100,7 +100,7 @@ class _DenyListPageState extends State<DenyListPage> {
                       },
                     );
                   },
-                  onDelete: () => client.traits.pushTraits(
+                  onDelete: () => client.traits.push(
                     traits: traits.copyWith(
                       denylist: denylist..remove(denylist[index]),
                     ),
@@ -134,7 +134,7 @@ class _DenyListPageState extends State<DenyListPage> {
                                     value = value.trim();
                                     try {
                                       if (value.isNotEmpty) {
-                                        await client.traits.pushTraits(
+                                        await client.traits.push(
                                           traits: traits.copyWith(
                                             denylist: denylist..add(value),
                                           ),
@@ -154,7 +154,7 @@ class _DenyListPageState extends State<DenyListPage> {
               ),
               refresh: (refreshController) async {
                 try {
-                  await client.traits.pullTraits(force: true);
+                  await client.traits.pull(force: true);
                   refreshController.refreshCompleted();
                 } on ClientException {
                   refreshController.refreshFailed();

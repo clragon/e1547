@@ -57,7 +57,7 @@ class PostsController extends PageClientDataController<Post>
 
   @override
   @protected
-  Future<List<Post>> fetch(int page, bool force) async => client.posts.posts(
+  Future<List<Post>> fetch(int page, bool force) async => client.posts.page(
         page: page,
         query: query,
         force: force,
@@ -86,7 +86,7 @@ class SinglePostController extends PostsController {
   @override
   Future<List<Post>> fetch(int page, bool force) async => [
         if (page == firstPageKey)
-          await client.posts.post(
+          await client.posts.get(
             id,
             force: force,
             cancelToken: cancelToken,

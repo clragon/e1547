@@ -10,7 +10,7 @@ class E621RepliesClient extends RepliesClient {
   final Dio dio;
 
   @override
-  Future<Reply> reply({
+  Future<Reply> get({
     required int id,
     bool? force,
     CancelToken? cancelToken,
@@ -26,7 +26,7 @@ class E621RepliesClient extends RepliesClient {
           );
 
   @override
-  Future<List<Reply>> replies({
+  Future<List<Reply>> page({
     required int id,
     int? page,
     int? limit,
@@ -52,7 +52,7 @@ class E621RepliesClient extends RepliesClient {
           );
 
   @override
-  Future<List<Reply>> repliesByTopic({
+  Future<List<Reply>> byTopic({
     required int id,
     int? page,
     int? limit,
@@ -60,7 +60,7 @@ class E621RepliesClient extends RepliesClient {
     bool? force,
     CancelToken? cancelToken,
   }) async =>
-      replies(
+      this.page(
         id: id,
         page: page,
         limit: limit,

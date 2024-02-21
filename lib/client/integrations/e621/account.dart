@@ -20,7 +20,7 @@ class E621AccountsClient extends AccountsClient {
   final PostsClient postsClient;
 
   @override
-  Future<Account?> account({bool? force, CancelToken? cancelToken}) async {
+  Future<Account?> get({bool? force, CancelToken? cancelToken}) async {
     if (identity.username == null) return null;
 
     Account result = await _dio
@@ -38,7 +38,7 @@ class E621AccountsClient extends AccountsClient {
     Post? avatar;
 
     if (result.avatarId != null) {
-      avatar = await postsClient.post(
+      avatar = await postsClient.get(
         result.avatarId!,
         force: force,
         cancelToken: cancelToken,
