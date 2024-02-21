@@ -18,7 +18,3 @@ class Wiki with _$Wiki {
 
   factory Wiki.fromJson(dynamic json) => _$WikiFromJson(json);
 }
-
-extension E621Wiki on Wiki {
-  static Wiki fromJson(dynamic json) => Wiki.fromJson(json);
-}

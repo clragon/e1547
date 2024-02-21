@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:e1547/identity/identity.dart';
 
 String encodeBasicAuth(String username, String password) =>
     'Basic ${base64Encode(utf8.encode('$username:$password'))}';
@@ -41,4 +42,31 @@ String normalizeHostUrl(String url) {
     path: uri.path,
   );
   return uri.toString();
+}
+
+String assembleHostedUrl(String host, String path) {
+  Uri uri = Uri.parse(normalizeHostUrl(host));
+  Uri other = Uri.parse(path);
+
+  path = other.path;
+  if (!path.startsWith('/')) path = '/$path';
+  path = '${uri.path}$path';
+
+  Map<String, dynamic>? queryParameters = other.queryParameters;
+  if (queryParameters.isEmpty) queryParameters = null;
+
+  String? fragment = other.fragment;
+  if (fragment.isEmpty) fragment = null;
+
+  return uri
+      .replace(
+        path: path,
+        queryParameters: queryParameters,
+        fragment: fragment,
+      )
+      .toString();
+}
+
+extension HostedUrlsExtenstion on Identity {
+  String withHost(String path) => assembleHostedUrl(host, path);
 }

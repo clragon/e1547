@@ -159,7 +159,7 @@ class ClientProvider extends SubProvider4<AppStorage, IdentitiesService,
             ClientConfig(
               identity: identities.identity,
               traits: traits.notifier,
-              cache: storage.httpCache,
+              storage: storage,
             ),
           ),
           keys: (context) => [

@@ -3,7 +3,6 @@ import 'package:e1547/comment/comment.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/markup/markup.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 Future<bool> replyComment({
   required BuildContext context,
