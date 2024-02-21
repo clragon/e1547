@@ -1,7 +1,7 @@
 import 'package:e1547/app/app.dart';
 import 'package:e1547/client/client.dart';
-import 'package:e1547/client/integrations/integrations.dart';
 import 'package:e1547/identity/identity.dart';
+import 'package:e1547/integrations/integrations.dart';
 import 'package:e1547/traits/traits.dart';
 import 'package:flutter/foundation.dart';
 
