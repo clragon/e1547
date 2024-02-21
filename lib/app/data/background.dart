@@ -17,7 +17,7 @@ void executeBackgroundTasks() => Workmanager().executeTask(
 
             // this ensures continued scheduling on iOS.
             FollowsService allFollows = FollowsService(
-              database: bundle.databases.sqlite,
+              database: bundle.storage.sqlite,
               identity: null,
             );
             allFollows
@@ -28,21 +28,24 @@ void executeBackgroundTasks() => Workmanager().executeTask(
             List<Identity> identities = await bundle.identities.all();
             List<bool> result = [];
 
+            final clientFactory = ClientFactory();
+
             for (final identity in identities) {
               FollowsService follows = FollowsService(
-                database: bundle.databases.sqlite,
+                database: bundle.storage.sqlite,
                 identity: identity.id,
               );
 
               TraitsService traits =
-                  TraitsService(database: bundle.databases.sqlite);
+                  TraitsService(database: bundle.storage.sqlite);
               await traits.activate(identity.id);
 
-              Client client = Client(
-                identity: identity,
-                traits: traits.notifier,
-                // TODO: figure out why this causes locked database errors.
-                // cache: bundle.databases.httpCache,
+              Client client = clientFactory.create(
+                ClientConfig(
+                  identity: identity,
+                  traits: traits.notifier,
+                  storage: bundle.storage,
+                ),
               );
 
               result.add(

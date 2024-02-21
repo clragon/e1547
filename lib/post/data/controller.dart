@@ -17,7 +17,7 @@ class PostsController extends PageClientDataController<Post>
         _orderFavorites = orderFavorites,
         _orderPools = orderPools {
     this.denying = denying;
-    client.traits.addListener(applyFilter);
+    client.traitsState.addListener(applyFilter);
   }
 
   @override
@@ -57,18 +57,19 @@ class PostsController extends PageClientDataController<Post>
 
   @override
   @protected
-  Future<List<Post>> fetch(int page, bool force) async => client.posts(
+  Future<List<Post>> fetch(int page, bool force) async => client.posts.posts(
         page: page,
         query: query,
         force: force,
-        orderPoolsByOldest: orderPools,
-        orderFavoritesByAdded: orderFavorites,
+        // TODO: ordering
+        // orderPoolsByOldest: orderPools,
+        // orderFavoritesByAdded: orderFavorites,
         cancelToken: cancelToken,
       );
 
   @override
   void dispose() {
-    client.traits.removeListener(applyFilter);
+    client.traitsState.removeListener(applyFilter);
     super.dispose();
   }
 }
@@ -85,7 +86,7 @@ class SinglePostController extends PostsController {
   @override
   Future<List<Post>> fetch(int page, bool force) async => [
         if (page == firstPageKey)
-          await client.post(
+          await client.posts.post(
             id,
             force: force,
             cancelToken: cancelToken,

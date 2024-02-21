@@ -63,19 +63,20 @@ List<PopupMenuItem<VoidCallback>> postMenuUserActions(
         error: 'You must be logged in to comment!',
       ),
     ),
-    PopupMenuTile(
-      title: 'Report',
-      icon: Icons.report,
-      value: () => guardWithLogin(
-        context: context,
-        callback: () => Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => PostReportScreen(post: post),
+    if (context.watch<Client>().hasFeature(PostFeature.report))
+      PopupMenuTile(
+        title: 'Report',
+        icon: Icons.report,
+        value: () => guardWithLogin(
+          context: context,
+          callback: () => Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => PostReportScreen(post: post),
+            ),
           ),
+          error: 'You must be logged in to report posts!',
         ),
-        error: 'You must be logged in to report posts!',
       ),
-    ),
     PopupMenuTile(
       title: 'Flag',
       icon: Icons.flag,

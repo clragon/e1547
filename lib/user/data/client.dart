@@ -1,11 +1,11 @@
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/user/user.dart';
 
-enum UsersFeature {
+enum UserFeature {
   report,
 }
 
-abstract class UsersClient with FeatureFlagging<UsersFeature> {
+abstract class UsersClient with FeatureFlagging<UserFeature> {
   // Technically missing users()
   Future<User> user({
     required String id,
@@ -17,7 +17,7 @@ abstract class UsersClient with FeatureFlagging<UsersFeature> {
     required int id,
     required String reason,
   }) =>
-      throwUnsupported(UsersFeature.report);
+      throwUnsupported(UserFeature.report);
 }
 
 // ignore: one_member_abstracts

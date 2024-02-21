@@ -8,7 +8,7 @@ class E621UsersClient extends UsersClient {
   final Dio dio;
 
   @override
-  Set<UsersFeature> get features => {UsersFeature.report};
+  Set<UserFeature> get features => {UserFeature.report};
 
   @override
   Future<User> user({

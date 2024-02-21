@@ -15,14 +15,14 @@ class TraitsSync extends StatelessWidget {
   Widget build(BuildContext context) {
     return SubEffect(
       effect: () {
-        context.read<Client>().syncTraits();
+        context.read<Client>().traits.pullTraits();
         return null;
       },
       keys: [context.watch<Client>()],
       child: SubValueListener(
-        listenable: context.watch<Client>().traits,
+        listenable: context.watch<Client>().traitsState,
         listener: (traits) =>
-            context.read<Client>().updateTraits(traits: traits),
+            context.read<Client>().traits.pushTraits(traits: traits),
         builder: (context, traits) => child,
       ),
     );

@@ -45,7 +45,7 @@ class _DenyListPageState extends State<DenyListPage> {
     return LimitedWidthLayout(
       child: Consumer<Client>(
         builder: (context, client, child) => ValueListenableBuilder(
-          valueListenable: client.traits,
+          valueListenable: client.traitsState,
           builder: (context, traits, child) {
             List<String> denylist = traits.denylist.toList();
             return RefreshableLoadingPage(
@@ -79,13 +79,13 @@ class _DenyListPageState extends State<DenyListPage> {
                         value = value.trim();
                         try {
                           if (value.isEmpty) {
-                            await client.updateTraits(
+                            await client.traits.pushTraits(
                               traits: traits.copyWith(
                                 denylist: denylist..remove(tag),
                               ),
                             );
                           } else {
-                            await client.updateTraits(
+                            await client.traits.pushTraits(
                               traits: traits.copyWith(
                                 denylist: denylist
                                   ..[denylist.indexOf(tag)] = value,
@@ -100,7 +100,7 @@ class _DenyListPageState extends State<DenyListPage> {
                       },
                     );
                   },
-                  onDelete: () => client.updateTraits(
+                  onDelete: () => client.traits.pushTraits(
                     traits: traits.copyWith(
                       denylist: denylist..remove(denylist[index]),
                     ),
@@ -134,7 +134,7 @@ class _DenyListPageState extends State<DenyListPage> {
                                     value = value.trim();
                                     try {
                                       if (value.isNotEmpty) {
-                                        await client.updateTraits(
+                                        await client.traits.pushTraits(
                                           traits: traits.copyWith(
                                             denylist: denylist..add(value),
                                           ),
@@ -154,7 +154,7 @@ class _DenyListPageState extends State<DenyListPage> {
               ),
               refresh: (refreshController) async {
                 try {
-                  await client.syncTraits(force: true);
+                  await client.traits.pullTraits(force: true);
                   refreshController.refreshCompleted();
                 } on ClientException {
                   refreshController.refreshFailed();

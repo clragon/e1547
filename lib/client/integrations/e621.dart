@@ -1,10 +1,84 @@
-export 'e621/account.dart';
-export 'e621/comment.dart';
-export 'e621/pool.dart';
-export 'e621/post.dart';
-export 'e621/reply.dart';
-export 'e621/tags.dart';
-export 'e621/topic.dart';
-export 'e621/traits.dart';
-export 'e621/user.dart';
-export 'e621/wiki.dart';
+import 'package:dio/dio.dart';
+import 'package:e1547/app/app.dart';
+import 'package:e1547/client/client.dart';
+import 'package:e1547/client/integrations/e621/account.dart';
+import 'package:e1547/client/integrations/e621/comment.dart';
+import 'package:e1547/client/integrations/e621/pool.dart';
+import 'package:e1547/client/integrations/e621/post.dart';
+import 'package:e1547/client/integrations/e621/reply.dart';
+import 'package:e1547/client/integrations/e621/tags.dart';
+import 'package:e1547/client/integrations/e621/topic.dart';
+import 'package:e1547/client/integrations/e621/traits.dart';
+import 'package:e1547/client/integrations/e621/user.dart';
+import 'package:e1547/client/integrations/e621/wiki.dart';
+import 'package:e1547/client/integrations/http/availability.dart';
+import 'package:e1547/identity/identity.dart';
+import 'package:e1547/traits/traits.dart';
+import 'package:flutter/foundation.dart';
+
+class E621Client extends Client with ClientAssembly {
+  E621Client({
+    required this.identity,
+    required this.traitsState,
+    required this.storage,
+  }) : dio = createDefaultDio(identity, cache: storage.httpCache) {
+    final posts = E621PostsClient(dio: dio, identity: identity);
+    final accounts = E621AccountsClient(
+      dio: dio,
+      identity: identity,
+      traits: traitsState,
+      postsClient: posts,
+    );
+    final availability = HttpAvailabilityClient(
+      dio: dio,
+      identity: identity,
+      traits: traitsState,
+    );
+    final comments = E621CommentsClient(dio: dio);
+    final pools = E621PoolsClient(
+      dio: dio,
+      postsClient: posts,
+    );
+    final replies = E621RepliesClient(dio: dio);
+    final tags = E621TagsClient(dio: dio);
+    final topics = E621TopicsClient(dio: dio);
+    final traits = E621TraitsClient(
+      dio: dio,
+      identity: identity,
+      traits: traitsState,
+      accountsClient: accounts,
+    );
+    final users = E621UsersClient(dio: dio);
+    final wikis = E621WikisClient(dio: dio);
+
+    enableClients(
+      accounts: accounts,
+      availability: availability,
+      comments: comments,
+      pools: pools,
+      posts: posts,
+      replies: replies,
+      tags: tags,
+      topics: topics,
+      traits: traits,
+      users: users,
+      wikis: wikis,
+    );
+  }
+
+  final Dio dio;
+
+  final AppStorage storage;
+
+  @override
+  final Identity identity;
+
+  @override
+  final ValueNotifier<Traits> traitsState;
+
+  @override
+  void dispose() {
+    super.dispose();
+    dio.close();
+  }
+}

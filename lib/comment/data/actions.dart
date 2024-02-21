@@ -51,9 +51,10 @@ Future<bool> writeComment({
               if (comment == null) {
                 await context
                     .read<Client>()
+                    .comments
                     .postComment(postId: postId, content: text);
               } else {
-                await context.read<Client>().updateComment(
+                await context.read<Client>().comments.updateComment(
                       id: comment.id,
                       postId: postId,
                       content: text,

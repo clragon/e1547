@@ -17,10 +17,12 @@ class DeletionDisplay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final client = context.read<Client>();
+    if (!client.hasFeature(PostFeature.flag)) return const SizedBox.shrink();
     if (!post.isDeleted) return const SizedBox.shrink();
     return SubFuture<PostFlag>(
       create: () async {
-        List<PostFlag> flags = await context.read<Client>().flags(
+        List<PostFlag> flags = await context.read<Client>().posts.flags(
               limit: 1,
               query: TagMap({
                 'type': 'deletion',

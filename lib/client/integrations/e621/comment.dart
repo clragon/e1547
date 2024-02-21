@@ -8,11 +8,11 @@ class E621CommentsClient extends CommentsClient {
   final Dio dio;
 
   @override
-  Set<CommentsFeature> get features => {
-        CommentsFeature.post,
-        CommentsFeature.update,
-        CommentsFeature.vote,
-        CommentsFeature.report,
+  Set<CommentFeature> get features => {
+        CommentFeature.post,
+        CommentFeature.update,
+        CommentFeature.vote,
+        CommentFeature.report,
       };
 
   @override

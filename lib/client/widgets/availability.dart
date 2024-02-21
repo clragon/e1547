@@ -37,7 +37,7 @@ class _ClientAvailabilityCheckState extends State<ClientAvailabilityCheck> {
     bool? offerResolve;
     Client client = context.read<Client>();
     try {
-      await client.availability();
+      await client.availability.check();
       logger.info('Client is available!');
     } on ClientException catch (e, stacktrace) {
       if (CancelToken.isCancel(e)) {

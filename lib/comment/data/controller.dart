@@ -10,7 +10,7 @@ class CommentsController extends PageClientDataController<Comment> {
     required this.postId,
     bool? orderByOldest,
   }) : _orderByOldest = orderByOldest ?? true {
-    client.traits.addListener(applyFilter);
+    client.traitsState.addListener(applyFilter);
   }
 
   @override
@@ -31,7 +31,7 @@ class CommentsController extends PageClientDataController<Comment> {
     int page,
     bool force,
   ) =>
-      client.commentsByPost(
+      client.comments.commentsByPost(
         id: postId,
         page: page,
         force: force,
@@ -41,8 +41,8 @@ class CommentsController extends PageClientDataController<Comment> {
 
   @override
   List<Comment>? filter(List<Comment>? items) => super.filter(items
-      ?.whereNot(
-          (e) => client.traits.value.denylist.contains('user:${e.creatorId}'))
+      ?.whereNot((e) =>
+          client.traitsState.value.denylist.contains('user:${e.creatorId}'))
       .toList());
 
   void replaceComment(Comment comment) => updateItem(
@@ -65,7 +65,7 @@ class CommentsController extends PageClientDataController<Comment> {
       ),
     );
     try {
-      await client.voteComment(
+      await client.comments.voteComment(
         id: comment.id,
         upvote: upvote,
         replace: replace,
@@ -80,7 +80,7 @@ class CommentsController extends PageClientDataController<Comment> {
 
   @override
   void dispose() {
-    client.traits.removeListener(applyFilter);
+    client.traitsState.removeListener(applyFilter);
     super.dispose();
   }
 }

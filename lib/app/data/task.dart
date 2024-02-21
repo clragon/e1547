@@ -22,7 +22,7 @@ Future<ControllerBundle> prepareBackgroundIsolate() async {
   await identities.activate(settings.identity.value);
 
   return ControllerBundle(
-    databases: storage,
+    storage: storage,
     settings: settings,
     identities: identities,
   );
@@ -33,13 +33,13 @@ class ControllerBundle {
   ///
   /// Useful for isolates or tests.
   const ControllerBundle({
-    required this.databases,
+    required this.storage,
     required this.settings,
     required this.identities,
   });
 
   /// Application databases.
-  final AppStorage databases;
+  final AppStorage storage;
 
   /// Application settings.
   final Settings settings;

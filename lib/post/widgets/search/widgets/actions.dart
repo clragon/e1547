@@ -22,7 +22,7 @@ class TagListActions extends StatelessWidget {
         create: () => follows.follow(tag).stream,
         keys: [follows, tag],
         builder: (context, snapshot) => ValueListenableBuilder(
-          valueListenable: client.traits,
+          valueListenable: client.traitsState,
           builder: (context, traits, child) => AnimatedSwitcher(
             duration: defaultAnimationDuration,
             child: [ConnectionState.none, ConnectionState.waiting]
@@ -55,7 +55,7 @@ class TagListActions extends StatelessWidget {
                           } else {
                             follows.addTag(tag, type: type);
                             if (denied) {
-                              client.traits.value = traits.copyWith(
+                              client.traitsState.value = traits.copyWith(
                                 denylist: traits.denylist..remove(tag),
                               );
                             }
@@ -129,7 +129,7 @@ class TagListActions extends StatelessWidget {
                                   : const Text('Block'),
                               onTap: () {
                                 if (denied) {
-                                  client.updateTraits(
+                                  client.traits.pushTraits(
                                     traits: traits.copyWith(
                                       denylist: traits.denylist
                                           .whereNot((element) => element == tag)
@@ -140,7 +140,7 @@ class TagListActions extends StatelessWidget {
                                   if (hasFollow) {
                                     follows.removeTag(tag);
                                   }
-                                  client.updateTraits(
+                                  client.traits.pushTraits(
                                     traits: traits.copyWith(
                                       denylist: [...traits.denylist, tag],
                                     ),

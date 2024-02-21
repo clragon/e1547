@@ -1,6 +1,5 @@
 import 'package:deep_pick/deep_pick.dart';
 import 'package:dio/dio.dart';
-import 'package:e1547/client/integrations/e621/post.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/pool/pool.dart';
 import 'package:e1547/post/post.dart';
@@ -12,7 +11,7 @@ class E621PoolsClient extends PoolsClient {
   });
 
   final Dio dio;
-  final E621PostsClient postsClient;
+  final PostsClient postsClient;
 
   @override
   Future<Pool> pool({

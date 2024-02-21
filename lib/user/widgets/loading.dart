@@ -18,7 +18,7 @@ class UserLoadingPage extends StatefulWidget {
 }
 
 class _UserLoadingPageState extends State<UserLoadingPage> {
-  late Future<User> user = context.read<Client>().user(id: widget.id);
+  late Future<User> user = context.read<Client>().users.user(id: widget.id);
 
   @override
   Widget build(BuildContext context) {

@@ -1,18 +1,11 @@
-import 'dart:async';
-import 'dart:io';
-
-import 'package:dio/dio.dart';
-import 'package:e1547/app/app.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/comment/comment.dart';
 import 'package:e1547/identity/identity.dart';
 import 'package:e1547/interface/interface.dart';
-import 'package:e1547/logs/logs.dart';
 import 'package:e1547/pool/pool.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/reply/reply.dart';
 import 'package:e1547/tag/tag.dart';
-import 'package:e1547/ticket/ticket.dart';
 import 'package:e1547/topic/topic.dart';
 import 'package:e1547/traits/traits.dart';
 import 'package:e1547/user/user.dart';
@@ -21,391 +14,158 @@ import 'package:flutter/foundation.dart';
 
 export 'package:dio/dio.dart' show CancelToken;
 
-class Client {
-  Client({
-    required this.identity,
-    required this.traits,
-    this.cache,
-  }) : status = ValueNotifier(const ClientSyncStatus()) {
-    _dio = Dio(
-      BaseOptions(
-        baseUrl: _host,
-        headers: {
-          HttpHeaders.userAgentHeader: AppInfo.instance.userAgent,
-          ...?identity.headers,
-        },
-        sendTimeout: const Duration(seconds: 30),
-        connectTimeout: const Duration(seconds: 30),
-      ),
-    );
-    _dio.interceptors.add(NewlineReplaceInterceptor());
-    _dio.interceptors.add(LoggingDioInterceptor());
-    if (cache != null) {
-      _dio.interceptors.add(
-        ClientCacheInterceptor(
-          options: ClientCacheConfig(
-            store: cache,
-            maxAge: const Duration(minutes: 5),
-            pageParam: 'page',
-          ),
-        ),
-      );
-    }
-  }
-
-  void dispose() {
-    _dio.close();
-  }
-
-  /// The user identity of this client.
-  final Identity identity;
-
-  /// The settings for this identity.
-  final ValueNotifier<Traits> traits;
-
-  /// The sync status of this client.
-  final ValueNotifier<ClientSyncStatus> status;
-
-  /// The cache to use for this client.
-  final CacheStore? cache;
-
-  late Dio _dio;
-
-  late final String _host = normalizeHostUrl(identity.host);
-
-  String get host => identity.host;
-
-  bool get hasLogin => identity.username != null;
-
-  /// Appends [value] to [host] and returns the result.
-  String withHost(String value) {
-    throw UnmigratedError();
-  }
-
-  Future<void> availability() async {
-    throw UnmigratedError();
-  }
-
-  Future<List<Post>> posts({
-    int? page,
-    int? limit,
-    QueryMap? query,
-    bool? ordered,
-    bool? orderPoolsByOldest,
-    bool? orderFavoritesByAdded,
-    bool? force,
-    CancelToken? cancelToken,
-  }) async {
-    throw UnmigratedError();
-  }
-
-  Future<List<Post>> postsByIds({
-    required List<int> ids,
-    int? limit,
-    bool? force,
-    CancelToken? cancelToken,
-  }) async {
-    throw UnmigratedError();
-  }
-
-  Future<List<Post>> postsByTags(
-    List<String> tags,
-    int page, {
-    int? limit,
-    bool? force,
-    CancelToken? cancelToken,
-  }) async {
-    throw UnmigratedError();
-  }
-
-  Future<List<Post>> postsByFavoriter({
-    required String username,
-    int? page,
-    int? limit,
-    bool? force,
-    CancelToken? cancelToken,
-  }) async {
-    throw UnmigratedError();
-  }
-
-  Future<List<Post>> postsByUploader({
-    required String username,
-    int? page,
-    int? limit,
-    bool? force,
-    CancelToken? cancelToken,
-  }) async {
-    throw UnmigratedError();
-  }
-
-  Future<Post> post(int postId, {bool? force, CancelToken? cancelToken}) async {
-    throw UnmigratedError();
-  }
-
-  Future<void> updatePost(int postId, Map<String, String?> body) async {
-    throw UnmigratedError();
-  }
-
-  Future<void> votePost(int postId, bool upvote, bool replace) async {
-    throw UnmigratedError();
-  }
-
-  Future<void> reportPost(int postId, int reportId, String reason) async {
-    throw UnmigratedError();
-  }
-
-  Future<void> flagPost(int postId, String flag, {int? parent}) async {
-    throw UnmigratedError();
-  }
-
-  Future<List<Post>> favorites({
-    int? page,
-    int? limit,
-    QueryMap? query,
-    bool? orderByAdded,
-    bool? force,
-    CancelToken? cancelToken,
-  }) async {
-    throw UnmigratedError();
-  }
-
-  Future<void> addFavorite(int postId) async {
-    throw UnmigratedError();
-  }
-
-  Future<void> removeFavorite(int postId) async {
-    throw UnmigratedError();
-  }
-
-  Future<List<PostFlag>> flags({
-    int? page,
-    int? limit,
-    QueryMap? query,
-    bool? force,
-    CancelToken? cancelToken,
-  }) async {
-    throw UnmigratedError();
-  }
-
-  Future<List<Pool>> pools({
-    int? page,
-    int? limit,
-    QueryMap? query,
-    bool? force,
-    CancelToken? cancelToken,
-  }) async {
-    throw UnmigratedError();
-  }
-
-  Future<Pool> pool({
-    required int id,
-    bool? force,
-    CancelToken? cancelToken,
-  }) async {
-    throw UnmigratedError();
-  }
-
-  Future<List<Post>> postsByPool({
-    required int id,
-    int? page,
-    int? limit,
-    bool orderByOldest = true,
-    bool? force,
-    CancelToken? cancelToken,
-  }) async {
-    throw UnmigratedError();
-  }
-
-  Future<List<Wiki>> wikis({
-    int? page,
-    int? limit,
-    QueryMap? query,
-    bool? force,
-    CancelToken? cancelToken,
-  }) async {
-    throw UnmigratedError();
-  }
-
-  Future<Wiki> wiki({
-    required String id,
-    bool? force,
-    CancelToken? cancelToken,
-  }) async {
-    throw UnmigratedError();
-  }
-
-  Future<User> user({
-    required String id,
-    bool? force,
-    CancelToken? cancelToken,
-  }) async {
-    throw UnmigratedError();
-  }
-
-  Future<void> reportUser({
-    required int id,
-    required String reason,
-  }) async {
-    throw UnmigratedError();
-  }
-
-  Future<Account?> account({
-    bool? force,
-    CancelToken? cancelToken,
-  }) async {
-    throw UnmigratedError();
-  }
-
-  Future<void> updateTraits({
-    required Traits traits,
-    CancelToken? cancelToken,
-  }) async {
-    throw UnmigratedError();
-  }
-
-  Future<void> syncTraits({bool? force, CancelToken? cancelToken}) async {
-    throw UnmigratedError();
-  }
-
-  Future<List<Tag>> tags({
-    int? page,
-    int? limit,
-    QueryMap? query,
-    bool? force,
-    CancelToken? cancelToken,
-  }) async {
-    throw UnmigratedError();
-  }
-
-  Future<List<Tag>> autocomplete({
-    required String search,
-    int? category,
-    bool? force,
-    CancelToken? cancelToken,
-  }) async {
-    throw UnmigratedError();
-  }
-
-  Future<String?> tagAliases({
-    int? page,
-    int? limit,
-    QueryMap? query,
-    bool? force,
-    CancelToken? cancelToken,
-  }) async {
-    throw UnmigratedError();
-  }
-
-  Future<List<Comment>> comments({
-    int? page,
-    int? limit,
-    QueryMap? query,
-    bool? force,
-    CancelToken? cancelToken,
-  }) async {
-    throw UnmigratedError();
-  }
-
-  Future<List<Comment>> commentsByPost({
-    required int id,
-    int? page,
-    int? limit,
-    bool? ascending,
-    bool? force,
-    CancelToken? cancelToken,
-  }) async {
-    throw UnmigratedError();
-  }
-
-  Future<Comment> comment({
-    required int id,
-    bool? force,
-    CancelToken? cancelToken,
-  }) async {
-    throw UnmigratedError();
-  }
-
-  Future<void> postComment({
-    required int postId,
-    required String content,
-  }) async {
-    throw UnmigratedError();
-  }
-
-  Future<void> updateComment({
-    required int id,
-    required int postId,
-    required String content,
-  }) async {
-    throw UnmigratedError();
-  }
-
-  Future<void> voteComment({
-    required int id,
-    required bool upvote,
-    required bool replace,
-  }) async {
-    throw UnmigratedError();
-  }
-
-  Future<void> reportComment({
-    required int id,
-    required String reason,
-  }) async {
-    throw UnmigratedError();
-  }
-
-  Future<List<Topic>> topics({
-    int? page,
-    int? limit,
-    QueryMap? query,
-    bool? force,
-    CancelToken? cancelToken,
-  }) async {
-    throw UnmigratedError();
-  }
-
-  Future<Topic> topic({
-    required int id,
-    bool? force,
-    CancelToken? cancelToken,
-  }) async {
-    throw UnmigratedError();
-  }
-
-  Future<List<Reply>> replies({
-    required int id,
-    int? page,
-    int? limit,
-    QueryMap? query,
-    bool? force,
-    CancelToken? cancelToken,
-  }) async {
-    throw UnmigratedError();
-  }
-
-  Future<List<Reply>> repliesByTopic({
-    required int id,
-    int? page,
-    int? limit,
-    bool? ascending,
-    bool? force,
-    CancelToken? cancelToken,
-  }) async {
-    throw UnmigratedError();
-  }
-
-  Future<Reply> reply({
-    required int id,
-    bool? force,
-    CancelToken? cancelToken,
-  }) async {
-    throw UnmigratedError();
-  }
+enum ClientFeature {
+  accounts,
+  availability,
+  comments,
+  pools,
+  posts,
+  replies,
+  tags,
+  topics,
+  traits,
+  users,
+  wikis,
 }
 
-class UnmigratedError extends UnimplementedError {
-  UnmigratedError() : super('This feature is not yet migrated.');
+abstract class Client with FeatureFlagging<Enum> {
+  Identity get identity;
+  ValueNotifier<Traits> get traitsState;
+
+  AccountsClient get accounts => throwUnsupported(ClientFeature.accounts);
+  AvailabilityClient get availability =>
+      throwUnsupported(ClientFeature.availability);
+  CommentsClient get comments => throwUnsupported(ClientFeature.comments);
+  PoolsClient get pools => throwUnsupported(ClientFeature.pools);
+  PostsClient get posts => throwUnsupported(ClientFeature.posts);
+  RepliesClient get replies => throwUnsupported(ClientFeature.replies);
+  TagsClient get tags => throwUnsupported(ClientFeature.tags);
+  TopicsClient get topics => throwUnsupported(ClientFeature.topics);
+  TraitsClient get traits => throwUnsupported(ClientFeature.traits);
+  UsersClient get users => throwUnsupported(ClientFeature.users);
+  WikisClient get wikis => throwUnsupported(ClientFeature.wikis);
+
+  @mustCallSuper
+  void dispose() {}
+}
+
+extension ClientExtension on Client {
+  String get host => identity.host;
+  bool get hasLogin => identity.username != null;
+  String withHost(String path) => identity.withHost(path);
+}
+
+mixin ClientAssembly on Client {
+  @protected
+  void enableClients({
+    AccountsClient? accounts,
+    AvailabilityClient? availability,
+    CommentsClient? comments,
+    PoolsClient? pools,
+    PostsClient? posts,
+    RepliesClient? replies,
+    TagsClient? tags,
+    TopicsClient? topics,
+    TraitsClient? traits,
+    UsersClient? users,
+    WikisClient? wikis,
+  }) {
+    _accounts = accounts;
+    _availability = availability;
+    _comments = comments;
+    _pools = pools;
+    _posts = posts;
+    _replies = replies;
+    _tags = tags;
+    _topics = topics;
+    _traits = traits;
+    _users = users;
+    _wikis = wikis;
+
+    _features = _generateFeatures();
+  }
+
+  late final Set<Enum> _features;
+
+  @override
+  Set<Enum> get features => _features;
+
+  Set<Enum> _generateFeatures() => {
+        // client features
+        if (_accounts != null) ClientFeature.accounts,
+        if (_availability != null) ClientFeature.availability,
+        if (_comments != null) ClientFeature.comments,
+        if (_pools != null) ClientFeature.pools,
+        if (_posts != null) ClientFeature.posts,
+        if (_replies != null) ClientFeature.replies,
+        if (_tags != null) ClientFeature.tags,
+        if (_topics != null) ClientFeature.topics,
+        if (_traits != null) ClientFeature.traits,
+        if (_users != null) ClientFeature.users,
+        if (_wikis != null) ClientFeature.wikis,
+        // sub features
+        ...{
+          _accounts,
+          _availability,
+          _comments,
+          _pools,
+          _posts,
+          _replies,
+          _tags,
+          _topics,
+          _traits,
+          _users,
+          _wikis,
+        }
+            .whereType<FeatureFlagging<Enum>>()
+            .fold<Set<Enum>>({}, (all, e) => all..addAll(e.features)),
+      };
+
+  late final AccountsClient? _accounts;
+  late final AvailabilityClient? _availability;
+  late final CommentsClient? _comments;
+  late final PoolsClient? _pools;
+  late final PostsClient? _posts;
+  late final RepliesClient? _replies;
+  late final TagsClient? _tags;
+  late final TopicsClient? _topics;
+  late final TraitsClient? _traits;
+  late final UsersClient? _users;
+  late final WikisClient? _wikis;
+
+  T _throwOnMissingClient<T>(T? client, ClientFeature flag) {
+    if (client == null) throwUnsupported(flag);
+    return client;
+  }
+
+  @override
+  AccountsClient get accounts =>
+      _throwOnMissingClient(_accounts, ClientFeature.accounts);
+  @override
+  AvailabilityClient get availability =>
+      _throwOnMissingClient(_availability, ClientFeature.availability);
+  @override
+  CommentsClient get comments =>
+      _throwOnMissingClient(_comments, ClientFeature.comments);
+  @override
+  PoolsClient get pools => _throwOnMissingClient(_pools, ClientFeature.pools);
+  @override
+  PostsClient get posts => _throwOnMissingClient(_posts, ClientFeature.posts);
+  @override
+  RepliesClient get replies =>
+      _throwOnMissingClient(_replies, ClientFeature.replies);
+  @override
+  TagsClient get tags => _throwOnMissingClient(_tags, ClientFeature.tags);
+  @override
+  TopicsClient get topics =>
+      _throwOnMissingClient(_topics, ClientFeature.topics);
+  @override
+  TraitsClient get traits =>
+      _throwOnMissingClient(_traits, ClientFeature.traits);
+  @override
+  UsersClient get users => _throwOnMissingClient(_users, ClientFeature.users);
+  @override
+  WikisClient get wikis => _throwOnMissingClient(_wikis, ClientFeature.wikis);
 }
 
 // TODO: create a call parameters class with force and cancelToken

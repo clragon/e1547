@@ -3,6 +3,7 @@ import 'package:e1547/post/post.dart';
 import 'package:e1547/ticket/ticket.dart';
 
 enum PostFeature {
+  uploads,
   update,
   favorite,
   report,
@@ -44,6 +45,24 @@ abstract class PostsClient with FeatureFlagging {
     bool? force,
     CancelToken? cancelToken,
   });
+
+  Future<List<Post>> postsByFavoriter({
+    required String username,
+    int? page,
+    int? limit,
+    bool? force,
+    CancelToken? cancelToken,
+  }) =>
+      throwUnsupported(PostFeature.favorite);
+
+  Future<List<Post>> postsByUploader({
+    required String username,
+    int? page,
+    int? limit,
+    bool? force,
+    CancelToken? cancelToken,
+  }) =>
+      throwUnsupported(PostFeature.uploads);
 
   Future<void> updatePost(int postId, Map<String, String?> body) =>
       throwUnsupported(PostFeature.update);

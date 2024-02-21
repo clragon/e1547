@@ -167,6 +167,7 @@ class E621PostsClient extends PostsClient {
     );
   }
 
+  @override
   Future<List<Post>> postsByFavoriter({
     required String username,
     int? page,
@@ -183,6 +184,7 @@ class E621PostsClient extends PostsClient {
         cancelToken: cancelToken,
       );
 
+  @override
   Future<List<Post>> postsByUploader({
     required String username,
     int? page,

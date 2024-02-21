@@ -133,8 +133,9 @@ class CommentTile extends StatelessWidget {
               icon: const Dimmed(child: Icon(Icons.more_vert)),
               onSelected: (value) => value(),
               itemBuilder: (context) => [
-                if (context.read<Client>().identity.username ==
-                    comment.creatorName)
+                if (context.watch<Client>().identity.username ==
+                        comment.creatorName &&
+                    context.watch<Client>().hasFeature(CommentFeature.update))
                   PopupMenuTile(
                     title: 'Edit',
                     icon: Icons.edit,
@@ -188,21 +189,22 @@ class CommentTile extends StatelessWidget {
                     ));
                   },
                 ),
-                PopupMenuTile(
-                  title: 'Report',
-                  icon: Icons.report,
-                  value: () => guardWithLogin(
-                    context: context,
-                    callback: () => Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => CommentReportScreen(
-                          comment: comment,
+                if (context.watch<Client>().hasFeature(CommentFeature.report))
+                  PopupMenuTile(
+                    title: 'Report',
+                    icon: Icons.report,
+                    value: () => guardWithLogin(
+                      context: context,
+                      callback: () => Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => CommentReportScreen(
+                            comment: comment,
+                          ),
                         ),
                       ),
+                      error: 'You must be logged in to report comments!',
                     ),
-                    error: 'You must be logged in to report comments!',
                   ),
-                ),
               ],
             ),
           ],

@@ -1,7 +1,7 @@
 import 'package:e1547/comment/comment.dart';
 import 'package:e1547/interface/interface.dart';
 
-enum CommentsFeature {
+enum CommentFeature {
   post,
   update,
   vote,
@@ -9,7 +9,7 @@ enum CommentsFeature {
 }
 
 // TODO: rename all the methods to be type agnostic
-abstract class CommentsClient with FeatureFlagging<CommentsFeature> {
+abstract class CommentsClient with FeatureFlagging<CommentFeature> {
   Future<Comment> comment({
     required int id,
     bool? force,
@@ -37,25 +37,25 @@ abstract class CommentsClient with FeatureFlagging<CommentsFeature> {
     required int postId,
     required String content,
   }) =>
-      throwUnsupported(CommentsFeature.post);
+      throwUnsupported(CommentFeature.post);
 
   Future<void> updateComment({
     required int id,
     required int postId,
     required String content,
   }) =>
-      throwUnsupported(CommentsFeature.update);
+      throwUnsupported(CommentFeature.update);
 
   Future<void> voteComment({
     required int id,
     required bool upvote,
     required bool replace,
   }) =>
-      throwUnsupported(CommentsFeature.vote);
+      throwUnsupported(CommentFeature.vote);
 
   Future<void> reportComment({
     required int id,
     required String reason,
   }) =>
-      throwUnsupported(CommentsFeature.report);
+      throwUnsupported(CommentFeature.report);
 }

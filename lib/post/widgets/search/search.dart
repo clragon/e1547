@@ -63,6 +63,7 @@ class _PostsSearchPageState extends State<PostsSearchPage> {
 
           Future<void> updatePool() async {
             if (!mounted) return;
+            if (!client.hasFeature(ClientFeature.pools)) return;
             setState(() {
               loadingInfo = true;
             });
@@ -71,7 +72,7 @@ class _PostsSearchPageState extends State<PostsSearchPage> {
             if (match != null) {
               if (match.namedGroup('id')! != pool?.id.toString()) {
                 try {
-                  pool = await client.pool(
+                  pool = await client.pools.pool(
                     id: int.parse(match.namedGroup('id')!),
                   );
                 } on ClientException {

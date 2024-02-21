@@ -143,7 +143,7 @@ class PostHistoryConnector extends StatelessWidget {
         item: post,
         addToHistory: (context, service, item) => service.addPost(
           post,
-          denylist: context.read<Client>().traits.value.denylist,
+          denylist: context.read<Client>().traitsState.value.denylist,
         ),
         child: child,
       );

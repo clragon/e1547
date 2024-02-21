@@ -9,7 +9,7 @@ class RepliesController extends PageClientDataController<Reply> {
     required this.topicId,
     bool? orderByOldest,
   }) : _orderByOldest = orderByOldest ?? true {
-    client.traits.addListener(applyFilter);
+    client.traitsState.addListener(applyFilter);
   }
 
   @override
@@ -26,7 +26,8 @@ class RepliesController extends PageClientDataController<Reply> {
 
   @override
   @protected
-  Future<List<Reply>> fetch(int page, bool force) => client.repliesByTopic(
+  Future<List<Reply>> fetch(int page, bool force) =>
+      client.replies.repliesByTopic(
         id: topicId,
         page: page,
         ascending: orderByOldest,
@@ -36,7 +37,7 @@ class RepliesController extends PageClientDataController<Reply> {
 
   @override
   void dispose() {
-    client.traits.removeListener(applyFilter);
+    client.traitsState.removeListener(applyFilter);
     super.dispose();
   }
 }

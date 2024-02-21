@@ -25,12 +25,12 @@ class FollowsUpdater extends ValueNotifier<FollowUpdate?> {
   set value(FollowUpdate? value) {
     List<Object?> previous = [
       this.value?.client,
-      this.value?.client.traits.value,
+      this.value?.client.traitsState.value,
       this.value?.force,
     ];
     List<Object?> current = [
       value?.client,
-      value?.client.traits.value,
+      value?.client.traitsState.value,
       value?.force,
     ];
     bool noneRunning = this.value?.completed ?? true;
@@ -194,9 +194,9 @@ class FollowUpdate {
     _assertNoDuplicates(tags);
 
     int limit = follows.length * refreshAmount;
-    List<Post> allPosts = await rateLimit(client.postsByTags(
-      tags,
-      1,
+    List<Post> allPosts = await rateLimit(client.posts.postsByTags(
+      tags: tags,
+      page: 1,
       limit: limit,
       force: force,
     ));
@@ -231,12 +231,12 @@ class FollowUpdate {
       return leftovers.isNotEmpty;
     }
 
-    if (hasLeftovers()) {
+    if (hasLeftovers() && client.hasFeature(ClientFeature.tags)) {
       for (final update in Map.from(updates).entries) {
         Follow follow = update.key;
         List<Post> posts = update.value;
         if (posts.isNotEmpty) continue;
-        String? alias = await rateLimit(client.tagAliases(
+        String? alias = await rateLimit(client.tags.tagAliases(
           query: TagMap({'search[antecedent_name]': follow.tags}),
         ));
         if (alias != follow.alias) {
@@ -259,7 +259,8 @@ class FollowUpdate {
       bool latestReached = posts.any((e) => e.id == follow.latest);
       bool depleted = allPosts.length < limit;
       if ([limitReached, latestReached, depleted].any((e) => e)) {
-        posts.removeWhere((e) => e.isDeniedBy(client.traits.value.denylist));
+        posts.removeWhere(
+            (e) => e.isDeniedBy(client.traitsState.value.denylist));
         result.add(follow.withUnseen(posts));
       }
     }
@@ -270,19 +271,20 @@ class FollowUpdate {
     Follow follow = multiples.first;
     _assertNoDuplicates([follow.tags]);
 
-    List<Post> posts = await rateLimit(client.posts(
+    List<Post> posts = await rateLimit(client.posts.posts(
       query: TagMap({'tags': follow.tags}),
       limit: refreshAmount,
-      ordered: false,
+      // TODO: ordered
+      // ordered: false,
       force: force,
     ));
-    posts.removeWhere((e) => e.isDeniedBy(client.traits.value.denylist));
+    posts.removeWhere((e) => e.isDeniedBy(client.traitsState.value.denylist));
     follow = follow.withUnseen(posts);
     RegExpMatch? match = poolRegex().firstMatch(follow.tags);
     if (follow.title == null && match != null) {
       try {
         follow = follow.withPool(
-          await client.pool(
+          await client.pools.pool(
             id: int.parse(match.namedGroup('id')!),
             force: force,
           ),

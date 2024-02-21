@@ -286,7 +286,7 @@ class _UserProfileActions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    ValueNotifier<Traits> traits = context.watch<Client>().traits;
+    ValueNotifier<Traits> traits = context.watch<Client>().traitsState;
     String userTag = 'user:${user.id}';
     bool blocked = traits.value.denylist.contains(userTag);
     return PopupMenuButton<VoidCallback>(
@@ -300,23 +300,24 @@ class _UserProfileActions extends StatelessWidget {
             context.read<Client>().withHost(user.link),
           ),
         ),
-        PopupMenuTile(
-          title: 'Report',
-          icon: Icons.report,
-          value: () => guardWithLogin(
-            context: context,
-            callback: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => UserReportScreen(
-                    user: user,
+        if (context.watch<Client>().hasFeature(UserFeature.report))
+          PopupMenuTile(
+            title: 'Report',
+            icon: Icons.report,
+            value: () => guardWithLogin(
+              context: context,
+              callback: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => UserReportScreen(
+                      user: user,
+                    ),
                   ),
-                ),
-              );
-            },
-            error: 'You must be logged in to report users!',
+                );
+              },
+              error: 'You must be logged in to report users!',
+            ),
           ),
-        ),
         PopupMenuTile(
           title: blocked ? 'Unblock' : 'Block',
           icon: blocked ? Icons.check : Icons.block,
