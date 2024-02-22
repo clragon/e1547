@@ -20,7 +20,7 @@ class DanbooruClient extends Client with ClientAssembly {
       identity: identity,
       traits: traitsState,
     );
-    final posts = DanbooruPostsClient(dio: dio);
+    final posts = DanbooruPostsClient(dio: dio, identity: identity);
     final traits = DanbooruTraitsClient(traits: traitsState);
     final tags = DanbooruTagsClient(dio: dio);
 

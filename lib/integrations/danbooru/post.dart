@@ -2,16 +2,25 @@ import 'dart:math';
 
 import 'package:deep_pick/deep_pick.dart';
 import 'package:dio/dio.dart';
+import 'package:e1547/client/client.dart';
+import 'package:e1547/identity/identity.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
+import 'package:e1547/tag/tag.dart';
 
 class DanbooruPostsClient extends PostsClient {
-  DanbooruPostsClient({required this.dio});
+  DanbooruPostsClient({
+    required this.dio,
+    required this.identity,
+  });
 
   final Dio dio;
+  final Identity identity;
 
   @override
-  Set<Enum> get features => {};
+  Set<Enum> get features => {
+        PostFeature.favorite,
+      };
 
   @override
   Future<Post> get(
@@ -87,6 +96,40 @@ class DanbooruPostsClient extends PostsClient {
     }
     return result;
   }
+
+  @override
+  Future<List<Post>> favorites({
+    int? page,
+    int? limit,
+    QueryMap? query,
+    bool? orderByAdded,
+    bool? force,
+    CancelToken? cancelToken,
+  }) async {
+    if (identity.username == null) {
+      throw NoUserLoginException();
+    }
+    return this.page(
+      page: page,
+      limit: limit,
+      query: {
+        ...?query,
+        'tags': (TagMap.parse(query?['tags'] ?? '')
+              ..['ordfav'] = identity.username)
+            .toString()
+      },
+      force: force,
+      cancelToken: cancelToken,
+    );
+  }
+
+  @override
+  Future<void> addFavorite(int postId) =>
+      dio.post('/favorites.json', queryParameters: {'post_id': postId});
+
+  @override
+  Future<void> removeFavorite(int postId) =>
+      dio.delete('/favorites/$postId.json');
 
   @override
   Future<List<Post>> byTags({
