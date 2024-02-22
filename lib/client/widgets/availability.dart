@@ -27,6 +27,12 @@ class ClientAvailabilityCheck extends StatefulWidget {
 class _ClientAvailabilityCheckState extends State<ClientAvailabilityCheck> {
   final Logger logger = Logger('ClientAvailability');
 
+  @override
+  void initState() {
+    super.initState();
+    check(context);
+  }
+
   Future<void> check(BuildContext context) async {
     bool? offerResolve;
     Client client = context.read<Client>();
