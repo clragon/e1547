@@ -36,6 +36,7 @@ class _ClientAvailabilityCheckState extends State<ClientAvailabilityCheck> {
   Future<void> check(BuildContext context) async {
     bool? offerResolve;
     Client client = context.read<Client>();
+    if (!client.hasFeature(ClientFeature.availability)) return;
     try {
       await client.availability.check();
       logger.info('Client is available!');
