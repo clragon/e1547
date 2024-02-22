@@ -3,6 +3,7 @@ import 'package:e1547/app/app.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/identity/data/identity.dart';
 import 'package:e1547/integrations/danbooru/post.dart';
+import 'package:e1547/integrations/danbooru/tags.dart';
 import 'package:e1547/integrations/danbooru/traits.dart';
 import 'package:e1547/traits/data/traits.dart';
 import 'package:flutter/foundation.dart';
@@ -15,10 +16,12 @@ class DanbooruClient extends Client with ClientAssembly {
   }) : dio = createDefaultDio(identity, cache: storage.httpCache) {
     final posts = DanbooruPostsClient(dio: dio);
     final traits = DanbooruTraitsClient(traits: traitsState);
+    final tags = DanbooruTagsClient(dio: dio);
 
     enableClients(
       posts: posts,
       traits: traits,
+      tags: tags,
     );
   }
 

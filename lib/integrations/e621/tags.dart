@@ -38,13 +38,14 @@ class E621TagsClient extends TagsClient {
   }
 
   @override
-  Future<List<TagSuggestion>> autocomplete({
+  Future<List<Tag>> autocomplete({
     required String search,
     int? category,
     bool? force,
     CancelToken? cancelToken,
   }) async {
     if (search.contains(':')) return [];
+    List<Tag> tags = [];
     if (category == null) {
       if (search.length < 3) return [];
       Object body = await dio
@@ -57,15 +58,14 @@ class E621TagsClient extends TagsClient {
             cancelToken: cancelToken,
           )
           .then((response) => response.data);
-      List<TagSuggestion> tags = [];
+
       if (body is List<dynamic>) {
         for (final tag in body) {
-          tags.add(TagSuggestion.fromJson(tag));
+          tags.add(Tag.fromJson(tag));
         }
       }
       return tags;
     } else {
-      List<TagSuggestion> tags = [];
       for (final tag in await page(
         limit: 3,
         query: {
@@ -76,12 +76,11 @@ class E621TagsClient extends TagsClient {
         force: force,
       )) {
         tags.add(
-          TagSuggestion(
+          Tag(
             id: tag.id,
             name: tag.name,
             postCount: tag.postCount,
             category: tag.category,
-            antecedentName: null,
           ),
         );
       }

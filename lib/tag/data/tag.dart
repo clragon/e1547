@@ -5,6 +5,7 @@ part 'tag.g.dart';
 
 @freezed
 class Tag with _$Tag {
+  // TODO: remove useless fields
   const factory Tag({
     required int id,
     required String name,

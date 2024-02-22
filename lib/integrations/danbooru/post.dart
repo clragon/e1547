@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:deep_pick/deep_pick.dart';
 import 'package:dio/dio.dart';
 import 'package:e1547/interface/interface.dart';
@@ -53,13 +55,37 @@ class DanbooruPostsClient extends PostsClient {
           );
 
   @override
-  Future<List<Post>> byIds(
-      {required List<int> ids,
-      int? limit,
-      bool? force,
-      CancelToken? cancelToken}) {
-    // TODO: implement byIds
-    throw UnimplementedError();
+  Future<List<Post>> byIds({
+    required List<int> ids,
+    int? limit,
+    bool? force,
+    CancelToken? cancelToken,
+  }) async {
+    limit = max(0, min(limit ?? 75, 100));
+
+    List<List<int>> chunks = [];
+    for (int i = 0; i < ids.length; i += limit) {
+      chunks.add(ids.sublist(i, min(i + limit, ids.length)));
+    }
+
+    List<Post> result = [];
+    for (final chunk in chunks) {
+      if (chunk.isEmpty) continue;
+      String filter = 'id:${chunk.join(',')}';
+      List<Post> part = await page(
+        query: {'tags': filter},
+        limit: limit,
+        // ordered: false,
+        force: force,
+        cancelToken: cancelToken,
+      );
+      Map<int, Post> table = {for (Post e in part) e.id: e};
+      part = (chunk.map((e) => table[e]).toList()
+            ..removeWhere((e) => e == null))
+          .cast<Post>();
+      result.addAll(part);
+    }
+    return result;
   }
 
   @override
@@ -69,9 +95,28 @@ class DanbooruPostsClient extends PostsClient {
     int? limit,
     bool? force,
     CancelToken? cancelToken,
-  }) {
-    // TODO: implement byTags
-    throw UnimplementedError();
+  }) async {
+    page ??= 1;
+    tags.removeWhere((e) => e.contains(' ') || e.contains(':'));
+    if (tags.isEmpty) return [];
+    int max = 40;
+    int pages = (tags.length / max).ceil();
+    int chunkSize = (tags.length / pages).ceil();
+
+    int tagPage = page % pages != 0 ? page % pages : pages;
+    int sitePage = (page / pages).ceil();
+
+    List<String> chunk =
+        tags.sublist((tagPage - 1) * chunkSize).take(chunkSize).toList();
+    String filter = chunk.map((e) => '~$e').join(' ');
+    return this.page(
+      page: sitePage,
+      query: QueryMap()..['tags'] = filter,
+      limit: limit,
+      // ordered: false,
+      force: force,
+      cancelToken: cancelToken,
+    );
   }
 }
 

@@ -1,3 +1,4 @@
+import 'package:e1547/client/client.dart';
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/history/history.dart';
 import 'package:e1547/interface/interface.dart';
@@ -44,6 +45,8 @@ final List<RouterDrawerDestination> rootDestintations = [
     builder: (context) => const FavPage(),
     unique: true,
     group: _drawerFollowsGroup,
+    visible: (context) =>
+        context.watch<Client>().hasFeature(PostFeature.favorite),
   ),
   NamedRouterDrawerDestination(
     path: '/timeline',
@@ -76,15 +79,19 @@ final List<RouterDrawerDestination> rootDestintations = [
     builder: (context) => const PoolsPage(),
     unique: true,
     group: _drawerCollectionsGroup,
+    visible: (context) =>
+        context.watch<Client>().hasFeature(ClientFeature.pools),
   ),
   NamedRouterDrawerDestination(
     path: '/forum',
     name: 'Forum',
     icon: const Icon(Icons.forum),
     builder: (context) => const TopicsPage(),
-    visible: (context) => context.watch<Settings>().showBeta.value,
     unique: true,
     group: _drawerCollectionsGroup,
+    visible: (context) =>
+        context.watch<Settings>().showBeta.value &&
+        context.watch<Client>().hasFeature(ClientFeature.topics),
   ),
   NamedRouterDrawerDestination(
     path: '/history',

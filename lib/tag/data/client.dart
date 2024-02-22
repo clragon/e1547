@@ -11,7 +11,7 @@ abstract class TagsClient {
     CancelToken? cancelToken,
   });
 
-  Future<List<TagSuggestion>> autocomplete({
+  Future<List<Tag>> autocomplete({
     required String search,
     int? category,
     bool? force,

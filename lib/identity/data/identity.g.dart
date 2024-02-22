@@ -28,6 +28,7 @@ Map<String, dynamic> _$$IdentityImplToJson(_$IdentityImpl instance) =>
 
 const _$ClientTypeEnumMap = {
   ClientType.e621: 'e621',
+  ClientType.danbooru: 'danbooru',
 };
 
 _$IdentityRequestImpl _$$IdentityRequestImplFromJson(
