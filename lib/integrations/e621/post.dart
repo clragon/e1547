@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:collection/collection.dart';
 import 'package:deep_pick/deep_pick.dart';
 import 'package:dio/dio.dart';
 import 'package:e1547/client/client.dart';
@@ -27,17 +28,15 @@ class E621PostsClient extends PostsClient {
       };
 
   @override
-  Future<Post> get(int postId, {bool? force, CancelToken? cancelToken}) async {
-    Map<String, dynamic> body = await dio
-        .get(
-          '/posts/$postId.json',
-          options: forceOptions(force),
-          cancelToken: cancelToken,
-        )
-        .then((response) => response.data);
-
-    return E621Post.fromJson(body['post']);
-  }
+  Future<Post> get(int postId, {bool? force, CancelToken? cancelToken}) => dio
+      .get(
+        '/posts/$postId.json',
+        options: forceOptions(force),
+        cancelToken: cancelToken,
+      )
+      .then(
+        (response) => E621Post.fromJson(response.data['post']),
+      );
 
   @override
   Future<List<Post>> page({
@@ -79,7 +78,7 @@ class E621PostsClient extends PostsClient {
     }
      */
 
-    Map<String, dynamic> body = await dio
+    return dio
         .get(
           '/posts.json',
           queryParameters: {
@@ -90,16 +89,14 @@ class E621PostsClient extends PostsClient {
           options: forceOptions(force),
           cancelToken: cancelToken,
         )
-        .then((response) => response.data);
-
-    List<Post> posts =
-        List<Post>.from(body['posts'].map((e) => E621Post.fromJson(e)));
-
-    posts.removeWhere(
-      (e) => (e.file == null && !e.isDeleted) || e.ext == 'swf',
-    );
-
-    return posts;
+        .then(
+          (response) => pick(pick(response.data).asMapOrThrow()['posts'])
+              .asListOrThrow(E621Post.fromJson)
+              .whereNot(
+                (e) => (e.file == null && !e.isDeleted) || e.ext == 'swf',
+              )
+              .toList(),
+        );
   }
 
   @override
