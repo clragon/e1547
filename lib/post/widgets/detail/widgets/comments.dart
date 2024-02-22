@@ -11,6 +11,9 @@ class CommentDisplay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (!context.watch<Client>().hasFeature(ClientFeature.comments)) {
+      return const SizedBox();
+    }
     return CrossFade(
       showChild: post.commentCount > 0,
       child: Column(
@@ -54,6 +57,9 @@ class PostDetailCommentsWrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (!context.watch<Client>().hasFeature(ClientFeature.comments)) {
+      return SingleChildScrollView(child: Column(children: children));
+    }
     return CommentsProvider(
       postId: post.id,
       child: Consumer<CommentsController>(

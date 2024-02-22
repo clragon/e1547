@@ -90,8 +90,8 @@ class E621PostsClient extends PostsClient {
           cancelToken: cancelToken,
         )
         .then(
-          (response) => pick(pick(response.data).asMapOrThrow()['posts'])
-              .asListOrThrow(E621Post.fromJson)
+          (response) => (response.data['posts'] as List<dynamic>)
+              .map<Post>(E621Post.fromJson)
               .whereNot(
                 (e) => (e.file == null && !e.isDeleted) || e.ext == 'swf',
               )

@@ -81,7 +81,7 @@ class TagDisplay extends StatelessWidget {
 
     return Column(
       mainAxisSize: MainAxisSize.min,
-      children: TagCategory.names
+      children: post.tags.keys
           .where((category) =>
               (tags[category]?.isNotEmpty ?? false) ||
               (editing && category != 'invalid'))
@@ -122,7 +122,7 @@ bool onPostTagsEdit(
       if (tags.isEmpty) {
         target = 'general';
       } else if (tags.first.name == tag &&
-          tags.first.category != TagCategory.byName(category).id) {
+          tags.first.category != TagCategory.byName(category)?.id) {
         target = TagCategory.byId(tags.first.category).name;
       }
       if (target != null) {

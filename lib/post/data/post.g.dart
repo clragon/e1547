@@ -33,7 +33,7 @@ _$PostImpl _$$PostImplFromJson(Map<String, dynamic> json) => _$PostImpl(
       description: json['description'] as String,
       sources:
           (json['sources'] as List<dynamic>).map((e) => e as String).toList(),
-      pools: (json['pools'] as List<dynamic>).map((e) => e as int).toList(),
+      pools: (json['pools'] as List<dynamic>?)?.map((e) => e as int).toList(),
       relationships: Relationships.fromJson(json['relationships']),
     );
 

@@ -63,7 +63,7 @@ List<PopupMenuItem<VoidCallback>> postMenuUserActions(
         error: 'You must be logged in to comment!',
       ),
     ),
-    if (context.watch<Client>().hasFeature(PostFeature.report))
+    if (context.read<Client>().hasFeature(PostFeature.report))
       PopupMenuTile(
         title: 'Report',
         icon: Icons.report,

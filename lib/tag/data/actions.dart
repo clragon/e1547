@@ -22,6 +22,7 @@ String tagToTitle(String tags) => tagToName(tagToRaw(tags));
 
 bool tagIsSingle(String tags) => !(tags.contains(' ') || tags.contains(':'));
 
+@Deprecated('Move this to E621Client, then make a client for this')
 enum TagCategory {
   general,
   species,
@@ -81,8 +82,8 @@ enum TagCategory {
 
   static TagCategory byId(int id) => values.firstWhere((e) => e.id == id);
 
-  static TagCategory byName(String name) =>
-      values.asNameMap()[name.toLowerCase()]!;
+  static TagCategory? byName(String name) =>
+      values.asNameMap()[name.toLowerCase()];
 }
 
 List<String> filterArtists(List<String> artists) {

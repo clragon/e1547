@@ -6,6 +6,7 @@ import 'package:e1547/post/post.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
 
+// TODO: this is e621 specific
 extension PostTagging on Post {
   bool hasTag(String tag) {
     if (tag.trim().isEmpty) return false;
@@ -55,7 +56,7 @@ extension PostTagging on Post {
           // This cannot be implemented, as it requires a user lookup
           return false;
         case 'pool':
-          return pools.contains(int.tryParse(value));
+          return pools?.contains(int.tryParse(value)) ?? false;
         case 'tagcount':
           NumberRange? range = NumberRange.tryParse(value);
           if (range == null) return false;

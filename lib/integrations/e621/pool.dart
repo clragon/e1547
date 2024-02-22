@@ -75,7 +75,7 @@ class E621PoolsClient extends PoolsClient {
     int limit = user?.perPage ?? 75;
      */
     int limit = 75; // store per page count in Traits
-    Pool pool = await this.get(id: id, force: force, cancelToken: cancelToken);
+    Pool pool = await get(id: id, force: force, cancelToken: cancelToken);
     List<int> ids = pool.postIds;
     if (!orderByOldest) ids = ids.reversed.toList();
     int lower = (page - 1) * limit;

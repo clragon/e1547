@@ -27,7 +27,7 @@ class Post with _$Post {
     required int commentCount,
     required String description,
     required List<String> sources,
-    required List<int> pools,
+    required List<int>? pools,
     required Relationships relationships,
   }) = _Post;
 

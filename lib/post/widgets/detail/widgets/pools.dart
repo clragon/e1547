@@ -9,7 +9,7 @@ class PoolDisplay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (post.pools.isNotEmpty) {
+    if (post.pools?.isNotEmpty ?? false) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -17,7 +17,7 @@ class PoolDisplay extends StatelessWidget {
             padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
             child: Text('Pools', style: TextStyle(fontSize: 16)),
           ),
-          ...post.pools.map(
+          ...post.pools!.map(
             (id) => ListTile(
               leading: const Icon(Icons.group),
               title: Text(id.toString()),

@@ -40,7 +40,7 @@ abstract class PostsClient with FeatureFlagging {
 
   Future<List<Post>> byTags({
     required List<String> tags,
-    int page,
+    int? page,
     int? limit,
     bool? force,
     CancelToken? cancelToken,

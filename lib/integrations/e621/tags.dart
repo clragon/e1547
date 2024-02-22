@@ -66,7 +66,7 @@ class E621TagsClient extends TagsClient {
       return tags;
     } else {
       List<TagSuggestion> tags = [];
-      for (final tag in await this.page(
+      for (final tag in await page(
         limit: 3,
         query: {
           'search[name_matches]': '$search*',

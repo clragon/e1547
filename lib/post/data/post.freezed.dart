@@ -41,7 +41,7 @@ mixin _$Post {
   int get commentCount => throw _privateConstructorUsedError;
   String get description => throw _privateConstructorUsedError;
   List<String> get sources => throw _privateConstructorUsedError;
-  List<int> get pools => throw _privateConstructorUsedError;
+  List<int>? get pools => throw _privateConstructorUsedError;
   Relationships get relationships => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -75,7 +75,7 @@ abstract class $PostCopyWith<$Res> {
       int commentCount,
       String description,
       List<String> sources,
-      List<int> pools,
+      List<int>? pools,
       Relationships relationships});
 
   $RelationshipsCopyWith<$Res> get relationships;
@@ -114,7 +114,7 @@ class _$PostCopyWithImpl<$Res, $Val extends Post>
     Object? commentCount = null,
     Object? description = null,
     Object? sources = null,
-    Object? pools = null,
+    Object? pools = freezed,
     Object? relationships = null,
   }) {
     return _then(_value.copyWith(
@@ -198,10 +198,10 @@ class _$PostCopyWithImpl<$Res, $Val extends Post>
           ? _value.sources
           : sources // ignore: cast_nullable_to_non_nullable
               as List<String>,
-      pools: null == pools
+      pools: freezed == pools
           ? _value.pools
           : pools // ignore: cast_nullable_to_non_nullable
-              as List<int>,
+              as List<int>?,
       relationships: null == relationships
           ? _value.relationships
           : relationships // ignore: cast_nullable_to_non_nullable
@@ -246,7 +246,7 @@ abstract class _$$PostImplCopyWith<$Res> implements $PostCopyWith<$Res> {
       int commentCount,
       String description,
       List<String> sources,
-      List<int> pools,
+      List<int>? pools,
       Relationships relationships});
 
   @override
@@ -283,7 +283,7 @@ class __$$PostImplCopyWithImpl<$Res>
     Object? commentCount = null,
     Object? description = null,
     Object? sources = null,
-    Object? pools = null,
+    Object? pools = freezed,
     Object? relationships = null,
   }) {
     return _then(_$PostImpl(
@@ -367,10 +367,10 @@ class __$$PostImplCopyWithImpl<$Res>
           ? _value._sources
           : sources // ignore: cast_nullable_to_non_nullable
               as List<String>,
-      pools: null == pools
+      pools: freezed == pools
           ? _value._pools
           : pools // ignore: cast_nullable_to_non_nullable
-              as List<int>,
+              as List<int>?,
       relationships: null == relationships
           ? _value.relationships
           : relationships // ignore: cast_nullable_to_non_nullable
@@ -403,7 +403,7 @@ class _$PostImpl implements _Post {
       required this.commentCount,
       required this.description,
       required final List<String> sources,
-      required final List<int> pools,
+      required final List<int>? pools,
       required this.relationships})
       : _tags = tags,
         _sources = sources,
@@ -465,12 +465,14 @@ class _$PostImpl implements _Post {
     return EqualUnmodifiableListView(_sources);
   }
 
-  final List<int> _pools;
+  final List<int>? _pools;
   @override
-  List<int> get pools {
+  List<int>? get pools {
+    final value = _pools;
+    if (value == null) return null;
     if (_pools is EqualUnmodifiableListView) return _pools;
     // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_pools);
+    return EqualUnmodifiableListView(value);
   }
 
   @override
@@ -583,7 +585,7 @@ abstract class _Post implements Post {
       required final int commentCount,
       required final String description,
       required final List<String> sources,
-      required final List<int> pools,
+      required final List<int>? pools,
       required final Relationships relationships}) = _$PostImpl;
 
   factory _Post.fromJson(Map<String, dynamic> json) = _$PostImpl.fromJson;
@@ -629,7 +631,7 @@ abstract class _Post implements Post {
   @override
   List<String> get sources;
   @override
-  List<int> get pools;
+  List<int>? get pools;
   @override
   Relationships get relationships;
   @override

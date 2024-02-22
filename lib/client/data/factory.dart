@@ -1,12 +1,14 @@
 import 'package:e1547/app/app.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/identity/identity.dart';
+import 'package:e1547/integrations/danbooru.dart';
 import 'package:e1547/integrations/integrations.dart';
 import 'package:e1547/traits/traits.dart';
 import 'package:flutter/foundation.dart';
 
 enum ClientType {
   e621,
+  danbooru,
 }
 
 class ClientConfig {
@@ -23,10 +25,16 @@ class ClientConfig {
 
 const String _e621Host = 'https://e621.net';
 const String _e926Host = 'https://e926.net';
+const String _danbooruHost = 'https://danbooru.donmai.us';
 
 class ClientFactory {
   Client create(ClientConfig config) => switch (config.identity.type) {
         ClientType.e621 => E621Client(
+            identity: config.identity,
+            traitsState: config.traits,
+            storage: config.storage,
+          ),
+        ClientType.danbooru => DanbooruClient(
             identity: config.identity,
             traitsState: config.traits,
             storage: config.storage,
@@ -56,6 +64,7 @@ class ClientFactory {
   String? registrationUrl(String host) {
     return switch (host) {
       _e621Host || _e926Host => '$host/users/new',
+      _danbooruHost => '$host/users/new',
       _ => null,
     };
   }
@@ -78,6 +87,7 @@ class ClientFactory {
   ClientType? typeFromUrl(String url) {
     return switch (normalizeHostUrl(url)) {
       _e621Host || _e926Host => ClientType.e621,
+      _danbooruHost => ClientType.danbooru,
       _ => null,
     };
   }

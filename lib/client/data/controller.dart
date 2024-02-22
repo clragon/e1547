@@ -1,5 +1,7 @@
+import 'package:deep_pick/deep_pick.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/interface/interface.dart';
+import 'package:e1547/logs/logs.dart';
 import 'package:flutter/foundation.dart';
 
 abstract class ClientDataController<KeyType, ItemType>
@@ -41,6 +43,9 @@ abstract class ClientDataController<KeyType, ItemType>
       // this must be awaited for the catch to work.
       return await call();
     } on ClientException catch (e) {
+      return PageResponse.error(error: e);
+    } on PickException catch (e) {
+      Logger('ClientController').severe(e.toString());
       return PageResponse.error(error: e);
     }
   }
