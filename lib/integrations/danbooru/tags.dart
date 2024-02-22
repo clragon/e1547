@@ -53,7 +53,7 @@ class DanbooruTagsClient extends TagsClient {
       query: {
         'search[fuzzy_name_matches]': search,
         'search[category]': category,
-        'search[order]': 'similarity',
+        'search[order]': 'count',
       }.toQuery(),
       force: force,
     )) {
