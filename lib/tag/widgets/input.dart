@@ -58,7 +58,7 @@ class TagInput extends StatelessWidget {
           return controller;
         },
         keys: [controller],
-        builder: (context, controller) => AutocompleteTextField<TagSuggestion>(
+        builder: (context, controller) => AutocompleteTextField<Tag>(
           controller: controller,
           submit: (result) => submit(sortTags(result)),
           direction: direction,

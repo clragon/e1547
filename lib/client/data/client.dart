@@ -640,7 +640,7 @@ class Client {
     return tags;
   }
 
-  Future<List<TagSuggestion>> autocomplete({
+  Future<List<Tag>> autocomplete({
     required String search,
     int? category,
     bool? force,
@@ -659,15 +659,15 @@ class Client {
             cancelToken: cancelToken,
           )
           .then((response) => response.data);
-      List<TagSuggestion> tags = [];
+      List<Tag> tags = [];
       if (body is List<dynamic>) {
         for (final tag in body) {
-          tags.add(TagSuggestion.fromJson(tag));
+          tags.add(Tag.fromJson(tag));
         }
       }
       return tags;
     } else {
-      List<TagSuggestion> tags = [];
+      List<Tag> tags = [];
       for (final tag in await this.tags(
         limit: 3,
         query: {
@@ -678,12 +678,11 @@ class Client {
         force: force,
       )) {
         tags.add(
-          TagSuggestion(
+          Tag(
             id: tag.id,
             name: tag.name,
             postCount: tag.postCount,
             category: tag.category,
-            antecedentName: null,
           ),
         );
       }
