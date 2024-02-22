@@ -31,7 +31,7 @@ class PostImageOverlay extends StatelessWidget {
     }
     if (post.file == null) {
       return const IconMessage(
-        title: Text('Image unavailable on this host'),
+        title: Text('Image is unavailable'),
         icon: Icon(Icons.image_not_supported_outlined),
       );
     }
