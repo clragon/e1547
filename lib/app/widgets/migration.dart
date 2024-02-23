@@ -27,7 +27,7 @@ class DatabaseMigrationProvider extends SingleChildStatefulWidget {
 class DatabaseMigrationProviderState
     extends SingleChildState<DatabaseMigrationProvider> {
   late Future<void> migration;
-  late AppLoadingScreenState loader = AppLoadingScreen.of(context);
+  late LoadingShellController loader = LoadingShell.of(context);
   final int version = 2;
 
   @override
@@ -59,27 +59,46 @@ class DatabaseMigrationProviderState
       return restartMigration();
     }
 
-    loader.message = 'Migrating follows...';
+    loader.value = loader.value.copyWith(
+      message: 'Migrating follows...',
+    );
 
-    String followDbName = 'follows.sqlite';
-    if (File(join((await getApplicationSupportDirectory()).path, followDbName))
-        .existsSync()) {
-      await migrateFollows(connectDatabase(followDbName), storage);
-      // TODO: enable deletion once this is tested
-      // File(followDbName).deleteSync();
+    try {
+      String followDbName = 'follows.sqlite';
+      if (File(
+              join((await getApplicationSupportDirectory()).path, followDbName))
+          .existsSync()) {
+        await migrateFollows(connectDatabase(followDbName), storage);
+        // TODO: enable deletion once this is tested
+        // File(followDbName).deleteSync();
+      }
+    } on Object catch (e) {
+      loader.value = loader.value.copyWith(
+        error: e,
+      );
+      rethrow;
     }
 
-    loader.message = 'Migrating history...';
+    loader.value = loader.value.copyWith(
+      message: 'Migrating history...',
+    );
 
-    String historyDbName = 'history.sqlite';
-    if (File(join((await getApplicationSupportDirectory()).path, historyDbName))
-        .existsSync()) {
-      await migrateHistory(connectDatabase(historyDbName), storage);
-      // TODO: enable deletion once this is tested
-      // File(historyDbName).deleteSync();
+    try {
+      String historyDbName = 'history.sqlite';
+      if (File(join(
+              (await getApplicationSupportDirectory()).path, historyDbName))
+          .existsSync()) {
+        await migrateHistory(connectDatabase(historyDbName), storage);
+        // TODO: enable deletion once this is tested
+        // File(historyDbName).deleteSync();
+      }
+    } on Object catch (e) {
+      loader.value = loader.value.copyWith(
+        error: e,
+      );
     }
 
-    loader.message = null;
+    loader.value = const LoadingShellState();
     sentinel.writeAsStringSync(version.toString());
   }
 
@@ -102,12 +121,21 @@ class DatabaseMigrationProviderState
 
     await storage.sqlite.close();
 
-    await File(join((await getApplicationSupportDirectory()).path, 'app.db'))
-        .delete();
+    try {
+      await File(join((await getApplicationSupportDirectory()).path, 'app.db'))
+          .delete();
 
-    await (await _getMigrationSentinel()).delete();
+      await (await _getMigrationSentinel()).delete();
+    } on Object catch (e) {
+      loader.value = loader.value.copyWith(
+        error: e,
+      );
+      rethrow;
+    }
 
-    loader.message = 'Please restart the app';
+    loader.value = loader.value.copyWith(
+      message: 'Please restart the app',
+    );
   }
 
   @override

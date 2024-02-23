@@ -33,17 +33,16 @@ class IdentitiesServiceProvider extends SubChangeNotifierProvider3<AppStorage,
             builder: (context, service, settings, child) => SubListener(
               listenable: service,
               listener: () => settings.identity.value = service.identity.id,
-              builder: (context) => SubFuture<void>(
+              builder: (context) => SubValue<Future<void>>(
                 create: () => service.activate(settings.identity.value),
                 keys: [service],
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState != ConnectionState.done) {
-                    return Container(
-                      color: Theme.of(context).colorScheme.background,
-                    );
-                  }
-                  return builder?.call(context, child) ?? child!;
-                },
+                builder: (context, future) => LoadingLayer(
+                  future: future,
+                  builder: (context, _) =>
+                      builder?.call(context, child) ?? child!,
+                  errorToString: (error) =>
+                      'Failed to activate identity: $error',
+                ),
               ),
             ),
             child: child,
@@ -67,17 +66,16 @@ class TraitsServiceProvider extends SubChangeNotifierProvider3<AppStorage,
           ),
           builder: (context, child) =>
               Consumer2<TraitsService, IdentitiesService>(
-            builder: (context, traits, identities, child) => SubFuture<void>(
+            builder: (context, traits, identities, child) =>
+                SubValue<Future<void>>(
               create: () => traits.activate(identities.identity.id),
               keys: [traits, identities, identities.identity],
-              builder: (context, snapshot) {
-                if (snapshot.connectionState != ConnectionState.done) {
-                  return Container(
-                    color: Theme.of(context).colorScheme.background,
-                  );
-                }
-                return builder?.call(context, child) ?? child!;
-              },
+              builder: (context, future) => LoadingLayer(
+                future: future,
+                builder: (context, _) =>
+                    builder?.call(context, child) ?? child!,
+                errorToString: (error) => 'Failed to activate traits: $error',
+              ),
             ),
             child: child,
           ),

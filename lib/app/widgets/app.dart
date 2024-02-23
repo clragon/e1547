@@ -61,7 +61,7 @@ class App extends StatelessWidget {
                     child: WindowShortcuts(
                       navigatorKey: navigatorKey,
                       child: LockScreen(
-                        child: AppLoadingScreen(
+                        child: LoadingShell(
                           child: MultiProvider(
                             providers: [
                               const DatabaseMigrationProvider(),
@@ -73,7 +73,7 @@ class App extends StatelessWidget {
                               HistoriesServiceProvider(),
                             ],
                             child: TraitsSync(
-                              child: AppLoadingScreenEnd(
+                              child: LoadingCore(
                                 child: ErrorNotifier(
                                   navigatorKey: navigatorKey,
                                   child: ClientAvailabilityCheck(
