@@ -10,4 +10,3 @@ export 'data/newline.dart';
 export 'data/status.dart';
 // widgets
 export 'widgets/availability.dart';
-export 'widgets/login.dart';
