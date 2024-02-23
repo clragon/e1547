@@ -6,7 +6,6 @@ import 'package:drift/native.dart';
 import 'package:e1547/app/app.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/identity/identity.dart';
-import 'package:e1547/interface/interface.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -34,6 +33,8 @@ class _IdentityPageState extends State<IdentityPage> {
         ? OmittedPasswordTextInputFormatter.passwordOmitted
         : null,
   );
+  ClientType? type;
+  bool foundClient = false;
 
   late bool withAuth =
       widget.identity == null || widget.identity!.username != null;
@@ -49,10 +50,26 @@ class _IdentityPageState extends State<IdentityPage> {
   void initState() {
     super.initState();
     allFields.addListener(resetErrors);
+    hostController.addListener(onHostChange);
+    onHostChange();
   }
 
   void resetErrors() => WidgetsBinding.instance
       .addPostFrameCallback((_) => setState(() => error = null));
+
+  void onHostChange() {
+    ClientType? type =
+        context.read<ClientFactory>().typeFromUrl(hostController.text);
+    setState(() {
+      if (type != null) {
+        this.type = type;
+        foundClient = true;
+      } else {
+        this.type = null;
+        foundClient = false;
+      }
+    });
+  }
 
   @override
   void dispose() {
@@ -73,6 +90,7 @@ class _IdentityPageState extends State<IdentityPage> {
         builder: (context) => LoginLoadingDialog(
           identity: widget.identity,
           host: hostController.text,
+          type: type!,
           username: withAuth ? usernameController.text : null,
           apikey: withAuth ? apikeyController.text : null,
           onError: (value) {
@@ -127,6 +145,14 @@ class _IdentityPageState extends State<IdentityPage> {
             HostFormField(
               controller: hostController,
               readOnly: widget.identity != null,
+            ),
+            ClientTypeFormField(
+              type: type,
+              enabled: !foundClient,
+              onChanged: (value) {
+                setState(() => type = value);
+                resetErrors();
+              },
             ),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 12),
@@ -278,12 +304,14 @@ class LoginLoadingDialog extends StatefulWidget {
     required this.host,
     required this.username,
     required this.apikey,
+    required this.type,
     this.onError,
     this.onDone,
   });
 
   final Identity? identity;
   final String host;
+  final ClientType type;
   final String? username;
   final String? apikey;
   final ValueSetter<String?>? onError;
@@ -303,10 +331,9 @@ class _LoginLoadingDialogState extends State<LoginLoadingDialog> {
   Future<void> login() async {
     NavigatorState navigator = Navigator.of(context);
     IdentitiesService service = context.read<IdentitiesService>();
-    ClientFactory factory = context.read<ClientFactory>();
     Identity? identity = widget.identity;
     String host = widget.host;
-    ClientType? type = widget.identity?.type;
+    ClientType type = widget.type;
     String? username = widget.username;
     String? apikey = widget.apikey;
     Map<String, String>? headers = Map.of(identity?.headers ?? {});
@@ -329,26 +356,12 @@ class _LoginLoadingDialogState extends State<LoginLoadingDialog> {
         await service.replace(
           identity.copyWith(
             host: host,
-            type: type!,
+            type: type,
             username: username,
             headers: headers,
           ),
         );
       } else {
-        type = factory.typeFromUrl(host);
-        if (type == null) {
-          Completer<bool> completer = Completer();
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            completer.complete(showUnknownHostDialog());
-          });
-          if (await completer.future) {
-            type = ClientType.e621;
-          }
-        }
-        if (type == null) {
-          await navigator.maybePop();
-          return;
-        }
         await service.add(
           IdentityRequest(
             host: host,
@@ -371,32 +384,6 @@ class _LoginLoadingDialogState extends State<LoginLoadingDialog> {
     }
     await navigator.maybePop();
     widget.onDone?.call();
-  }
-
-  Future<bool> showUnknownHostDialog() {
-    return showDialog<bool>(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => AlertDialog(
-        title: const Text('Unknown host'),
-        content: Text(
-          'The host ${linkToDisplay(widget.host)} is not recognized.\n'
-          '${AppInfo.instance.appName} only supports hosts with the official e621 API.\n'
-          'If you don\'t know what this means, '
-          'please do not proceed.\n',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('CANCEL'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('CONFIRM'),
-          ),
-        ],
-      ),
-    ).then((value) => value ?? false);
   }
 
   @override
@@ -453,8 +440,10 @@ class _HostFormFieldState extends State<HostFormField> {
   @override
   void initState() {
     super.initState();
-    _updateController();
     controller.addListener(_updateController);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _updateController();
+    });
   }
 
   void _updateController() {
@@ -642,5 +631,47 @@ class OmittedPasswordTextInputFormatter extends TextInputFormatter {
       );
     }
     return newValue;
+  }
+}
+
+class ClientTypeFormField extends StatelessWidget {
+  const ClientTypeFormField({
+    super.key,
+    required this.type,
+    required this.onChanged,
+    this.enabled,
+  });
+
+  final ClientType? type;
+  final ValueSetter<ClientType?> onChanged;
+  final bool? enabled;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      child: DropdownButtonFormField<ClientType>(
+        value: type,
+        onChanged: enabled ?? true ? onChanged : null,
+        items: ClientType.values
+            .map(
+              (e) => DropdownMenuItem(
+                value: e,
+                child: Text(e.name),
+              ),
+            )
+            .toList(),
+        decoration: const InputDecoration(
+          labelText: 'Client type',
+          border: OutlineInputBorder(),
+        ),
+        validator: (value) {
+          if (value == null) {
+            return 'You must select a client type.';
+          }
+          return null;
+        },
+      ),
+    );
   }
 }

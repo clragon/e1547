@@ -50,7 +50,7 @@ class ClientFactory {
   }
 
   TraitsRequest createDefaultTraits(Identity identity) {
-    return switch (identity.host) {
+    return switch (normalizeHostUrl(identity.host)) {
       _e621Host || _e926Host => TraitsRequest(
           identity: identity.id,
           denylist: ['young -rating:s', 'gore', 'scat', 'watersports'],
@@ -58,7 +58,7 @@ class ClientFactory {
         ),
       _danbooruHost || _safeDanbooruHost => TraitsRequest(
           identity: identity.id,
-          denylist: [],
+          denylist: ['loli', 'shota', 'guro'],
           homeTags: 'score:>=20',
         ),
       _ => TraitsRequest(
@@ -68,7 +68,7 @@ class ClientFactory {
   }
 
   String? registrationUrl(String host) {
-    return switch (host) {
+    return switch (normalizeHostUrl(host)) {
       _e621Host || _e926Host => '$host/users/new',
       _danbooruHost || _safeDanbooruHost => '$host/users/new',
       _ => null,
@@ -77,7 +77,7 @@ class ClientFactory {
 
   String? apiKeysUrl(String host, String username) {
     if (username.isEmpty) return null;
-    return switch (host) {
+    return switch (normalizeHostUrl(host)) {
       _e621Host || _e926Host => '$host/users/$username/api_key',
       _danbooruHost || _safeDanbooruHost => '$host/users/$username/api_keys',
       _ => null,
@@ -85,7 +85,7 @@ class ClientFactory {
   }
 
   String? unsafeHostUrl(String host) {
-    return switch (host) {
+    return switch (normalizeHostUrl(host)) {
       _e926Host => _e621Host,
       _safeDanbooruHost => _danbooruHost,
       _ => null,
