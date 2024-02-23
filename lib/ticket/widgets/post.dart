@@ -93,8 +93,8 @@ class _PostReportScreenState extends State<PostReportScreen> {
               type!.id,
               reasonController.text.trim(),
             );
-        if (mounted) {
-          Navigator.maybePop(context);
+        if (context.mounted) {
+          Navigator.of(context).maybePop();
         }
         messenger.showSnackBar(SnackBar(
           duration: const Duration(seconds: 1),
@@ -210,8 +210,8 @@ class _PostFlagScreenState extends State<PostFlagScreen> {
               type!.title,
               parent: int.tryParse(parentController.text),
             );
-        if (mounted) {
-          Navigator.maybePop(context);
+        if (context.mounted) {
+          Navigator.of(context).maybePop();
         }
         messenger.showSnackBar(SnackBar(
           duration: const Duration(seconds: 1),

@@ -76,7 +76,7 @@ class _ControllerHistoryConnectorState<T extends DataController?>
         if (controller == null) return;
         await controller.waitForNextPage();
         if (controller.error != null) return;
-        if (!mounted) return;
+        if (!context.mounted) return;
         widget.addToHistory(
           context,
           context.read<HistoriesService>(),

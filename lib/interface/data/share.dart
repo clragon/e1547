@@ -40,7 +40,9 @@ abstract final class Share {
     if (Platform.isAndroid || Platform.isIOS) {
       await plus.Share.shareXFiles([file]);
     } else {
-      return clipboard(context, await file.readAsString());
+      String content = await file.readAsString();
+      if (!context.mounted) return;
+      return clipboard(context, content);
     }
   }
 
