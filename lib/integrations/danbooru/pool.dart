@@ -4,8 +4,8 @@ import 'package:e1547/interface/interface.dart';
 import 'package:e1547/pool/pool.dart';
 import 'package:e1547/post/post.dart';
 
-class E621PoolsClient extends PoolsClient {
-  E621PoolsClient({
+class DanbooruPoolsClient extends PoolsClient {
+  DanbooruPoolsClient({
     required this.dio,
     required this.postsClient,
   });
@@ -25,9 +25,7 @@ class E621PoolsClient extends PoolsClient {
             options: forceOptions(force),
             cancelToken: cancelToken,
           )
-          .then(
-            (response) => E621Pool.fromJson(response.data),
-          );
+          .then((response) => DanbooruPool.fromJson(response.data));
 
   @override
   Future<List<Pool>> page({
@@ -43,6 +41,7 @@ class E621PoolsClient extends PoolsClient {
             queryParameters: {
               'page': page,
               'limit': limit,
+              'search[order]': query?['search[order]'] ?? 'created_at',
               ...?query,
             },
             options: forceOptions(force),
@@ -50,7 +49,7 @@ class E621PoolsClient extends PoolsClient {
           )
           .then(
             (response) => pick(response.data).asListOrThrow(
-              (e) => E621Pool.fromJson(e.asMapOrThrow()),
+              (e) => DanbooruPool.fromJson(e.asMapOrThrow()),
             ),
           );
 
@@ -64,11 +63,7 @@ class E621PoolsClient extends PoolsClient {
     CancelToken? cancelToken,
   }) async {
     page ??= 1;
-    /*
-    Account? user = await account(cancelToken: cancelToken);
-    int limit = user?.perPage ?? 75;
-     */
-    int limit = 75; // store per page count in Traits
+    int limit = 20;
     Pool pool = await get(id: id, force: force, cancelToken: cancelToken);
     List<int> ids = pool.postIds;
     if (!orderByOldest) ids = ids.reversed.toList();
@@ -84,7 +79,7 @@ class E621PoolsClient extends PoolsClient {
   }
 }
 
-extension E621Pool on Pool {
+extension DanbooruPool on Pool {
   static Pool fromJson(dynamic json) => pick(json).letOrThrow(
         (pick) => Pool(
           id: pick('id').asIntOrThrow(),

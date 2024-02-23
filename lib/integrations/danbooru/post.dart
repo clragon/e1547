@@ -98,6 +98,37 @@ class DanbooruPostsClient extends PostsClient {
   }
 
   @override
+  Future<List<Post>> byTags({
+    required List<String> tags,
+    int? page,
+    int? limit,
+    bool? force,
+    CancelToken? cancelToken,
+  }) async {
+    page ??= 1;
+    tags.removeWhere((e) => e.contains(' ') || e.contains(':'));
+    if (tags.isEmpty) return [];
+    int max = 40;
+    int pages = (tags.length / max).ceil();
+    int chunkSize = (tags.length / pages).ceil();
+
+    int tagPage = page % pages != 0 ? page % pages : pages;
+    int sitePage = (page / pages).ceil();
+
+    List<String> chunk =
+        tags.sublist((tagPage - 1) * chunkSize).take(chunkSize).toList();
+    String filter = chunk.map((e) => '~$e').join(' ');
+    return this.page(
+      page: sitePage,
+      query: QueryMap()..['tags'] = filter,
+      limit: limit,
+      // ordered: false,
+      force: force,
+      cancelToken: cancelToken,
+    );
+  }
+
+  @override
   Future<List<Post>> favorites({
     int? page,
     int? limit,
@@ -130,37 +161,6 @@ class DanbooruPostsClient extends PostsClient {
   @override
   Future<void> removeFavorite(int postId) =>
       dio.delete('/favorites/$postId.json');
-
-  @override
-  Future<List<Post>> byTags({
-    required List<String> tags,
-    int? page,
-    int? limit,
-    bool? force,
-    CancelToken? cancelToken,
-  }) async {
-    page ??= 1;
-    tags.removeWhere((e) => e.contains(' ') || e.contains(':'));
-    if (tags.isEmpty) return [];
-    int max = 40;
-    int pages = (tags.length / max).ceil();
-    int chunkSize = (tags.length / pages).ceil();
-
-    int tagPage = page % pages != 0 ? page % pages : pages;
-    int sitePage = (page / pages).ceil();
-
-    List<String> chunk =
-        tags.sublist((tagPage - 1) * chunkSize).take(chunkSize).toList();
-    String filter = chunk.map((e) => '~$e').join(' ');
-    return this.page(
-      page: sitePage,
-      query: QueryMap()..['tags'] = filter,
-      limit: limit,
-      // ordered: false,
-      force: force,
-      cancelToken: cancelToken,
-    );
-  }
 }
 
 extension DanbooruPost on Post {

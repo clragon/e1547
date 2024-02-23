@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:e1547/app/app.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/identity/data/identity.dart';
+import 'package:e1547/integrations/danbooru/pool.dart';
 import 'package:e1547/integrations/danbooru/post.dart';
 import 'package:e1547/integrations/danbooru/tags.dart';
 import 'package:e1547/integrations/danbooru/traits.dart';
@@ -22,12 +23,14 @@ class DanbooruClient extends Client with ClientAssembly {
       traits: traitsState,
     );
     final posts = DanbooruPostsClient(dio: dio, identity: identity);
+    final pools = DanbooruPoolsClient(dio: dio, postsClient: posts);
     final tags = DanbooruTagsClient(dio: dio);
     final traits = DanbooruTraitsClient(traits: traitsState);
     final wikis = DanbooruWikisClient(dio: dio);
 
     enableClients(
       availability: availability,
+      pools: pools,
       posts: posts,
       tags: tags,
       traits: traits,
