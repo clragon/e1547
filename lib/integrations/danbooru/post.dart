@@ -167,8 +167,8 @@ extension DanbooruPost on Post {
   static Post fromJson(dynamic json) => pick(json).letOrThrow(
         (pick) => Post(
           id: pick('id').asIntOrThrow(),
-          file: pick('large_file_url').asStringOrNull(),
-          sample: pick('file_url').asStringOrNull(),
+          file: pick('file_url').asStringOrNull(),
+          sample: pick('large_file_url').asStringOrNull(),
           preview: pick('preview_file_url').asStringOrNull(),
           width: pick('image_width').asIntOrThrow(),
           height: pick('image_height').asIntOrThrow(),
