@@ -26,6 +26,7 @@ class ClientConfig {
 const String _e621Host = 'https://e621.net';
 const String _e926Host = 'https://e926.net';
 const String _danbooruHost = 'https://danbooru.donmai.us';
+const String _safeDanbooruHost = 'https://safebooru.donmai.us';
 
 class ClientFactory {
   Client create(ClientConfig config) => switch (config.identity.type) {
@@ -55,6 +56,11 @@ class ClientFactory {
           denylist: ['young -rating:s', 'gore', 'scat', 'watersports'],
           homeTags: 'score:>=20',
         ),
+      _danbooruHost || _safeDanbooruHost => TraitsRequest(
+          identity: identity.id,
+          denylist: [],
+          homeTags: 'score:>=20',
+        ),
       _ => TraitsRequest(
           identity: identity.id,
         ),
@@ -64,7 +70,7 @@ class ClientFactory {
   String? registrationUrl(String host) {
     return switch (host) {
       _e621Host || _e926Host => '$host/users/new',
-      _danbooruHost => '$host/users/new',
+      _danbooruHost || _safeDanbooruHost => '$host/users/new',
       _ => null,
     };
   }
@@ -73,6 +79,7 @@ class ClientFactory {
     if (username.isEmpty) return null;
     return switch (host) {
       _e621Host || _e926Host => '$host/users/$username/api_key',
+      _danbooruHost || _safeDanbooruHost => '$host/users/$username/api_keys',
       _ => null,
     };
   }
@@ -80,6 +87,7 @@ class ClientFactory {
   String? unsafeHostUrl(String host) {
     return switch (host) {
       _e926Host => _e621Host,
+      _safeDanbooruHost => _danbooruHost,
       _ => null,
     };
   }
@@ -87,7 +95,7 @@ class ClientFactory {
   ClientType? typeFromUrl(String url) {
     return switch (normalizeHostUrl(url)) {
       _e621Host || _e926Host => ClientType.e621,
-      _danbooruHost => ClientType.danbooru,
+      _danbooruHost || _safeDanbooruHost => ClientType.danbooru,
       _ => null,
     };
   }
