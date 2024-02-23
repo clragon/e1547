@@ -11,7 +11,6 @@ class Wiki with _$Wiki {
     required String body,
     required DateTime createdAt,
     DateTime? updatedAt,
-    required int categoryId,
     List<String>? otherNames,
     bool? isLocked,
   }) = _Wiki;

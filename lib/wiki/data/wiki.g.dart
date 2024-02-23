@@ -14,7 +14,6 @@ _$WikiImpl _$$WikiImplFromJson(Map<String, dynamic> json) => _$WikiImpl(
       updatedAt: json['updated_at'] == null
           ? null
           : DateTime.parse(json['updated_at'] as String),
-      categoryId: json['category_id'] as int,
       otherNames: (json['other_names'] as List<dynamic>?)
           ?.map((e) => e as String)
           .toList(),
@@ -28,7 +27,6 @@ Map<String, dynamic> _$$WikiImplToJson(_$WikiImpl instance) =>
       'body': instance.body,
       'created_at': instance.createdAt.toIso8601String(),
       'updated_at': instance.updatedAt?.toIso8601String(),
-      'category_id': instance.categoryId,
       'other_names': instance.otherNames,
       'is_locked': instance.isLocked,
     };

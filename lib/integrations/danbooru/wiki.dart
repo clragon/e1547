@@ -3,8 +3,8 @@ import 'package:dio/dio.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/wiki/wiki.dart';
 
-class E621WikisClient extends WikisClient {
-  E621WikisClient({required this.dio});
+class DanbooruWikisClient extends WikisClient {
+  DanbooruWikisClient({required this.dio});
 
   final Dio dio;
 
@@ -13,16 +13,17 @@ class E621WikisClient extends WikisClient {
     required String id,
     bool? force,
     CancelToken? cancelToken,
-  }) =>
-      dio
-          .get(
-            '/wiki_pages/$id.json',
-            options: forceOptions(force),
-            cancelToken: cancelToken,
-          )
-          .then(
-            (response) => E621Wiki.fromJson(response.data),
-          );
+  }) async {
+    Map<String, dynamic> body = await dio
+        .get(
+          '/wiki_pages/$id.json',
+          options: forceOptions(force),
+          cancelToken: cancelToken,
+        )
+        .then((response) => response.data);
+
+    return DanbooruWiki.fromJson(body);
+  }
 
   @override
   Future<List<Wiki>> page({
@@ -31,26 +32,25 @@ class E621WikisClient extends WikisClient {
     QueryMap? query,
     bool? force,
     CancelToken? cancelToken,
-  }) =>
-      dio
-          .get(
-            '/wiki_pages.json',
-            queryParameters: {
-              'page': page,
-              'limit': limit,
-              ...?query,
-            },
-            options: forceOptions(force),
-            cancelToken: cancelToken,
-          )
-          .then(
-            (response) => pick(response.data).asListOrThrow(
-              (p0) => E621Wiki.fromJson(p0.asMapOrThrow<String, dynamic>()),
-            ),
-          );
+  }) async {
+    List<dynamic> body = await dio
+        .get(
+          '/wiki_pages.json',
+          queryParameters: {
+            'page': page,
+            'limit': limit,
+            ...?query,
+          },
+          options: forceOptions(force),
+          cancelToken: cancelToken,
+        )
+        .then((response) => response.data);
+
+    return body.map((entry) => DanbooruWiki.fromJson(entry)).toList();
+  }
 }
 
-extension E621Wiki on Wiki {
+extension DanbooruWiki on Wiki {
   static Wiki fromJson(dynamic json) => pick(json).letOrThrow(
         (pick) => Wiki(
           id: pick('id').asIntOrThrow(),

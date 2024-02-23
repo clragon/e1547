@@ -25,7 +25,6 @@ mixin _$Wiki {
   String get body => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
   DateTime? get updatedAt => throw _privateConstructorUsedError;
-  int get categoryId => throw _privateConstructorUsedError;
   List<String>? get otherNames => throw _privateConstructorUsedError;
   bool? get isLocked => throw _privateConstructorUsedError;
 
@@ -45,7 +44,6 @@ abstract class $WikiCopyWith<$Res> {
       String body,
       DateTime createdAt,
       DateTime? updatedAt,
-      int categoryId,
       List<String>? otherNames,
       bool? isLocked});
 }
@@ -68,7 +66,6 @@ class _$WikiCopyWithImpl<$Res, $Val extends Wiki>
     Object? body = null,
     Object? createdAt = null,
     Object? updatedAt = freezed,
-    Object? categoryId = null,
     Object? otherNames = freezed,
     Object? isLocked = freezed,
   }) {
@@ -93,10 +90,6 @@ class _$WikiCopyWithImpl<$Res, $Val extends Wiki>
           ? _value.updatedAt
           : updatedAt // ignore: cast_nullable_to_non_nullable
               as DateTime?,
-      categoryId: null == categoryId
-          ? _value.categoryId
-          : categoryId // ignore: cast_nullable_to_non_nullable
-              as int,
       otherNames: freezed == otherNames
           ? _value.otherNames
           : otherNames // ignore: cast_nullable_to_non_nullable
@@ -122,7 +115,6 @@ abstract class _$$WikiImplCopyWith<$Res> implements $WikiCopyWith<$Res> {
       String body,
       DateTime createdAt,
       DateTime? updatedAt,
-      int categoryId,
       List<String>? otherNames,
       bool? isLocked});
 }
@@ -142,7 +134,6 @@ class __$$WikiImplCopyWithImpl<$Res>
     Object? body = null,
     Object? createdAt = null,
     Object? updatedAt = freezed,
-    Object? categoryId = null,
     Object? otherNames = freezed,
     Object? isLocked = freezed,
   }) {
@@ -167,10 +158,6 @@ class __$$WikiImplCopyWithImpl<$Res>
           ? _value.updatedAt
           : updatedAt // ignore: cast_nullable_to_non_nullable
               as DateTime?,
-      categoryId: null == categoryId
-          ? _value.categoryId
-          : categoryId // ignore: cast_nullable_to_non_nullable
-              as int,
       otherNames: freezed == otherNames
           ? _value._otherNames
           : otherNames // ignore: cast_nullable_to_non_nullable
@@ -192,7 +179,6 @@ class _$WikiImpl implements _Wiki {
       required this.body,
       required this.createdAt,
       this.updatedAt,
-      required this.categoryId,
       final List<String>? otherNames,
       this.isLocked})
       : _otherNames = otherNames;
@@ -210,8 +196,6 @@ class _$WikiImpl implements _Wiki {
   final DateTime createdAt;
   @override
   final DateTime? updatedAt;
-  @override
-  final int categoryId;
   final List<String>? _otherNames;
   @override
   List<String>? get otherNames {
@@ -227,7 +211,7 @@ class _$WikiImpl implements _Wiki {
 
   @override
   String toString() {
-    return 'Wiki(id: $id, title: $title, body: $body, createdAt: $createdAt, updatedAt: $updatedAt, categoryId: $categoryId, otherNames: $otherNames, isLocked: $isLocked)';
+    return 'Wiki(id: $id, title: $title, body: $body, createdAt: $createdAt, updatedAt: $updatedAt, otherNames: $otherNames, isLocked: $isLocked)';
   }
 
   @override
@@ -242,8 +226,6 @@ class _$WikiImpl implements _Wiki {
                 other.createdAt == createdAt) &&
             (identical(other.updatedAt, updatedAt) ||
                 other.updatedAt == updatedAt) &&
-            (identical(other.categoryId, categoryId) ||
-                other.categoryId == categoryId) &&
             const DeepCollectionEquality()
                 .equals(other._otherNames, _otherNames) &&
             (identical(other.isLocked, isLocked) ||
@@ -252,16 +234,8 @@ class _$WikiImpl implements _Wiki {
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      id,
-      title,
-      body,
-      createdAt,
-      updatedAt,
-      categoryId,
-      const DeepCollectionEquality().hash(_otherNames),
-      isLocked);
+  int get hashCode => Object.hash(runtimeType, id, title, body, createdAt,
+      updatedAt, const DeepCollectionEquality().hash(_otherNames), isLocked);
 
   @JsonKey(ignore: true)
   @override
@@ -284,7 +258,6 @@ abstract class _Wiki implements Wiki {
       required final String body,
       required final DateTime createdAt,
       final DateTime? updatedAt,
-      required final int categoryId,
       final List<String>? otherNames,
       final bool? isLocked}) = _$WikiImpl;
 
@@ -300,8 +273,6 @@ abstract class _Wiki implements Wiki {
   DateTime get createdAt;
   @override
   DateTime? get updatedAt;
-  @override
-  int get categoryId;
   @override
   List<String>? get otherNames;
   @override

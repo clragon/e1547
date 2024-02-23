@@ -1,5 +1,4 @@
 import 'package:e1547/interface/interface.dart';
-import 'package:e1547/tag/tag.dart';
 import 'package:e1547/wiki/wiki.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -29,7 +28,6 @@ class WikiInfo extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          textInfoRow('category', TagCategory.byId(wiki.categoryId).name),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
