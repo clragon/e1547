@@ -236,7 +236,7 @@ class _LoadingLayerState<T> extends State<LoadingLayer<T>> {
             color: Theme.of(context).colorScheme.background,
           );
         } else {
-          return widget.builder(context, snapshot.requireData);
+          return widget.builder(context, snapshot.data as T);
         }
       },
     );
