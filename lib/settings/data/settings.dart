@@ -41,8 +41,8 @@ class Settings extends NotifiedSettings {
     values: GridQuilt.values,
   );
 
-  late final ValueNotifier<bool> splitFollows =
-      createSetting(key: 'splitFollows', initialValue: true);
+  late final ValueNotifier<bool> filterUnseenFollows =
+      createSetting(key: 'filterUnseenFollows', initialValue: false);
   late final ValueNotifier<bool> showPostInfo =
       createSetting<bool>(key: 'showPostInfo', initialValue: false);
   late final ValueNotifier<bool> showBeta =

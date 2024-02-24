@@ -63,7 +63,7 @@ class FollowFilterReadTile extends StatelessWidget {
         onChanged(value);
       },
       secondary: Icon(filterUnseen ? Icons.mark_email_unread : Icons.email),
-      title: const Text('show unseen only'),
+      title: const Text('show unseen first'),
       subtitle: filterUnseen
           ? const Text('filtering for unseen')
           : const Text('all posts shown'),
