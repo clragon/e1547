@@ -28,8 +28,7 @@ class TagDisplay extends StatelessWidget {
             (tag) => TagCard(
               tag: tag,
               category: category,
-              editing: editing,
-              onRemove: canEdit
+              onRemove: editing && canEdit
                   ? () {
                       Map<String, List<String>> edited =
                           Map.from(editingController!.value!.tags);

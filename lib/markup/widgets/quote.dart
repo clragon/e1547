@@ -8,7 +8,7 @@ class QuoteWrap extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StripedCard(
+    return IndentedCard(
       backgroundColor: Theme.of(context).canvasColor,
       color: dimTextColor(context),
       child: Padding(

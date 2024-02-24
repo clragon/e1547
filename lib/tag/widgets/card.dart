@@ -1,3 +1,5 @@
+import 'package:e1547/interface/interface.dart';
+import 'package:e1547/post/post.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
 
@@ -6,68 +8,37 @@ class TagCard extends StatelessWidget {
     super.key,
     required this.tag,
     this.category,
-    this.stripeColor,
     this.onRemove,
-    this.editing = false,
-    this.wiki = false,
-    this.extra,
   });
 
   final String tag;
   final String? category;
-  final Color? stripeColor;
   final VoidCallback? onRemove;
-  final bool editing;
-  final bool wiki;
-  final List<Widget>? extra;
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: TagGesture(
-        tag: tag,
-        wiki: wiki,
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (stripeColor != null ||
-                category != null ||
-                editing ||
-                onRemove != null)
-              Container(
-                height: 27,
-                decoration: BoxDecoration(
-                  color: stripeColor ??
-                      (category != null
-                          ? TagCategory.byName(category!).color
-                          : null),
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(4),
-                    bottomLeft: Radius.circular(4),
-                  ),
-                ),
-                child: editing
-                    ? IconButton(
-                        constraints: const BoxConstraints(),
-                        padding: EdgeInsets.zero,
-                        icon: const Icon(Icons.clear, size: 16),
-                        onPressed: onRemove,
-                      )
-                    : const SizedBox(width: 5),
-              ),
-            Flexible(
-              child: Padding(
-                padding: const EdgeInsets.only(
-                    top: 4, bottom: 4, right: 10, left: 6),
-                child: Text(
-                  tagToTitle(tag),
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-            ),
-            if (extra != null) ...extra!,
-          ],
+    return ColoredCard(
+      color: (category != null ? TagCategory.byName(category!).color : null),
+      onTap: () => Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => PostsSearchPage(
+            query: TagMap({'tags': tag}),
+          ),
         ),
+      ),
+      onLongPress: () => showTagSearchPrompt(context: context, tag: tag),
+      onSecondaryTap: () => showTagSearchPrompt(context: context, tag: tag),
+      leading: onRemove != null
+          ? IconButton(
+              constraints: const BoxConstraints(),
+              padding: EdgeInsets.zero,
+              icon: const Icon(Icons.clear, size: 16),
+              onPressed: onRemove,
+            )
+          : null,
+      child: Text(
+        tagToTitle(tag),
+        overflow: TextOverflow.ellipsis,
       ),
     );
   }
@@ -87,25 +58,29 @@ class TagCounterCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TagCard(
-      tag: tag,
-      category: category,
-      wiki: true,
-      extra: [
-        Container(
-          width: 2,
-          height: 18,
-          color: Theme.of(context).dividerColor,
-        ),
-        Flexible(
-          child: Padding(
-            padding: const EdgeInsets.all(4),
-            child: Text(
-              count.toString(),
+    return ColoredCard(
+      color: (category != null ? TagCategory.byName(category!).color : null),
+      trailing: Row(
+        children: [
+          Container(
+            width: 2,
+            height: 18,
+            color: Theme.of(context).dividerColor,
+          ),
+          Flexible(
+            child: Padding(
+              padding: const EdgeInsets.all(4),
+              child: Text(
+                count.toString(),
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
+      child: Text(
+        tagToTitle(tag),
+        overflow: TextOverflow.ellipsis,
+      ),
     );
   }
 }
@@ -127,12 +102,30 @@ class DenyListTagCard extends StatelessWidget {
     }
   }
 
+  Widget? getTagIcon(String tag) {
+    String prefix = tag[0];
+    switch (prefix) {
+      case '-':
+        return const Icon(Icons.check, size: 16);
+      case '~':
+        return const Icon(Icons.question_mark, size: 16);
+      default:
+        return const Icon(Icons.block, size: 16);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return TagCard(
-      tag: tag,
-      wiki: true,
-      stripeColor: getTagColor(tag),
+    return ColoredCard(
+      color: getTagColor(tag),
+      leading: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 4),
+        child: getTagIcon(tag),
+      ),
+      child: Text(
+        tagToTitle(tag),
+        overflow: TextOverflow.ellipsis,
+      ),
     );
   }
 }
