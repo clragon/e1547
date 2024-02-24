@@ -102,26 +102,13 @@ class DenyListTagCard extends StatelessWidget {
     }
   }
 
-  Widget? getTagIcon(String tag) {
-    String prefix = tag[0];
-    switch (prefix) {
-      case '-':
-        return const Icon(Icons.check, size: 16);
-      case '~':
-        return const Icon(Icons.question_mark, size: 16);
-      default:
-        return const Icon(Icons.block, size: 16);
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return ColoredCard(
       color: getTagColor(tag),
-      leading: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 4),
-        child: getTagIcon(tag),
-      ),
+      onTap: () => showTagSearchPrompt(context: context, tag: tag),
+      onLongPress: () => showTagSearchPrompt(context: context, tag: tag),
+      onSecondaryTap: () => showTagSearchPrompt(context: context, tag: tag),
       child: Text(
         tagToTitle(tag),
         overflow: TextOverflow.ellipsis,
