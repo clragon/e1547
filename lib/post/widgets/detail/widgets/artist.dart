@@ -17,26 +17,19 @@ class ArtistDisplay extends StatelessWidget {
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Flexible(
-              child: Row(
-                children: [
-                  const Padding(
-                    padding: EdgeInsets.only(right: 12),
-                    child: Icon(Icons.account_circle),
-                  ),
-                  Flexible(
-                    child: ArtistName(post: post),
-                  ),
-                ],
-              ),
-            ),
+            Expanded(child: ArtistName(post: post)),
             Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 InkWell(
-                  child: Text('#${post.id}'),
+                  borderRadius: BorderRadius.circular(4),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                    child: Text('#${post.id}'),
+                  ),
                   onLongPress: () {
                     Clipboard.setData(ClipboardData(text: post.id.toString()));
                     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -46,14 +39,17 @@ class ArtistDisplay extends StatelessWidget {
                   },
                 ),
                 InkWell(
-                  child: Row(
-                    children: [
-                      const Icon(Icons.person, size: 14),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 4),
-                        child: Text(post.uploaderId.toString()),
-                      ),
-                    ],
+                  borderRadius: BorderRadius.circular(4),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.person, size: 14),
+                        const SizedBox(width: 4),
+                        Text(post.uploaderId.toString()),
+                      ],
+                    ),
                   ),
                   onTap: () => Navigator.of(context).push(
                     MaterialPageRoute(
@@ -87,31 +83,43 @@ class ArtistName extends StatelessWidget {
 
     List<String> artists = filterArtists((tags)['artist'] ?? []);
     if (artists.isNotEmpty) {
-      List<InlineSpan> spans = [];
-      for (String artist in artists) {
-        if (artist != artists.first && artists.length > 1) {
-          spans.add(const TextSpan(text: ', '));
-        }
-        spans.add(
-          WidgetSpan(
-            child: TagGesture(
+      return OverflowBar(
+        children: [
+          for (String artist in artists)
+            TagGesture(
               tag: artist,
-              child: Text(artist),
+              child: Padding(
+                padding: const EdgeInsets.all(4),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Padding(
+                      padding: EdgeInsets.only(right: 8),
+                      child: Icon(Icons.account_circle),
+                    ),
+                    Flexible(
+                      child: Text(
+                        tagToName(artist),
+                        overflow: TextOverflow.fade,
+                        style: const TextStyle(fontSize: 14),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
-          ),
-        );
-      }
-      return Text.rich(
-        TextSpan(children: spans),
-        overflow: TextOverflow.fade,
-        style: const TextStyle(fontSize: 14),
+        ],
       );
     } else {
-      return Text(
-        'no artist',
-        style: TextStyle(
+      return Padding(
+        padding: const EdgeInsets.all(8),
+        child: Text(
+          'no artist',
+          style: TextStyle(
             color: Theme.of(context).textTheme.titleSmall!.color,
-            fontStyle: FontStyle.italic),
+            fontStyle: FontStyle.italic,
+          ),
+        ),
       );
     }
   }

@@ -24,6 +24,7 @@ class TagGesture extends StatelessWidget {
     void sheet() => showTagSearchPrompt(context: context, tag: tag);
 
     return InkWell(
+      borderRadius: BorderRadius.circular(4),
       onTap: () async {
         Traits traits = context.read<Client>().traits.value;
         if (wiki || (safe && traits.denylist.contains(tag))) {
