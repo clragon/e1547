@@ -9,6 +9,7 @@ export 'data/task.dart';
 export 'data/theme.dart';
 // widgets
 export 'widgets/app.dart';
+export 'widgets/display.dart';
 export 'widgets/errors.dart';
 export 'widgets/link.dart';
 export 'widgets/loading.dart';

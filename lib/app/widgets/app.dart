@@ -60,35 +60,38 @@ class App extends StatelessWidget {
                   builder: (context, child) => WindowFrame(
                     child: WindowShortcuts(
                       navigatorKey: navigatorKey,
-                      child: LockScreen(
-                        child: LoadingShell(
-                          child: MultiProvider(
-                            providers: [
-                              const DatabaseMigrationProvider(),
-                              IdentitiesServiceProvider(),
-                              TraitsServiceProvider(),
-                              ClientProvider(),
-                              CacheManagerProvider(),
-                              FollowsProvider(),
-                              HistoriesServiceProvider(),
-                            ],
-                            child: TraitsSync(
-                              child: LoadingCore(
-                                child: ErrorNotifier(
-                                  navigatorKey: navigatorKey,
-                                  child: ClientAvailabilityCheck(
+                      child: SecureDisplay(
+                        child: LockScreen(
+                          child: LoadingShell(
+                            child: MultiProvider(
+                              providers: [
+                                const DatabaseMigrationProvider(),
+                                IdentitiesServiceProvider(),
+                                TraitsServiceProvider(),
+                                ClientProvider(),
+                                CacheManagerProvider(),
+                                FollowsProvider(),
+                                HistoriesServiceProvider(),
+                              ],
+                              child: TraitsSync(
+                                child: LoadingCore(
+                                  child: ErrorNotifier(
                                     navigatorKey: navigatorKey,
-                                    child: AppLinkHandler(
+                                    child: ClientAvailabilityCheck(
                                       navigatorKey: navigatorKey,
-                                      child: NotificationHandler(
+                                      child: AppLinkHandler(
                                         navigatorKey: navigatorKey,
-                                        routes: {
-                                          for (final destination in context
-                                              .watch<RouterDrawerController>()
-                                              .destinations)
-                                            destination.path: destination.unique
-                                        },
-                                        child: child!,
+                                        child: NotificationHandler(
+                                          navigatorKey: navigatorKey,
+                                          routes: {
+                                            for (final destination in context
+                                                .watch<RouterDrawerController>()
+                                                .destinations)
+                                              destination.path:
+                                                  destination.unique
+                                          },
+                                          child: child!,
+                                        ),
                                       ),
                                     ),
                                   ),

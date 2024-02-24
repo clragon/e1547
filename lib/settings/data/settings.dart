@@ -60,6 +60,8 @@ class Settings extends NotifiedSettings {
   late final ValueNotifier<bool> muteVideos =
       createSetting<bool>(key: 'muteVideos', initialValue: true);
 
+  late final ValueNotifier<bool> secureDisplay =
+      createSetting<bool>(key: 'secureDisplay', initialValue: false);
   late final ValueNotifier<String?> appPin =
       createSetting(key: 'appPin', initialValue: null);
   late final ValueNotifier<bool> biometricAuth =

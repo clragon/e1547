@@ -185,7 +185,7 @@ class SettingsPage extends StatelessWidget {
                 builder: (context, value, child) => SwitchListTile(
                   title: const Text('Post info'),
                   subtitle:
-                  Text(value ? 'info on post tiles' : 'image tiles only'),
+                      Text(value ? 'info on post tiles' : 'image tiles only'),
                   secondary: const Icon(Icons.subtitles),
                   value: value,
                   onChanged: (value) => settings.showPostInfo.value = value,
@@ -231,7 +231,19 @@ class SettingsPage extends StatelessWidget {
                 ),
               ),
               const Divider(),
-              const ListTileHeader(title: 'Lockscreen'),
+              const ListTileHeader(title: 'Security'),
+              if (Platform.isAndroid || Platform.isIOS)
+                ValueListenableBuilder<bool>(
+                  valueListenable: settings.secureDisplay,
+                  builder: (context, value, child) => SwitchListTile(
+                    title: const Text('Secure display'),
+                    subtitle:
+                        Text(value ? 'screen protected' : 'screen visible'),
+                    secondary: const Icon(Icons.stop_screen_share_outlined),
+                    value: value,
+                    onChanged: (value) => settings.secureDisplay.value = value,
+                  ),
+                ),
               ValueListenableBuilder<String?>(
                 valueListenable: settings.appPin,
                 builder: (context, value, child) => SwitchListTile(
