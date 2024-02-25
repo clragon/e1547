@@ -4,6 +4,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Added
+- Donation list in about
+- Secure display setting
+
+### Changed
+- Show unseen follows now persists
+- Artist names UI
+
+### Fixed
+- Android downloads
+- Post info setting being hidden
+- Green app border
+- Text editor not closing
+
 ## [18.0.0+90] - 2024-02-06
 ### Added
 - multiple logins (identities)
@@ -827,6 +842,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Fixed
 - API client bindings
 
+[Unreleased]: https://github.com/clragon/e1547/compare/18.0.0+90...HEAD
 [18.0.0+90]: https://github.com/clragon/e1547/compare/17.0.0+89...18.0.0+90
 [17.0.0+89]: https://github.com/clragon/e1547/compare/16.2.8+88...17.0.0+89
 [16.2.8+88]: https://github.com/clragon/e1547/compare/16.2.7+87...16.2.8+88
