@@ -45,14 +45,14 @@ class DescriptionDisplay extends StatelessWidget {
                               builder: (context) => DTextEditor(
                                 title: Text('#${post.id} description'),
                                 content: description,
-                                onSubmit: (text) {
+                                onSubmitted: (text) {
                                   editingController.value =
                                       editingController.value!.copyWith(
                                     description: text,
                                   );
-                                  Navigator.of(context).maybePop();
                                   return null;
                                 },
+                                onClosed: Navigator.of(context).maybePop,
                               ),
                             ),
                           );

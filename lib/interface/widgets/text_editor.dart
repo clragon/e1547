@@ -11,7 +11,8 @@ class TextEditor extends StatefulWidget {
   const TextEditor({
     super.key,
     this.content,
-    required this.onSubmit,
+    required this.onSubmitted,
+    this.onClosed,
     this.title,
     this.actions,
     this.preview,
@@ -19,7 +20,8 @@ class TextEditor extends StatefulWidget {
   });
 
   final String? content;
-  final TextEditorSubmit onSubmit;
+  final TextEditorSubmit onSubmitted;
+  final VoidCallback? onClosed;
 
   final Widget? title;
   final List<Widget>? actions;
@@ -39,7 +41,7 @@ class _TextEditorState extends State<TextEditor> {
       TextEditingController(text: widget.content);
 
   Future<void> submit() async {
-    String? error = await widget.onSubmit(
+    String? error = await widget.onSubmitted.call(
       textController.text.trim(),
     );
     if (error != null) {
@@ -88,7 +90,12 @@ class _TextEditorState extends State<TextEditor> {
               backgroundColor: Theme.of(context).cardColor,
               onPressed: actionController.isLoading
                   ? null
-                  : () => actionController.showAndAction(context, submit),
+                  : () async {
+                      await actionController.showAndAction(context, submit);
+                      if (!actionController.isError) {
+                        widget.onClosed?.call();
+                      }
+                    },
               child:
                   Icon(Icons.check, color: Theme.of(context).iconTheme.color),
             ),

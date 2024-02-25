@@ -48,14 +48,14 @@ class SourceDisplay extends StatelessWidget {
                                 title: Text('#${post.id} sources'),
                                 content:
                                     editingController.value!.sources.join('\n'),
-                                onSubmit: (text) {
+                                onSubmitted: (text) {
                                   editingController.value =
                                       editingController.value!.copyWith(
                                     sources: text.trim().split('\n'),
                                   );
-                                  Navigator.of(context).maybePop();
                                   return null;
                                 },
+                                onClosed: Navigator.of(context).maybePop,
                               ),
                             ),
                           );

@@ -7,18 +7,21 @@ class DTextEditor extends StatelessWidget {
   const DTextEditor({
     super.key,
     this.title,
-    required this.onSubmit,
+    required this.onSubmitted,
+    this.onClosed,
     this.content,
   });
 
   final Widget? title;
   final String? content;
-  final TextEditorSubmit onSubmit;
+  final TextEditorSubmit onSubmitted;
+  final VoidCallback? onClosed;
 
   @override
   Widget build(BuildContext context) {
     return TextEditor(
-      onSubmit: onSubmit,
+      onSubmitted: onSubmitted,
+      onClosed: onClosed,
       title: title,
       content: content,
       toolbar: (context, controller) => DTextEditorBar(controller: controller),

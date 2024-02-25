@@ -19,7 +19,7 @@ class DenyListEditor extends StatelessWidget {
         )
       ],
       content: client.traits.value.denylist.join('\n'),
-      onSubmit: (value) async {
+      onSubmitted: (value) async {
         List<String> tags = value.split('\n');
         tags = tags.trim();
         tags.removeWhere((tag) => tag.isEmpty);
@@ -30,11 +30,9 @@ class DenyListEditor extends StatelessWidget {
         } on ClientException {
           return 'Failed to update blacklist!';
         }
-        if (context.mounted) {
-          Navigator.of(context).maybePop();
-        }
         return null;
       },
+      onClosed: Navigator.of(context).maybePop,
     );
   }
 }

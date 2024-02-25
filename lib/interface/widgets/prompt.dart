@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sub/flutter_sub.dart';
@@ -18,20 +20,26 @@ abstract class PromptActionController extends ActionController {
     });
   }
 
-  void show(BuildContext context, Widget? child);
+  FutureOr<void> show(BuildContext context, Widget? child);
 
-  void showOrAction(BuildContext context, Widget child) {
+  FutureOr<void> showOrAction(
+    BuildContext context,
+    Widget child,
+  ) async {
     if (action != null) {
       action!();
     } else {
-      show(context, child);
+      await show(context, child);
     }
   }
 
-  void showAndAction(BuildContext context, ActionControllerCallback submit) {
+  FutureOr<void> showAndAction(
+    BuildContext context,
+    ActionControllerCallback submit,
+  ) async {
     super.setAction(submit);
     action!();
-    show(context, null);
+    await show(context, null);
   }
 }
 
@@ -51,7 +59,7 @@ class SheetActionController extends PromptActionController {
   }
 
   @override
-  void show(BuildContext context, Widget? child) {
+  FutureOr<void> show(BuildContext context, Widget? child) async {
     sheetController = Scaffold.of(context).showBottomSheet(
       (context) => PromptActions(
         controller: this,
@@ -61,7 +69,7 @@ class SheetActionController extends PromptActionController {
         ),
       ),
     );
-    sheetController!.closed.then((_) => reset());
+    await sheetController!.closed.then((_) => reset());
   }
 }
 
@@ -100,47 +108,45 @@ class DialogActionController extends PromptActionController {
   }
 
   @override
-  void show(BuildContext context, Widget? child) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        _dialog = ModalRoute.of(context);
-        return PromptActions(
-          controller: this,
-          child: AlertDialog(
-            content: ActionIndicators(
-              controller: this,
-              child: child,
+  FutureOr<void> show(BuildContext context, Widget? child) => showDialog(
+        context: context,
+        builder: (context) {
+          _dialog = ModalRoute.of(context);
+          return PromptActions(
+            controller: this,
+            child: AlertDialog(
+              content: ActionIndicators(
+                controller: this,
+                child: child,
+              ),
             ),
-          ),
-        );
-      },
-    ).then((_) => reset());
-  }
+          );
+        },
+      ).then((_) => reset());
 }
 
 class LoadingDialogActionController extends DialogActionController {
   @override
-  void show(BuildContext context, [Widget? child]) {
-    super.show(
-      context,
-      PopScope(
-        canPop: !isLoading,
-        child: ListenableBuilder(
+  FutureOr<void> show(BuildContext context, [Widget? child]) => super.show(
+        context,
+        ListenableBuilder(
           listenable: this,
-          builder: (context, child) {
-            if (isLoading) {
-              return const Text('Loading...');
-            } else if (isError) {
-              return Text(error!.message);
-            } else {
-              return const SizedBox();
-            }
-          },
+          builder: (context, child) => PopScope(
+            canPop: !isLoading,
+            child: Builder(
+              builder: (context) {
+                if (isLoading) {
+                  return const Text('Loading...');
+                } else if (isError) {
+                  return Text(error!.message);
+                } else {
+                  return const SizedBox();
+                }
+              },
+            ),
+          ),
         ),
-      ),
-    );
-  }
+      );
 }
 
 class _PromptActions extends InheritedNotifier<PromptActionController> {

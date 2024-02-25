@@ -45,8 +45,7 @@ Future<bool> writeComment({
       builder: (context) => DTextEditor(
         title: Text('#$postId comment'),
         content: text ?? (comment?.body),
-        onSubmit: (text) async {
-          NavigatorState navigator = Navigator.of(context);
+        onSubmitted: (text) async {
           ScaffoldMessengerState messenger = ScaffoldMessenger.of(context);
           if (text.isNotEmpty) {
             try {
@@ -61,20 +60,20 @@ Future<bool> writeComment({
                       content: text,
                     );
               }
-              sent = true;
-              navigator.maybePop();
-              messenger.showSnackBar(
-                const SnackBar(
-                  duration: Duration(seconds: 1),
-                  content: Text('Comment sent!'),
-                ),
-              );
             } on ClientException {
               return 'Failed to send comment!';
             }
+            sent = true;
+            messenger.showSnackBar(
+              const SnackBar(
+                duration: Duration(seconds: 1),
+                content: Text('Comment sent!'),
+              ),
+            );
           }
           return null;
         },
+        onClosed: Navigator.of(context).maybePop,
       ),
     ),
   );
