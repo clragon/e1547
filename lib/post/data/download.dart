@@ -32,7 +32,7 @@ extension PostDownloading on Post {
             openDocumentTree(initialUri: target),
             'No download folder was chosen!',
           );
-          onPathChanged(target.path);
+          onPathChanged(target.toString());
         }
         DocumentFile dir = await _throwOnNull(
           target.toDocumentFile(),
