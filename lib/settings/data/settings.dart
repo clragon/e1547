@@ -1,6 +1,5 @@
 import 'package:e1547/app/app.dart';
 import 'package:e1547/client/client.dart';
-import 'package:e1547/interface/interface.dart';
 import 'package:flutter/foundation.dart';
 import 'package:notified_preferences/notified_preferences.dart';
 

@@ -3,7 +3,6 @@ import 'dart:math';
 import 'package:drift/drift.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/identity/identity.dart';
-import 'package:e1547/interface/interface.dart';
 
 // ignore: always_use_package_imports
 import 'database.drift.dart';

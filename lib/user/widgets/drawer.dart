@@ -1,6 +1,5 @@
 import 'package:e1547/client/client.dart';
 import 'package:e1547/identity/identity.dart';
-import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
 
 class UserDrawerHeader extends StatelessWidget {

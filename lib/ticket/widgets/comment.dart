@@ -2,7 +2,6 @@ import 'package:e1547/client/client.dart';
 import 'package:e1547/comment/comment.dart';
 import 'package:e1547/ticket/ticket.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class CommentReportScreen extends StatelessWidget {
   const CommentReportScreen({super.key, required this.comment});

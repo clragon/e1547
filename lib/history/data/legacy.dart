@@ -6,7 +6,6 @@ import 'package:e1547/client/client.dart';
 import 'package:e1547/history/data/database.drift.dart';
 import 'package:e1547/history/history.dart';
 import 'package:e1547/identity/identity.dart';
-import 'package:e1547/interface/interface.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:e1547/tag/tag.dart';
 
