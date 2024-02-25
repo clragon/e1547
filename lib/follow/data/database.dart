@@ -172,21 +172,35 @@ class FollowsDao extends DatabaseAccessor<GeneratedDatabase>
     if (this.identity == null && identity == null) {
       throw ArgumentError('Cannot add follow without identity!');
     }
-    Follow follow = await into(followsTable).insertReturning(
-      FollowCompanion(
-        tags: Value(item.tags),
-        title: Value(item.title),
-        alias: Value(item.alias),
-        type: Value(item.type),
-      ),
-      mode: InsertMode.insertOrIgnore,
-    );
-    await into(followsIdentitiesTable).insert(
-      FollowIdentityCompanion(
-        identity: Value(this.identity ?? identity!),
-        follow: Value(follow.id),
-      ),
-    );
+
+    Follow follow;
+    Follow? existing = await _queryExpression(
+      tagRegex: r'^' + RegExp.escape(item.tags) + r'$',
+    ).getSingleOrNull();
+    if (existing != null) {
+      follow = existing.copyWith(
+        title: item.title,
+        alias: item.alias,
+        type: item.type,
+      );
+      await replace(follow);
+    } else {
+      follow = await into(followsTable).insertReturning(
+        FollowCompanion(
+          tags: Value(item.tags),
+          title: Value(item.title),
+          alias: Value(item.alias),
+          type: Value(item.type),
+        ),
+        mode: InsertMode.insertOrIgnore,
+      );
+      await into(followsIdentitiesTable).insert(
+        FollowIdentityCompanion(
+          identity: Value(this.identity ?? identity!),
+          follow: Value(follow.id),
+        ),
+      );
+    }
   }
 
   Future<void> replace(Follow item) =>

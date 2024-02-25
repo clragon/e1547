@@ -56,30 +56,21 @@ class _FollowEditorState extends State<FollowEditor> {
           ),
         ],
         onSubmit: (value) async {
+          Map<String, List<String>> contents = Map.fromEntries(
+            value.whereNot((e) => e.value == null).map(
+                  (e) => MapEntry(
+                    e.key,
+                    e.value!.split('\n').whereNot((e) => e.isEmpty).toList(),
+                  ),
+                ),
+          );
           await service.edit(
-            value
-                .firstWhere((e) => e.key == notify)
-                .value!
-                .split('\n')
-                .whereNot((e) => e.isEmpty)
-                .toList(),
-            value
-                .firstWhere((e) => e.key == subscribe)
-                .value!
-                .split('\n')
-                .whereNot((e) => e.isEmpty)
-                .toList(),
-            value
-                .firstWhere((e) => e.key == bookmark)
-                .value!
-                .split('\n')
-                .whereNot((e) => e.isEmpty)
-                .toList(),
+            notifications: contents[notify],
+            subscriptions: contents[subscribe],
+            bookmarks: contents[bookmark],
           );
           if (context.mounted) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              Navigator.of(context).maybePop();
-            });
+            Navigator.of(context).maybePop();
           }
           return null;
         },

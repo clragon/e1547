@@ -35,11 +35,11 @@ class FollowsService extends FollowsDao {
         },
       );
 
-  Future<void> edit(
-    List<String> notifications,
-    List<String> subscriptions,
-    List<String> bookmarks,
-  ) async {
+  Future<void> edit({
+    List<String>? notifications,
+    List<String>? subscriptions,
+    List<String>? bookmarks,
+  }) async {
     List<Follow> allRemoved = [];
     List<FollowRequest> allAdded = [];
 
@@ -57,9 +57,15 @@ class FollowsService extends FollowsDao {
       allAdded.addAll(added);
     }
 
-    await process(notifications, FollowType.notify);
-    await process(subscriptions, FollowType.update);
-    await process(bookmarks, FollowType.bookmark);
+    if (notifications != null) {
+      await process(notifications, FollowType.notify);
+    }
+    if (subscriptions != null) {
+      await process(subscriptions, FollowType.update);
+    }
+    if (bookmarks != null) {
+      await process(bookmarks, FollowType.bookmark);
+    }
 
     for (final follow in allRemoved) {
       await remove(follow.id);
