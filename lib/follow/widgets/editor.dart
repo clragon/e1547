@@ -55,7 +55,7 @@ class _FollowEditorState extends State<FollowEditor> {
             value: value[bookmark],
           ),
         ],
-        onSubmit: (value) async {
+        onSubmitted: (value) async {
           Map<String, List<String>> contents = Map.fromEntries(
             value.whereNot((e) => e.value == null).map(
                   (e) => MapEntry(
@@ -69,11 +69,9 @@ class _FollowEditorState extends State<FollowEditor> {
             subscriptions: contents[subscribe],
             bookmarks: contents[bookmark],
           );
-          if (context.mounted) {
-            Navigator.of(context).maybePop();
-          }
           return null;
         },
+        onClosed: Navigator.of(context).maybePop,
       ),
     );
   }

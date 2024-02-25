@@ -7,7 +7,7 @@ typedef TextEditorSubmit = FutureOr<String?> Function(String value);
 typedef TextEditorBuilder = Widget Function(
     BuildContext context, TextEditingController controller);
 
-class TextEditor extends StatefulWidget {
+class TextEditor extends StatelessWidget {
   const TextEditor({
     super.key,
     this.content,
@@ -28,21 +28,100 @@ class TextEditor extends StatefulWidget {
   final TextEditorBuilder? preview;
   final TextEditorBuilder? toolbar;
 
+  static const String _contentKey = 'content';
+
   @override
-  State<StatefulWidget> createState() {
-    return _TextEditorState();
+  Widget build(BuildContext context) {
+    return MultiTextEditor(
+      content: [
+        TextEditorContent(
+          key: _contentKey,
+          value: content,
+        ),
+      ],
+      onSubmitted: (values) => onSubmitted.call(values.first.value!),
+      onClosed: onClosed,
+      title: title,
+      actions: actions,
+      preview: preview != null
+          ? (context, controllers) =>
+              preview!.call(context, controllers[_contentKey]!)
+          : null,
+      toolbar: toolbar != null
+          ? (context, controllers) =>
+              toolbar!.call(context, controllers[_contentKey]!)
+          : null,
+    );
   }
 }
 
-class _TextEditorState extends State<TextEditor> {
+class TextEditorContent {
+  const TextEditorContent({
+    required this.key,
+    this.title,
+    this.value,
+  });
+
+  final String key;
+  final String? title;
+  final String? value;
+}
+
+typedef MultiTextEditorSubmit = FutureOr<String?> Function(
+    List<TextEditorContent> values);
+typedef MultiTextEditorBuilder = Widget Function(
+    BuildContext context, Map<String, TextEditingController> controllers);
+
+class MultiTextEditor extends StatefulWidget {
+  const MultiTextEditor({
+    super.key,
+    required this.content,
+    required this.onSubmitted,
+    this.onClosed,
+    this.title,
+    this.actions,
+    this.preview,
+    this.toolbar,
+  });
+
+  final List<TextEditorContent> content;
+  final MultiTextEditorSubmit onSubmitted;
+  final VoidCallback? onClosed;
+
+  final Widget? title;
+  final List<Widget>? actions;
+  final MultiTextEditorBuilder? preview;
+  final MultiTextEditorBuilder? toolbar;
+
+  @override
+  State<MultiTextEditor> createState() => _MultiTextEditorState();
+}
+
+class _MultiTextEditorState extends State<MultiTextEditor> {
+  late Map<TextEditorContent, TextEditingController> textControllers = {
+    for (final content in widget.content)
+      content: TextEditingController(text: content.value),
+  };
+  Map<String, TextEditingController> get textControllerMap {
+    return {
+      for (final content in textControllers.keys)
+        content.key: textControllers[content]!,
+    };
+  }
+
   late LoadingDialogActionController actionController =
       LoadingDialogActionController();
-  late TextEditingController textController =
-      TextEditingController(text: widget.content);
 
   Future<void> submit() async {
-    String? error = await widget.onSubmitted.call(
-      textController.text.trim(),
+    String? error = await widget.onSubmitted(
+      [
+        for (final content in textControllers.keys)
+          TextEditorContent(
+            key: content.key,
+            title: content.title,
+            value: textControllers[content]!.text.trim(),
+          ),
+      ],
     );
     if (error != null) {
       throw ActionControllerException(message: error);
@@ -70,16 +149,30 @@ class _TextEditorState extends State<TextEditor> {
 
         Widget editor() {
           return scrollView(
-            TextField(
-              controller: textController,
-              keyboardType: TextInputType.multiline,
-              autofocus: true,
-              decoration: const InputDecoration(
-                border: InputBorder.none,
-                hintText: 'type here...',
-              ),
-              maxLines: null,
-              enabled: !actionController.isLoading,
+            Column(
+              children: [
+                for (final content in textControllers.keys)
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (content.title != null)
+                        Text(
+                          content.title!,
+                          style: Theme.of(context).textTheme.titleLarge,
+                        ),
+                      TextField(
+                        controller: textControllers[content],
+                        keyboardType: TextInputType.multiline,
+                        decoration: const InputDecoration(
+                          border: InputBorder.none,
+                          hintText: 'type here...',
+                        ),
+                        maxLines: null,
+                        enabled: !actionController.isLoading,
+                      ),
+                    ],
+                  ),
+              ],
             ),
           );
         }
@@ -106,7 +199,10 @@ class _TextEditorState extends State<TextEditor> {
           const Tab(text: 'Write'): editor(),
           if (widget.preview case final preview?)
             const Tab(text: 'Preview'): scrollView(
-              preview(context, textController),
+              preview(
+                context,
+                textControllerMap,
+              ),
             ),
         };
 
@@ -120,7 +216,7 @@ class _TextEditorState extends State<TextEditor> {
                 builder: (context, child) => Scaffold(
                   floatingActionButton: fab(),
                   bottomSheet: tabController.index == 0
-                      ? widget.toolbar?.call(context, textController)
+                      ? widget.toolbar?.call(context, textControllerMap)
                       : null,
                   body: NestedScrollView(
                     headerSliverBuilder: (context, innerBoxIsScrolled) => [
@@ -156,115 +252,6 @@ class _TextEditorState extends State<TextEditor> {
           ),
         );
       },
-    );
-  }
-}
-
-class TextEditorContent {
-  const TextEditorContent({
-    required this.key,
-    required this.title,
-    this.value,
-  });
-
-  final String key;
-  final String title;
-  final String? value;
-}
-
-class MultiTextEditor extends StatefulWidget {
-  const MultiTextEditor({
-    super.key,
-    required this.content,
-    required this.onSubmit,
-    this.title,
-    this.actions,
-  });
-
-  final List<TextEditorContent> content;
-  final FutureOr<String?> Function(List<TextEditorContent>) onSubmit;
-
-  final Widget? title;
-  final List<Widget>? actions;
-
-  @override
-  State<MultiTextEditor> createState() => _MultiTextEditorState();
-}
-
-class _MultiTextEditorState extends State<MultiTextEditor> {
-  late Map<TextEditorContent, TextEditingController> textControllers = {
-    for (final content in widget.content)
-      content: TextEditingController(text: content.value),
-  };
-  late LoadingDialogActionController actionController =
-      LoadingDialogActionController();
-
-  Future<void> submit() async {
-    String? error = await widget.onSubmit(
-      [
-        for (final content in textControllers.keys)
-          TextEditorContent(
-            key: content.key,
-            title: content.title,
-            value: textControllers[content]!.text.trim(),
-          ),
-      ],
-    );
-    if (error != null) {
-      throw ActionControllerException(message: error);
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    Widget editor() {
-      return ListView(
-        padding: defaultActionListPadding.add(const EdgeInsets.all(8)),
-        children: [
-          for (final content in textControllers.keys)
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  content.title,
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
-                TextField(
-                  controller: textControllers[content],
-                  keyboardType: TextInputType.multiline,
-                  decoration: const InputDecoration(
-                    border: InputBorder.none,
-                    hintText: 'type here...',
-                  ),
-                  maxLines: null,
-                  enabled: !actionController.isLoading,
-                ),
-              ],
-            ),
-        ],
-      );
-    }
-
-    Widget fab() {
-      return Builder(
-        builder: (context) => FloatingActionButton(
-          backgroundColor: Theme.of(context).cardColor,
-          onPressed: actionController.isLoading
-              ? null
-              : () => actionController.showAndAction(context, submit),
-          child: Icon(Icons.check, color: Theme.of(context).iconTheme.color),
-        ),
-      );
-    }
-
-    return Scaffold(
-      appBar: DefaultAppBar(
-        leading: ModalRoute.of(context)!.canPop ? const CloseButton() : null,
-        title: widget.title,
-        actions: widget.actions,
-      ),
-      body: editor(),
-      floatingActionButton: fab(),
     );
   }
 }
