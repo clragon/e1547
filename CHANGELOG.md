@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [18.1.0+91] - 2024-02-25
 ### Added
 - Donation list in about
 - Secure display setting
@@ -842,7 +842,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Fixed
 - API client bindings
 
-[Unreleased]: https://github.com/clragon/e1547/compare/18.0.0+90...HEAD
+[18.1.0+91]: https://github.com/clragon/e1547/compare/18.0.0+90...18.1.0+91
 [18.0.0+90]: https://github.com/clragon/e1547/compare/17.0.0+89...18.0.0+90
 [17.0.0+89]: https://github.com/clragon/e1547/compare/16.2.8+88...17.0.0+89
 [16.2.8+88]: https://github.com/clragon/e1547/compare/16.2.7+87...16.2.8+88

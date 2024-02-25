@@ -1,0 +1,13 @@
+### Added
+- Donation list in about
+- Secure display setting
+
+### Changed
+- Show unseen follows now persists
+- Artist names UI
+
+### Fixed
+- Android downloads
+- Post info setting being hidden
+- Green app border
+- Text editor not closing
