@@ -1,12 +1,9 @@
-import 'dart:io';
-
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/logs/logs.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
-import 'package:notified_preferences/notified_preferences.dart';
 
 Future<void> postDownloadingNotification(
   BuildContext context,
@@ -20,11 +17,6 @@ Future<void> postDownloadingNotification(
     icon: const Icon(Icons.download),
     timeout: const Duration(milliseconds: 100),
     process: (item) async {
-      // This is a janky fix for the infamous Android Download crash
-      final pathNotifier = settings.downloadPath as PreferenceNotifier<String>;
-      if (Platform.isAndroid && Uri.parse(pathNotifier.value).host.isEmpty) {
-        pathNotifier.reset();
-      }
       try {
         await item.download(
           path: settings.downloadPath.value,

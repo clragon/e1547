@@ -56,6 +56,16 @@ class Settings extends NotifiedSettings {
       host: 'com.android.externalstorage.documents',
       path: '/tree/primary${Uri.encodeComponent(':Pictures')}',
     ).toString(),
+    read: (prefs, key) {
+      String? result = prefs.getString(key);
+      if (result != null) {
+        Uri uri = Uri.parse(result);
+        if (uri.host.isEmpty) {
+          return null;
+        }
+      }
+      return result;
+    },
   );
   late final ValueNotifier<bool> muteVideos =
       createSetting<bool>(key: 'muteVideos', initialValue: true);
