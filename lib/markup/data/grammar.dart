@@ -179,15 +179,17 @@ class DTextGrammar extends GrammarDefinition<List<DTextElement>> {
   Parser<DTextElement> subscript() =>
       ref1(simpleBlockTag, 'sub').map(DTextSubscript.new);
   Parser<DTextElement> spoiler() =>
-      (position() & ref1(simpleBlockTag, 'spoiler') & position())
-          .map((e) => DTextSpoiler(DTextId(start: e[0], end: e[2]), e[1]));
+      (position(), ref1(simpleBlockTag, 'spoiler'), position())
+          .toSequenceParser()
+          .map((e) => DTextSpoiler(DTextId(start: e.$1, end: e.$3), e.$2));
   Parser<DTextElement> color() =>
       ref3(blockTag, 'color', 'color', null).map((e) => DTextColor(e.$1, e.$2));
 
-  Parser<DTextElement> inlineCode() =>
-      (char('`') & any().starLazy(char('`')).flatten() & char('`'))
-          .pick(1)
-          .map((e) => DTextInlineCode(e));
+  Parser<DTextElement> inlineCode() => (
+        char('`'),
+        any().starLazy(char('`')).flatten().map((e) => DTextInlineCode(e)),
+        char('`')
+      ).toSequenceParser().map((e) => e.$2);
 
   Parser<DTextElement> header() => (
         (
