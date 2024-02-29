@@ -312,11 +312,7 @@ class DTextBody extends StatelessWidget {
           ),
         ),
       DTextHeader() => TextSpan(
-          children: [
-            if (element.preContent != null)
-              _buildSpan(context, element.preContent!),
-            ..._buildSpans(context, element.children),
-          ],
+          children: _buildSpans(context, element.children),
           style: TextStyle(
             fontSize: Theme.of(context).textTheme.bodyMedium!.fontSize! +
                 ((element.level - 7).abs() * 2),
@@ -324,8 +320,6 @@ class DTextBody extends StatelessWidget {
         ),
       DTextList() => TextSpan(
           children: [
-            if (element.preContent != null)
-              _buildSpan(context, element.preContent!),
             TextSpan(text: '${' ' * element.indent}• '),
             ..._buildSpans(context, element.children),
           ],

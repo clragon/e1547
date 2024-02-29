@@ -21,9 +21,9 @@ class DTextGrammar extends GrammarDefinition<List<DTextElement>> {
             ].toChoiceParser(),
             limit,
           ),
-        ).toSequenceParser().map((value) => [
-              if (value.$1 != null) value.$1!,
-              ...value.$2,
+        ).toSequenceParser().map((e) => [
+              if (e.$1 != null) e.$1!,
+              ...e.$2,
             ]),
       );
 
@@ -141,7 +141,7 @@ class DTextGrammar extends GrammarDefinition<List<DTextElement>> {
           blockTag,
           'code',
           'code',
-          any().map((e) => DTextContent(e)),
+          any().map(DTextContent.new),
         ).map((e) => e.$2),
       ).map(DTextCode.new);
 
@@ -201,7 +201,7 @@ class DTextGrammar extends GrammarDefinition<List<DTextElement>> {
           newline(),
           endOfInput(),
         ].toChoiceParser())),
-      ).toSequenceParser().map((e) => DTextHeader(e.$1, null, e.$2));
+      ).toSequenceParser().map((e) => DTextHeader(e.$1, e.$2));
 
   Parser<DTextElement> list() => (
         (
@@ -213,7 +213,7 @@ class DTextGrammar extends GrammarDefinition<List<DTextElement>> {
           newline(),
           endOfInput(),
         ].toChoiceParser())),
-      ).toSequenceParser().map((e) => DTextList(e.$1, null, e.$2));
+      ).toSequenceParser().map((e) => DTextList(e.$1, e.$2));
 
   Parser<DTextElement> linkWord() => LinkWord.values
       .map((e) => e.name)
@@ -226,9 +226,9 @@ class DTextGrammar extends GrammarDefinition<List<DTextElement>> {
       )
       .toChoiceParser()
       .map(
-        (value) => DTextLinkWord(
-          LinkWord.values.asNameMap()[value.$1.toLowerCase()]!,
-          value.$3,
+        (e) => DTextLinkWord(
+          LinkWord.values.asNameMap()[e.$1.toLowerCase()]!,
+          e.$3,
         ),
       );
 
@@ -253,9 +253,7 @@ class DTextGrammar extends GrammarDefinition<List<DTextElement>> {
           stringIgnoreCase('://'),
           any().starLazy(ref0(linkEnd)).flatten(),
         ).toSequenceParser().flatten(),
-      ).toSequenceParser().map(
-            (value) => DTextLink(value.$1, value.$2),
-          );
+      ).toSequenceParser().map((e) => DTextLink(e.$1, e.$2));
 
   Parser<DTextElement> localLink() => (
         (
@@ -268,9 +266,7 @@ class DTextGrammar extends GrammarDefinition<List<DTextElement>> {
           char('/'),
           any().starLazy(ref0(linkEnd)).flatten(),
         ).toSequenceParser().flatten(),
-      ).toSequenceParser().map(
-            (value) => DTextLocalLink(value.$1, value.$2),
-          );
+      ).toSequenceParser().map((e) => DTextLocalLink(e.$1, e.$2));
 
   Parser<DTextElement> tagLink() => (
         string('[['),
@@ -280,15 +276,11 @@ class DTextGrammar extends GrammarDefinition<List<DTextElement>> {
           any().starLazy(string(']]')).flatten(),
         ).toSequenceParser().map((e) => e.$2).optional(),
         string(']]'),
-      ).toSequenceParser().map(
-            (value) => DTextTagLink(value.$3, value.$2),
-          );
+      ).toSequenceParser().map((e) => DTextTagLink(e.$3, e.$2));
 
   Parser<DTextElement> tagSearchLink() => (
         string('{{'),
         any().starLazy(string('}}')).flatten(),
         string('}}'),
-      ).toSequenceParser().map(
-            (value) => DTextTagSearchLink(value.$2),
-          );
+      ).toSequenceParser().map((e) => DTextTagSearchLink(e.$2));
 }

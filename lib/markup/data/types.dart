@@ -202,20 +202,18 @@ enum LinkWord {
 }
 
 class DTextHeader extends DTextBlock {
-  const DTextHeader(this.level, this.preContent, super.children);
+  const DTextHeader(this.level, super.children);
 
   final int level;
-  final DTextElement? preContent;
 
   @override
   String toString() => 'Header($level, $children)';
 }
 
 class DTextList extends DTextBlock {
-  const DTextList(this.indent, this.preContent, super.children);
+  const DTextList(this.indent, super.children);
 
   final int indent;
-  final DTextElement? preContent;
 
   @override
   String toString() => 'List($indent, $children)';
