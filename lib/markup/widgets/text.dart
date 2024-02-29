@@ -1,6 +1,7 @@
 import 'package:e1547/app/app.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/interface/interface.dart';
+import 'package:e1547/logs/logs.dart';
 import 'package:e1547/markup/markup.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -37,7 +38,8 @@ class _DTextState extends State<DText> {
   void _runParse() {
     try {
       elements = DTextGrammar().build().parse(widget.value).value;
-    } on ParserException catch (e) {
+    } on ParserException catch (e, s) {
+      Logger('DText').shout('Failed to parse DText', e, s);
       error = e;
     }
   }

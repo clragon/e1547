@@ -5,16 +5,26 @@ class DTextGrammar extends GrammarDefinition<List<DTextElement>> {
   @override
   Parser<List<DTextElement>> start() => body().end();
 
-  Parser<List<DTextElement>> body([Parser? limit]) => ref1(
+  Parser<List<DTextElement>> body([Parser<void>? limit]) => ref1(
         trimmed,
-        ref2(
-          withText,
-          [
-            ref0(blocks),
-            ref1(textElement, limit),
-          ].toChoiceParser(),
-          limit,
-        ),
+        (
+          ref0(structures).optional(),
+          ref2(
+            withText,
+            [
+              (
+                newline(),
+                ref0(structures),
+              ).toSequenceParser().map((e) => e.$2),
+              ref0(blocks),
+              ref0(textElement),
+            ].toChoiceParser(),
+            limit,
+          ),
+        ).toSequenceParser().map((value) => [
+              if (value.$1 != null) value.$1!,
+              ...value.$2,
+            ]),
       );
 
   Parser<List<DTextElement>> trimmed(Parser<List<DTextElement>> parser) {
@@ -33,7 +43,7 @@ class DTextGrammar extends GrammarDefinition<List<DTextElement>> {
 
   Parser<List<DTextElement>> withText([
     Parser<DTextElement>? other,
-    Parser? limit,
+    Parser<void>? limit,
   ]) =>
       condense(
         [
@@ -59,18 +69,21 @@ class DTextGrammar extends GrammarDefinition<List<DTextElement>> {
         ref0(section),
       ].toChoiceParser();
 
-  Parser<DTextElement> textElement([Parser? limit]) => [
-        ref1(styles, limit),
+  Parser<DTextElement> structures() => [
+        ref0(header),
+        ref0(list),
+      ].toChoiceParser();
+
+  Parser<DTextElement> textElement() => [
+        ref0(styles),
         ref0(links),
         ref0(character),
       ].toChoiceParser();
 
-  Parser<DTextElement> styles([Parser? limit]) => [
+  Parser<DTextElement> styles() => [
         ref0(inlineStyles),
         ref0(spoiler),
         ref0(inlineCode),
-        ref1(header, limit),
-        ref1(list, limit),
       ].toChoiceParser();
 
   Parser<DTextElement> inlineStyles() => [
@@ -176,35 +189,31 @@ class DTextGrammar extends GrammarDefinition<List<DTextElement>> {
           .pick(1)
           .map((e) => DTextInlineCode(e));
 
-  Parser<DTextElement> header([Parser? limit]) => (
-        startOfLine().map((e) => e != null ? DTextContent(e) : null),
+  Parser<DTextElement> header() => (
         (
           charIgnoringCase('h'),
           pattern('1-6').map(int.parse),
           char('.'),
-          char(' ').optional(),
+          char(' ').star(),
         ).toSequenceParser().map((e) => e.$2),
         condense(ref0(textElement).starLazy([
-          if (limit != null) limit,
           blocks(),
           newline(),
           endOfInput(),
         ].toChoiceParser())),
-      ).toSequenceParser().map((e) => DTextHeader(e.$2, e.$1, e.$3));
+      ).toSequenceParser().map((e) => DTextHeader(e.$1, null, e.$2));
 
-  Parser<DTextElement> list([Parser? limit]) => (
-        startOfLine().map((e) => e != null ? DTextContent(e) : null),
+  Parser<DTextElement> list() => (
         (
           char('*').plus().flatten().map((e) => e.length - 1),
           char(' '),
         ).toSequenceParser().map((e) => e.$1),
         condense(ref0(textElement).starLazy([
-          if (limit != null) limit,
           blocks(),
           newline(),
           endOfInput(),
         ].toChoiceParser())),
-      ).toSequenceParser().map((e) => DTextList(e.$2, e.$1, e.$3));
+      ).toSequenceParser().map((e) => DTextList(e.$1, null, e.$2));
 
   Parser<DTextElement> linkWord() => LinkWord.values
       .map((e) => e.name)
@@ -283,24 +292,3 @@ class DTextGrammar extends GrammarDefinition<List<DTextElement>> {
             (value) => DTextTagSearchLink(value.$2),
           );
 }
-
-class StartOfInputParser extends Parser<void> {
-  @override
-  Result<void> parseOn(Context context) {
-    if (context.position == 0) {
-      return context.success(null);
-    } else {
-      return context.failure('Expected start of input');
-    }
-  }
-
-  @override
-  Parser<void> copy() => StartOfInputParser();
-}
-
-Parser<void> startOfInput() => StartOfInputParser();
-
-Parser<String?> startOfLine() => [
-      startOfInput().map((_) => null),
-      newline(),
-    ].toChoiceParser();
