@@ -89,14 +89,10 @@ class E621CommentsClient extends CommentsClient {
     required int postId,
     required String content,
   }) async {
-    // TODO: implement
-    /*
-    await cache?.deleteFromPath(
+    await dio.cache?.deleteFromPath(
       RegExp(RegExp.escape('/comments.json')),
       queryParams: {'search[post_id]': postId.toString()},
     );
-     */
-
     Map<String, dynamic> body = {
       'comment[body]': content,
       'comment[post_id]': postId,
@@ -112,18 +108,13 @@ class E621CommentsClient extends CommentsClient {
     required int postId,
     required String content,
   }) async {
-    // TODO: implement
-    /*
-    await cache?.deleteFromPath(
+    await dio.cache?.deleteFromPath(
       RegExp(RegExp.escape('/comments.json')),
       queryParams: {'search[post_id]': postId.toString()},
     );
-
-    await cache?.deleteFromPath(
+    await dio.cache?.deleteFromPath(
       RegExp(RegExp.escape('/comments/$id.json')),
     );
-     */
-
     Map<String, dynamic> body = {
       'comment[body]': content,
       'commit': 'Submit',

@@ -87,7 +87,7 @@ class _PostReportScreenState extends State<PostReportScreen> {
       );
       ScaffoldMessengerState messenger = ScaffoldMessenger.of(context);
       try {
-        await context.read<Client>().posts.remove(
+        await context.read<Client>().posts.report(
               widget.post.id,
               type!.id,
               reasonController.text.trim(),

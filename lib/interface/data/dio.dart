@@ -176,3 +176,8 @@ class ClientCacheInterceptor extends DioCacheInterceptor {
     super.onResponse(response, handler);
   }
 }
+
+extension CacheStoreDioExtension on Dio {
+  CacheStore? get cache =>
+      (options.extra['@cache_options@'] as CacheOptions?)?.store;
+}

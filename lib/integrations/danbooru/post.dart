@@ -132,7 +132,6 @@ class DanbooruPostsClient extends PostsClient {
     int? page,
     int? limit,
     QueryMap? query,
-    bool? orderByAdded,
     bool? force,
     CancelToken? cancelToken,
   }) async {

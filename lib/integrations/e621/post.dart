@@ -155,7 +155,7 @@ class E621PostsClient extends PostsClient {
     String filter = chunk.map((e) => '~$e').join(' ');
     return this.page(
       page: sitePage,
-      query: QueryMap()..['tags'] = filter,
+      query: {'tags': filter},
       limit: limit,
       // ordered: false,
       force: force,
@@ -173,7 +173,7 @@ class E621PostsClient extends PostsClient {
   }) =>
       this.page(
         page: page,
-        query: QueryMap()..['tags'] = 'fav:$username',
+        query: {'tags': 'fav:$username'},
         limit: limit,
         // ordered: false,
         force: force,
@@ -190,7 +190,7 @@ class E621PostsClient extends PostsClient {
   }) =>
       this.page(
         page: page,
-        query: QueryMap()..['tags'] = 'user:$username',
+        query: {'tags': 'user:$username'},
         limit: limit,
         // ordered: false,
         force: force,
@@ -199,21 +199,16 @@ class E621PostsClient extends PostsClient {
 
   @override
   Future<void> update(int postId, Map<String, String?> body) async {
-    // TODO: Implement cache invalidation
-    /*
-    await cache?.deleteFromPath(
+    await dio.cache?.deleteFromPath(
       RegExp(RegExp.escape('/posts/$postId.json')),
     );
-     */
-
     await dio.put('/posts/$postId.json', data: FormData.fromMap(body));
   }
 
   @override
   Future<void> vote(int postId, bool upvote, bool replace) async {
-    /*
-    await cache?.deleteFromPath(RegExp(RegExp.escape('/posts/$postId.json')));
-     */
+    await dio.cache
+        ?.deleteFromPath(RegExp(RegExp.escape('/posts/$postId.json')));
     await dio.post('/posts/$postId/votes.json', queryParameters: {
       'score': upvote ? 1 : -1,
       'no_unvote': replace,
@@ -225,16 +220,14 @@ class E621PostsClient extends PostsClient {
     int? page,
     int? limit,
     QueryMap? query,
-    bool? orderByAdded,
     bool? force,
     CancelToken? cancelToken,
   }) async {
     if (identity.username == null) {
       throw NoUserLoginException();
     }
-    orderByAdded ??= true;
     String tags = query?['tags'] ?? '';
-    if (tags.isEmpty && orderByAdded) {
+    if (tags.isEmpty) {
       Map<String, dynamic> body = await dio
           .get(
             '/favorites.json',
@@ -267,20 +260,20 @@ class E621PostsClient extends PostsClient {
 
   @override
   Future<void> addFavorite(int postId) async {
-    // TODO: Implement cache invalidation
-    // await cache?.deleteFromPath(RegExp(RegExp.escape('/posts/$postId.json')));
+    await dio.cache
+        ?.deleteFromPath(RegExp(RegExp.escape('/posts/$postId.json')));
     await dio.post('/favorites.json', queryParameters: {'post_id': postId});
   }
 
   @override
   Future<void> removeFavorite(int postId) async {
-    // TODO: Implement cache invalidation
-    // await cache?.deleteFromPath(RegExp(RegExp.escape('/posts/$postId.json')));
+    await dio.cache
+        ?.deleteFromPath(RegExp(RegExp.escape('/posts/$postId.json')));
     await dio.delete('/favorites/$postId.json');
   }
 
   @override
-  Future<void> remove(int postId, int reportId, String reason) async {
+  Future<void> report(int postId, int reportId, String reason) async {
     await dio.post(
       '/tickets',
       queryParameters: {

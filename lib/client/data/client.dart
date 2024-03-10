@@ -166,6 +166,3 @@ mixin ClientAssembly on Client {
   @override
   WikisClient get wikis => _throwOnMissingClient(_wikis, ClientFeature.wikis);
 }
-
-// TODO: create a call parameters class with force and cancelToken
-// TODO: create a subclass for call parameters with pagination

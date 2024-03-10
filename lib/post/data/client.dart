@@ -74,7 +74,6 @@ abstract class PostsClient with FeatureFlagging {
     int? page,
     int? limit,
     QueryMap? query,
-    bool? orderByAdded,
     bool? force,
     CancelToken? cancelToken,
   }) =>
@@ -86,7 +85,7 @@ abstract class PostsClient with FeatureFlagging {
   Future<void> removeFavorite(int postId) =>
       throwUnsupported(PostFeature.favorite);
 
-  Future<void> remove(int postId, int reportId, String reason) =>
+  Future<void> report(int postId, int reportId, String reason) =>
       throwUnsupported(PostFeature.report);
 
   Future<void> addFlag(int postId, String flag, {int? parent}) =>

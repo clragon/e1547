@@ -8,7 +8,6 @@ enum CommentFeature {
   report,
 }
 
-// TODO: rename all the methods to be type agnostic
 abstract class CommentsClient with FeatureFlagging<CommentFeature> {
   Future<Comment> get({
     required int id,

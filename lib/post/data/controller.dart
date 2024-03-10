@@ -7,13 +7,11 @@ class PostsController extends PageClientDataController<Post>
   PostsController({
     required this.client,
     QueryMap? query,
-    bool orderFavorites = false,
     bool orderPools = true,
     bool denying = true,
     this.canSearch = true,
     this.filterMode = PostFilterMode.filtering,
   })  : _query = query ?? {},
-        _orderFavorites = orderFavorites,
         _orderPools = orderPools {
     this.denying = denying;
     client.traitsState.addListener(applyFilter);
@@ -33,16 +31,6 @@ class PostsController extends PageClientDataController<Post>
 
   @override
   final PostFilterMode filterMode;
-
-  bool _orderFavorites;
-
-  /// Order posts by when they were added to favorites.
-  bool get orderFavorites => _orderFavorites;
-  set orderFavorites(bool value) {
-    if (value == _orderFavorites) return;
-    _orderFavorites = value;
-    refresh();
-  }
 
   bool _orderPools;
 
@@ -107,7 +95,6 @@ class PostsProvider extends SubChangeNotifierProvider<Client, PostsController> {
           create: (context, client) => PostsController(
             client: client,
             query: query,
-            orderFavorites: orderFavorites,
             orderPools: orderPools,
             denying: denying,
             canSearch: canSearch,
