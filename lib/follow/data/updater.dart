@@ -274,8 +274,7 @@ class FollowUpdate {
     List<Post> posts = await rateLimit(client.posts.page(
       query: TagMap({'tags': follow.tags}),
       limit: refreshAmount,
-      // TODO: ordered
-      // ordered: false,
+      ordered: false,
       force: force,
     ));
     posts.removeWhere((e) => e.isDeniedBy(client.traitsState.value.denylist));

@@ -42,6 +42,9 @@ class DanbooruPostsClient extends PostsClient {
     int? page,
     int? limit,
     QueryMap? query,
+    bool? ordered,
+    bool? orderPoolsByOldest,
+    bool? orderFavoritesByAdded,
     bool? force,
     CancelToken? cancelToken,
   }) =>
@@ -83,7 +86,7 @@ class DanbooruPostsClient extends PostsClient {
       List<Post> part = await page(
         query: {'tags': filter},
         limit: limit,
-        // ordered: false,
+        ordered: false,
         force: force,
         cancelToken: cancelToken,
       );
@@ -121,7 +124,7 @@ class DanbooruPostsClient extends PostsClient {
       page: sitePage,
       query: QueryMap()..['tags'] = filter,
       limit: limit,
-      // ordered: false,
+      ordered: false,
       force: force,
       cancelToken: cancelToken,
     );
@@ -132,19 +135,21 @@ class DanbooruPostsClient extends PostsClient {
     int? page,
     int? limit,
     QueryMap? query,
+    bool? orderByAdded,
     bool? force,
     CancelToken? cancelToken,
   }) async {
     if (identity.username == null) {
       throw NoUserLoginException();
     }
+    orderByAdded ??= true;
     return this.page(
       page: page,
       limit: limit,
       query: {
         ...?query,
         'tags': (TagMap.parse(query?['tags'] ?? '')
-              ..['ordfav'] = identity.username)
+              ..[orderByAdded ? 'ordfav' : 'fav'] = identity.username)
             .toString()
       },
       force: force,

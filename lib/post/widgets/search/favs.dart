@@ -38,6 +38,24 @@ class FavPage extends StatelessWidget {
                   title: Text('Favorites'),
                   actions: [ContextDrawerButton()],
                 ),
+                drawerActions: [
+                  if (controller.query['tags']?.isEmpty ?? true)
+                    SwitchListTile(
+                      secondary: const Icon(Icons.sort),
+                      title: Text(
+                        'Favorite order',
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                      subtitle: Text(controller.orderFavorites
+                          ? 'added order'
+                          : 'id order'),
+                      value: controller.orderFavorites,
+                      onChanged: (value) {
+                        controller.orderFavorites = value;
+                        Navigator.of(context).maybePop();
+                      },
+                    ),
+                ],
               ),
             ),
           ),

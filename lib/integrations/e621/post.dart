@@ -5,6 +5,7 @@ import 'package:deep_pick/deep_pick.dart';
 import 'package:dio/dio.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/identity/identity.dart';
+import 'package:e1547/pool/pool.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:e1547/ticket/ticket.dart';
@@ -13,10 +14,12 @@ class E621PostsClient extends PostsClient {
   E621PostsClient({
     required this.dio,
     required this.identity,
+    this.pools,
   });
 
   final Dio dio;
   final Identity identity;
+  final PoolsClient? pools;
 
   @override
   Set<Enum> get features => {
@@ -42,27 +45,24 @@ class E621PostsClient extends PostsClient {
     int? page,
     int? limit,
     QueryMap? query,
-    /*
     bool? ordered,
     bool? orderPoolsByOldest,
     bool? orderFavoritesByAdded,
-     */
     bool? force,
     CancelToken? cancelToken,
   }) async {
-    // TODO: function redirections are not real
-    /*
     ordered ??= true;
     String? tags = query?['tags'];
     if (ordered && tags != null) {
       Map<RegExp, Future<List<Post>> Function(RegExpMatch match)> redirects = {
-        poolRegex(): (match) => postsByPool(
-              id: int.parse(match.namedGroup('id')!),
-              page: page,
-              orderByOldest: orderPoolsByOldest ?? true,
-              force: force,
-              cancelToken: cancelToken,
-            ),
+        if (pools != null)
+          poolRegex(): (match) => pools!.byPool(
+                id: int.parse(match.namedGroup('id')!),
+                page: page,
+                orderByOldest: orderPoolsByOldest ?? true,
+                force: force,
+                cancelToken: cancelToken,
+              ),
         if ((orderFavoritesByAdded ?? false) && identity.username != null)
           favRegex(identity.username!): (match) =>
               favorites(page: page, limit: limit, force: force),
@@ -75,7 +75,6 @@ class E621PostsClient extends PostsClient {
         }
       }
     }
-     */
 
     return dio
         .get(
@@ -175,7 +174,7 @@ class E621PostsClient extends PostsClient {
         page: page,
         query: {'tags': 'fav:$username'},
         limit: limit,
-        // ordered: false,
+        ordered: false,
         force: force,
         cancelToken: cancelToken,
       );
@@ -192,7 +191,7 @@ class E621PostsClient extends PostsClient {
         page: page,
         query: {'tags': 'user:$username'},
         limit: limit,
-        // ordered: false,
+        ordered: false,
         force: force,
         cancelToken: cancelToken,
       );
@@ -220,14 +219,16 @@ class E621PostsClient extends PostsClient {
     int? page,
     int? limit,
     QueryMap? query,
+    bool? orderByAdded,
     bool? force,
     CancelToken? cancelToken,
   }) async {
     if (identity.username == null) {
       throw NoUserLoginException();
     }
+    orderByAdded ??= true;
     String tags = query?['tags'] ?? '';
-    if (tags.isEmpty) {
+    if (tags.isEmpty && orderByAdded) {
       Map<String, dynamic> body = await dio
           .get(
             '/favorites.json',
@@ -251,7 +252,7 @@ class E621PostsClient extends PostsClient {
           ...?query,
           'tags': (TagMap.parse(tags)..['fav'] = identity.username).toString(),
         },
-        // ordered: false,
+        ordered: false,
         force: force,
         cancelToken: cancelToken,
       );

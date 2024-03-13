@@ -21,12 +21,13 @@ abstract class PostsClient with FeatureFlagging {
     int? page,
     int? limit,
     QueryMap? query,
-    // TODO: Implement these
-    /*
+    // This needs to be rearchitected.
+    // - maybe extra function, e.g. pageOrdered?
+    // - maybe extra PostPageOrder class?
+    // - maybe special query parameters?
     bool? ordered,
     bool? orderPoolsByOldest,
     bool? orderFavoritesByAdded,
-     */
     bool? force,
     CancelToken? cancelToken,
   });
@@ -74,6 +75,7 @@ abstract class PostsClient with FeatureFlagging {
     int? page,
     int? limit,
     QueryMap? query,
+    bool? orderByAdded,
     bool? force,
     CancelToken? cancelToken,
   }) =>
