@@ -19,7 +19,6 @@ class HttpAvailabilityClient extends AvailabilityClient {
   Future<void> check() async {
     String body = await _dio.get('').then((response) => response.data);
     String? favicon = findFavicon(body);
-    print('found favicon: $favicon');
     traits.value = traits.value.copyWith(
       favicon: favicon != null ? identity.withHost(favicon) : null,
     );
