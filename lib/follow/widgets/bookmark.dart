@@ -55,8 +55,14 @@ class FollowsBookmarkPage extends StatelessWidget {
                     ),
                     body: TileLayout(
                       child: LoadingPage(
-                        onEmpty: const Text('No bookmarks'),
-                        onError: const Text('Failed to load bookmarks'),
+                        onEmpty: const IconMessage(
+                          title: Text('No bookmarks'),
+                          icon: Icon(Icons.clear),
+                        ),
+                        onError: const IconMessage(
+                          title: Text('Failed to load bookmarks'),
+                          icon: Icon(Icons.warning_amber),
+                        ),
                         isError: snapshot.hasError,
                         isBuilt: follows != null,
                         isLoading: follows == null,
