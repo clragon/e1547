@@ -13,6 +13,7 @@ import 'package:e1547/integrations/e621/traits.dart';
 import 'package:e1547/integrations/e621/user.dart';
 import 'package:e1547/integrations/e621/wiki.dart';
 import 'package:e1547/integrations/http/availability.dart';
+import 'package:e1547/post/post.dart';
 import 'package:e1547/traits/traits.dart';
 import 'package:flutter/foundation.dart';
 
@@ -22,8 +23,8 @@ class E621Client extends Client with ClientAssembly {
     required this.traitsState,
     required this.storage,
   }) : dio = createDefaultDio(identity, cache: storage.httpCache) {
-    final posts = E621PostsClient(dio: dio, identity: identity);
-    final accounts = E621AccountsClient(
+    late PostsClient posts;
+    late final accounts = E621AccountsClient(
       dio: dio,
       identity: identity,
       traits: traitsState,
@@ -35,9 +36,14 @@ class E621Client extends Client with ClientAssembly {
       traits: traitsState,
     );
     final comments = E621CommentsClient(dio: dio);
-    final pools = E621PoolsClient(
+    late final pools = E621PoolsClient(
       dio: dio,
       postsClient: posts,
+    );
+    posts = E621PostsClient(
+      dio: dio,
+      identity: identity,
+      poolsClient: pools,
     );
     final replies = E621RepliesClient(dio: dio);
     final tags = E621TagsClient(dio: dio);

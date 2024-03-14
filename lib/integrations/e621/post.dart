@@ -14,12 +14,12 @@ class E621PostsClient extends PostsClient {
   E621PostsClient({
     required this.dio,
     required this.identity,
-    this.pools,
+    this.poolsClient,
   });
 
   final Dio dio;
   final Identity identity;
-  final PoolsClient? pools;
+  final PoolsClient? poolsClient;
 
   @override
   Set<Enum> get features => {
@@ -55,8 +55,8 @@ class E621PostsClient extends PostsClient {
     String? tags = query?['tags'];
     if (ordered && tags != null) {
       Map<RegExp, Future<List<Post>> Function(RegExpMatch match)> redirects = {
-        if (pools != null)
-          poolRegex(): (match) => pools!.byPool(
+        if (poolsClient != null)
+          poolRegex(): (match) => poolsClient!.byPool(
                 id: int.parse(match.namedGroup('id')!),
                 page: page,
                 orderByOldest: orderPoolsByOldest ?? true,
@@ -118,7 +118,7 @@ class E621PostsClient extends PostsClient {
       List<Post> part = await page(
         query: {'tags': filter},
         limit: limit,
-        // ordered: false,
+        ordered: false,
         force: force,
         cancelToken: cancelToken,
       );
@@ -156,7 +156,7 @@ class E621PostsClient extends PostsClient {
       page: sitePage,
       query: {'tags': filter},
       limit: limit,
-      // ordered: false,
+      ordered: false,
       force: force,
       cancelToken: cancelToken,
     );

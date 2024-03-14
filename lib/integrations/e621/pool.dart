@@ -3,15 +3,18 @@ import 'package:dio/dio.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/pool/pool.dart';
 import 'package:e1547/post/post.dart';
+import 'package:e1547/user/user.dart';
 
 class E621PoolsClient extends PoolsClient {
   E621PoolsClient({
     required this.dio,
     required this.postsClient,
+    this.accountsClient,
   });
 
   final Dio dio;
   final PostsClient postsClient;
+  final AccountsClient? accountsClient;
 
   @override
   Future<Pool> get({
@@ -64,11 +67,9 @@ class E621PoolsClient extends PoolsClient {
     CancelToken? cancelToken,
   }) async {
     page ??= 1;
-    /*
-    Account? user = await account(cancelToken: cancelToken);
-    int limit = user?.perPage ?? 75;
-     */
-    int limit = 75; // store per page count in Traits
+    int limit = 75;
+    // store per page count in Traits
+    limit = await accountsClient?.get().then((e) => e?.perPage) ?? limit;
     Pool pool = await get(id: id, force: force, cancelToken: cancelToken);
     List<int> ids = pool.postIds;
     if (!orderByOldest) ids = ids.reversed.toList();
