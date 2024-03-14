@@ -204,9 +204,9 @@ class _IdentityHttpFileService extends HttpFileService {
   }
 }
 
-class AppInfoClientProvider extends SubProvider<AppStorage, AppInfoClient?> {
+class AppInfoClientProvider extends SubProvider0<AppInfoClient?> {
   AppInfoClientProvider({super.child, super.builder})
       : super(
-          create: (context, storage) => AppInfoClient(cache: storage.httpCache),
+          create: (context) => AppInfoClient(),
         );
 }

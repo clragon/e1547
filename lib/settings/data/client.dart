@@ -10,7 +10,7 @@ import 'package:flutter/services.dart';
 import 'package:pub_semver/pub_semver.dart';
 
 class AppInfoClient {
-  AppInfoClient({this.cache}) {
+  AppInfoClient() {
     _dio.interceptors.add(
       ClientCacheInterceptor(options: ClientCacheConfig(store: cache)),
     );
@@ -19,7 +19,7 @@ class AppInfoClient {
   }
 
   final AppInfo info = AppInfo.instance;
-  final CacheStore? cache;
+  final CacheStore? cache = MemCacheStore();
   late final Dio _dio = Dio(
     BaseOptions(
       headers: {
