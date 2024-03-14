@@ -82,13 +82,6 @@ class App extends StatelessWidget {
                                         navigatorKey: navigatorKey,
                                         child: NotificationHandler(
                                           navigatorKey: navigatorKey,
-                                          routes: {
-                                            for (final destination in context
-                                                .watch<RouterDrawerController>()
-                                                .destinations)
-                                              destination.path:
-                                                  destination.unique
-                                          },
                                           child: child!,
                                         ),
                                       ),

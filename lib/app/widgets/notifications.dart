@@ -1,9 +1,10 @@
 import 'dart:async';
+import 'dart:convert';
 
-import 'package:collection/collection.dart';
 import 'package:e1547/app/app.dart';
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/interface/interface.dart';
+import 'package:e1547/logs/logs.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
@@ -14,12 +15,10 @@ class NotificationHandler extends StatefulWidget {
     super.key,
     required this.child,
     required this.navigatorKey,
-    required this.routes,
   });
 
   final Widget child;
   final GlobalKey<NavigatorState> navigatorKey;
-  final Map<String, bool> routes;
 
   @override
   State<NotificationHandler> createState() => _NotificationHandlerState();
@@ -29,6 +28,7 @@ class _NotificationHandlerState extends State<NotificationHandler> {
   late Future<FlutterLocalNotificationsPlugin> notifications =
       initializeNotifications(onDidReceiveNotificationResponse: handle);
   List<Follow>? previousFollows;
+  Logger logger = Logger('Notifications');
 
   @override
   void initState() {
@@ -69,10 +69,11 @@ class _NotificationHandlerState extends State<NotificationHandler> {
     registerFollowBackgroundTask(follows);
   }
 
-  Future<void> sendNotifications(List<Follow> follows) async {
+  Future<void> sendNotifications(List<Follow> follows, int identity) async {
     if (!PlatformCapabilities.hasNotifications) return;
     if (previousFollows != null) {
       await updateFollowNotifications(
+        identity: identity,
         previous: previousFollows!,
         updated: follows,
         notifications: await notifications,
@@ -85,41 +86,41 @@ class _NotificationHandlerState extends State<NotificationHandler> {
     if (!context.mounted) return;
     String? payload = response.payload;
     if (payload == null) return;
-    Uri? url = Uri.tryParse(payload);
-    if (url == null) return;
-    MapEntry<String, bool>? destination =
-        widget.routes.entries.firstWhereOrNull((e) => e.key == url.path);
-    if (destination != null) {
-      if (destination.value) {
-        widget.navigatorKey.currentState!
-            .pushNamedAndRemoveUntil(destination.key, (_) => false);
+    NotificationPayload? notification;
+    try {
+      notification = NotificationPayload.fromJson(json.decode(payload));
+    } on FormatException catch (e, s) {
+      logger.severe('Failed to parse notification payload', e, s);
+      return;
+    }
 
-        // This is very specific. Find a way to make it more systematic.
-        String? tags = url.queryParameters['tags'];
-        int? id = int.tryParse(url.queryParameters['id'] ?? '');
-        if (url.path == '/subscriptions') {
-          if (tags != null) {
-            widget.navigatorKey.currentState!.push(
-              MaterialPageRoute(
-                builder: (context) => PostsSearchPage(
-                  query: TagMap({'tags': tags}),
-                  orderPoolsByOldest: false,
-                  readerMode: poolRegex().hasMatch(tags),
-                ),
+    switch (notification.type) {
+      case 'follow':
+        widget.navigatorKey.currentState!
+            .pushNamedAndRemoveUntil('/subscriptions', (_) => false);
+        if (notification.query != null) {
+          widget.navigatorKey.currentState!.push(
+            MaterialPageRoute(
+              builder: (context) => PostsSearchPage(
+                query: TagMap(notification!.query!),
+                orderPoolsByOldest: false,
+                readerMode:
+                    poolRegex().hasMatch(notification.query!['tags'] ?? ''),
               ),
-            );
-          }
-          if (id != null) {
-            widget.navigatorKey.currentState!.push(
-              MaterialPageRoute(
-                builder: (context) => PostLoadingPage(id),
-              ),
-            );
-          }
+            ),
+          );
         }
-      } else {
-        widget.navigatorKey.currentState!.pushNamed(destination.key);
-      }
+        if (notification.id != null) {
+          widget.navigatorKey.currentState!.push(
+            MaterialPageRoute(
+              builder: (context) => PostLoadingPage(notification!.id!),
+            ),
+          );
+        }
+        break;
+      default:
+        logger.warning('Unknown notification type: ${notification.type}');
+        return;
     }
   }
 
@@ -129,8 +130,9 @@ class _NotificationHandlerState extends State<NotificationHandler> {
             .watch<FollowsService>()
             .all(types: [FollowType.notify]).stream,
         listener: (event) {
+          final service = context.read<FollowsService>();
           setupFollowBackground(event);
-          sendNotifications(event);
+          sendNotifications(event, service.identity!);
         },
         keys: [context.watch<FollowsService>()],
         builder: (context, stream) => widget.child,

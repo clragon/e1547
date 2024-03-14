@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:collection/collection.dart';
@@ -6,7 +7,6 @@ import 'package:e1547/client/client.dart';
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/logs/logs.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 const String followsBackgroundTaskKey = 'net.clynamic.e1547.follows';
 
@@ -36,6 +36,7 @@ Future<bool> backgroundUpdateFollows({
   logger.info('Completed follow update');
 
   await updateFollowNotifications(
+    identity: client.identity.id,
     previous: previous,
     updated: updated,
     notifications: notifications,
@@ -45,6 +46,7 @@ Future<bool> backgroundUpdateFollows({
 }
 
 Future<void> updateFollowNotifications({
+  required int identity,
   required List<Follow> previous,
   required List<Follow> updated,
   required FlutterLocalNotificationsPlugin notifications,
@@ -89,10 +91,12 @@ Future<void> updateFollowNotifications({
       title,
       description,
       notificationDetails,
-      payload: Uri(path: '/subscriptions', queryParameters: {
-        'tags': follow.tags,
-        if (unseen == 1) 'id': follow.latest.toString(),
-      }).toString(),
+      payload: json.encode(NotificationPayload(
+        identity: identity,
+        type: 'follow',
+        query: {'tags': follow.tags},
+        id: unseen == 1 ? follow.latest : null,
+      )),
     );
 
     if (Platform.isAndroid) {
@@ -110,7 +114,10 @@ Future<void> updateFollowNotifications({
           'New posts!',
           null,
           notificationDetails,
-          payload: Uri(path: '/subscriptions').toString(),
+          payload: json.encode(NotificationPayload(
+            identity: identity,
+            type: 'follow',
+          )),
         );
       } else {
         notifications.cancel(followsBackgroundTaskKey.hashCode);
