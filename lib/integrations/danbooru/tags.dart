@@ -76,10 +76,27 @@ class DanbooruTagsClient extends TagsClient {
     QueryMap? query,
     bool? force,
     CancelToken? cancelToken,
-  }) {
-    // TODO: implement aliases
-    throw UnimplementedError();
-  }
+  }) =>
+      dio
+          .get(
+            '/tag_aliases.json',
+            queryParameters: {
+              'page': page,
+              'limit': limit,
+              ...?query,
+            },
+            options: forceOptions(force),
+            cancelToken: cancelToken,
+          )
+          .then(
+            (value) => pick(value.data)
+                .asListOrNull(
+                  (p0) => pick(p0.asMapOrNull()).letOrNull(
+                    (pick) => pick('consequent_name').asStringOrThrow(),
+                  ),
+                )
+                ?.firstOrNull,
+          );
 }
 
 extension DanbooruTag on Tag {
