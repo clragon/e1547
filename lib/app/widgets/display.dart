@@ -15,6 +15,7 @@ class SecureDisplay extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SubValueListener(
+      initialize: true,
       listenable: context.watch<Settings>().secureDisplay,
       listener: (value) {
         if (value) {
