@@ -46,14 +46,16 @@ class ColoredCard extends StatelessWidget {
                 ),
                 child: leading ?? const SizedBox(width: 5),
               ),
-            Padding(
-              padding: const EdgeInsets.only(
-                top: 4,
-                bottom: 4,
-                right: 10,
-                left: 6,
+            Flexible(
+              child: Padding(
+                padding: const EdgeInsets.only(
+                  top: 4,
+                  bottom: 4,
+                  right: 10,
+                  left: 6,
+                ),
+                child: child,
               ),
-              child: child,
             ),
             if (trailing case final trailing?) trailing,
           ],
