@@ -61,6 +61,7 @@ class TagCounterCard extends StatelessWidget {
     return ColoredCard(
       color: (category != null ? TagCategory.byName(category!).color : null),
       trailing: Row(
+        mainAxisSize: MainAxisSize.min,
         children: [
           Container(
             width: 2,
