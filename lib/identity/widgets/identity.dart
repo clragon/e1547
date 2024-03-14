@@ -7,6 +7,7 @@ import 'package:e1547/app/app.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/identity/identity.dart';
 import 'package:e1547/settings/settings.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:keyboard_dismisser/keyboard_dismisser.dart';
@@ -80,10 +81,17 @@ class _IdentityPageState extends State<IdentityPage> {
     super.dispose();
   }
 
-  void saveAndTest(BuildContext context) {
+  Future<void> saveAndTest(BuildContext context) async {
     FormState form = Form.of(context);
     if (form.validate()) {
       final navigator = Navigator.of(context);
+      if (type != ClientType.e621) {
+        bool agreed = await showUnknownHostDialog();
+        if (!agreed) return;
+        type ??= ClientType.e621;
+      }
+
+      if (!context.mounted) return;
       showDialog(
         context: context,
         barrierDismissible: false,
@@ -104,6 +112,31 @@ class _IdentityPageState extends State<IdentityPage> {
         ),
       );
     }
+  }
+
+  Future<bool> showUnknownHostDialog() {
+    return showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        title: const Text('Unknown host'),
+        content: Text(
+          'The host ${linkToDisplay(hostController.text)} is not recognized.\n'
+          '${AppInfo.instance.appName} only supports hosts with the official e621 API.\n'
+          'If you don\'t know what this means, please do not proceed.\n',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('CANCEL'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('CONFIRM'),
+          ),
+        ],
+      ),
+    ).then((value) => value ?? false);
   }
 
   @override
@@ -146,14 +179,15 @@ class _IdentityPageState extends State<IdentityPage> {
               controller: hostController,
               readOnly: widget.identity != null,
             ),
-            ClientTypeFormField(
-              type: type,
-              enabled: !foundClient,
-              onChanged: (value) {
-                setState(() => type = value);
-                resetErrors();
-              },
-            ),
+            if (kDebugMode)
+              ClientTypeFormField(
+                type: type,
+                enabled: !foundClient,
+                onChanged: (value) {
+                  setState(() => type = value);
+                  resetErrors();
+                },
+              ),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 12),
               child: CheckboxFormField(
