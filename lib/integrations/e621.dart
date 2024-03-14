@@ -36,9 +36,12 @@ class E621Client extends Client with ClientAssembly {
       traits: traitsState,
     );
     final comments = E621CommentsClient(dio: dio);
-    late final pools = E621PoolsClient(
+    final pools = E621PoolsClient(
       dio: dio,
-      postsClient: posts,
+      postsClient: E621PostsClient(
+        dio: dio,
+        identity: identity,
+      ),
     );
     posts = E621PostsClient(
       dio: dio,
