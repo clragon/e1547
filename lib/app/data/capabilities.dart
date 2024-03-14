@@ -22,4 +22,9 @@ abstract final class PlatformCapabilities {
   /// Whether this platform supports playing videos.
   /// Platform views are not supported on desktop right now.
   static bool get hasVideos => true;
+
+  /// Whether this platform supports secure display.
+  /// This means that the platform supports hiding the app from the app switcher.
+  static bool get hasSecureDisplay =>
+      [Platform.isAndroid, Platform.isIOS].any((e) => e);
 }

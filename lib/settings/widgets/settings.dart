@@ -232,7 +232,7 @@ class SettingsPage extends StatelessWidget {
               ),
               const Divider(),
               const ListTileHeader(title: 'Security'),
-              if (Platform.isAndroid || Platform.isIOS)
+              if (PlatformCapabilities.hasSecureDisplay)
                 ValueListenableBuilder<bool>(
                   valueListenable: settings.secureDisplay,
                   builder: (context, value, child) => SwitchListTile(

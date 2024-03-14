@@ -1,3 +1,4 @@
+import 'package:e1547/app/app.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
@@ -18,6 +19,7 @@ class SecureDisplay extends StatelessWidget {
       initialize: true,
       listenable: context.watch<Settings>().secureDisplay,
       listener: (value) {
+        if (!PlatformCapabilities.hasSecureDisplay) return;
         if (value) {
           SecureAppSwitcher.on();
         } else {
