@@ -9,7 +9,7 @@ import 'package:e1547/pool/pool.dart';
 import 'package:e1547/post/post.dart';
 import 'package:rxdart/rxdart.dart';
 
-abstract class DiskFollowsClient extends FollowsClient {
+abstract class DiskFollowsClient extends FollowsClient with Disposable {
   DiskFollowsClient({
     required this.database,
     required this.identity,
@@ -172,4 +172,13 @@ abstract class DiskFollowsClient extends FollowsClient {
           unseen: seen ?? true ? const Value(0) : const Value.absent(),
         ),
       );
+
+  @override
+  void dispose() {
+    _currentSync?.cancel();
+    _currentSync = null;
+    _syncStream.add(_currentSync);
+    _syncStream.close();
+    super.dispose();
+  }
 }

@@ -29,7 +29,7 @@ enum ClientFeature {
   follows,
 }
 
-abstract class Client with FeatureFlagging<Enum> {
+abstract class Client with FeatureFlagging<Enum>, Disposable {
   Identity get identity;
   ValueNotifier<Traits> get traitsState;
 
@@ -46,9 +46,6 @@ abstract class Client with FeatureFlagging<Enum> {
   UsersClient get users => throwUnsupported(ClientFeature.users);
   WikisClient get wikis => throwUnsupported(ClientFeature.wikis);
   FollowsClient get follows => throwUnsupported(ClientFeature.follows);
-
-  @mustCallSuper
-  void dispose() {}
 }
 
 extension ClientExtension on Client {
@@ -94,6 +91,21 @@ mixin ClientAssembly on Client {
   @override
   Set<Enum> get features => _features;
 
+  Set<Object?> get _clients => {
+        _accounts,
+        _availability,
+        _comments,
+        _pools,
+        _posts,
+        _replies,
+        _tags,
+        _topics,
+        _traits,
+        _users,
+        _wikis,
+        _follows,
+      };
+
   Set<Enum> _generateFeatures() => {
         // client features
         if (_accounts != null) ClientFeature.accounts,
@@ -109,20 +121,7 @@ mixin ClientAssembly on Client {
         if (_wikis != null) ClientFeature.wikis,
         if (_follows != null) ClientFeature.follows,
         // sub features
-        ...{
-          _accounts,
-          _availability,
-          _comments,
-          _pools,
-          _posts,
-          _replies,
-          _tags,
-          _topics,
-          _traits,
-          _users,
-          _wikis,
-          _follows,
-        }
+        ..._clients
             .whereType<FeatureFlagging<Enum>>()
             .fold<Set<Enum>>({}, (all, e) => all..addAll(e.features)),
       };
@@ -176,4 +175,14 @@ mixin ClientAssembly on Client {
   @override
   FollowsClient get follows =>
       _throwOnMissingClient(_follows, ClientFeature.follows);
+
+  @override
+  void dispose() {
+    for (final client in _clients) {
+      if (client is Disposable) {
+        client.dispose();
+      }
+    }
+    super.dispose();
+  }
 }
