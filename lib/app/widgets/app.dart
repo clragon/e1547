@@ -69,15 +69,14 @@ class App extends StatelessWidget {
                                 TraitsServiceProvider(),
                                 ClientProvider(),
                                 CacheManagerProvider(),
-                                FollowsProvider(),
                                 HistoriesServiceProvider(),
                               ],
-                              child: TraitsSync(
-                                child: LoadingCore(
-                                  child: ErrorNotifier(
+                              child: LoadingCore(
+                                child: ErrorNotifier(
+                                  navigatorKey: navigatorKey,
+                                  child: ClientAvailabilityCheck(
                                     navigatorKey: navigatorKey,
-                                    child: ClientAvailabilityCheck(
-                                      navigatorKey: navigatorKey,
+                                    child: ClientSync(
                                       child: AppLinkHandler(
                                         navigatorKey: navigatorKey,
                                         child: NotificationHandler(

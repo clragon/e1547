@@ -77,6 +77,7 @@ class FollowsDao extends DatabaseAccessor<GeneratedDatabase>
     String? tagRegex,
     String? titleRegex,
     List<FollowType>? types,
+    bool? hasUnseen,
     int? limit,
     int? offset,
   }) {
@@ -98,6 +99,9 @@ class FollowsDao extends DatabaseAccessor<GeneratedDatabase>
     if (types != null) {
       selectable.where((tbl) => tbl.type.isIn(types.map((e) => e.name)));
     }
+    if (hasUnseen ?? false) {
+      selectable.where((tbl) => tbl.unseen.isBiggerThanValue(0));
+    }
     assert(
       offset == null || limit != null,
       'Cannot specify offset without limit!',
@@ -114,6 +118,7 @@ class FollowsDao extends DatabaseAccessor<GeneratedDatabase>
     String? tagRegex,
     String? titleRegex,
     List<FollowType>? types,
+    bool? hasUnseen,
   }) {
     limit ??= 80;
     int offset = (max(1, page) - 1) * limit;
@@ -121,6 +126,7 @@ class FollowsDao extends DatabaseAccessor<GeneratedDatabase>
       tagRegex: tagRegex,
       titleRegex: titleRegex,
       types: types,
+      hasUnseen: hasUnseen,
       limit: limit,
       offset: offset,
     ).watch().future;
@@ -130,12 +136,14 @@ class FollowsDao extends DatabaseAccessor<GeneratedDatabase>
     String? tagRegex,
     String? titleRegex,
     List<FollowType>? types,
+    bool? hasUnseen,
     int? limit,
   }) =>
       _queryExpression(
         tagRegex: tagRegex,
         titleRegex: titleRegex,
         types: types,
+        hasUnseen: hasUnseen,
         limit: limit,
       ).watch().future;
 

@@ -16,3 +16,9 @@ extension ConditionalListenables on Listenable {
     return completer.future;
   }
 }
+
+// ignore: one_member_abstracts
+abstract interface class Disposable {
+  @mustCallSuper
+  void dispose();
+}

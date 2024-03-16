@@ -1,29 +1,20 @@
 import 'package:e1547/app/app.dart';
+import 'package:e1547/client/client.dart';
 import 'package:e1547/follow/follow.dart';
-import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
 
 class FollowSelectionAppBar extends StatelessWidget with AppBarBuilderWidget {
   const FollowSelectionAppBar({
     super.key,
-    required this.service,
     required this.child,
   });
 
-  final FollowsService service;
   @override
   final PreferredSizeWidget child;
 
-  Future<void> update(Iterable<Follow> follows) async {
-    await service.transaction(() async {
-      for (final follow in follows) {
-        await service.replace(follow);
-      }
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
+    final client = context.watch<Client>();
     return SelectionAppBar<Follow>(
       child: child,
       titleBuilder: (context, data) => data.selections.length == 1
@@ -44,40 +35,44 @@ class FollowSelectionAppBar extends StatelessWidget with AppBarBuilderWidget {
               tooltip:
                   notified ? 'Disable notifications' : 'Enable notifications',
               onPressed: () async {
-                if (notified) {
-                  update(
-                    data.selections.map(
-                      (e) => e.copyWith(type: FollowType.update),
-                    ),
-                  );
-                } else {
-                  update(
-                    data.selections.map(
-                      (e) => e.copyWith(type: FollowType.notify),
-                    ),
-                  );
-                }
                 data.clear();
+                if (notified) {
+                  for (final follow in data.selections) {
+                    await client.follows.update(
+                      id: follow.id,
+                      type: FollowType.update,
+                    );
+                  }
+                } else {
+                  for (final follow in data.selections) {
+                    await client.follows.update(
+                      id: follow.id,
+                      type: FollowType.notify,
+                    );
+                  }
+                }
               },
             ),
           IconButton(
             icon: Icon(bookmarked ? Icons.person_add : Icons.bookmark),
             tooltip: bookmarked ? 'Subscribe' : 'Bookmark',
             onPressed: () async {
-              if (bookmarked) {
-                update(
-                  data.selections.map(
-                    (e) => e.copyWith(type: FollowType.update),
-                  ),
-                );
-              } else {
-                update(
-                  data.selections.map(
-                    (e) => e.copyWith(type: FollowType.bookmark),
-                  ),
-                );
-              }
               data.clear();
+              if (bookmarked) {
+                for (final follow in data.selections) {
+                  await client.follows.update(
+                    id: follow.id,
+                    type: FollowType.update,
+                  );
+                }
+              } else {
+                for (final follow in data.selections) {
+                  await client.follows.update(
+                    id: follow.id,
+                    type: FollowType.bookmark,
+                  );
+                }
+              }
             },
           ),
           IconButton(
@@ -85,9 +80,11 @@ class FollowSelectionAppBar extends StatelessWidget with AppBarBuilderWidget {
             tooltip:
                 unseen > 0 ? 'mark $unseen posts as seen' : 'no unseen posts',
             onPressed: unseen > 0
-                ? () {
-                    update(data.selections.map((e) => e.withSeen()));
+                ? () async {
                     data.clear();
+                    client.follows.markAllSeen(
+                      ids: data.selections.map((e) => e.id).toList(),
+                    );
                   }
                 : null,
           ),

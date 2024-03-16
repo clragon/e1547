@@ -22,7 +22,7 @@ String tagToTitle(String tags) => tagToName(tagToRaw(tags));
 
 bool tagIsSingle(String tags) => !(tags.contains(' ') || tags.contains(':'));
 
-@Deprecated('Move this to E621Client, then make a client for this')
+// TODO: Move this to E621Client, then make a client for this
 enum TagCategory {
   general,
   species,

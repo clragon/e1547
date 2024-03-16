@@ -11,7 +11,6 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 const String followsBackgroundTaskKey = 'net.clynamic.e1547.follows';
 
 Future<bool> backgroundUpdateFollows({
-  required FollowsService service,
   required Client client,
   required FlutterLocalNotificationsPlugin notifications,
 }) async {
@@ -19,18 +18,14 @@ Future<bool> backgroundUpdateFollows({
 
   logger.info('Starting follow update');
 
-  List<Follow> previous = await service.all(
-    types: [FollowType.notify],
+  List<Follow> previous = await client.follows.all(
+    query: FollowsQuery(types: [FollowType.notify]),
   );
 
-  await FollowUpdate(
-    service: service,
-    client: client,
-    force: true,
-  ).run();
+  await client.follows.sync(force: true);
 
-  List<Follow> updated = await service.all(
-    types: [FollowType.notify],
+  List<Follow> updated = await client.follows.all(
+    query: FollowsQuery(types: [FollowType.notify]),
   );
 
   logger.info('Completed follow update');

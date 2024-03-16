@@ -85,7 +85,7 @@ Future<void> migrateFollows(
 
     await service.activate(identity.id);
 
-    FollowsService followsService = FollowsService(
+    FollowsDao followsService = FollowsDao(
       database: db,
       identity: identity.id,
     );

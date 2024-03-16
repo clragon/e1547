@@ -4,6 +4,7 @@ import 'package:e1547/client/client.dart';
 import 'package:e1547/identity/identity.dart';
 import 'package:e1547/integrations/e621/account.dart';
 import 'package:e1547/integrations/e621/comment.dart';
+import 'package:e1547/integrations/e621/follow.dart';
 import 'package:e1547/integrations/e621/pool.dart';
 import 'package:e1547/integrations/e621/post.dart';
 import 'package:e1547/integrations/e621/reply.dart';
@@ -59,6 +60,14 @@ class E621Client extends Client with ClientAssembly {
     );
     final users = E621UsersClient(dio: dio);
     final wikis = E621WikisClient(dio: dio);
+    final follows = E621FollowsClient(
+      database: storage.sqlite,
+      identity: identity,
+      traits: traitsState,
+      postsClient: posts,
+      poolsClient: pools,
+      tagsClient: tags,
+    );
 
     enableClients(
       accounts: accounts,
@@ -72,6 +81,7 @@ class E621Client extends Client with ClientAssembly {
       traits: traits,
       users: users,
       wikis: wikis,
+      follows: follows,
     );
   }
 

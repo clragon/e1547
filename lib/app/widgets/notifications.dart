@@ -2,8 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:e1547/app/app.dart';
+import 'package:e1547/client/client.dart';
 import 'package:e1547/follow/follow.dart';
-import 'package:e1547/interface/interface.dart';
 import 'package:e1547/logs/logs.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/tag/tag.dart';
@@ -125,16 +125,21 @@ class _NotificationHandlerState extends State<NotificationHandler> {
   }
 
   @override
-  Widget build(BuildContext context) => SubStream<List<Follow>>(
-        create: () => context
-            .watch<FollowsService>()
-            .all(types: [FollowType.notify]).stream,
-        listener: (event) {
-          final service = context.read<FollowsService>();
-          setupFollowBackground(event);
-          sendNotifications(event, service.identity!);
-        },
-        keys: [context.watch<FollowsService>()],
-        builder: (context, stream) => widget.child,
-      );
+  Widget build(BuildContext context) {
+    Client client = context.watch<Client>();
+    if (!client.hasFeature(FollowFeature.database)) {
+      return widget.child;
+    }
+    return SubStream<List<Follow>>(
+      create: () => client.follows
+          .all(query: FollowsQuery(types: [FollowType.notify]))
+          .streamed,
+      keys: [client],
+      listener: (event) {
+        setupFollowBackground(event);
+        sendNotifications(event, client.identity.id);
+      },
+      builder: (context, stream) => widget.child,
+    );
+  }
 }

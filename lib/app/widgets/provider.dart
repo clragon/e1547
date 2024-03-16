@@ -9,7 +9,6 @@ import 'dart:io';
 
 import 'package:e1547/app/app.dart';
 import 'package:e1547/client/client.dart';
-import 'package:e1547/follow/follow.dart';
 import 'package:e1547/history/history.dart';
 import 'package:e1547/identity/identity.dart';
 import 'package:e1547/settings/settings.dart';
@@ -104,34 +103,6 @@ class HistoriesServiceProvider extends SubChangeNotifierProvider3<AppStorage,
             },
             builder: (context) => builder?.call(context, child) ?? child!,
           ),
-        );
-}
-
-class FollowsProvider
-    extends SubProvider2<AppStorage, IdentitiesService, FollowsService> {
-  FollowsProvider({
-    super.child,
-    TransitionBuilder? builder,
-  }) : super(
-          create: (context, storage, identities) => FollowsService(
-            database: storage.sqlite,
-            identity: identities.identity.id,
-          ),
-          keys: (context) => [context.watch<IdentitiesService>().identity.id],
-          builder: (context, child) {
-            return SubChangeNotifierProvider<FollowsService, FollowsUpdater>(
-              create: (context, service) {
-                FollowsUpdater updater = FollowsUpdater(service: service);
-                WidgetsBinding.instance.addPostFrameCallback(
-                  (_) => updater.update(client: context.read<Client>()),
-                );
-                return updater;
-              },
-              builder: (context, child) =>
-                  builder?.call(context, child) ?? child!,
-              child: child,
-            );
-          },
         );
 }
 

@@ -1,120 +1,108 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:async/async.dart';
 import 'package:collection/collection.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/follow/follow.dart';
+import 'package:e1547/integrations/disk/follow.dart';
+import 'package:e1547/interface/interface.dart';
 import 'package:e1547/logs/logs.dart';
+import 'package:e1547/pool/data/client.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/tag/tag.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+import 'package:e1547/traits/traits.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:rxdart/rxdart.dart';
 
-class FollowsUpdater extends ValueNotifier<FollowUpdate?> {
-  FollowsUpdater({required this.service}) : super(null);
+class E621FollowsClient extends DiskFollowsClient {
+  E621FollowsClient({
+    required super.database,
+    required super.identity,
+    required this.traits,
+    required this.postsClient,
+    this.poolsClient,
+    this.tagsClient,
+  });
 
-  final FollowsService service;
-
-  final StreamController<int> _remaining = BehaviorSubject();
-  Stream<int> get remaining => _remaining.stream;
-
-  late StreamSubscription<int> _remainingCurrent;
+  final ValueNotifier<Traits> traits;
+  final PostsClient postsClient;
+  final PoolsClient? poolsClient;
+  final TagsClient? tagsClient;
 
   @override
-  set value(FollowUpdate? value) {
-    List<Object?> previous = [
-      this.value?.client,
-      this.value?.client.traitsState.value,
-      this.value?.force,
-    ];
-    List<Object?> current = [
-      value?.client,
-      value?.client.traitsState.value,
-      value?.force,
-    ];
-    bool noneRunning = this.value?.completed ?? true;
-    bool dependenciesChanged =
-        !const DeepCollectionEquality().equals(previous, current);
-    if (noneRunning || dependenciesChanged) {
-      if (this.value != null) {
-        this.value!.cancel();
-        _remainingCurrent.cancel();
-      }
-      super.value = value;
-      if (value != null) {
-        _remainingCurrent = value.remaining.listen(
-          _remaining.add,
-          onError: _remaining.addError,
-        );
-        value.run();
-      }
-    }
-  }
-
-  void update({
-    required Client client,
-    bool? force,
-  }) =>
-      value = FollowUpdate(
-        service: service,
-        client: client,
+  FollowSync createSync({bool? force}) => E621FollowSync(
+        dao: dao,
+        traits: traits,
+        postsClient: postsClient,
+        poolsClient: poolsClient,
+        tagsClient: tagsClient,
         force: force,
       );
-
-  void cancel() => value = null;
-
-  @override
-  void dispose() {
-    value?.cancel();
-    _remaining.close();
-    super.dispose();
-  }
 }
 
-class FollowUpdate {
-  FollowUpdate({
-    required this.service,
-    required this.client,
+class E621FollowSync implements FollowSync {
+  E621FollowSync({
+    required this.dao,
+    required this.traits,
+    required this.postsClient,
+    this.poolsClient,
+    this.tagsClient,
     this.force,
-    this.refreshAmount = 5,
-    this.refreshRate = const Duration(hours: 1),
   });
 
   late final Logger logger = Logger('$runtimeType#$hashCode');
 
-  final int refreshAmount;
-  final Duration refreshRate;
+  final int refreshAmount = 5;
+  final Duration refreshRate = const Duration(hours: 1);
 
-  final FollowsService service;
-  final Client client;
+  final FollowsDao dao;
+  final ValueNotifier<Traits> traits;
+  final PostsClient postsClient;
+  final PoolsClient? poolsClient;
+  final TagsClient? tagsClient;
   final bool? force;
 
-  bool _running = false;
-  bool get running => _running;
+  CancelableOperation<void>? _operation;
 
-  bool _cancelled = false;
-  bool get cancelled => _cancelled;
+  @override
+  bool get running => _operation != null;
 
+  @override
+  bool get completed => _operation?.isCompleted ?? false;
+
+  @override
+  bool get cancelled => _operation?.isCanceled ?? false;
+
+  @override
   void cancel() {
-    logger.fine('Follow update cancelled!');
-    _cancelled = true;
+    logger.fine('Sync cancelled!');
+    _operation?.cancel();
   }
 
-  Object? _error;
+  @override
   Object? get error => _error;
+  Object? _error;
+
+  @override
+  Stream<double> get progress =>
+      _remaining.stream.map((e) => _total == null ? 0 : e / _total!);
 
   late final StreamController<int> _remaining = BehaviorSubject()
     ..stream.listen(
-      (value) => logger.fine('Updating $value follows...'),
-      onError: (exception, stacktrace) =>
-          logger.severe('Follow update failed!', exception, stacktrace),
-      onDone: () => logger.info('Follow update finished!'),
+      (value) => logger.fine('Syncing ${(_total ?? 0) - value} follows...'),
+      onError: (exception, stacktrace) {
+        _error = exception;
+        if (exception is Error) {
+          logger.shout('Sync failed!', exception, stacktrace);
+        } else {
+          logger.warning('Sync failed!', exception, stacktrace);
+        }
+      },
+      onDone: () => logger.info('Sync finished!'),
     );
 
-  Stream<int> get remaining => _remaining.stream;
-
-  bool get completed => _remaining.isClosed;
+  int? _total;
 
   List<String> _previousTags = [];
 
@@ -123,24 +111,28 @@ class FollowUpdate {
         !const DeepCollectionEquality().equals(_previousTags, tags);
     assert(
       tagsAreDifferent,
-      'Follow update tried refreshing same follows twice!',
+      'Sync tried refreshing same follows twice!',
     );
     _previousTags = tags;
   }
 
+  @override
   Future<void> run() async {
-    if (_running) return;
-    _running = true;
-    logger.info('Follow update started!');
+    _operation ??= CancelableOperation.fromFuture(_run());
+    return _operation!.value;
+  }
+
+  Future<void> _run() async {
+    logger.info('Sync started!');
     try {
       if (force ?? false) {
         logger.fine('Force refreshing follows...');
-        await service.transaction(() async {
-          List<Follow> follows = await service.all(
+        await dao.transaction(() async {
+          List<Follow> follows = await dao.all(
             types: [FollowType.notify, FollowType.update],
           );
           for (final follow in follows) {
-            await service.replace(follow.copyWith(
+            await dao.replace(follow.copyWith(
               updated: null,
             ));
           }
@@ -150,23 +142,24 @@ class FollowUpdate {
       while (!cancelled) {
         List<Follow> follows = [];
 
-        follows.addAll(await service.outdated(
+        follows.addAll(await dao.outdated(
           minAge: refreshRate,
           types: [FollowType.notify, FollowType.update],
         ));
 
-        follows.addAll(await service.fresh(
+        follows.addAll(await dao.fresh(
           types: [FollowType.bookmark],
         ));
 
-        _remaining.add(follows.length);
+        _total ??= follows.length;
+        _remaining.add(_total! - follows.length);
 
         List<Follow> singles = follows.where((e) => e.isSingle).toList();
         if (singles.isNotEmpty) {
           List<Follow> updates = await _refreshSingles(singles);
-          await service.transaction(() async {
+          await dao.transaction(() async {
             for (final update in updates) {
-              await service.replace(update);
+              await dao.replace(update);
             }
           });
           continue;
@@ -175,13 +168,13 @@ class FollowUpdate {
         List<Follow> multiples = follows.whereNot(singles.contains).toList();
         if (multiples.isNotEmpty) {
           Follow update = await _refreshMultiples(multiples);
-          await service.replace(update);
+          await dao.replace(update);
           continue;
         }
 
         break;
       }
-    } on ClientException catch (error, stacktrace) {
+    } on Object catch (error, stacktrace) {
       _remaining.addError(error, stacktrace);
     } finally {
       _remaining.close();
@@ -194,7 +187,7 @@ class FollowUpdate {
     _assertNoDuplicates(tags);
 
     int limit = follows.length * refreshAmount;
-    List<Post> allPosts = await rateLimit(client.posts.byTags(
+    List<Post> allPosts = await rateLimit(postsClient.byTags(
       tags: tags,
       page: 1,
       limit: limit,
@@ -224,26 +217,26 @@ class FollowUpdate {
       List<Post> leftovers = allPosts.whereNot(picked.contains).toList();
       if (leftovers.isNotEmpty) {
         logger.info(
-          'Follow update found ${leftovers.length} leftover posts!\n'
+          'Sync found ${leftovers.length} leftover posts!\n'
           '${prettyLogObject(leftovers, header: 'Leftovers')}',
         );
       }
       return leftovers.isNotEmpty;
     }
 
-    if (hasLeftovers() && client.hasFeature(ClientFeature.tags)) {
+    if (hasLeftovers() && tagsClient != null) {
       for (final update in Map.from(updates).entries) {
         Follow follow = update.key;
         List<Post> posts = update.value;
         if (posts.isNotEmpty) continue;
-        String? alias = await rateLimit(client.tags.aliases(
-          query: TagMap({'search[antecedent_name]': follow.tags}),
+        String? alias = await rateLimit(tagsClient!.aliases(
+          query: {'search[antecedent_name]': follow.tags},
         ));
         if (alias != follow.alias) {
           Follow updated = follow.copyWith(alias: alias);
           updates[updated] = updates.remove(follow)!;
           logger.info(
-            'Follow update corrected alias for ${follow.tags} to $alias',
+            'Sync corrected alias for ${follow.tags} to $alias',
           );
           updates = assign(updates.keys.toList(), allPosts);
           if (!hasLeftovers()) break;
@@ -259,8 +252,7 @@ class FollowUpdate {
       bool latestReached = posts.any((e) => e.id == follow.latest);
       bool depleted = allPosts.length < limit;
       if ([limitReached, latestReached, depleted].any((e) => e)) {
-        posts.removeWhere(
-            (e) => e.isDeniedBy(client.traitsState.value.denylist));
+        posts.removeWhere((e) => e.isDeniedBy(traits.value.denylist));
         result.add(follow.withUnseen(posts));
       }
     }
@@ -271,33 +263,35 @@ class FollowUpdate {
     Follow follow = multiples.first;
     _assertNoDuplicates([follow.tags]);
 
-    List<Post> posts = await rateLimit(client.posts.page(
-      query: TagMap({'tags': follow.tags}),
+    List<Post> posts = await rateLimit(postsClient.page(
+      query: {'tags': follow.tags},
       limit: refreshAmount,
       ordered: false,
       force: force,
     ));
-    posts.removeWhere((e) => e.isDeniedBy(client.traitsState.value.denylist));
+    posts.removeWhere((e) => e.isDeniedBy(traits.value.denylist));
     follow = follow.withUnseen(posts);
-    RegExpMatch? match = poolRegex().firstMatch(follow.tags);
-    if (follow.title == null && match != null) {
-      try {
-        follow = follow.withPool(
-          await client.pools.get(
-            id: int.parse(match.namedGroup('id')!),
-            force: force,
-          ),
-        );
-      } on ClientException catch (e) {
-        if (e.response?.statusCode == HttpStatus.notFound) {
-          follow = follow.copyWith(
-            type: FollowType.bookmark,
+    if (poolsClient != null) {
+      RegExpMatch? match = poolRegex().firstMatch(follow.tags);
+      if (follow.title == null && match != null) {
+        try {
+          follow = follow.withPool(
+            await poolsClient!.get(
+              id: int.parse(match.namedGroup('id')!),
+              force: force,
+            ),
           );
-          logger.info(
-            'Follow update found no pool for ${follow.tags}. Set to bookmarked!',
-          );
-        } else {
-          rethrow;
+        } on ClientException catch (e) {
+          if (e.response?.statusCode == HttpStatus.notFound) {
+            follow = follow.copyWith(
+              type: FollowType.bookmark,
+            );
+            logger.info(
+              'Sync found no pool for ${follow.tags}. Set to bookmarked!',
+            );
+          } else {
+            rethrow;
+          }
         }
       }
     }

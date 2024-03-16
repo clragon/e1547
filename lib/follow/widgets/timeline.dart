@@ -17,9 +17,7 @@ class _FollowsTimelinePageState extends State<FollowsTimelinePage> {
       child: PostsProvider.builder(
         create: (context, client) => FollowTimelineController(
           client: client,
-          follows: context.read<FollowsService>(),
         ),
-        keys: (context) => [context.watch<FollowsService>()],
         child: Consumer<PostsController>(
           builder: (context, controller, child) => PostsPage(
             appBar: const DefaultAppBar(

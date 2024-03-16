@@ -55,3 +55,19 @@ Map<String, dynamic> _$$FollowRequestImplToJson(_$FollowRequestImpl instance) =>
       'alias': instance.alias,
       'type': _$FollowTypeEnumMap[instance.type]!,
     };
+
+_$FollowUpdateImpl _$$FollowUpdateImplFromJson(Map<String, dynamic> json) =>
+    _$FollowUpdateImpl(
+      id: json['id'] as int,
+      tags: json['tags'] as String?,
+      title: json['title'] as String?,
+      type: $enumDecodeNullable(_$FollowTypeEnumMap, json['type']),
+    );
+
+Map<String, dynamic> _$$FollowUpdateImplToJson(_$FollowUpdateImpl instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'tags': instance.tags,
+      'title': instance.title,
+      'type': _$FollowTypeEnumMap[instance.type],
+    };

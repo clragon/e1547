@@ -504,3 +504,192 @@ abstract class _FollowRequest implements FollowRequest {
   _$$FollowRequestImplCopyWith<_$FollowRequestImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
+
+FollowUpdate _$FollowUpdateFromJson(Map<String, dynamic> json) {
+  return _FollowUpdate.fromJson(json);
+}
+
+/// @nodoc
+mixin _$FollowUpdate {
+  int get id => throw _privateConstructorUsedError;
+  String? get tags => throw _privateConstructorUsedError;
+  String? get title => throw _privateConstructorUsedError;
+  FollowType? get type => throw _privateConstructorUsedError;
+
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+  @JsonKey(ignore: true)
+  $FollowUpdateCopyWith<FollowUpdate> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $FollowUpdateCopyWith<$Res> {
+  factory $FollowUpdateCopyWith(
+          FollowUpdate value, $Res Function(FollowUpdate) then) =
+      _$FollowUpdateCopyWithImpl<$Res, FollowUpdate>;
+  @useResult
+  $Res call({int id, String? tags, String? title, FollowType? type});
+}
+
+/// @nodoc
+class _$FollowUpdateCopyWithImpl<$Res, $Val extends FollowUpdate>
+    implements $FollowUpdateCopyWith<$Res> {
+  _$FollowUpdateCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = null,
+    Object? tags = freezed,
+    Object? title = freezed,
+    Object? type = freezed,
+  }) {
+    return _then(_value.copyWith(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as int,
+      tags: freezed == tags
+          ? _value.tags
+          : tags // ignore: cast_nullable_to_non_nullable
+              as String?,
+      title: freezed == title
+          ? _value.title
+          : title // ignore: cast_nullable_to_non_nullable
+              as String?,
+      type: freezed == type
+          ? _value.type
+          : type // ignore: cast_nullable_to_non_nullable
+              as FollowType?,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$FollowUpdateImplCopyWith<$Res>
+    implements $FollowUpdateCopyWith<$Res> {
+  factory _$$FollowUpdateImplCopyWith(
+          _$FollowUpdateImpl value, $Res Function(_$FollowUpdateImpl) then) =
+      __$$FollowUpdateImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({int id, String? tags, String? title, FollowType? type});
+}
+
+/// @nodoc
+class __$$FollowUpdateImplCopyWithImpl<$Res>
+    extends _$FollowUpdateCopyWithImpl<$Res, _$FollowUpdateImpl>
+    implements _$$FollowUpdateImplCopyWith<$Res> {
+  __$$FollowUpdateImplCopyWithImpl(
+      _$FollowUpdateImpl _value, $Res Function(_$FollowUpdateImpl) _then)
+      : super(_value, _then);
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = null,
+    Object? tags = freezed,
+    Object? title = freezed,
+    Object? type = freezed,
+  }) {
+    return _then(_$FollowUpdateImpl(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as int,
+      tags: freezed == tags
+          ? _value.tags
+          : tags // ignore: cast_nullable_to_non_nullable
+              as String?,
+      title: freezed == title
+          ? _value.title
+          : title // ignore: cast_nullable_to_non_nullable
+              as String?,
+      type: freezed == type
+          ? _value.type
+          : type // ignore: cast_nullable_to_non_nullable
+              as FollowType?,
+    ));
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$FollowUpdateImpl implements _FollowUpdate {
+  const _$FollowUpdateImpl(
+      {required this.id, this.tags, this.title, this.type});
+
+  factory _$FollowUpdateImpl.fromJson(Map<String, dynamic> json) =>
+      _$$FollowUpdateImplFromJson(json);
+
+  @override
+  final int id;
+  @override
+  final String? tags;
+  @override
+  final String? title;
+  @override
+  final FollowType? type;
+
+  @override
+  String toString() {
+    return 'FollowUpdate(id: $id, tags: $tags, title: $title, type: $type)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$FollowUpdateImpl &&
+            (identical(other.id, id) || other.id == id) &&
+            (identical(other.tags, tags) || other.tags == tags) &&
+            (identical(other.title, title) || other.title == title) &&
+            (identical(other.type, type) || other.type == type));
+  }
+
+  @JsonKey(ignore: true)
+  @override
+  int get hashCode => Object.hash(runtimeType, id, tags, title, type);
+
+  @JsonKey(ignore: true)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$FollowUpdateImplCopyWith<_$FollowUpdateImpl> get copyWith =>
+      __$$FollowUpdateImplCopyWithImpl<_$FollowUpdateImpl>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$FollowUpdateImplToJson(
+      this,
+    );
+  }
+}
+
+abstract class _FollowUpdate implements FollowUpdate {
+  const factory _FollowUpdate(
+      {required final int id,
+      final String? tags,
+      final String? title,
+      final FollowType? type}) = _$FollowUpdateImpl;
+
+  factory _FollowUpdate.fromJson(Map<String, dynamic> json) =
+      _$FollowUpdateImpl.fromJson;
+
+  @override
+  int get id;
+  @override
+  String? get tags;
+  @override
+  String? get title;
+  @override
+  FollowType? get type;
+  @override
+  @JsonKey(ignore: true)
+  _$$FollowUpdateImplCopyWith<_$FollowUpdateImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}

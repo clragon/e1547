@@ -16,7 +16,7 @@ void executeBackgroundTasks() => Workmanager().executeTask(
                 await initializeNotifications();
 
             // this ensures continued scheduling on iOS.
-            FollowsService allFollows = FollowsService(
+            FollowsDao allFollows = FollowsDao(
               database: bundle.storage.sqlite,
               identity: null,
             );
@@ -31,11 +31,6 @@ void executeBackgroundTasks() => Workmanager().executeTask(
             final clientFactory = ClientFactory();
 
             for (final identity in identities) {
-              FollowsService follows = FollowsService(
-                database: bundle.storage.sqlite,
-                identity: identity.id,
-              );
-
               TraitsService traits =
                   TraitsService(database: bundle.storage.sqlite);
               await traits.activate(identity.id);
@@ -50,7 +45,6 @@ void executeBackgroundTasks() => Workmanager().executeTask(
 
               result.add(
                 await backgroundUpdateFollows(
-                  service: follows,
                   client: client,
                   notifications: notifications,
                 ),

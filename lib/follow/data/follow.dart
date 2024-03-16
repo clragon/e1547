@@ -33,7 +33,19 @@ class FollowRequest with _$FollowRequest {
       _$FollowRequestFromJson(json);
 }
 
-@JsonEnum()
+@freezed
+class FollowUpdate with _$FollowUpdate {
+  const factory FollowUpdate({
+    required int id,
+    String? tags,
+    String? title,
+    FollowType? type,
+  }) = _FollowUpdate;
+
+  factory FollowUpdate.fromJson(Map<String, dynamic> json) =>
+      _$FollowUpdateFromJson(json);
+}
+
 enum FollowType {
   update,
   notify,

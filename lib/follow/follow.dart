@@ -1,11 +1,10 @@
 // data
 export 'data/actions.dart';
+export 'data/client.dart';
 export 'data/controller.dart';
 export 'data/database.dart';
 export 'data/follow.dart';
 export 'data/notifications.dart';
-export 'data/service.dart';
-export 'data/updater.dart';
 // widgets
 export 'widgets/appbar.dart';
 export 'widgets/bookmark.dart';
@@ -15,4 +14,3 @@ export 'widgets/icon.dart';
 export 'widgets/subscriptions.dart';
 export 'widgets/tile.dart';
 export 'widgets/timeline.dart';
-export 'widgets/updates.dart';

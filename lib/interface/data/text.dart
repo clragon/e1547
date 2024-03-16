@@ -68,9 +68,7 @@ extension StringEllipsing on String {
 
 extension StringNullifying on String {
   String? get nullWhenEmpty {
-    if (isEmpty) {
-      return null;
-    }
+    if (trim().isEmpty) return null;
     return this;
   }
 }
@@ -79,6 +77,10 @@ extension StringListTrimming on List<String> {
   /// Trims all strings in the list and removes empty strings.
   List<String> trim() =>
       map((e) => e.trim()).toList()..removeWhere((element) => element.isEmpty);
+}
+
+extension StringInfixRegexing on String {
+  String get infixRegex => '.*${RegExp.escape(this)}.*';
 }
 
 String linkToDisplay(String link) {

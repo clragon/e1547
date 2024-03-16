@@ -58,25 +58,26 @@ class SettingsPage extends StatelessWidget {
                   ),
                 ),
               ),
-              Consumer2<FollowsService, Client>(
-                builder: (context, service, client, child) => SubStream<int>(
-                  create: () => service.length().stream,
-                  keys: [service, client.host],
-                  builder: (context, snapshot) => ListTile(
-                    title: const Text('Follows'),
-                    subtitle: snapshot.data != null && snapshot.data != 0
-                        ? Text('${snapshot.data} searches followed')
-                        : null,
-                    leading: const Icon(Icons.person_add),
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const FollowEditor(),
+              if (context.watch<Client>().hasFeature(ClientFeature.follows))
+                Consumer<Client>(
+                  builder: (context, client, child) => SubStream<int>(
+                    create: () => client.follows.count().streamed,
+                    keys: [client],
+                    builder: (context, snapshot) => ListTile(
+                      title: const Text('Follows'),
+                      subtitle: snapshot.data != null && snapshot.data != 0
+                          ? Text('${snapshot.data} searches followed')
+                          : null,
+                      leading: const Icon(Icons.person_add),
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const FollowEditor(),
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
               Consumer2<HistoriesService, Client>(
                 builder: (context, service, client, child) => SubStream<int>(
                   create: () => service.length(),

@@ -36,26 +36,25 @@ class _PostsSearchPageState extends State<PostsSearchPage> {
     return PostsProvider(
       query: widget.query,
       orderPools: widget.orderPoolsByOldest,
-      child: Consumer3<PostsController, FollowsService, Client>(
-        builder: (context, controller, follows, client, child) {
+      child: Consumer2<PostsController, Client>(
+        builder: (context, controller, client, child) {
           Future<void> updateFollow() async {
-            follow = await follows.follow(
-              controller.query['tags'] ?? '',
-            );
+            String? tags = controller.query['tags'];
+            if (tags?.nullWhenEmpty != null) {
+              follow = await client.follows.getByTags(tags: tags!);
+            } else {
+              follow = null;
+            }
             if (follow != null) {
-              Follow updated = follow!;
-              if (controller.items?.isNotEmpty ?? false) {
-                updated = follow!.withLatest(
-                  controller.items!.first,
-                  foreground: mounted,
-                );
-              }
-              if (pool != null) {
-                updated = updated.withPool(pool!);
-              }
-              if (updated != follow) {
-                await follows.replace(updated);
-              }
+              await client.follows.syncWith(
+                id: follow!.id,
+                post: controller.items,
+                pool: pool,
+              );
+              if (!context.mounted) return;
+              Follow updated = await client.follows.get(id: follow!.id);
+              if (follow == updated) return;
+              if (!context.mounted) return;
               setState(() => follow = updated);
             }
           }

@@ -2,8 +2,12 @@ import 'package:async/async.dart';
 
 /// A [Future] that wraps a [Stream].
 ///
-/// This is useful for situations where you usually only need the first item of a
-/// stream, but sometimes need to access the stream itself.
+/// This is useful for situations where an interface returns a [Future], but
+/// might provide updates through a [Stream].
+///
+/// With [StreamFuture], we can therefore serve both
+/// single and continuous consumption of data,
+/// while defaulting to single consumption, as opposed to a [Stream].
 class StreamFuture<T> extends DelegatingFuture<T> {
   /// Creates a [StreamFuture] from a [stream].
   ///
@@ -34,5 +38,23 @@ class StreamFuture<T> extends DelegatingFuture<T> {
 
 /// An extension on [Stream] to easily create a [StreamFuture].
 extension StreamFutureExtension<T> on Stream<T> {
-  StreamFuture<T> get future => StreamFuture(this);
+  /// Creates a [StreamFuture] from this [Stream].
+  StreamFuture<T> get future => StreamFuture<T>(this);
+}
+
+/// An extension on [Future] to either cast it to a [StreamFuture] or create a
+/// new one from it. Note that the resulting [StreamFuture]
+/// might only return a single value, if the original [Future] is not a [StreamFuture].
+extension FutureStreamExtension<T> on Future<T> {
+  /// Creates a [StreamFuture] from this [Future].
+  /// Either casts it to a [StreamFuture] if it already is one, or creates a new
+  /// [StreamFuture] from it.
+  StreamFuture<T> get stream => this is StreamFuture<T>
+      ? this as StreamFuture<T>
+      : StreamFuture<T>(asStream());
+
+  /// Turns this [Future] into a [Stream].
+  /// If the [Future] is already a [StreamFuture], it will return the [Stream]
+  /// from it. Otherwise, it will create a new [Stream] from the [Future].
+  Stream<T> get streamed => stream.stream;
 }

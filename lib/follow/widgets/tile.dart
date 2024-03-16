@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:e1547/app/app.dart';
+import 'package:e1547/client/client.dart';
 import 'package:e1547/follow/follow.dart';
-import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
@@ -14,8 +14,8 @@ class FollowTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Client client = context.watch<Client>();
     PromptActionController? promptController = PromptActions.maybeOf(context);
-    FollowsService follows = context.watch<FollowsService>();
     bool active = follow.latest != null && follow.thumbnail != null;
 
     void editTitle() {
@@ -32,12 +32,10 @@ class FollowTile extends StatelessWidget {
             submit: (value) {
               String? title = value.trim();
               if (follow.title != value) {
-                if (value.isEmpty) {
-                  title = null;
-                }
-                follows.replace(follow.copyWith(
+                client.follows.update(
+                  id: follow.id,
                   title: title,
-                ));
+                );
               }
             },
           ),
@@ -52,15 +50,12 @@ class FollowTile extends StatelessWidget {
           onSubmit: (value) {
             value = value.trim();
             if (value.isNotEmpty) {
-              follows.replace(follow.copyWith(
+              client.follows.update(
+                id: follow.id,
                 tags: value,
-                updated: null,
-                unseen: null,
-                thumbnail: null,
-                latest: null,
-              ));
+              );
             } else {
-              follows.remove(follow.id);
+              client.follows.delete(id: follow.id);
             }
           },
           actionController: promptController,
@@ -80,18 +75,15 @@ class FollowTile extends StatelessWidget {
         itemBuilder: (context) => [
           if ((follow.unseen ?? 0) > 0)
             PopupMenuTile(
-              value: () => follows.replace(
-                follow.withSeen(),
-              ),
+              value: () => client.follows.markSeen(id: follow.id),
               title: 'Mark as read',
               icon: Icons.mark_email_read,
             ),
           if (PlatformCapabilities.hasNotifications && !bookmarked)
             PopupMenuTile(
-              value: () => follows.replace(
-                follow.copyWith(
-                  type: !notified ? FollowType.notify : FollowType.update,
-                ),
+              value: () => client.follows.update(
+                id: follow.id,
+                type: !notified ? FollowType.notify : FollowType.update,
               ),
               title:
                   notified ? 'Disable notifications' : 'Enable notifications',
@@ -101,10 +93,9 @@ class FollowTile extends StatelessWidget {
             ),
           if (!PlatformCapabilities.hasNotifications || !notified)
             PopupMenuTile(
-              value: () => follows.replace(
-                follow.copyWith(
-                  type: !bookmarked ? FollowType.bookmark : FollowType.update,
-                ),
+              value: () => client.follows.update(
+                id: follow.id,
+                type: !bookmarked ? FollowType.bookmark : FollowType.update,
               ),
               title: bookmarked ? 'Subscribe' : 'Bookmark',
               icon: bookmarked ? Icons.person_add : Icons.bookmark,
@@ -122,7 +113,7 @@ class FollowTile extends StatelessWidget {
               icon: Icons.edit,
             ),
           PopupMenuTile(
-            value: () => follows.remove(follow.id),
+            value: () => client.follows.delete(id: follow.id),
             title: 'Unfollow',
             icon: Icons.person_remove,
           ),
@@ -243,9 +234,8 @@ class FollowTile extends StatelessWidget {
                         opacity: 0.7,
                         child: Row(
                           children: [
-                            // if (PlatformCapabilities.hasNotifications || follow.type != FollowType.notify)
                             CrossFade(
-                              showChild: follow.type != FollowType.update,
+                              showChild: follow.type == FollowType.notify,
                               child: Padding(
                                 padding: const EdgeInsets.only(right: 4),
                                 child: follow.type.icon,

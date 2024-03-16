@@ -6,6 +6,7 @@ import 'package:e1547/interface/interface.dart';
 export 'package:dio/dio.dart' show CancelToken;
 export 'package:dio_cache_interceptor/dio_cache_interceptor.dart';
 
+// TODO: Controllers now also throw Database exceptions, so this needs to be a real class.
 typedef ClientException = DioException;
 
 extension QueryMapExtension on Map<String, dynamic> {
@@ -17,10 +18,16 @@ extension QueryMapExtension on Map<String, dynamic> {
         entries.where((entry) => entry.value != null).map(
               (entry) => MapEntry(
                 entry.key,
-                entry.value.toString(),
+                _stringify(entry.value),
               ),
             ),
       );
+
+  String _stringify(Object? value) => switch (value) {
+        List e => e.map(_stringify).join(','),
+        Enum e => e.name,
+        _ => value.toString(),
+      };
 }
 
 Future<bool> validateCall(Future<void> Function() call) async {

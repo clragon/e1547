@@ -1,6 +1,6 @@
 import 'package:collection/collection.dart';
+import 'package:e1547/client/client.dart';
 import 'package:e1547/follow/follow.dart';
-import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
 
 class FollowEditor extends StatefulWidget {
@@ -15,19 +15,61 @@ class _FollowEditorState extends State<FollowEditor> {
   final String subscribe = FollowType.update.name;
   final String bookmark = FollowType.bookmark.name;
 
-  late FollowsService service = context.read<FollowsService>();
-  late Future<Map<String, String>> follows = Future(
-    () async => {
-      notify: await service.all(types: [FollowType.notify]).then(followString),
-      subscribe:
-          await service.all(types: [FollowType.update]).then(followString),
-      bookmark:
-          await service.all(types: [FollowType.bookmark]).then(followString),
+  late Client client = context.read<Client>();
+  late Future<List<Follow>> all = client.follows.all();
+  late Future<Map<String, String>> follows = all.then(
+    (all) => {
+      notify: followString(all.where((e) => e.type == FollowType.notify)),
+      subscribe: followString(all.where((e) => e.type == FollowType.update)),
+      bookmark: followString(all.where((e) => e.type == FollowType.bookmark)),
     },
   );
 
-  String followString(List<Follow> follows) {
-    return follows.map((e) => e.tags).join('\n');
+  String followString(Iterable<Follow> follows) =>
+      follows.map((e) => e.tags).join('\n');
+
+  Future<void> edit({
+    List<String>? notifications,
+    List<String>? subscriptions,
+    List<String>? bookmarks,
+  }) async {
+    List<Follow> allRemoved = [];
+    List<FollowRequest> allAdded = [];
+
+    Future<void> process(List<String> updateList, FollowType type) async {
+      List<Follow> follows = await all
+          .then((value) => value.where((e) => e.type == type).toList());
+      List<Follow> removed =
+          follows.whereNot((e) => updateList.contains(e.tags)).toList();
+      List<String> tags = follows.map((e) => e.tags).toList();
+      List<FollowRequest> added = updateList
+          .whereNot((e) => tags.contains(e))
+          .map((e) => FollowRequest(tags: e, type: type))
+          .toList();
+
+      allRemoved.addAll(removed);
+      allAdded.addAll(added);
+    }
+
+    if (notifications != null) {
+      await process(notifications, FollowType.notify);
+    }
+    if (subscriptions != null) {
+      await process(subscriptions, FollowType.update);
+    }
+    if (bookmarks != null) {
+      await process(bookmarks, FollowType.bookmark);
+    }
+
+    for (final follow in allRemoved) {
+      await client.follows.delete(id: follow.id);
+    }
+    for (final follow in allAdded) {
+      await client.follows.create(
+        tags: follow.tags,
+        type: follow.type,
+      );
+    }
   }
 
   @override
@@ -64,7 +106,7 @@ class _FollowEditorState extends State<FollowEditor> {
                   ),
                 ),
           );
-          await service.edit(
+          await edit(
             notifications: contents[notify],
             subscriptions: contents[subscribe],
             bookmarks: contents[bookmark],

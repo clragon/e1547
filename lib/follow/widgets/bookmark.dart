@@ -11,49 +11,50 @@ class FollowsBookmarkPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return RouterDrawerEntry<FollowsBookmarkPage>(
-      child: Consumer<FollowsService>(
-        builder: (context, service, child) => SubEffect(
-          effect: () {
-            WidgetsBinding.instance.addPostFrameCallback(
-              (_) => context.read<FollowsUpdater>().update(
-                    client: context.read<Client>(),
-                  ),
-            );
-            return null;
-          },
-          keys: const [],
-          child: SubStream<List<Follow>>(
-            create: () => service.all(
-              types: [FollowType.bookmark],
-            ).stream,
-            keys: [service],
-            builder: (context, snapshot) {
-              List<Follow>? follows = snapshot.data;
-              return SelectionLayout<Follow>(
-                items: follows,
-                child: PromptActions(
-                  child: AdaptiveScaffold(
-                    appBar: FollowSelectionAppBar(
-                      service: service,
-                      child: const DefaultAppBar(
-                        title: Text('Bookmarks'),
-                      ),
+      child: SubChangeNotifierProvider<Client, FollowsController>(
+        create: (context, client) => FollowsController(
+          client: client,
+          types: [FollowType.bookmark],
+        ),
+        child: Consumer<FollowsController>(
+          builder: (context, controller, child) => SubEffect(
+            effect: () {
+              // remove this when the paged grid view is implemented
+              controller.getNextPage();
+              final client = context.read<Client>();
+              if (client.hasFeature(FollowFeature.database)) {
+                client.follows.sync();
+              }
+              return null;
+            },
+            keys: const [],
+            child: SelectionLayout<Follow>(
+              items: controller.items,
+              child: PromptActions(
+                child: RefreshableDataPage.builder(
+                  controller: controller,
+                  appBar: const FollowSelectionAppBar(
+                    child: DefaultAppBar(
+                      title: Text('Bookmarks'),
                     ),
-                    drawer: const RouterDrawer(),
-                    floatingActionButton: AddTagFloatingActionButton(
-                      title: 'Add to bookmarks',
-                      onSubmit: (value) {
-                        value = value.trim();
-                        if (value.isNotEmpty) {
-                          service.addTag(
-                            value,
+                  ),
+                  drawer: const RouterDrawer(),
+                  floatingActionButton: AddTagFloatingActionButton(
+                    title: 'Add to bookmarks',
+                    onSubmit: (value) async {
+                      value = value.trim();
+                      if (value.isEmpty) return;
+                      await context.read<Client>().follows.create(
+                            tags: value,
                             type: FollowType.bookmark,
                           );
-                        }
-                      },
-                    ),
-                    body: TileLayout(
-                      child: LoadingPage(
+                    },
+                  ),
+                  builder: (context, child) =>
+                      LimitedWidthLayout(child: TileLayout(child: child)),
+                  child: (context) =>
+                      // TODO: Implement PagedAlignedGridView and PagedSliverAlignedGrid
+                      /*
                         onEmpty: const IconMessage(
                           title: Text('No bookmarks'),
                           icon: Icon(Icons.clear),
@@ -62,26 +63,20 @@ class FollowsBookmarkPage extends StatelessWidget {
                           title: Text('Failed to load bookmarks'),
                           icon: Icon(Icons.warning_amber),
                         ),
-                        isError: snapshot.hasError,
-                        isBuilt: follows != null,
-                        isLoading: follows == null,
-                        isEmpty: follows?.isEmpty ?? false,
-                        child: (context) => AlignedGridView.count(
-                          primary: true,
-                          padding: defaultActionListPadding,
-                          addAutomaticKeepAlives: false,
-                          itemCount: follows?.length ?? 0,
-                          itemBuilder: (context, index) => FollowTile(
-                            follow: follows![index],
-                          ),
-                          crossAxisCount: TileLayout.of(context).crossAxisCount,
-                        ),
-                      ),
+                        */
+                      AlignedGridView.count(
+                    primary: true,
+                    padding: defaultActionListPadding,
+                    addAutomaticKeepAlives: false,
+                    itemCount: controller.items?.length ?? 0,
+                    itemBuilder: (context, index) => FollowTile(
+                      follow: controller.items![index],
                     ),
+                    crossAxisCount: TileLayout.of(context).crossAxisCount,
                   ),
                 ),
-              );
-            },
+              ),
+            ),
           ),
         ),
       ),

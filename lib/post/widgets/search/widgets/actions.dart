@@ -16,10 +16,10 @@ class TagListActions extends StatelessWidget {
     if (wikiMetaTags.any((prefix) => tag.startsWith(prefix))) {
       return const SizedBox.shrink();
     }
-    return Consumer2<FollowsService, Client>(
-      builder: (context, follows, client, child) => SubStream<Follow?>(
-        create: () => follows.follow(tag).stream,
-        keys: [follows, tag],
+    return Consumer<Client>(
+      builder: (context, client, child) => SubStream<Follow?>(
+        create: () => client.follows.getByTags(tags: tag).streamed,
+        keys: [client, tag],
         builder: (context, snapshot) => ValueListenableBuilder(
           valueListenable: client.traitsState,
           builder: (context, traits, child) => AnimatedSwitcher(
@@ -43,16 +43,16 @@ class TagListActions extends StatelessWidget {
                         return () {
                           if (hasFollow) {
                             if (follow.type == type) {
-                              follows.removeTag(tag);
+                              client.follows.delete(id: follow.id);
                             }
                             if (follow.type == FollowType.notify &&
                                 type == FollowType.update) {
-                              follows.removeTag(tag);
+                              client.follows.delete(id: follow.id);
                             } else {
-                              follows.replace(follow.copyWith(type: type));
+                              client.follows.update(id: follow.id, type: type);
                             }
                           } else {
-                            follows.addTag(tag, type: type);
+                            client.follows.create(tags: tag, type: type);
                             if (denied) {
                               client.traitsState.value = traits.copyWith(
                                 denylist: traits.denylist..remove(tag),
@@ -91,13 +91,15 @@ class TagListActions extends StatelessWidget {
                                         : const Text('Notify'),
                                     onTap: () {
                                       if (notifying) {
-                                        follows.replace(follow!.copyWith(
+                                        client.follows.update(
+                                          id: follow!.id,
                                           type: FollowType.update,
-                                        ));
+                                        );
                                       } else {
-                                        follows.replace(follow!.copyWith(
+                                        client.follows.update(
+                                          id: follow!.id,
                                           type: FollowType.notify,
-                                        ));
+                                        );
                                       }
                                     },
                                   ),
@@ -137,7 +139,7 @@ class TagListActions extends StatelessWidget {
                                   );
                                 } else {
                                   if (hasFollow) {
-                                    follows.removeTag(tag);
+                                    client.follows.delete(id: follow.id);
                                   }
                                   client.traits.push(
                                     traits: traits.copyWith(
@@ -228,8 +230,7 @@ class SubtractTagAction extends StatelessWidget {
       label: const Text('Subtract'),
       onTap: () {
         Navigator.of(context).maybePop();
-        // controller.search = sortTags([controller.search, '-$tag'].join(' '));
-        TagMap result = TagMap(controller.query);
+        QueryMap result = Map.from(controller.query);
         result['tags'] =
             (TagMap.parse(result['tags'] ?? '')..add('-$tag')).toString();
         controller.query = result;

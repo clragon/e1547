@@ -54,6 +54,8 @@ final List<RouterDrawerDestination> rootDestintations = [
     builder: (context) => const FollowsTimelinePage(),
     unique: true,
     group: _drawerFollowsGroup,
+    visible: (context) =>
+        context.watch<Client>().hasFeature(ClientFeature.follows),
   ),
   NamedRouterDrawerDestination(
     path: '/subscriptions',
@@ -62,6 +64,8 @@ final List<RouterDrawerDestination> rootDestintations = [
     builder: (context) => const FollowsSubscriptionsPage(),
     unique: true,
     group: _drawerFollowsGroup,
+    visible: (context) =>
+        context.watch<Client>().hasFeature(ClientFeature.follows),
   ),
   NamedRouterDrawerDestination(
     path: '/bookmarks',
@@ -70,6 +74,8 @@ final List<RouterDrawerDestination> rootDestintations = [
     builder: (context) => const FollowsBookmarkPage(),
     unique: true,
     group: _drawerFollowsGroup,
+    visible: (context) =>
+        context.watch<Client>().hasFeature(ClientFeature.follows),
   ),
   NamedRouterDrawerDestination(
     path: '/pools',
