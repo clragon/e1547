@@ -107,10 +107,13 @@ class DanbooruPostsClient extends PostsClient {
     bool? force,
     CancelToken? cancelToken,
   }) async {
+    // TODO: this is extremely inefficient
+    // its unclear how we can replace this functionality, given that
+    // danbooru has a limit of 2 tags per query for free users.
     page ??= 1;
     tags.removeWhere((e) => e.contains(' ') || e.contains(':'));
     if (tags.isEmpty) return [];
-    int max = 40;
+    int max = 2;
     int pages = (tags.length / max).ceil();
     int chunkSize = (tags.length / pages).ceil();
 
