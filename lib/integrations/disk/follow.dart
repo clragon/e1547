@@ -39,7 +39,7 @@ abstract class DiskFollowsClient extends FollowsClient with Disposable {
     CancelToken? cancelToken,
   }) =>
       (dao.select(dao.followsTable)..where((tbl) => tbl.tags.equals(tags)))
-          .watchSingle()
+          .watchSingleOrNull()
           .future;
 
   @override
