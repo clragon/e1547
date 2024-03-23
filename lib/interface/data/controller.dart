@@ -111,7 +111,8 @@ abstract class DataController<KeyType, ItemType> with ChangeNotifier {
       onPostRequest(force, reset, background);
       _nextPageKey = response.nextPageKey;
       rawItems = [if (rawItems != null) ...rawItems!, ...response.items!];
-    } on Exception catch (e) {
+    } on Object catch (e, s) {
+      Zone.current.handleUncaughtError(e, s);
       _error = e;
     } finally {
       _fetching = false;
