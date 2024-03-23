@@ -27,8 +27,7 @@ class FollowTimelineController extends PostsController {
   }
 }
 
-class FollowsController extends PageClientDataController<Follow>
-    with StreamableClientDataController {
+class FollowsController extends PageClientDataController<Follow> {
   FollowsController({
     required this.client,
     this.types = FollowType.values,
@@ -48,7 +47,7 @@ class FollowsController extends PageClientDataController<Follow>
   }
 
   @override
-  StreamFuture<List<Follow>> stream(int page, bool force) {
+  Future<List<Follow>> fetch(int page, bool force) {
     StreamFuture<List<Follow>> result;
     if (page == 1) {
       result = client.follows

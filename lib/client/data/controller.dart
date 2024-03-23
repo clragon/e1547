@@ -69,8 +69,8 @@ abstract class ClientDataController<KeyType, ItemType>
   }
 }
 
-abstract class PageClientDataController<T>
-    extends ClientDataController<int, T> {
+abstract class PageClientDataController<T> extends ClientDataController<int, T>
+    with StreamableClientDataController {
   /// A [DataController] that uses positive integers as page keys.
   PageClientDataController({super.firstPageKey = 1});
 
@@ -81,7 +81,7 @@ abstract class PageClientDataController<T>
   ) async =>
       withError(
         () async {
-          List<T> items = await fetch(page, force);
+          List<T> items = await withStream(fetch(page, force));
           if (items.isEmpty) {
             return PageResponse.last(items: items);
           } else {
@@ -117,11 +117,11 @@ mixin StreamableClientDataController<KeyType, ItemType>
     rawItems = items;
   }
 
-  @override
-  @nonVirtual
-  Future<List<ItemType>> fetch(KeyType page, bool force) {
-    StreamFuture<List<ItemType>> future = this.stream(page, force);
-    _streams.add(future.stream);
+  @protected
+  Future<List<ItemType>> withStream(Future<List<ItemType>> result) async {
+    if (result is! StreamFuture<List<ItemType>>) return result;
+
+    _streams.add(result.stream);
 
     _subscription?.cancel();
     _subscription = CombineLatestStream<List<ItemType>, List<ItemType>>(
@@ -133,10 +133,8 @@ mixin StreamableClientDataController<KeyType, ItemType>
       onDone: () => _subscription?.cancel(),
     );
 
-    return future;
+    return result;
   }
-
-  StreamFuture<List<ItemType>> stream(KeyType page, bool force);
 
   @override
   void onPreRequest(bool force, bool reset, bool background) {
