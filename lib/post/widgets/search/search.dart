@@ -1,6 +1,5 @@
 import 'package:e1547/client/client.dart';
 import 'package:e1547/follow/follow.dart';
-import 'package:e1547/history/history.dart';
 import 'package:e1547/pool/pool.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/tag/tag.dart';
@@ -90,17 +89,18 @@ class _PostsSearchPageState extends State<PostsSearchPage> {
             if (!mounted) return;
             if (mapEquals(lastQuery, controller.query)) return;
             lastQuery = controller.query;
-            HistoriesService historiesService =
-                context.read<HistoriesService>();
+            Client client = context.read<Client>();
             await updatePool();
             await controller.waitForNextPage();
             if (controller.error != null) return;
             await updateFollow();
             if (pool != null) {
-              historiesService.addPool(pool!, posts: controller.items);
+              client.histories.addPool(pool: pool!, posts: controller.items);
             } else {
-              historiesService.addPostSearch(controller.query,
-                  posts: controller.items);
+              client.histories.addPostSearch(
+                query: controller.query,
+                posts: controller.items,
+              );
             }
           }
 

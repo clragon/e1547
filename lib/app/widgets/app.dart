@@ -69,7 +69,6 @@ class App extends StatelessWidget {
                                 TraitsServiceProvider(),
                                 ClientProvider(),
                                 CacheManagerProvider(),
-                                HistoriesServiceProvider(),
                               ],
                               child: LoadingCore(
                                 child: ErrorNotifier(

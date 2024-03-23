@@ -84,14 +84,14 @@ class HistoryTile extends StatelessWidget {
                                 context.read<Client>().withHost(entry.link),
                               ),
                             ),
-                            if (context.read<HistoriesController?>() != null)
-                              PopupMenuTile(
-                                title: 'Delete',
-                                icon: Icons.delete,
-                                value: () => context
-                                    .read<HistoriesController>()
-                                    .remove(entry),
-                              ),
+                            PopupMenuTile(
+                              title: 'Delete',
+                              icon: Icons.delete,
+                              value: () => context
+                                  .read<Client>()
+                                  .histories
+                                  .remove(id: entry.id),
+                            ),
                           ],
                         ),
                       ],

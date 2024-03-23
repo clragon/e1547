@@ -29,9 +29,9 @@ class _PoolPageState extends State<PoolPage> {
       child: Consumer<PostsController>(
         builder: (context, controller, child) => ControllerHistoryConnector(
           controller: controller,
-          addToHistory: (context, service, data) {
-            service.addPool(
-              widget.pool,
+          addToHistory: (context, client, data) {
+            client.histories.addPool(
+              pool: widget.pool,
               posts: controller.items,
             );
           },

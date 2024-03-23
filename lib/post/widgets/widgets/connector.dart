@@ -140,10 +140,8 @@ class PostHistoryConnector extends StatelessWidget {
   @override
   Widget build(BuildContext context) => ItemHistoryConnector<Post>(
         item: post,
-        addToHistory: (context, service, item) => service.addPost(
-          post,
-          denylist: context.read<Client>().traitsState.value.denylist,
-        ),
+        addToHistory: (context, client, item) =>
+            client.histories.addPost(post: post),
         child: child,
       );
 }
@@ -162,8 +160,8 @@ class PostsControllerHistoryConnector extends StatelessWidget {
   Widget build(BuildContext context) =>
       ControllerHistoryConnector<PostsController>(
         controller: controller,
-        addToHistory: (context, service, data) => service.addPostSearch(
-          data.query,
+        addToHistory: (context, client, data) => client.histories.addPostSearch(
+          query: data.query,
           posts: data.items,
         ),
         child: child,

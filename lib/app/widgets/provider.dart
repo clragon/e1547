@@ -9,7 +9,6 @@ import 'dart:io';
 
 import 'package:e1547/app/app.dart';
 import 'package:e1547/client/client.dart';
-import 'package:e1547/history/history.dart';
 import 'package:e1547/identity/identity.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:e1547/traits/traits.dart';
@@ -76,32 +75,6 @@ class TraitsServiceProvider extends SubChangeNotifierProvider3<AppStorage,
               ),
             ),
             child: child,
-          ),
-        );
-}
-
-class HistoriesServiceProvider extends SubChangeNotifierProvider3<AppStorage,
-    IdentitiesService, Settings, HistoriesService> {
-  HistoriesServiceProvider({
-    super.child,
-    TransitionBuilder? builder,
-  }) : super(
-          create: (context, storage, identities, settings) => HistoriesService(
-            database: storage.sqlite,
-            identity: identities.identity.id,
-            enabled: settings.writeHistory.value,
-            trimming: settings.trimHistory.value,
-          ),
-          keys: (context) => [context.watch<IdentitiesService>().identity.id],
-          builder: (context, child) => SubListener(
-            listenable: context.watch<HistoriesService>(),
-            listener: () {
-              HistoriesService service = context.read<HistoriesService>();
-              Settings settings = context.read<Settings>();
-              settings.writeHistory.value = service.enabled;
-              settings.trimHistory.value = service.trimming;
-            },
-            builder: (context) => builder?.call(context, child) ?? child!,
           ),
         );
 }

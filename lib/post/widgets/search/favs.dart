@@ -15,9 +15,9 @@ class FavPage extends StatelessWidget {
         child: Consumer<PostsController>(
           builder: (context, controller, child) => ControllerHistoryConnector(
             controller: controller,
-            addToHistory: (context, service, controller) =>
-                service.addPostSearch(
-              controller.query,
+            addToHistory: (context, client, controller) =>
+                client.histories.addPostSearch(
+              query: controller.query,
               posts: controller.items,
             ),
             child: LoadingPage(

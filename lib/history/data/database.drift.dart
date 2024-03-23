@@ -4,7 +4,7 @@ import 'package:drift/src/runtime/api/runtime_api.dart' as i1;
 import 'package:e1547/history/data/database.drift.dart' as i2;
 import 'package:drift/internal/modular.dart' as i3;
 import 'package:e1547/identity/data/database.drift.dart' as i4;
-import 'package:e1547/history/data/entry.dart' as i5;
+import 'package:e1547/history/data/history.dart' as i5;
 import 'package:e1547/history/data/database.dart' as i6;
 import 'package:e1547/interface/data/sql.dart' as i7;
 

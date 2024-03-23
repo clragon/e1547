@@ -21,8 +21,9 @@ class RepliesPage extends StatelessWidget {
           create: (context) => UsernameGenerator(),
           child: ControllerHistoryConnector(
             controller: controller,
-            addToHistory: (context, service, data) => service.addTopic(
-              topic,
+            addToHistory: (context, client, controller) =>
+                client.histories.addTopic(
+              topic: topic,
               replies: controller.items!,
             ),
             child: RefreshableDataPage(

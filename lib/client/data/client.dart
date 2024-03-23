@@ -1,6 +1,7 @@
 import 'package:e1547/client/client.dart';
 import 'package:e1547/comment/comment.dart';
 import 'package:e1547/follow/follow.dart';
+import 'package:e1547/history/history.dart';
 import 'package:e1547/identity/identity.dart';
 import 'package:e1547/pool/pool.dart';
 import 'package:e1547/post/post.dart';
@@ -27,6 +28,7 @@ enum ClientFeature {
   users,
   wikis,
   follows,
+  histories,
 }
 
 abstract class Client with FeatureFlagging<Enum>, Disposable {
@@ -46,6 +48,7 @@ abstract class Client with FeatureFlagging<Enum>, Disposable {
   UsersClient get users => throwUnsupported(ClientFeature.users);
   WikisClient get wikis => throwUnsupported(ClientFeature.wikis);
   FollowsClient get follows => throwUnsupported(ClientFeature.follows);
+  HistoriesClient get histories => throwUnsupported(ClientFeature.histories);
 }
 
 extension ClientExtension on Client {
@@ -69,6 +72,7 @@ mixin ClientAssembly on Client {
     UsersClient? users,
     WikisClient? wikis,
     FollowsClient? follows,
+    HistoriesClient? histories,
   }) {
     _accounts = accounts;
     _availability = availability;
@@ -82,6 +86,7 @@ mixin ClientAssembly on Client {
     _users = users;
     _wikis = wikis;
     _follows = follows;
+    _histories = histories;
 
     _features = _generateFeatures();
   }
@@ -104,6 +109,7 @@ mixin ClientAssembly on Client {
         _users,
         _wikis,
         _follows,
+        _histories,
       };
 
   Set<Enum> _generateFeatures() => {
@@ -120,6 +126,7 @@ mixin ClientAssembly on Client {
         if (_users != null) ClientFeature.users,
         if (_wikis != null) ClientFeature.wikis,
         if (_follows != null) ClientFeature.follows,
+        if (_histories != null) ClientFeature.histories,
         // sub features
         ..._clients
             .whereType<FeatureFlagging<Enum>>()
@@ -138,6 +145,7 @@ mixin ClientAssembly on Client {
   late final UsersClient? _users;
   late final WikisClient? _wikis;
   late final FollowsClient? _follows;
+  late final HistoriesClient? _histories;
 
   T _throwOnMissingClient<T>(T? client, ClientFeature flag) {
     if (client == null) throwUnsupported(flag);
@@ -175,6 +183,9 @@ mixin ClientAssembly on Client {
   @override
   FollowsClient get follows =>
       _throwOnMissingClient(_follows, ClientFeature.follows);
+  @override
+  HistoriesClient get histories =>
+      _throwOnMissingClient(_histories, ClientFeature.histories);
 
   @override
   void dispose() {

@@ -1,6 +1,5 @@
 import 'package:collection/collection.dart';
 import 'package:e1547/client/client.dart';
-import 'package:e1547/history/history.dart';
 import 'package:e1547/markup/markup.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/tag/tag.dart';
@@ -244,20 +243,23 @@ class _SearchTagDisplayState extends State<SearchTagDisplay> {
 
   Future<Wiki?> retrieveWiki() async {
     List<Wiki> results = await context.read<Client>().wikis.page(
-          query: TagMap({'search[title]': tagToRaw(widget.tag)}),
-        );
+      query: {'search[title]': tagToRaw(widget.tag)},
+    );
     return results.firstWhereOrNull((e) => e.title == tagToRaw(widget.tag));
   }
 
   @override
   void initState() {
     super.initState();
-    HistoriesService service = context.read<HistoriesService>();
+    // TODO: history connector?
+    Client client = context.read<Client>();
     wiki.then((value) {
       if (value != null) {
-        service.addWiki(value);
+        client.histories.addWiki(wiki: value);
       } else {
-        service.addWikiSearch(widget.tag);
+        client.histories.addWikiSearch(
+          query: {'search[title]': tagToRaw(widget.tag)},
+        );
       }
     });
   }

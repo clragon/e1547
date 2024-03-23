@@ -1,5 +1,5 @@
+import 'package:e1547/client/client.dart';
 import 'package:e1547/history/history.dart';
-import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
 
 class HistorySelectionAppBar extends StatelessWidget with AppBarBuilderWidget {
@@ -21,11 +21,12 @@ class HistorySelectionAppBar extends StatelessWidget with AppBarBuilderWidget {
       actionBuilder: (context, data) => [
         IconButton(
           icon: const Icon(Icons.delete_outline),
-          onPressed: () {
-            context
-                .read<HistoriesController>()
-                .removeAll(data.selections.toList());
+          onPressed: () async {
             data.onChanged({});
+            await context
+                .read<Client>()
+                .histories
+                .removeAll(ids: data.selections.map((e) => e.id).toList());
           },
         ),
       ],

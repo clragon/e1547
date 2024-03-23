@@ -104,6 +104,8 @@ final List<RouterDrawerDestination> rootDestintations = [
     icon: const Icon(Icons.history),
     builder: (context) => const HistoriesPage(),
     group: _drawerSettingsGroup,
+    visible: (context) =>
+        context.watch<Client>().hasFeature(ClientFeature.histories),
   ),
   RouterDrawerDestination(
     path: '/blacklist',

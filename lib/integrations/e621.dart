@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:e1547/app/app.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/identity/identity.dart';
+import 'package:e1547/integrations/disk/history.dart';
 import 'package:e1547/integrations/e621/account.dart';
 import 'package:e1547/integrations/e621/comment.dart';
 import 'package:e1547/integrations/e621/follow.dart';
@@ -68,6 +69,12 @@ class E621Client extends Client with ClientAssembly {
       poolsClient: pools,
       tagsClient: tags,
     );
+    final histories = DiskHistoriesClient(
+      database: storage.sqlite,
+      preferences: storage.preferences,
+      identity: identity,
+      traits: traitsState,
+    );
 
     enableClients(
       accounts: accounts,
@@ -82,6 +89,7 @@ class E621Client extends Client with ClientAssembly {
       users: users,
       wikis: wikis,
       follows: follows,
+      histories: histories,
     );
   }
 

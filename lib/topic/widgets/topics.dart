@@ -17,8 +17,9 @@ class TopicsPage extends StatelessWidget {
         child: Consumer<TopicsController>(
           builder: (context, controller, child) => ControllerHistoryConnector(
             controller: controller,
-            addToHistory: (context, service, data) => service.addTopicSearch(
-              controller.query,
+            addToHistory: (context, client, controller) =>
+                client.histories.addTopicSearch(
+              query: controller.query,
               topics: controller.items!,
             ),
             child: RefreshableDataPage(

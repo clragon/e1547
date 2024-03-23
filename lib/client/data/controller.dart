@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:deep_pick/deep_pick.dart';
+import 'package:drift/drift.dart';
+import 'package:drift/isolate.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/logs/logs.dart';
 import 'package:flutter/foundation.dart';
@@ -14,6 +16,8 @@ abstract class ClientDataController<KeyType, ItemType>
 
   CancelToken _cancelToken = CancelToken();
   CancelToken get cancelToken => _cancelToken;
+
+  final Logger _logger = Logger('ClientController');
 
   @protected
   Future<List<ItemType>> fetch(KeyType page, bool force);
@@ -47,7 +51,13 @@ abstract class ClientDataController<KeyType, ItemType>
     } on ClientException catch (e) {
       return PageResponse.error(error: e);
     } on PickException catch (e, s) {
-      Logger('ClientController').severe(e.message, e, s);
+      _logger.severe(e.message, e, s);
+      return PageResponse.error(error: e);
+    } on DriftWrappedException catch (e, s) {
+      _logger.severe(e.message, e, s);
+      return PageResponse.error(error: e);
+    } on DriftRemoteException catch (e) {
+      _logger.severe(e, e.remoteCause, e.remoteStackTrace);
       return PageResponse.error(error: e);
     }
   }

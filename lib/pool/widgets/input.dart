@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:e1547/app/app.dart';
+import 'package:e1547/client/client.dart';
 import 'package:e1547/history/history.dart';
-import 'package:e1547/interface/interface.dart';
 import 'package:e1547/pool/data/controller.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/tag/tag.dart';
@@ -136,18 +136,20 @@ class PoolNameFilter extends StatelessWidget {
           }
         },
         suggestionsCallback: (value) async {
-          HistoriesService service = context.read<HistoriesService>();
           value = value.trim();
 
-          return (await service
-                  .all(
-                    linkRegex: r'/pools/.*',
-                    titleRegex: r'.*' +
-                        RegExp.escape(value.replaceAll(' ', '_')) +
-                        r'.*',
-                    limit: 4,
-                  )
-                  .first)
+          Client client = context.read<Client>();
+          if (!client.hasFeature(ClientFeature.histories)) return [];
+
+          return (await client.histories.page(
+            page: 1,
+            query: HistoryQuery(
+              date: DateTime.now(),
+              link: r'/pools/.*',
+              title: r'.*' + RegExp.escape(value.replaceAll(' ', '_')) + r'.*',
+            ),
+            limit: 4,
+          ))
               .where((e) => e.title != null)
               .map(
                 (e) => _PoolSearchResult(

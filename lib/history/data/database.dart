@@ -52,7 +52,7 @@ class HistoriesDao extends DatabaseAccessor<GeneratedDatabase>
     return tbl.id.isInQuery(subQuery);
   }
 
-  Stream<int> length() {
+  StreamFuture<int> length() {
     final Expression<int> count = historiesTable.id.count();
     final Expression<bool> identified = _identityQuery(historiesTable);
 
@@ -60,10 +60,11 @@ class HistoriesDao extends DatabaseAccessor<GeneratedDatabase>
           ..where(identified)
           ..addColumns([count]))
         .map((row) => row.read(count)!)
-        .watchSingle();
+        .watchSingle()
+        .future;
   }
 
-  Stream<List<DateTime>> dates() {
+  StreamFuture<List<DateTime>> dates() {
     final Expression<DateTime> time = historiesTable.visitedAt;
     final Expression<String> date = historiesTable.visitedAt.date;
     final Expression<bool> hosted = _identityQuery(historiesTable);
@@ -74,13 +75,17 @@ class HistoriesDao extends DatabaseAccessor<GeneratedDatabase>
           ..groupBy([date])
           ..addColumns([time]))
         .map((row) {
-      DateTime source = row.read(time)!;
-      return DateTime(source.year, source.month, source.day);
-    }).watch();
+          DateTime source = row.read(time)!;
+          return DateTime(source.year, source.month, source.day);
+        })
+        .watch()
+        .future;
   }
 
-  Stream<History> get(int id) =>
-      (select(historiesTable)..where((tbl) => tbl.id.equals(id))).watchSingle();
+  StreamFuture<History> get(int id) =>
+      (select(historiesTable)..where((tbl) => tbl.id.equals(id)))
+          .watchSingle()
+          .future;
 
   SimpleSelectStatement<HistoriesTable, History> _querySelect({
     int? limit,
@@ -89,6 +94,7 @@ class HistoriesDao extends DatabaseAccessor<GeneratedDatabase>
     String? linkRegex,
     String? titleRegex,
     String? subtitleRegex,
+    Duration? maxAge,
   }) {
     final selectable = select(historiesTable)
       ..orderBy([
@@ -116,6 +122,10 @@ class HistoriesDao extends DatabaseAccessor<GeneratedDatabase>
         ),
       );
     }
+    if (maxAge != null) {
+      selectable.where((tbl) =>
+          tbl.visitedAt.isBiggerThanValue(DateTime.now().subtract(maxAge)));
+    }
     assert(
       offset == null || limit != null,
       'Cannot specify offset without limit!',
@@ -126,7 +136,7 @@ class HistoriesDao extends DatabaseAccessor<GeneratedDatabase>
     return selectable;
   }
 
-  Stream<List<History>> page({
+  StreamFuture<List<History>> page({
     required int page,
     int? limit,
     DateTime? day,
@@ -143,23 +153,8 @@ class HistoriesDao extends DatabaseAccessor<GeneratedDatabase>
       subtitleRegex: subtitleRegex,
       limit: limit,
       offset: offset,
-    ).watch();
+    ).watch().future;
   }
-
-  Stream<List<History>> all({
-    int? limit,
-    DateTime? day,
-    String? linkRegex,
-    String? titleRegex,
-    String? subtitleRegex,
-  }) =>
-      _querySelect(
-        day: day,
-        linkRegex: linkRegex,
-        titleRegex: titleRegex,
-        subtitleRegex: subtitleRegex,
-        limit: limit,
-      ).watch();
 
   SimpleSelectStatement<HistoriesTable, History> _recentSelect({
     int? limit,
@@ -169,11 +164,15 @@ class HistoriesDao extends DatabaseAccessor<GeneratedDatabase>
         ..where((tbl) => (tbl.visitedAt
             .isBiggerThanValue(DateTime.now().subtract(maxAge)))));
 
-  Stream<List<History>> recent({
-    int limit = 15,
-    Duration maxAge = const Duration(minutes: 10),
-  }) =>
-      _recentSelect(limit: limit, maxAge: maxAge).watch();
+  Future<bool> isDuplicate(HistoryRequest item) =>
+      (_querySelect(limit: 1, maxAge: const Duration(minutes: 3))
+            ..where((tbl) => tbl.link.equals(item.link))
+            ..where((tbl) => tbl.title.equalsNullable(item.title))
+            ..where((tbl) => tbl.subtitle.equalsNullable(item.subtitle))
+            ..where((tbl) => tbl.thumbnails.equalsNullable(
+                JsonSqlConverter.list().toSql(item.thumbnails))))
+          .get()
+          .then((e) => e.isNotEmpty);
 
   Future<void> add(HistoryRequest item, {int? identity}) async {
     if (identity == null && this.identity == null) {

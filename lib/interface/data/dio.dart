@@ -9,27 +9,6 @@ export 'package:dio_cache_interceptor/dio_cache_interceptor.dart';
 // TODO: Controllers now also throw Database exceptions, so this needs to be a real class.
 typedef ClientException = DioException;
 
-extension QueryMapExtension on Map<String, dynamic> {
-  /// Transforms a given Map into a QueryMap.
-  ///
-  /// Null values are omitted.
-  /// All other values are converted to strings.
-  QueryMap toQuery() => Map.fromEntries(
-        entries.where((entry) => entry.value != null).map(
-              (entry) => MapEntry(
-                entry.key,
-                _stringify(entry.value),
-              ),
-            ),
-      );
-
-  String _stringify(Object? value) => switch (value) {
-        List e => e.map(_stringify).join(','),
-        Enum e => e.name,
-        _ => value.toString(),
-      };
-}
-
 Future<bool> validateCall(Future<void> Function() call) async {
   try {
     await call();

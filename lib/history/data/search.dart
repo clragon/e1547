@@ -1,131 +1,62 @@
+import 'package:e1547/history/history.dart';
 import 'package:flutter/material.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
 
-part 'search.freezed.dart';
-
-part 'search.g.dart';
-
-@freezed
-class HistoriesSearch with _$HistoriesSearch {
-  const factory HistoriesSearch({
-    DateTime? date,
-    required Set<HistorySearchFilter> searchFilters,
-    required Set<HistoryTypeFilter> typeFilters,
-  }) = _HistoriesSearch;
-  const HistoriesSearch._();
-
-  factory HistoriesSearch.fromJson(dynamic json) =>
-      _$HistoriesSearchFromJson(json);
-
-  String buildLinkFilter() {
-    String? regexShell(String? regex) =>
-        regex != null ? r'^' '($regex)' r'$' : null;
-    List<String?> regexes = [];
-    for (final searchFilter in searchFilters) {
-      switch (searchFilter) {
-        case HistorySearchFilter.items:
-          regexes.addAll((typeFilters.map((e) => regexShell(e.regex))));
-          break;
-        case HistorySearchFilter.searches:
-          regexes.addAll((typeFilters.map((e) => regexShell(e.searchRegex))));
-          break;
-      }
-    }
-    regexes.removeWhere((e) => e == null);
-    regexes.add(r'^$');
-    return regexes.join('|');
-  }
-}
-
-@JsonEnum()
-enum HistorySearchFilter {
-  items,
-  searches;
-
+extension HistorySearchFilterDisplaying on HistoryCategory {
   String get title {
     switch (this) {
-      case HistorySearchFilter.items:
+      case HistoryCategory.items:
         return 'Items';
-      case HistorySearchFilter.searches:
+      case HistoryCategory.searches:
         return 'Searches';
     }
   }
 
   Widget? get icon {
     switch (this) {
-      case HistorySearchFilter.items:
+      case HistoryCategory.items:
         return const Icon(Icons.article);
-      case HistorySearchFilter.searches:
+      case HistoryCategory.searches:
         return const Icon(Icons.search);
     }
   }
 }
 
-@JsonEnum()
-enum HistoryTypeFilter {
-  posts,
-  pools,
-  topics,
-  users,
-  wikis;
+extension HistoryTypeFilterDisplaying on HistoryType {
+  String get title => switch (this) {
+        HistoryType.posts => 'Posts',
+        HistoryType.pools => 'Pools',
+        HistoryType.topics => 'Topics',
+        HistoryType.wikis => 'Wikis',
+        HistoryType.users => 'Users'
+      };
 
-  String get title {
-    switch (this) {
-      case posts:
-        return 'Posts';
-      case pools:
-        return 'Pools';
-      case topics:
-        return 'Topics';
-      case wikis:
-        return 'Wikis';
-      case users:
-        return 'Users';
-    }
-  }
+  Widget? get icon => switch (this) {
+        HistoryType.posts => const Icon(Icons.image),
+        HistoryType.pools => const Icon(Icons.collections),
+        HistoryType.topics => const Icon(Icons.forum),
+        HistoryType.users => const Icon(Icons.person),
+        HistoryType.wikis => const Icon(Icons.info_outlined)
+      };
 
-  Widget? get icon {
-    switch (this) {
-      case HistoryTypeFilter.posts:
-        return const Icon(Icons.image);
-      case HistoryTypeFilter.pools:
-        return const Icon(Icons.collections);
-      case HistoryTypeFilter.topics:
-        return const Icon(Icons.forum);
-      case HistoryTypeFilter.users:
-        return const Icon(Icons.person);
-      case HistoryTypeFilter.wikis:
-        return const Icon(Icons.info_outlined);
-    }
-  }
+  // region
+  // TODO: these are all e6 specific
+  // We need to come up with a generic solution
 
-  String? get regex {
-    switch (this) {
-      case posts:
-        return r'/posts/\d+';
-      case pools:
-        return r'/pools/\d+';
-      case topics:
-        return r'/forum_topics/\d+';
-      case wikis:
-        return r'/wiki_pages/[^\s]+';
-      case users:
-        return r'/users/[^\s]+';
-    }
-  }
+  String? get regex => switch (this) {
+        HistoryType.posts => r'/posts/\d+',
+        HistoryType.pools => r'/pools/\d+',
+        HistoryType.topics => r'/forum_topics/\d+',
+        HistoryType.wikis => r'/wiki_pages/\S+',
+        HistoryType.users => r'/users/\S+'
+      };
 
-  String? get searchRegex {
-    switch (this) {
-      case posts:
-        return r'/posts(\?.*)?';
-      case pools:
-        return r'/pools(\?.*)?';
-      case topics:
-        return r'/forum_topics(\?.*)?';
-      case wikis:
-        return r'/wiki_pages(\?.*)?';
-      case users:
-        return null;
-    }
-  }
+  String? get searchRegex => switch (this) {
+        HistoryType.posts => r'/posts(\?.*)?',
+        HistoryType.pools => r'/pools(\?.*)?',
+        HistoryType.topics => r'/forum_topics(\?.*)?',
+        HistoryType.wikis => r'/wiki_pages(\?.*)?',
+        HistoryType.users => null
+      };
+
+  // endregion
 }

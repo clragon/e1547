@@ -1,11 +1,10 @@
-import 'package:e1547/history/history.dart';
-import 'package:e1547/interface/interface.dart';
+import 'package:e1547/client/client.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sub/flutter_sub.dart';
 
 typedef HistoryConnector<T> = void Function(
   BuildContext context,
-  HistoriesService service,
+  Client client,
   T data,
 );
 
@@ -30,14 +29,19 @@ class _ItemHistoryConnectorState<T> extends State<ItemHistoryConnector<T>> {
   @override
   void initState() {
     super.initState();
-    widget.addToHistory(context, context.read<HistoriesService>(), widget.item);
+    Client client = context.read<Client>();
+    if (client.hasFeature(ClientFeature.histories)) {
+      widget.addToHistory(context, client, widget.item);
+    }
   }
 
   @override
   void didUpdateWidget(covariant ItemHistoryConnector<T> oldWidget) {
     if (oldWidget.item != widget.item) {
-      widget.addToHistory(
-          context, context.read<HistoriesService>(), widget.item);
+      Client client = context.read<Client>();
+      if (client.hasFeature(ClientFeature.histories)) {
+        widget.addToHistory(context, client, widget.item);
+      }
     }
     super.didUpdateWidget(oldWidget);
   }
@@ -77,11 +81,14 @@ class _ControllerHistoryConnectorState<T extends DataController?>
         await controller.waitForNextPage();
         if (controller.error != null) return;
         if (!context.mounted) return;
-        widget.addToHistory(
-          context,
-          context.read<HistoriesService>(),
-          controller,
-        );
+        Client client = context.read<Client>();
+        if (client.hasFeature(ClientFeature.histories)) {
+          widget.addToHistory(
+            context,
+            client,
+            controller,
+          );
+        }
       },
       builder: (context) => widget.child,
     );
