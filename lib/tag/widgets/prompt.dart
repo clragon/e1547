@@ -253,15 +253,17 @@ class _SearchTagDisplayState extends State<SearchTagDisplay> {
     super.initState();
     // TODO: history connector?
     Client client = context.read<Client>();
-    wiki.then((value) {
-      if (value != null) {
-        client.histories.addWiki(wiki: value);
-      } else {
-        client.histories.addWikiSearch(
-          query: {'search[title]': tagToRaw(widget.tag)},
-        );
-      }
-    });
+    if (client.hasFeature(ClientFeature.histories)) {
+      wiki.then((value) {
+        if (value != null) {
+          client.histories.addWiki(wiki: value);
+        } else {
+          client.histories.addWikiSearch(
+            query: {'search[title]': tagToRaw(widget.tag)},
+          );
+        }
+      });
+    }
   }
 
   @override

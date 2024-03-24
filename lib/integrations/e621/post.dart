@@ -362,6 +362,7 @@ extension E621Post on Post {
           favCount: pick('fav_count').asIntOrThrow(),
           isFavorited: pick('is_favorited').asBoolOrThrow(),
           commentCount: pick('comment_count').asIntOrThrow(),
+          hasComments: pick('comment_count').asIntOrThrow() > 0,
           description: pick('description').asStringOrThrow(),
           sources:
               pick('sources').asListOrThrow((pick) => pick.asStringOrThrow()),

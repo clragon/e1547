@@ -213,11 +213,8 @@ extension DanbooruPost on Post {
           isFavorited:
               // TODO: does not seem to be available. maybe only for logged in users?
               false, // pick('is_favorited').asBoolOrThrow(),
-          commentCount:
-              // TODO: not available. alternative endpoint?
-              // TODO: last_commented_at could indicate whether comments are not 0
-              0, // pick('comment_count').asIntOrThrow(),
-
+          commentCount: null,
+          hasComments: pick('last_commented_at').asDateTimeOrNull() != null,
           description:
               // TODO: danbooru does not have a description field
               '', // pick('description').asStringOrThrow(),

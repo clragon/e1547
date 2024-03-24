@@ -14,7 +14,7 @@ class CommentDisplay extends StatelessWidget {
       return const SizedBox();
     }
     return CrossFade(
-      showChild: post.commentCount > 0,
+      showChild: post.hasComments ?? false,
       child: Column(
         children: [
           Row(
@@ -32,7 +32,10 @@ class CommentDisplay extends StatelessWidget {
                     overlayColor: MaterialStateProperty.all(
                         Theme.of(context).splashColor),
                   ),
-                  child: Text('COMMENTS (${post.commentCount})'),
+                  child: Text(
+                    'COMMENTS'
+                    '${post.commentCount != null ? '(${post.commentCount})' : ''}',
+                  ),
                 ),
               )
             ],
@@ -54,6 +57,9 @@ class SliverPostCommentSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (!context.watch<Client>().hasFeature(ClientFeature.comments)) {
+      return const SliverToBoxAdapter();
+    }
     return CommentsProvider(
       postId: post.id,
       child: Consumer<CommentsController>(
@@ -109,7 +115,13 @@ class SliverPostCommentSection extends StatelessWidget {
                                     if (success) {
                                       postsController.replacePost(
                                         post.copyWith(
-                                          commentCount: post.commentCount + 1,
+                                          commentCount:
+                                              post.commentCount != null
+                                                  ? post.commentCount! + 1
+                                                  : null,
+                                          hasComments: post.hasComments != null
+                                              ? true
+                                              : null,
                                         ),
                                       );
                                       controller.refresh(force: true);

@@ -24,7 +24,8 @@ class Post with _$Post {
     required Rating rating,
     required int favCount, // turn into class with bool isFavorited?
     required bool isFavorited,
-    required int commentCount,
+    required int? commentCount,
+    required bool? hasComments,
     required String description,
     required List<String> sources,
     required List<int>? pools,
