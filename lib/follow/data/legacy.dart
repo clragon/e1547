@@ -85,7 +85,7 @@ Future<void> migrateFollows(
 
     await service.activate(identity.id);
 
-    FollowsDao followsService = FollowsDao(
+    FollowsRepository repo = FollowsRepository(
       database: db,
       identity: identity.id,
     );
@@ -111,18 +111,18 @@ Future<void> migrateFollows(
       );
     }
 
-    await followsService.batch((batch) =>
-        batch.insertAllOnConflictUpdate(followsService.followsTable, requests));
+    await repo.batch((batch) =>
+        batch.insertAllOnConflictUpdate(repo.followsTable, requests));
 
-    Expression<bool> noLink = followsService.followsTable.id.isNotInQuery(
-      followsService.followsIdentitiesTable.selectOnly()
-        ..addColumns([followsService.followsIdentitiesTable.follow]),
+    Expression<bool> noLink = repo.followsTable.id.isNotInQuery(
+      repo.followsIdentitiesTable.selectOnly()
+        ..addColumns([repo.followsIdentitiesTable.follow]),
     );
 
-    List<int> ids = await (followsService.followsTable.selectOnly()
-          ..addColumns([followsService.followsTable.id])
+    List<int> ids = await (repo.followsTable.selectOnly()
+          ..addColumns([repo.followsTable.id])
           ..where(noLink))
-        .map((row) => row.read(followsService.followsTable.id)!)
+        .map((row) => row.read(repo.followsTable.id)!)
         .get();
 
     List<FollowIdentityCompanion> links = [];
@@ -135,8 +135,8 @@ Future<void> migrateFollows(
       );
     }
 
-    await followsService.batch((batch) => batch.insertAllOnConflictUpdate(
-        followsService.followsIdentitiesTable, links));
+    await repo.batch((batch) =>
+        batch.insertAllOnConflictUpdate(repo.followsIdentitiesTable, links));
   }
 
   await oldDb.close();

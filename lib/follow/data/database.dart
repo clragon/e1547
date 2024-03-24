@@ -37,9 +37,9 @@ class FollowsIdentitiesTable extends Table {
   FollowsIdentitiesTable,
   IdentitiesTable,
 ])
-class FollowsDao extends DatabaseAccessor<GeneratedDatabase>
-    with $FollowsDaoMixin {
-  FollowsDao({
+class FollowsRepository extends DatabaseAccessor<GeneratedDatabase>
+    with $FollowsRepositoryMixin {
+  FollowsRepository({
     required GeneratedDatabase database,
     required this.identity,
   }) : super(database);

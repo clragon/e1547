@@ -16,7 +16,7 @@ void executeBackgroundTasks() => Workmanager().executeTask(
                 await initializeNotifications();
 
             // this ensures continued scheduling on iOS.
-            FollowsDao allFollows = FollowsDao(
+            FollowsRepository allFollows = FollowsRepository(
               database: bundle.storage.sqlite,
               identity: null,
             );

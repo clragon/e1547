@@ -15,7 +15,8 @@ class DiskHistoriesClient extends HistoriesClient with Disposable {
     required this.preferences,
     required this.identity,
     required this.traits,
-  }) : dao = HistoriesDao(database: database, identity: identity.id);
+  }) : repository =
+            HistoriesRepository(database: database, identity: identity.id);
 
   final GeneratedDatabase database;
   final Identity identity;
@@ -23,7 +24,7 @@ class DiskHistoriesClient extends HistoriesClient with Disposable {
   final ValueNotifier<Traits> traits;
   // TODO: this is jank
   final SharedPreferences preferences;
-  final HistoriesDao dao;
+  final HistoriesRepository repository;
 
   @override
   Future<History> get({
@@ -31,7 +32,7 @@ class DiskHistoriesClient extends HistoriesClient with Disposable {
     bool? force,
     CancelToken? cancelToken,
   }) =>
-      dao.get(id);
+      repository.get(id);
 
   @override
   Future<List<History>> page({
@@ -42,7 +43,7 @@ class DiskHistoriesClient extends HistoriesClient with Disposable {
     CancelToken? cancelToken,
   }) {
     final search = HistoryQuery.maybeFrom(query);
-    return dao.page(
+    return repository.page(
       page: page ?? 1,
       limit: limit,
       day: search?.date,
@@ -58,15 +59,16 @@ class DiskHistoriesClient extends HistoriesClient with Disposable {
   }
 
   @override
-  Future<void> add({required HistoryRequest request}) => dao.add(request);
+  Future<void> add({required HistoryRequest request}) =>
+      repository.add(request);
 
   @override
   Future<void> addMaybe({required HistoryRequest request}) async {
     if (!enabled) return;
-    return dao.transaction(() async {
-      if (await dao.isDuplicate(request)) return;
+    return repository.transaction(() async {
+      if (await repository.isDuplicate(request)) return;
       if (trimming) {
-        await dao.trim(
+        await repository.trim(
           maxAmount: trimAmount,
           maxAge: trimAge,
         );
@@ -77,15 +79,15 @@ class DiskHistoriesClient extends HistoriesClient with Disposable {
 
   @override
   Future<void> removeAll({required List<int>? ids}) =>
-      (dao.delete(dao.historiesTable)
+      (repository.delete(repository.historiesTable)
             ..where((tbl) => Variable(ids).isNull() | tbl.id.isIn(ids!)))
           .go();
 
   @override
-  Future<int> count() => dao.length();
+  Future<int> count() => repository.length();
 
   @override
-  Future<List<DateTime>> days() => dao.dates();
+  Future<List<DateTime>> days() => repository.dates();
 
   @override
   bool get enabled => _enabled;

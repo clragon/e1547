@@ -8,7 +8,7 @@ import 'package:e1547/history/data/history.dart' as i5;
 import 'package:e1547/history/data/database.dart' as i6;
 import 'package:e1547/interface/data/sql.dart' as i7;
 
-mixin $HistoriesDaoMixin on i0.DatabaseAccessor<i1.GeneratedDatabase> {
+mixin $HistoriesRepositoryMixin on i0.DatabaseAccessor<i1.GeneratedDatabase> {
   i2.$HistoriesTableTable get historiesTable =>
       i3.ReadDatabaseContainer(attachedDatabase).resultSet('histories_table');
   i4.$IdentitiesTableTable get identitiesTable =>

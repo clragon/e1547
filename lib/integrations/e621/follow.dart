@@ -32,7 +32,7 @@ class E621FollowsClient extends DiskFollowsClient {
 
   @override
   FollowSync createSync({bool? force}) => E621FollowSync(
-        dao: dao,
+        repository: repository,
         traits: traits,
         postsClient: postsClient,
         poolsClient: poolsClient,
@@ -43,7 +43,7 @@ class E621FollowsClient extends DiskFollowsClient {
 
 class E621FollowSync implements FollowSync {
   E621FollowSync({
-    required this.dao,
+    required this.repository,
     required this.traits,
     required this.postsClient,
     this.poolsClient,
@@ -56,7 +56,7 @@ class E621FollowSync implements FollowSync {
   final int refreshAmount = 5;
   final Duration refreshRate = const Duration(hours: 1);
 
-  final FollowsDao dao;
+  final FollowsRepository repository;
   final ValueNotifier<Traits> traits;
   final PostsClient postsClient;
   final PoolsClient? poolsClient;
@@ -127,12 +127,12 @@ class E621FollowSync implements FollowSync {
     try {
       if (force ?? false) {
         logger.fine('Force refreshing follows...');
-        await dao.transaction(() async {
-          List<Follow> follows = await dao.all(
+        await repository.transaction(() async {
+          List<Follow> follows = await repository.all(
             types: [FollowType.notify, FollowType.update],
           );
           for (final follow in follows) {
-            await dao.replace(follow.copyWith(
+            await repository.replace(follow.copyWith(
               updated: null,
             ));
           }
@@ -142,12 +142,12 @@ class E621FollowSync implements FollowSync {
       while (!cancelled) {
         List<Follow> follows = [];
 
-        follows.addAll(await dao.outdated(
+        follows.addAll(await repository.outdated(
           minAge: refreshRate,
           types: [FollowType.notify, FollowType.update],
         ));
 
-        follows.addAll(await dao.fresh(
+        follows.addAll(await repository.fresh(
           types: [FollowType.bookmark],
         ));
 
@@ -157,9 +157,9 @@ class E621FollowSync implements FollowSync {
         List<Follow> singles = follows.where((e) => e.isSingle).toList();
         if (singles.isNotEmpty) {
           List<Follow> updates = await _refreshSingles(singles);
-          await dao.transaction(() async {
+          await repository.transaction(() async {
             for (final update in updates) {
-              await dao.replace(update);
+              await repository.replace(update);
             }
           });
           continue;
@@ -168,7 +168,7 @@ class E621FollowSync implements FollowSync {
         List<Follow> multiples = follows.whereNot(singles.contains).toList();
         if (multiples.isNotEmpty) {
           Follow update = await _refreshMultiples(multiples);
-          await dao.replace(update);
+          await repository.replace(update);
           continue;
         }
 

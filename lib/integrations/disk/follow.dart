@@ -13,11 +13,12 @@ abstract class DiskFollowsClient extends FollowsClient with Disposable {
   DiskFollowsClient({
     required this.database,
     required this.identity,
-  }) : dao = FollowsDao(database: database, identity: identity.id);
+  }) : repository =
+            FollowsRepository(database: database, identity: identity.id);
 
   final GeneratedDatabase database;
   final Identity identity;
-  final FollowsDao dao;
+  final FollowsRepository repository;
 
   @override
   Set<FollowFeature> get features => {
@@ -30,7 +31,7 @@ abstract class DiskFollowsClient extends FollowsClient with Disposable {
     bool? force,
     CancelToken? cancelToken,
   }) =>
-      dao.get(id);
+      repository.get(id);
 
   @override
   Future<Follow?> getByTags({
@@ -38,7 +39,8 @@ abstract class DiskFollowsClient extends FollowsClient with Disposable {
     bool? force,
     CancelToken? cancelToken,
   }) =>
-      (dao.select(dao.followsTable)..where((tbl) => tbl.tags.equals(tags)))
+      (repository.select(repository.followsTable)
+            ..where((tbl) => tbl.tags.equals(tags)))
           .watchSingleOrNull()
           .future;
 
@@ -51,7 +53,7 @@ abstract class DiskFollowsClient extends FollowsClient with Disposable {
     CancelToken? cancelToken,
   }) {
     final search = FollowsQuery.from(query);
-    return dao.page(
+    return repository.page(
       page: page ?? 1,
       limit: limit,
       tagRegex: search?.tags?.infixRegex,
@@ -68,7 +70,7 @@ abstract class DiskFollowsClient extends FollowsClient with Disposable {
     CancelToken? cancelToken,
   }) {
     final search = FollowsQuery.from(query);
-    return dao.all(
+    return repository.all(
       tagRegex: search?.tags?.infixRegex,
       titleRegex: search?.title?.infixRegex,
       types: search?.type,
@@ -83,7 +85,7 @@ abstract class DiskFollowsClient extends FollowsClient with Disposable {
     String? title,
     String? alias,
   }) =>
-      dao.add(
+      repository.add(
         FollowRequest(
           tags: tags,
           type: type,
@@ -99,8 +101,8 @@ abstract class DiskFollowsClient extends FollowsClient with Disposable {
     String? title,
     FollowType? type,
   }) =>
-      dao.transaction(() async {
-        await ((dao.update(dao.followsTable))
+      repository.transaction(() async {
+        await ((repository.update(repository.followsTable))
               ..where((tbl) => tbl.id.equals(id)))
             .write(FollowCompanion(
           title:
@@ -108,7 +110,7 @@ abstract class DiskFollowsClient extends FollowsClient with Disposable {
           type: type != null ? Value(type) : const Value.absent(),
         ));
         if (tags?.nullWhenEmpty != null) {
-          await ((dao.update(dao.followsTable))
+          await ((repository.update(repository.followsTable))
                 ..where((tbl) => tbl.id.equals(id)))
               .write(FollowCompanion(
             tags: Value(tags!),
@@ -122,15 +124,15 @@ abstract class DiskFollowsClient extends FollowsClient with Disposable {
 
   @override
   Future<void> markAllSeen({required List<int>? ids}) =>
-      ((dao.update(dao.followsTable))
+      ((repository.update(repository.followsTable))
             ..where((tbl) => Variable(ids).isNull() | tbl.id.isIn(ids!)))
           .write(const FollowCompanion(unseen: Value(0)));
 
   @override
-  Future<void> delete({required int id}) => dao.remove(id);
+  Future<void> delete({required int id}) => repository.remove(id);
 
   @override
-  Future<int> count() => dao.length();
+  Future<int> count() => repository.length();
 
   @override
   Stream<FollowSync?> get syncStream => _syncStream.stream;
@@ -160,7 +162,9 @@ abstract class DiskFollowsClient extends FollowsClient with Disposable {
     Pool? pool,
     bool? seen,
   }) =>
-      ((dao.update(dao.followsTable))..where((tbl) => tbl.id.equals(id))).write(
+      ((repository.update(repository.followsTable))
+            ..where((tbl) => tbl.id.equals(id)))
+          .write(
         FollowCompanion(
           latest: post?.isNotEmpty ?? false
               ? Value(post!.first.id)

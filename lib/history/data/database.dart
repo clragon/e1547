@@ -34,9 +34,9 @@ class HistoriesIdentitiesTable extends Table {
   HistoriesIdentitiesTable,
   IdentitiesTable,
 ])
-class HistoriesDao extends DatabaseAccessor<GeneratedDatabase>
-    with $HistoriesDaoMixin {
-  HistoriesDao({
+class HistoriesRepository extends DatabaseAccessor<GeneratedDatabase>
+    with $HistoriesRepositoryMixin {
+  HistoriesRepository({
     required GeneratedDatabase database,
     required this.identity,
   }) : super(database);
