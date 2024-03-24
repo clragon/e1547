@@ -5,6 +5,7 @@ import 'package:e1547/ticket/ticket.dart';
 import 'package:e1547/user/user.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:username_generator/username_generator.dart';
 
 class CommentTile extends StatelessWidget {
   const CommentTile({
@@ -29,13 +30,20 @@ class CommentTile extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 4),
             child: InkWell(
-              child: Text(comment.creatorName),
-              onTap: () => Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => UserLoadingPage(
-                    comment.creatorId.toString(),
-                  ),
-                ),
+              onTap: context.watch<Client>().hasFeature(ClientFeature.users)
+                  ? () => Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => UserLoadingPage(
+                            comment.creatorId.toString(),
+                          ),
+                        ),
+                      )
+                  : null,
+              child: Text(
+                comment.creatorName ??
+                    context
+                        .watch<UsernameGenerator>()
+                        .generate(comment.creatorId),
               ),
             ),
           ),
@@ -132,9 +140,9 @@ class CommentTile extends StatelessWidget {
               icon: const Dimmed(child: Icon(Icons.more_vert)),
               onSelected: (value) => value(),
               itemBuilder: (context) => [
-                if (context.watch<Client>().identity.username ==
+                if (context.read<Client>().identity.username ==
                         comment.creatorName &&
-                    context.watch<Client>().hasFeature(CommentFeature.update))
+                    context.read<Client>().hasFeature(CommentFeature.update))
                   PopupMenuTile(
                     title: 'Edit',
                     icon: Icons.edit,
@@ -188,7 +196,7 @@ class CommentTile extends StatelessWidget {
                     ));
                   },
                 ),
-                if (context.watch<Client>().hasFeature(CommentFeature.report))
+                if (context.read<Client>().hasFeature(CommentFeature.report))
                   PopupMenuTile(
                     title: 'Report',
                     icon: Icons.report,

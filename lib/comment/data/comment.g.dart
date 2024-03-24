@@ -14,7 +14,7 @@ _$CommentImpl _$$CommentImplFromJson(Map<String, dynamic> json) =>
       createdAt: DateTime.parse(json['created_at'] as String),
       updatedAt: DateTime.parse(json['updated_at'] as String),
       creatorId: json['creator_id'] as int,
-      creatorName: json['creator_name'] as String,
+      creatorName: json['creator_name'] as String?,
       vote: json['vote'] == null
           ? null
           : VoteInfo.fromJson(json['vote'] as Map<String, dynamic>),

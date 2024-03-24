@@ -26,7 +26,7 @@ mixin _$Comment {
   DateTime get createdAt => throw _privateConstructorUsedError;
   DateTime get updatedAt => throw _privateConstructorUsedError;
   int get creatorId => throw _privateConstructorUsedError;
-  String get creatorName => throw _privateConstructorUsedError;
+  String? get creatorName => throw _privateConstructorUsedError;
   VoteInfo? get vote => throw _privateConstructorUsedError;
   CommentWarning? get warning => throw _privateConstructorUsedError;
 
@@ -47,7 +47,7 @@ abstract class $CommentCopyWith<$Res> {
       DateTime createdAt,
       DateTime updatedAt,
       int creatorId,
-      String creatorName,
+      String? creatorName,
       VoteInfo? vote,
       CommentWarning? warning});
 
@@ -73,7 +73,7 @@ class _$CommentCopyWithImpl<$Res, $Val extends Comment>
     Object? createdAt = null,
     Object? updatedAt = null,
     Object? creatorId = null,
-    Object? creatorName = null,
+    Object? creatorName = freezed,
     Object? vote = freezed,
     Object? warning = freezed,
   }) {
@@ -102,10 +102,10 @@ class _$CommentCopyWithImpl<$Res, $Val extends Comment>
           ? _value.creatorId
           : creatorId // ignore: cast_nullable_to_non_nullable
               as int,
-      creatorName: null == creatorName
+      creatorName: freezed == creatorName
           ? _value.creatorName
           : creatorName // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
       vote: freezed == vote
           ? _value.vote
           : vote // ignore: cast_nullable_to_non_nullable
@@ -144,7 +144,7 @@ abstract class _$$CommentImplCopyWith<$Res> implements $CommentCopyWith<$Res> {
       DateTime createdAt,
       DateTime updatedAt,
       int creatorId,
-      String creatorName,
+      String? creatorName,
       VoteInfo? vote,
       CommentWarning? warning});
 
@@ -169,7 +169,7 @@ class __$$CommentImplCopyWithImpl<$Res>
     Object? createdAt = null,
     Object? updatedAt = null,
     Object? creatorId = null,
-    Object? creatorName = null,
+    Object? creatorName = freezed,
     Object? vote = freezed,
     Object? warning = freezed,
   }) {
@@ -198,10 +198,10 @@ class __$$CommentImplCopyWithImpl<$Res>
           ? _value.creatorId
           : creatorId // ignore: cast_nullable_to_non_nullable
               as int,
-      creatorName: null == creatorName
+      creatorName: freezed == creatorName
           ? _value.creatorName
           : creatorName // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
       vote: freezed == vote
           ? _value.vote
           : vote // ignore: cast_nullable_to_non_nullable
@@ -244,7 +244,7 @@ class _$CommentImpl implements _Comment {
   @override
   final int creatorId;
   @override
-  final String creatorName;
+  final String? creatorName;
   @override
   final VoteInfo? vote;
   @override
@@ -302,7 +302,7 @@ abstract class _Comment implements Comment {
       required final DateTime createdAt,
       required final DateTime updatedAt,
       required final int creatorId,
-      required final String creatorName,
+      required final String? creatorName,
       required final VoteInfo? vote,
       required final CommentWarning? warning}) = _$CommentImpl;
 
@@ -321,7 +321,7 @@ abstract class _Comment implements Comment {
   @override
   int get creatorId;
   @override
-  String get creatorName;
+  String? get creatorName;
   @override
   VoteInfo? get vote;
   @override
