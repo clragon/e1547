@@ -4,14 +4,14 @@ import 'package:e1547/interface/interface.dart';
 import 'package:e1547/pool/pool.dart';
 import 'package:e1547/post/post.dart';
 
-class DanbooruPoolsClient extends PoolsClient {
-  DanbooruPoolsClient({
+class DanbooruPoolService extends PoolService {
+  DanbooruPoolService({
     required this.dio,
     required this.postsClient,
   });
 
   final Dio dio;
-  final PostsClient postsClient;
+  final PostService postsClient;
 
   @override
   Future<Pool> get({

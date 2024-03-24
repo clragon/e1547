@@ -15,7 +15,7 @@ class E621TraitsClient extends TraitsClient {
   final Dio dio;
   final Identity identity;
   final ValueNotifier<Traits> traits;
-  final AccountsClient accountsClient;
+  final AccountService accountsClient;
 
   @override
   Future<void> push({

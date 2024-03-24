@@ -7,8 +7,8 @@ import 'package:e1547/identity/identity.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/tag/tag.dart';
 
-class DanbooruPostsClient extends PostsClient {
-  DanbooruPostsClient({
+class DanbooruPostService extends PostService {
+  DanbooruPostService({
     required this.dio,
     required this.identity,
   });

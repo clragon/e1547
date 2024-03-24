@@ -8,7 +8,7 @@ enum CommentFeature {
   report,
 }
 
-abstract class CommentsClient with FeatureFlagging<CommentFeature> {
+abstract class CommentService with FeatureFlagging<CommentFeature> {
   Future<Comment> get({
     required int id,
     bool? force,

@@ -1,7 +1,7 @@
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/reply/reply.dart';
 
-abstract class RepliesClient {
+abstract class ReplyService {
   Future<Reply> get({
     required int id,
     bool? force,

@@ -18,19 +18,19 @@ class DanbooruClient extends Client with ClientAssembly {
     required this.traitsState,
     required this.storage,
   }) : dio = createDefaultDio(identity, cache: storage.httpCache) {
-    final availability = HttpAvailabilityClient(
+    final availability = HttpAvailabilityService(
       dio: dio,
       identity: identity,
       traits: traitsState,
     );
-    final posts = DanbooruPostsClient(dio: dio, identity: identity);
-    final comments = DanbooruCommentsClient(dio: dio);
-    final pools = DanbooruPoolsClient(dio: dio, postsClient: posts);
-    final tags = DanbooruTagsClient(dio: dio);
+    final posts = DanbooruPostService(dio: dio, identity: identity);
+    final comments = DanbooruCommentService(dio: dio);
+    final pools = DanbooruPoolService(dio: dio, postsClient: posts);
+    final tags = DanbooruTagService(dio: dio);
     final traits = DanbooruTraitsClient(traits: traitsState);
-    final wikis = DanbooruWikisClient(dio: dio);
+    final wikis = DanbooruWikiService(dio: dio);
 
-    enableClients(
+    enableServices(
       availability: availability,
       comments: comments,
       pools: pools,

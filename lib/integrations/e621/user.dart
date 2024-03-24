@@ -2,8 +2,8 @@ import 'package:dio/dio.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/user/user.dart';
 
-class E621UsersClient extends UsersClient {
-  E621UsersClient({required this.dio});
+class E621UserService extends UserService {
+  E621UserService({required this.dio});
 
   final Dio dio;
 

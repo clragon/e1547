@@ -10,8 +10,8 @@ import 'package:e1547/post/post.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:e1547/ticket/ticket.dart';
 
-class E621PostsClient extends PostsClient {
-  E621PostsClient({
+class E621PostService extends PostService {
+  E621PostService({
     required this.dio,
     required this.identity,
     this.poolsClient,
@@ -19,7 +19,7 @@ class E621PostsClient extends PostsClient {
 
   final Dio dio;
   final Identity identity;
-  final PoolsClient? poolsClient;
+  final PoolService? poolsClient;
 
   @override
   Set<Enum> get features => {

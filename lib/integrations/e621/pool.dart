@@ -5,16 +5,16 @@ import 'package:e1547/pool/pool.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/user/user.dart';
 
-class E621PoolsClient extends PoolsClient {
-  E621PoolsClient({
+class E621PoolService extends PoolService {
+  E621PoolService({
     required this.dio,
     required this.postsClient,
     this.accountsClient,
   });
 
   final Dio dio;
-  final PostsClient postsClient;
-  final AccountsClient? accountsClient;
+  final PostService postsClient;
+  final AccountService? accountsClient;
 
   @override
   Future<Pool> get({

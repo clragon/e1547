@@ -17,16 +17,16 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_sub/flutter_sub.dart';
 
 class IdentitiesServiceProvider extends SubChangeNotifierProvider3<AppStorage,
-    Settings, ClientFactory, IdentitiesService> {
+    Settings, ClientFactory, IdentityService> {
   IdentitiesServiceProvider({
     super.child,
     TransitionBuilder? builder,
   }) : super(
-          create: (context, storage, settings, factory) => IdentitiesService(
+          create: (context, storage, settings, factory) => IdentityService(
             database: storage.sqlite,
             onCreate: factory.createDefaultIdentity,
           ),
-          builder: (context, child) => Consumer2<IdentitiesService, Settings>(
+          builder: (context, child) => Consumer2<IdentityService, Settings>(
             builder: (context, service, settings, child) => SubListener(
               listenable: service,
               listener: () => settings.identity.value = service.identity.id,
@@ -48,7 +48,7 @@ class IdentitiesServiceProvider extends SubChangeNotifierProvider3<AppStorage,
 }
 
 class TraitsServiceProvider extends SubChangeNotifierProvider3<AppStorage,
-    IdentitiesService, ClientFactory, TraitsService> {
+    IdentityService, ClientFactory, TraitsService> {
   TraitsServiceProvider({
     super.child,
     TransitionBuilder? builder,
@@ -62,7 +62,7 @@ class TraitsServiceProvider extends SubChangeNotifierProvider3<AppStorage,
             },
           ),
           builder: (context, child) =>
-              Consumer2<TraitsService, IdentitiesService>(
+              Consumer2<TraitsService, IdentityService>(
             builder: (context, traits, identities, child) =>
                 SubValue<Future<void>>(
               create: () => traits.activate(identities.identity.id),
@@ -93,7 +93,7 @@ class ClientFactoryProvider extends SubProvider0<ClientFactory> {
       : super(create: (context) => ClientFactory());
 }
 
-class ClientProvider extends SubProvider4<AppStorage, IdentitiesService,
+class ClientProvider extends SubProvider4<AppStorage, IdentityService,
     TraitsService, ClientFactory, Client> {
   ClientProvider({super.child, super.builder})
       : super(
@@ -106,7 +106,7 @@ class ClientProvider extends SubProvider4<AppStorage, IdentitiesService,
             ),
           ),
           keys: (context) => [
-            context.watch<IdentitiesService>().identity,
+            context.watch<IdentityService>().identity,
             context.watch<TraitsService>(), // notifier is created per identity
             context.watch<AppStorage>().httpCache,
           ],
@@ -115,7 +115,7 @@ class ClientProvider extends SubProvider4<AppStorage, IdentitiesService,
 }
 
 class CacheManagerProvider
-    extends SubProvider<IdentitiesService, BaseCacheManager> {
+    extends SubProvider<IdentityService, BaseCacheManager> {
   CacheManagerProvider({super.child, super.builder})
       : super(
           create: (context, service) => CacheManager(

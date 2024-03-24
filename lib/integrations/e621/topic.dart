@@ -3,8 +3,8 @@ import 'package:dio/dio.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/topic/topic.dart';
 
-class E621TopicsClient extends TopicsClient {
-  E621TopicsClient({required this.dio});
+class E621TopicService extends TopicService {
+  E621TopicService({required this.dio});
 
   final Dio dio;
 

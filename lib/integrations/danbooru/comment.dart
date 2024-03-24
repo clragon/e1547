@@ -3,8 +3,8 @@ import 'package:dio/dio.dart';
 import 'package:e1547/comment/comment.dart';
 import 'package:e1547/interface/interface.dart';
 
-class DanbooruCommentsClient extends CommentsClient {
-  DanbooruCommentsClient({required this.dio});
+class DanbooruCommentService extends CommentService {
+  DanbooruCommentService({required this.dio});
 
   final Dio dio;
 

@@ -4,8 +4,8 @@ import 'package:e1547/comment/comment.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/reply/reply.dart';
 
-class E621RepliesClient extends RepliesClient {
-  E621RepliesClient({required this.dio});
+class E621ReplyService extends ReplyService {
+  E621ReplyService({required this.dio});
 
   final Dio dio;
 

@@ -4,8 +4,8 @@ import 'package:e1547/identity/identity.dart';
 import 'package:e1547/traits/traits.dart';
 import 'package:flutter/foundation.dart';
 
-class HttpAvailabilityClient extends AvailabilityClient {
-  HttpAvailabilityClient({
+class HttpAvailabilityService extends AvailabilityService {
+  HttpAvailabilityService({
     required Dio dio,
     required this.identity,
     required this.traits,

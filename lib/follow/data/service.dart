@@ -7,7 +7,7 @@ enum FollowFeature {
   database,
 }
 
-abstract class FollowsClient with FeatureFlagging<FollowFeature> {
+abstract class FollowService with FeatureFlagging<FollowFeature> {
   Future<Follow> get({
     required int id,
     bool? force,

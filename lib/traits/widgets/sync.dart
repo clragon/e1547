@@ -1,5 +1,5 @@
 import 'package:e1547/client/client.dart';
-import 'package:e1547/follow/data/client.dart';
+import 'package:e1547/follow/data/service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sub/flutter_sub.dart';
 

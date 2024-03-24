@@ -18,7 +18,7 @@ Future<ControllerBundle> prepareBackgroundIsolate() async {
   await initializeLogger(path: storage.temporaryFiles, postfix: 'background');
   Settings settings = Settings(storage.preferences);
 
-  IdentitiesService identities = IdentitiesService(database: storage.sqlite);
+  IdentityService identities = IdentityService(database: storage.sqlite);
   await identities.activate(settings.identity.value);
 
   return ControllerBundle(
@@ -45,7 +45,7 @@ class ControllerBundle {
   final Settings settings;
 
   /// Service of identities.
-  final IdentitiesService identities;
+  final IdentityService identities;
 }
 
 /// Registers background tasks for the app.

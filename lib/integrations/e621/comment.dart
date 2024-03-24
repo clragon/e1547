@@ -3,8 +3,8 @@ import 'package:dio/dio.dart';
 import 'package:e1547/comment/comment.dart';
 import 'package:e1547/interface/interface.dart';
 
-class E621CommentsClient extends CommentsClient {
-  E621CommentsClient({required this.dio});
+class E621CommentService extends CommentService {
+  E621CommentService({required this.dio});
 
   final Dio dio;
 

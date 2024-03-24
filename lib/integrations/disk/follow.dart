@@ -9,8 +9,8 @@ import 'package:e1547/pool/pool.dart';
 import 'package:e1547/post/post.dart';
 import 'package:rxdart/rxdart.dart';
 
-abstract class DiskFollowsClient extends FollowsClient with Disposable {
-  DiskFollowsClient({
+abstract class DiskFollowService extends FollowService with Disposable {
+  DiskFollowService({
     required this.database,
     required this.identity,
   }) : repository =

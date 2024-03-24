@@ -1,14 +1,14 @@
 import 'package:e1547/interface/interface.dart';
-import 'package:e1547/wiki/wiki.dart';
+import 'package:e1547/topic/topic.dart';
 
-abstract class WikisClient {
-  Future<Wiki> get({
-    required String id,
+abstract class TopicService {
+  Future<Topic> get({
+    required int id,
     bool? force,
     CancelToken? cancelToken,
   });
 
-  Future<List<Wiki>> page({
+  Future<List<Topic>> page({
     int? page,
     int? limit,
     QueryMap? query,

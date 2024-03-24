@@ -2,8 +2,8 @@ import 'package:dio/dio.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/tag/tag.dart';
 
-class E621TagsClient extends TagsClient {
-  E621TagsClient({required this.dio});
+class E621TagService extends TagService {
+  E621TagService({required this.dio});
 
   final Dio dio;
 

@@ -3,8 +3,8 @@ import 'package:dio/dio.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/tag/tag.dart';
 
-class DanbooruTagsClient extends TagsClient {
-  DanbooruTagsClient({required this.dio});
+class DanbooruTagService extends TagService {
+  DanbooruTagService({required this.dio});
 
   final Dio dio;
 

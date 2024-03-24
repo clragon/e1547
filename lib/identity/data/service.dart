@@ -5,8 +5,8 @@ import 'package:drift/drift.dart';
 import 'package:e1547/identity/identity.dart';
 import 'package:flutter/foundation.dart';
 
-class IdentitiesService extends IdentitiesDao with ChangeNotifier {
-  IdentitiesService({
+class IdentityService extends IdentitiesDao with ChangeNotifier {
+  IdentityService({
     required GeneratedDatabase database,
     this.onCreate,
   }) : super(database);

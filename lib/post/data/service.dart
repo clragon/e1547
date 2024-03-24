@@ -10,7 +10,7 @@ enum PostFeature {
   flag,
 }
 
-abstract class PostsClient with FeatureFlagging {
+abstract class PostService with FeatureFlagging {
   Future<Post> get(
     int postId, {
     bool? force,

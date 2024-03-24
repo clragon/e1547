@@ -25,43 +25,43 @@ class E621Client extends Client with ClientAssembly {
     required this.traitsState,
     required this.storage,
   }) : dio = createDefaultDio(identity, cache: storage.httpCache) {
-    late PostsClient posts;
-    late final accounts = E621AccountsClient(
+    late PostService posts;
+    late final accounts = E621AccountService(
       dio: dio,
       identity: identity,
       traits: traitsState,
       postsClient: posts,
     );
-    final availability = HttpAvailabilityClient(
+    final availability = HttpAvailabilityService(
       dio: dio,
       identity: identity,
       traits: traitsState,
     );
-    final comments = E621CommentsClient(dio: dio);
-    final pools = E621PoolsClient(
+    final comments = E621CommentService(dio: dio);
+    final pools = E621PoolService(
       dio: dio,
-      postsClient: E621PostsClient(
+      postsClient: E621PostService(
         dio: dio,
         identity: identity,
       ),
     );
-    posts = E621PostsClient(
+    posts = E621PostService(
       dio: dio,
       identity: identity,
       poolsClient: pools,
     );
-    final replies = E621RepliesClient(dio: dio);
-    final tags = E621TagsClient(dio: dio);
-    final topics = E621TopicsClient(dio: dio);
+    final replies = E621ReplyService(dio: dio);
+    final tags = E621TagService(dio: dio);
+    final topics = E621TopicService(dio: dio);
     final traits = E621TraitsClient(
       dio: dio,
       identity: identity,
       traits: traitsState,
       accountsClient: accounts,
     );
-    final users = E621UsersClient(dio: dio);
-    final wikis = E621WikisClient(dio: dio);
-    final follows = E621FollowsClient(
+    final users = E621UserService(dio: dio);
+    final wikis = E621WikiService(dio: dio);
+    final follows = E621FollowService(
       database: storage.sqlite,
       identity: identity,
       traits: traitsState,
@@ -69,14 +69,14 @@ class E621Client extends Client with ClientAssembly {
       poolsClient: pools,
       tagsClient: tags,
     );
-    final histories = DiskHistoriesClient(
+    final histories = DiskHistoryService(
       database: storage.sqlite,
       preferences: storage.preferences,
       identity: identity,
       traits: traitsState,
     );
 
-    enableClients(
+    enableServices(
       accounts: accounts,
       availability: availability,
       comments: comments,

@@ -9,8 +9,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:notified_preferences/notified_preferences.dart';
 import 'package:rxdart/rxdart.dart';
 
-class DiskHistoriesClient extends HistoriesClient with Disposable {
-  DiskHistoriesClient({
+class DiskHistoryService extends HistoryService with Disposable {
+  DiskHistoryService({
     required this.database,
     required this.preferences,
     required this.identity,

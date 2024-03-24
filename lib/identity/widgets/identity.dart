@@ -364,7 +364,7 @@ class _LoginLoadingDialogState extends State<LoginLoadingDialog> {
 
   Future<void> login() async {
     NavigatorState navigator = Navigator.of(context);
-    IdentitiesService service = context.read<IdentitiesService>();
+    IdentityService service = context.read<IdentityService>();
     Identity? identity = widget.identity;
     String host = widget.host;
     ClientType type = widget.type;

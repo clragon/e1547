@@ -6,8 +6,8 @@ import 'package:e1547/traits/traits.dart';
 import 'package:e1547/user/user.dart';
 import 'package:flutter/foundation.dart';
 
-class E621AccountsClient extends AccountsClient {
-  E621AccountsClient({
+class E621AccountService extends AccountService {
+  E621AccountService({
     required Dio dio,
     required this.identity,
     required this.traits,
@@ -17,7 +17,7 @@ class E621AccountsClient extends AccountsClient {
   final Dio _dio;
   final Identity identity;
   final ValueNotifier<Traits> traits;
-  final PostsClient postsClient;
+  final PostService postsClient;
 
   @override
   Future<Account?> get({bool? force, CancelToken? cancelToken}) async {

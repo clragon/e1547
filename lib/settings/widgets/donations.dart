@@ -62,7 +62,7 @@ class Donors extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String? username = context.watch<IdentitiesService>().identity.username;
+    String? username = context.watch<IdentityService>().identity.username;
     return Column(
       children: [
         ...donors.sortByDonation().map(

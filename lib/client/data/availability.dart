@@ -1,4 +1,4 @@
 // ignore: one_member_abstracts
-abstract class AvailabilityClient {
+abstract class AvailabilityService {
   Future<void> check();
 }

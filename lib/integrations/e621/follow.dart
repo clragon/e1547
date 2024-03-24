@@ -8,15 +8,15 @@ import 'package:e1547/follow/follow.dart';
 import 'package:e1547/integrations/disk/follow.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/logs/logs.dart';
-import 'package:e1547/pool/data/client.dart';
+import 'package:e1547/pool/data/service.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:e1547/traits/traits.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:rxdart/rxdart.dart';
 
-class E621FollowsClient extends DiskFollowsClient {
-  E621FollowsClient({
+class E621FollowService extends DiskFollowService {
+  E621FollowService({
     required super.database,
     required super.identity,
     required this.traits,
@@ -26,9 +26,9 @@ class E621FollowsClient extends DiskFollowsClient {
   });
 
   final ValueNotifier<Traits> traits;
-  final PostsClient postsClient;
-  final PoolsClient? poolsClient;
-  final TagsClient? tagsClient;
+  final PostService postsClient;
+  final PoolService? poolsClient;
+  final TagService? tagsClient;
 
   @override
   FollowSync createSync({bool? force}) => E621FollowSync(
@@ -58,9 +58,9 @@ class E621FollowSync implements FollowSync {
 
   final FollowsRepository repository;
   final ValueNotifier<Traits> traits;
-  final PostsClient postsClient;
-  final PoolsClient? poolsClient;
-  final TagsClient? tagsClient;
+  final PostService postsClient;
+  final PoolService? poolsClient;
+  final TagService? tagsClient;
   final bool? force;
 
   CancelableOperation<void>? _operation;

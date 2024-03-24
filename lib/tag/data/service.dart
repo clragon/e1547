@@ -1,7 +1,7 @@
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/tag/tag.dart';
 
-abstract class TagsClient {
+abstract class TagService {
   // Technically missing tags()
   Future<List<Tag>> page({
     int? page,

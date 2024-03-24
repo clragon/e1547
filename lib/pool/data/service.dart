@@ -2,7 +2,7 @@ import 'package:e1547/interface/interface.dart';
 import 'package:e1547/pool/pool.dart';
 import 'package:e1547/post/post.dart';
 
-abstract class PoolsClient {
+abstract class PoolService {
   Future<Pool> get({
     required int id,
     bool? force,

@@ -11,7 +11,7 @@ import 'package:e1547/wiki/wiki.dart';
 import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
 
-abstract class HistoriesClient {
+abstract class HistoryService {
   ValueNotifier<Traits> get traits;
 
   Future<History> get({

@@ -3,8 +3,8 @@ import 'package:dio/dio.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/wiki/wiki.dart';
 
-class DanbooruWikisClient extends WikisClient {
-  DanbooruWikisClient({required this.dio});
+class DanbooruWikiService extends WikiService {
+  DanbooruWikiService({required this.dio});
 
   final Dio dio;
 

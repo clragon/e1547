@@ -91,7 +91,7 @@ Future<void> migrateHistory(
   Settings settings = Settings(storage.preferences);
   Credentials? credentials = settings.credentials.value;
 
-  IdentitiesService service = IdentitiesService(database: db);
+  IdentityService service = IdentityService(database: db);
 
   for (final host in hosts) {
     String normalizedHost = normalizeHostUrl(host);

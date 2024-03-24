@@ -35,20 +35,20 @@ abstract class Client with FeatureFlagging<Enum>, Disposable {
   Identity get identity;
   ValueNotifier<Traits> get traitsState;
 
-  AccountsClient get accounts => throwUnsupported(ClientFeature.accounts);
-  AvailabilityClient get availability =>
+  AccountService get accounts => throwUnsupported(ClientFeature.accounts);
+  AvailabilityService get availability =>
       throwUnsupported(ClientFeature.availability);
-  CommentsClient get comments => throwUnsupported(ClientFeature.comments);
-  PoolsClient get pools => throwUnsupported(ClientFeature.pools);
-  PostsClient get posts => throwUnsupported(ClientFeature.posts);
-  RepliesClient get replies => throwUnsupported(ClientFeature.replies);
-  TagsClient get tags => throwUnsupported(ClientFeature.tags);
-  TopicsClient get topics => throwUnsupported(ClientFeature.topics);
+  CommentService get comments => throwUnsupported(ClientFeature.comments);
+  PoolService get pools => throwUnsupported(ClientFeature.pools);
+  PostService get posts => throwUnsupported(ClientFeature.posts);
+  ReplyService get replies => throwUnsupported(ClientFeature.replies);
+  TagService get tags => throwUnsupported(ClientFeature.tags);
+  TopicService get topics => throwUnsupported(ClientFeature.topics);
   TraitsClient get traits => throwUnsupported(ClientFeature.traits);
-  UsersClient get users => throwUnsupported(ClientFeature.users);
-  WikisClient get wikis => throwUnsupported(ClientFeature.wikis);
-  FollowsClient get follows => throwUnsupported(ClientFeature.follows);
-  HistoriesClient get histories => throwUnsupported(ClientFeature.histories);
+  UserService get users => throwUnsupported(ClientFeature.users);
+  WikiService get wikis => throwUnsupported(ClientFeature.wikis);
+  FollowService get follows => throwUnsupported(ClientFeature.follows);
+  HistoryService get histories => throwUnsupported(ClientFeature.histories);
 }
 
 extension ClientExtension on Client {
@@ -59,20 +59,20 @@ extension ClientExtension on Client {
 
 mixin ClientAssembly on Client {
   @protected
-  void enableClients({
-    AccountsClient? accounts,
-    AvailabilityClient? availability,
-    CommentsClient? comments,
-    PoolsClient? pools,
-    PostsClient? posts,
-    RepliesClient? replies,
-    TagsClient? tags,
-    TopicsClient? topics,
+  void enableServices({
+    AccountService? accounts,
+    AvailabilityService? availability,
+    CommentService? comments,
+    PoolService? pools,
+    PostService? posts,
+    ReplyService? replies,
+    TagService? tags,
+    TopicService? topics,
     TraitsClient? traits,
-    UsersClient? users,
-    WikisClient? wikis,
-    FollowsClient? follows,
-    HistoriesClient? histories,
+    UserService? users,
+    WikiService? wikis,
+    FollowService? follows,
+    HistoryService? histories,
   }) {
     _accounts = accounts;
     _availability = availability;
@@ -96,7 +96,7 @@ mixin ClientAssembly on Client {
   @override
   Set<Enum> get features => _features;
 
-  Set<Object?> get _clients => {
+  Set<Object?> get _services => {
         _accounts,
         _availability,
         _comments,
@@ -128,70 +128,70 @@ mixin ClientAssembly on Client {
         if (_follows != null) ClientFeature.follows,
         if (_histories != null) ClientFeature.histories,
         // sub features
-        ..._clients
+        ..._services
             .whereType<FeatureFlagging<Enum>>()
             .fold<Set<Enum>>({}, (all, e) => all..addAll(e.features)),
       };
 
-  late final AccountsClient? _accounts;
-  late final AvailabilityClient? _availability;
-  late final CommentsClient? _comments;
-  late final PoolsClient? _pools;
-  late final PostsClient? _posts;
-  late final RepliesClient? _replies;
-  late final TagsClient? _tags;
-  late final TopicsClient? _topics;
+  late final AccountService? _accounts;
+  late final AvailabilityService? _availability;
+  late final CommentService? _comments;
+  late final PoolService? _pools;
+  late final PostService? _posts;
+  late final ReplyService? _replies;
+  late final TagService? _tags;
+  late final TopicService? _topics;
   late final TraitsClient? _traits;
-  late final UsersClient? _users;
-  late final WikisClient? _wikis;
-  late final FollowsClient? _follows;
-  late final HistoriesClient? _histories;
+  late final UserService? _users;
+  late final WikiService? _wikis;
+  late final FollowService? _follows;
+  late final HistoryService? _histories;
 
-  T _throwOnMissingClient<T>(T? client, ClientFeature flag) {
+  T _throwOnMissingService<T>(T? client, ClientFeature flag) {
     if (client == null) throwUnsupported(flag);
     return client;
   }
 
   @override
-  AccountsClient get accounts =>
-      _throwOnMissingClient(_accounts, ClientFeature.accounts);
+  AccountService get accounts =>
+      _throwOnMissingService(_accounts, ClientFeature.accounts);
   @override
-  AvailabilityClient get availability =>
-      _throwOnMissingClient(_availability, ClientFeature.availability);
+  AvailabilityService get availability =>
+      _throwOnMissingService(_availability, ClientFeature.availability);
   @override
-  CommentsClient get comments =>
-      _throwOnMissingClient(_comments, ClientFeature.comments);
+  CommentService get comments =>
+      _throwOnMissingService(_comments, ClientFeature.comments);
   @override
-  PoolsClient get pools => _throwOnMissingClient(_pools, ClientFeature.pools);
+  PoolService get pools => _throwOnMissingService(_pools, ClientFeature.pools);
   @override
-  PostsClient get posts => _throwOnMissingClient(_posts, ClientFeature.posts);
+  PostService get posts => _throwOnMissingService(_posts, ClientFeature.posts);
   @override
-  RepliesClient get replies =>
-      _throwOnMissingClient(_replies, ClientFeature.replies);
+  ReplyService get replies =>
+      _throwOnMissingService(_replies, ClientFeature.replies);
   @override
-  TagsClient get tags => _throwOnMissingClient(_tags, ClientFeature.tags);
+  TagService get tags => _throwOnMissingService(_tags, ClientFeature.tags);
   @override
-  TopicsClient get topics =>
-      _throwOnMissingClient(_topics, ClientFeature.topics);
+  TopicService get topics =>
+      _throwOnMissingService(_topics, ClientFeature.topics);
   @override
   TraitsClient get traits =>
-      _throwOnMissingClient(_traits, ClientFeature.traits);
+      _throwOnMissingService(_traits, ClientFeature.traits);
   @override
-  UsersClient get users => _throwOnMissingClient(_users, ClientFeature.users);
+  UserService get users => _throwOnMissingService(_users, ClientFeature.users);
   @override
-  WikisClient get wikis => _throwOnMissingClient(_wikis, ClientFeature.wikis);
+  WikiService get wikis => _throwOnMissingService(_wikis, ClientFeature.wikis);
   @override
-  FollowsClient get follows =>
-      _throwOnMissingClient(_follows, ClientFeature.follows);
+  FollowService get follows =>
+      _throwOnMissingService(_follows, ClientFeature.follows);
   @override
-  HistoriesClient get histories =>
-      _throwOnMissingClient(_histories, ClientFeature.histories);
+  HistoryService get histories =>
+      _throwOnMissingService(_histories, ClientFeature.histories);
 
   @override
   void dispose() {
-    for (final client in _clients) {
-      if (client is Disposable) {
-        client.dispose();
+    for (final service in _services) {
+      if (service is Disposable) {
+        service.dispose();
       }
     }
     super.dispose();
