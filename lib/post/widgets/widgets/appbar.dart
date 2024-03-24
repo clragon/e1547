@@ -52,7 +52,7 @@ List<PopupMenuItem<VoidCallback>> postMenuUserActions(
         value: () => guardWithLogin(
           context: context,
           callback: () async {
-            PostsController controller = context.read<PostsController>();
+            PostController controller = context.read<PostController>();
             bool success =
                 await writeComment(context: context, postId: post.id);
             if (success) {

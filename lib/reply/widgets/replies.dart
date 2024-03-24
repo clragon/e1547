@@ -13,10 +13,10 @@ class RepliesPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return RepliesProvider(
+    return ReplyProvider(
       topicId: topic.id,
       orderByOldest: orderByOldest,
-      child: Consumer<RepliesController>(
+      child: Consumer<ReplyController>(
         builder: (context, controller, child) => Provider<UsernameGenerator>(
           create: (context) => UsernameGenerator(),
           child: ControllerHistoryConnector(

@@ -44,14 +44,14 @@ class PoolTile extends StatelessWidget {
     }
 
     Widget? image;
-    PoolsController? controller = context.watch<PoolsController?>();
+    PoolController? controller = context.watch<PoolController?>();
 
     if (pool.postIds.isNotEmpty && controller != null) {
       int thumbnail = pool.postIds.first;
       Post? post = controller.thumbnails.items
           ?.firstWhereOrNull((e) => e.id == thumbnail);
       if (post != null) {
-        image = ChangeNotifierProvider<PostsController>.value(
+        image = ChangeNotifierProvider<PostController>.value(
           value: controller.thumbnails,
           child: Center(
             child: ConstrainedBox(

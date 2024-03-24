@@ -15,7 +15,7 @@ class FollowMarkReadTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<FollowsController>(
+    return Consumer<FollowController>(
       builder: (context, controller, child) {
         int unseenCount =
             controller.items?.fold<int>(0, (a, b) => a + (b.unseen ?? 0)) ?? 0;

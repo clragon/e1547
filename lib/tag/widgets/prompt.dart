@@ -27,7 +27,7 @@ Future<void> showTagSearchSheet({
   required BuildContext context,
   required String tag,
 }) async {
-  PostsController? controller = context.read<PostsController?>();
+  PostController? controller = context.read<PostController?>();
   return showDefaultSlidingBottomSheet(
     context,
     (context, sheetState) => TagSearchSheet(
@@ -41,7 +41,7 @@ class TagSearchSheet extends StatelessWidget {
   const TagSearchSheet({super.key, required this.tag, this.controller});
 
   final String tag;
-  final PostsController? controller;
+  final PostController? controller;
 
   @override
   Widget build(BuildContext context) {
@@ -112,7 +112,7 @@ class TagSearchInfo extends StatelessWidget {
   const TagSearchInfo({super.key, required this.tag, this.controller});
 
   final String tag;
-  final PostsController? controller;
+  final PostController? controller;
 
   @override
   Widget build(BuildContext context) {
@@ -150,7 +150,7 @@ class TagSearchInfoChild extends StatelessWidget {
   });
 
   final String tag;
-  final PostsController? controller;
+  final PostController? controller;
 
   @override
   Widget build(BuildContext context) {
@@ -318,7 +318,7 @@ Future<void> showTagSearchDialog({
   required BuildContext context,
   required String tag,
 }) {
-  PostsController? controller = context.read<PostsController?>();
+  PostController? controller = context.read<PostController?>();
   return showDialog(
     context: context,
     builder: (context) => TagSearchDialog(
@@ -336,7 +336,7 @@ class TagSearchDialog extends StatelessWidget {
   });
 
   final String tag;
-  final PostsController? controller;
+  final PostController? controller;
 
   @override
   Widget build(BuildContext context) {

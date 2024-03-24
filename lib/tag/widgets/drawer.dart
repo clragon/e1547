@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 class DrawerTagCounter extends StatelessWidget {
   const DrawerTagCounter({super.key, required this.controller});
 
-  final PostsController controller;
+  final PostController controller;
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +23,7 @@ class DrawerTagCounter extends StatelessWidget {
 class DrawerMultiTagCounter extends StatelessWidget {
   const DrawerMultiTagCounter({super.key, required this.controllers});
 
-  final List<PostsController> controllers;
+  final List<PostController> controllers;
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +31,7 @@ class DrawerMultiTagCounter extends StatelessWidget {
       animation: Listenable.merge(controllers),
       builder: (context, child) {
         List<Post>? posts;
-        for (PostsController controller in controllers) {
+        for (PostController controller in controllers) {
           if (controller.items != null) {
             posts ??= [];
             posts.addAll(controller.items!);
@@ -53,7 +53,7 @@ class DrawerTagCounterBody extends StatelessWidget {
 
   final int limit;
   final List<Post>? posts;
-  final PostsController? controller;
+  final PostController? controller;
 
   @override
   Widget build(BuildContext context) {

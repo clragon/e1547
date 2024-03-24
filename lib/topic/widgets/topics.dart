@@ -12,9 +12,9 @@ class TopicsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return RouterDrawerEntry<TopicsPage>(
-      child: TopicsProvider(
+      child: TopicProvider(
         query: query,
-        child: Consumer<TopicsController>(
+        child: Consumer<TopicController>(
           builder: (context, controller, child) => ControllerHistoryConnector(
             controller: controller,
             addToHistory: (context, client, controller) =>

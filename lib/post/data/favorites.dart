@@ -2,7 +2,7 @@ import 'package:e1547/client/client.dart';
 import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
 
-class FavoritePostsController extends PostsController {
+class FavoritePostsController extends PostController {
   FavoritePostsController({required super.client});
 
   @override

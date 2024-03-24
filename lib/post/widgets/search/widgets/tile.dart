@@ -115,7 +115,7 @@ class PostTileOverlay extends StatelessWidget {
     return PostsConnector(
       post: post,
       builder: (context, post) {
-        PostsController? controller = context.watch<PostsController?>();
+        PostController? controller = context.watch<PostController?>();
         if (post.isDeleted) {
           return const Center(child: Text('deleted'));
         }
@@ -217,7 +217,7 @@ class PostInfoBar extends StatelessWidget {
 }
 
 void defaultPushPostDetail(BuildContext context, Post post) {
-  PostsController? controller = context.read<PostsController?>();
+  PostController? controller = context.read<PostController?>();
   int? cacheSize = context.read<ImageCacheSize>().size;
   Navigator.of(context).push(
     MaterialPageRoute(
@@ -321,7 +321,7 @@ class PostFeedTile extends StatelessWidget {
               status: post.vote.status,
               score: post.vote.score,
               onUpvote: (isLiked) async {
-                PostsController controller = context.read<PostsController>();
+                PostController controller = context.read<PostController>();
                 ScaffoldMessengerState messenger =
                     ScaffoldMessenger.of(context);
                 if (context.read<Client>().hasLogin) {
@@ -341,7 +341,7 @@ class PostFeedTile extends StatelessWidget {
                 }
               },
               onDownvote: (isLiked) async {
-                PostsController controller = context.read<PostsController>();
+                PostController controller = context.read<PostController>();
                 ScaffoldMessengerState messenger =
                     ScaffoldMessenger.of(context);
                 if (context.read<Client>().hasLogin) {
@@ -412,7 +412,7 @@ class PostFeedTile extends StatelessWidget {
           child: PostImageTile(
             post: post,
             onTap: () {
-              PostsController? controller = context.read<PostsController?>();
+              PostController? controller = context.read<PostController?>();
               Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (context) => PostVideoRoute(

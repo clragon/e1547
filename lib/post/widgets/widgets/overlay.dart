@@ -15,7 +15,7 @@ class PostImageOverlay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    PostsController? controller = context.read<PostsController?>();
+    PostController? controller = context.read<PostController?>();
 
     Widget centerText(String text) {
       return Center(

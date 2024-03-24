@@ -15,8 +15,8 @@ class FollowsSubscriptionsPage extends StatelessWidget {
       child: ValueListenableBuilder(
         valueListenable: context.watch<Settings>().filterUnseenFollows,
         builder: (context, filterUnseenFollows, child) =>
-            SubChangeNotifierProvider<Client, FollowsController>(
-          create: (context, value) => FollowsController(
+            SubChangeNotifierProvider<Client, FollowController>(
+          create: (context, value) => FollowController(
             client: value,
             types: [FollowType.update, FollowType.notify],
             filterUnseen: filterUnseenFollows,
@@ -24,7 +24,7 @@ class FollowsSubscriptionsPage extends StatelessWidget {
           keys: (context) => [filterUnseenFollows],
           child: child,
         ),
-        child: Consumer<FollowsController>(
+        child: Consumer<FollowController>(
           builder: (context, controller, _) => SubEffect(
             effect: () {
               // remove this when the paged grid view is implemented

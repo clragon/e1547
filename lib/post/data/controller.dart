@@ -2,9 +2,9 @@ import 'package:e1547/client/client.dart';
 import 'package:e1547/post/post.dart';
 import 'package:flutter/foundation.dart';
 
-class PostsController extends PageClientDataController<Post>
-    with PostsActionController, PostFilterableController {
-  PostsController({
+class PostController extends PageClientDataController<Post>
+    with PostActionController, PostFilterableController {
+  PostController({
     required this.client,
     QueryMap? query,
     bool orderFavorites = false,
@@ -72,7 +72,7 @@ class PostsController extends PageClientDataController<Post>
   }
 }
 
-class SinglePostController extends PostsController {
+class SinglePostController extends PostController {
   SinglePostController({
     required this.id,
     required super.client,
@@ -92,8 +92,8 @@ class SinglePostController extends PostsController {
       ];
 }
 
-class PostsProvider extends SubChangeNotifierProvider<Client, PostsController> {
-  PostsProvider({
+class PostProvider extends SubChangeNotifierProvider<Client, PostController> {
+  PostProvider({
     QueryMap? query,
     bool orderFavorites = false,
     bool orderPools = true,
@@ -103,7 +103,7 @@ class PostsProvider extends SubChangeNotifierProvider<Client, PostsController> {
     super.child,
     super.builder,
   }) : super(
-          create: (context, client) => PostsController(
+          create: (context, client) => PostController(
             client: client,
             query: query,
             orderPools: orderPools,
@@ -114,7 +114,7 @@ class PostsProvider extends SubChangeNotifierProvider<Client, PostsController> {
         );
 
   // ignore: use_key_in_widget_constructors
-  PostsProvider.builder({
+  PostProvider.builder({
     required super.create,
     super.keys,
     super.child,
@@ -122,7 +122,7 @@ class PostsProvider extends SubChangeNotifierProvider<Client, PostsController> {
   });
 }
 
-class SinglePostProvider extends PostsProvider {
+class SinglePostProvider extends PostProvider {
   SinglePostProvider({
     required int id,
     PostFilterMode filterMode = PostFilterMode.plain,

@@ -14,7 +14,7 @@ class PoolsPageFloatingActionButton extends StatelessWidget {
     required this.controller,
   });
 
-  final PoolsController controller;
+  final PoolController controller;
 
   @override
   Widget build(BuildContext context) {

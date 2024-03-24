@@ -88,7 +88,7 @@ class HistoryCategoryFilterTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<HistoriesController>(
+    return Consumer<HistoryController>(
       builder: (context, controller, child) => Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -133,7 +133,7 @@ class HistoryTypeFilterTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<HistoriesController>(
+    return Consumer<HistoryController>(
       builder: (context, controller, child) => Column(
         mainAxisSize: MainAxisSize.min,
         children: [

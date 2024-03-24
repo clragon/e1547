@@ -15,7 +15,7 @@ class PostFullscreenGallery extends StatelessWidget {
           'Cannot pass both initialPage and pageController',
         );
 
-  final PostsController controller;
+  final PostController controller;
   final int? initialPage;
   final PageController? pageController;
   final ValueChanged<int>? onPageChanged;
@@ -28,7 +28,7 @@ class PostFullscreenGallery extends StatelessWidget {
       builder: (context, pageController) => ScaffoldFrame(
         child: ChangeNotifierProvider.value(
           value: controller,
-          child: Consumer<PostsController>(
+          child: Consumer<PostController>(
             builder: (context, controller, child) => GalleryButtons(
               controller: pageController,
               child: PageView.builder(

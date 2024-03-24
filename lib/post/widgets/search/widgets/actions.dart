@@ -175,7 +175,7 @@ class RemoveTagAction extends StatelessWidget {
     required this.tag,
   });
 
-  final PostsController controller;
+  final PostController controller;
   final String tag;
 
   @override
@@ -201,7 +201,7 @@ class AddTagAction extends StatelessWidget {
     required this.tag,
   });
 
-  final PostsController controller;
+  final PostController controller;
   final String tag;
 
   @override
@@ -227,7 +227,7 @@ class SubtractTagAction extends StatelessWidget {
     required this.tag,
   });
 
-  final PostsController controller;
+  final PostController controller;
   final String tag;
 
   @override
@@ -254,7 +254,7 @@ class TagSearchActions extends StatelessWidget {
   });
 
   final String tag;
-  final PostsController controller;
+  final PostController controller;
 
   @override
   Widget build(BuildContext context) {

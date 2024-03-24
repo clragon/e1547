@@ -65,7 +65,7 @@ class App extends StatelessWidget {
                             child: MultiProvider(
                               providers: [
                                 const DatabaseMigrationProvider(),
-                                IdentitiesServiceProvider(),
+                                IdentityServiceProvider(),
                                 TraitsServiceProvider(),
                                 ClientProvider(),
                                 CacheManagerProvider(),

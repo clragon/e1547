@@ -10,7 +10,7 @@ class PostSelectionAppBar extends StatelessWidget with AppBarBuilderWidget {
     required this.child,
   });
 
-  final PostsController controller;
+  final PostController controller;
   @override
   final PreferredSizeWidget child;
 

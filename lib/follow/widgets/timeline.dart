@@ -14,11 +14,11 @@ class _FollowsTimelinePageState extends State<FollowsTimelinePage> {
   @override
   Widget build(BuildContext context) {
     return RouterDrawerEntry<FollowsTimelinePage>(
-      child: PostsProvider.builder(
+      child: PostProvider.builder(
         create: (context, client) => FollowTimelineController(
           client: client,
         ),
-        child: Consumer<PostsController>(
+        child: Consumer<PostController>(
           builder: (context, controller, child) => PostsPage(
             appBar: const DefaultAppBar(
               title: Text('Timeline'),

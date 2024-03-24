@@ -11,7 +11,7 @@ enum PostDisplayType {
 // These need to be functions because SmartRefresher needs the ScrollView as direct child
 Widget postDisplay({
   required BuildContext context,
-  required PostsController controller,
+  required PostController controller,
   PostDisplayType displayType = PostDisplayType.grid,
 }) {
   switch (displayType) {
@@ -26,7 +26,7 @@ Widget postDisplay({
 
 Widget postGrid({
   required BuildContext context,
-  required PostsController controller,
+  required PostController controller,
 }) {
   PagedChildBuilderDelegate<Post> buildBuilderDelegate(
           ItemWidgetBuilder<Post> itemBuilder) =>
@@ -78,7 +78,7 @@ Widget postGrid({
 
 Widget postComic({
   required BuildContext context,
-  required PostsController controller,
+  required PostController controller,
 }) {
   return PagedListView(
     primary: true,
@@ -99,7 +99,7 @@ Widget postComic({
 
 Widget postTimeline({
   required BuildContext context,
-  required PostsController controller,
+  required PostController controller,
 }) {
   return PagedListView(
     primary: true,

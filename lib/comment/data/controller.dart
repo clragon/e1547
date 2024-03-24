@@ -3,8 +3,8 @@ import 'package:e1547/client/client.dart';
 import 'package:e1547/comment/comment.dart';
 import 'package:flutter/material.dart';
 
-class CommentsController extends PageClientDataController<Comment> {
-  CommentsController({
+class CommentController extends PageClientDataController<Comment> {
+  CommentController({
     required this.client,
     required this.postId,
     bool? orderByOldest,
@@ -84,12 +84,12 @@ class CommentsController extends PageClientDataController<Comment> {
   }
 }
 
-class CommentsProvider
-    extends SubChangeNotifierProvider<Client, CommentsController> {
-  CommentsProvider({required int postId, super.child, super.builder})
+class CommentProvider
+    extends SubChangeNotifierProvider<Client, CommentController> {
+  CommentProvider({required int postId, super.child, super.builder})
       : super(
           create: (context, client) =>
-              CommentsController(client: client, postId: postId),
+              CommentController(client: client, postId: postId),
           keys: (context) => [postId],
         );
 }

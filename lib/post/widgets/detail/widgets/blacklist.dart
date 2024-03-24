@@ -13,7 +13,7 @@ class DenylistTagDisplay extends StatelessWidget {
     return PostsConnector(
       post: post,
       builder: (context, post) {
-        PostsController controller = context.watch<PostsController>();
+        PostController controller = context.watch<PostController>();
         return CrossFade.builder(
           showChild: controller.isDenied(post),
           builder: (context) => Column(

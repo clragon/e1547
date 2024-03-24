@@ -14,7 +14,7 @@ class PostsPage extends StatefulWidget {
     this.canSelect = true,
   });
 
-  final PostsController controller;
+  final PostController controller;
   final PreferredSizeWidget appBar;
   final List<Widget>? drawerActions;
   final PostDisplayType? displayType;
@@ -57,7 +57,7 @@ class _PostsPageState extends State<PostsPage> {
 
     return ChangeNotifierProvider.value(
       value: widget.controller,
-      child: Consumer<PostsController>(
+      child: Consumer<PostController>(
         builder: (context, controller, child) => SelectionLayout<Post>(
           enabled: widget.canSelect,
           items: controller.items,
@@ -90,7 +90,7 @@ class PostsPageFloatingActionButton extends StatelessWidget {
     required this.controller,
   });
 
-  final PostsController controller;
+  final PostController controller;
 
   @override
   Widget build(BuildContext context) {

@@ -3,8 +3,8 @@ import 'package:e1547/pool/pool.dart';
 import 'package:e1547/post/post.dart';
 import 'package:flutter/foundation.dart';
 
-class PoolsController extends PageClientDataController<Pool> {
-  PoolsController({
+class PoolController extends PageClientDataController<Pool> {
+  PoolController({
     required this.client,
     QueryMap? query,
   })  : _query = query ?? QueryMap(),
@@ -48,10 +48,10 @@ class PoolsController extends PageClientDataController<Pool> {
   }
 }
 
-class PoolsProvider extends SubChangeNotifierProvider<Client, PoolsController> {
+class PoolsProvider extends SubChangeNotifierProvider<Client, PoolController> {
   PoolsProvider({QueryMap? search, super.child, super.builder})
       : super(
-          create: (context, client) => PoolsController(
+          create: (context, client) => PoolController(
             client: client,
             query: search,
           ),
@@ -59,7 +59,7 @@ class PoolsProvider extends SubChangeNotifierProvider<Client, PoolsController> {
         );
 }
 
-class ThumbnailController extends PostsController {
+class ThumbnailController extends PostController {
   ThumbnailController({required super.client});
 
   Map<int, List<int>> _ids = {};
@@ -89,8 +89,8 @@ class ThumbnailController extends PostsController {
   }
 }
 
-class PoolController extends PostsController {
-  PoolController({
+class PoolPostController extends PostController {
+  PoolPostController({
     required super.client,
     required this.id,
     bool orderByOldest = true,

@@ -59,18 +59,18 @@ class IdentityAvatar extends StatelessWidget {
 class UserAvatar extends StatelessWidget {
   const UserAvatar({super.key, required this.controller, required this.id});
 
-  final PostsController? controller;
+  final PostController? controller;
   final int? id;
 
   @override
   Widget build(BuildContext context) {
     int? id = this.id;
-    PostsController? controller = this.controller;
+    PostController? controller = this.controller;
     if (id == null || controller == null) {
       return const EmptyAvatar();
     }
-    return SubFuture<PostsController>(
-      create: () => Future<PostsController>(() async {
+    return SubFuture<PostController>(
+      create: () => Future<PostController>(() async {
         await controller.getNextPage();
         return controller;
       }),
@@ -110,7 +110,7 @@ class PostAvatar extends StatelessWidget {
     } else {
       return SinglePostProvider(
         id: id!,
-        child: Consumer<PostsController>(
+        child: Consumer<PostController>(
           builder: (context, controller, child) =>
               UserAvatar(id: id, controller: controller),
         ),

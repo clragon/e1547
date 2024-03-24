@@ -64,7 +64,7 @@ class PostDetailImageToggle extends StatelessWidget {
       builder: (context, post) {
         if (post.isDeleted) return const SizedBox.shrink();
         if (post.file == null) return const SizedBox.shrink();
-        PostsController controller = context.watch<PostsController>();
+        PostController controller = context.watch<PostController>();
         return CrossFade.builder(
           showChild: (!post.isFavorited && controller.isDenied(post)) ||
               controller.isAllowed(post),
@@ -125,7 +125,7 @@ class PostDetailImageActions extends StatelessWidget {
       builder: (context, post) {
         VoidCallback? onTap;
 
-        PostsController controller = context.watch<PostsController>();
+        PostController controller = context.watch<PostController>();
         bool visible = post.file != null &&
             (!controller.isDenied(post) || post.isFavorited);
 

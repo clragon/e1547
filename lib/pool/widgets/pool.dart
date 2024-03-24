@@ -20,13 +20,13 @@ class _PoolPageState extends State<PoolPage> {
 
   @override
   Widget build(BuildContext context) {
-    return PostsProvider.builder(
-      create: (context, client) => PoolController(
+    return PostProvider.builder(
+      create: (context, client) => PoolPostController(
         client: client,
         id: widget.pool.id,
         orderByOldest: widget.orderByOldest ?? true,
       ),
-      child: Consumer<PostsController>(
+      child: Consumer<PostController>(
         builder: (context, controller, child) => ControllerHistoryConnector(
           controller: controller,
           addToHistory: (context, client, data) {

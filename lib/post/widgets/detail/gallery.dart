@@ -15,7 +15,7 @@ class PostDetailGallery extends StatelessWidget {
           'Cannot pass both initialPage and pageController',
         );
 
-  final PostsController controller;
+  final PostController controller;
   final int? initialPage;
   final PageController? pageController;
   final ValueChanged<int>? onPageChanged;
@@ -27,7 +27,7 @@ class PostDetailGallery extends StatelessWidget {
       create: () => PageController(initialPage: initialPage ?? 0),
       builder: (context, pageController) => ChangeNotifierProvider.value(
         value: controller,
-        child: Consumer<PostsController>(
+        child: Consumer<PostController>(
           builder: (context, controller, child) => GalleryButtons(
             controller: pageController,
             child: PagedPageView(

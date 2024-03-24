@@ -16,9 +16,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_sub/flutter_sub.dart';
 
-class IdentitiesServiceProvider extends SubChangeNotifierProvider3<AppStorage,
+class IdentityServiceProvider extends SubChangeNotifierProvider3<AppStorage,
     Settings, ClientFactory, IdentityService> {
-  IdentitiesServiceProvider({
+  IdentityServiceProvider({
     super.child,
     TransitionBuilder? builder,
   }) : super(

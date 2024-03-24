@@ -10,9 +10,9 @@ class PostCommentsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CommentsProvider(
+    return CommentProvider(
       postId: postId,
-      child: Consumer<CommentsController>(
+      child: Consumer<CommentController>(
         builder: (context, controller, child) => Provider<UsernameGenerator>(
           create: (context) => UsernameGenerator(),
           child: RefreshableDataPage(

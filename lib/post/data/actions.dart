@@ -173,7 +173,7 @@ extension PostLinking on Post {
   String get link => getPostLink(id);
 }
 
-mixin PostsActionController<KeyType> on ClientDataController<KeyType, Post> {
+mixin PostActionController<KeyType> on ClientDataController<KeyType, Post> {
   Post? postById(int id) {
     int index = rawItems?.indexWhere((e) => e.id == id) ?? -1;
     if (index == -1) {

@@ -8,7 +8,7 @@ class TopicsPageFloatingActionButton extends StatelessWidget {
     required this.controller,
   });
 
-  final TopicsController controller;
+  final TopicController controller;
 
   @override
   Widget build(BuildContext context) {

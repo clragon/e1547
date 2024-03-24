@@ -2,8 +2,8 @@ import 'package:e1547/client/client.dart';
 import 'package:e1547/reply/reply.dart';
 import 'package:flutter/material.dart';
 
-class RepliesController extends PageClientDataController<Reply> {
-  RepliesController({
+class ReplyController extends PageClientDataController<Reply> {
+  ReplyController({
     required this.client,
     required this.topicId,
     bool? orderByOldest,
@@ -40,15 +40,14 @@ class RepliesController extends PageClientDataController<Reply> {
   }
 }
 
-class RepliesProvider
-    extends SubChangeNotifierProvider<Client, RepliesController> {
-  RepliesProvider({
+class ReplyProvider extends SubChangeNotifierProvider<Client, ReplyController> {
+  ReplyProvider({
     required int topicId,
     bool? orderByOldest,
     super.child,
     super.builder,
   }) : super(
-          create: (context, client) => RepliesController(
+          create: (context, client) => ReplyController(
             client: client,
             topicId: topicId,
             orderByOldest: orderByOldest,

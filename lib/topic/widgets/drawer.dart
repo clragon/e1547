@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 class TopicTagEditingTile extends StatelessWidget {
   const TopicTagEditingTile({super.key, required this.controller});
 
-  final TopicsController controller;
+  final TopicController controller;
 
   @override
   Widget build(BuildContext context) {

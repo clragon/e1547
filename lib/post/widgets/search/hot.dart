@@ -13,9 +13,9 @@ class HotPage extends StatefulWidget {
 class _HotPageState extends State<HotPage> with RouterDrawerEntryWidget {
   @override
   Widget build(BuildContext context) {
-    return PostsProvider(
+    return PostProvider(
       query: TagMap({'tags': 'order:rank'}),
-      child: Consumer<PostsController>(
+      child: Consumer<PostController>(
         builder: (context, controller, child) =>
             PostsControllerHistoryConnector(
           controller: controller,

@@ -20,7 +20,7 @@ class LikeDisplay extends StatelessWidget {
               status: post.vote.status,
               score: post.vote.score,
               onUpvote: (isLiked) async {
-                PostsController controller = context.read<PostsController>();
+                PostController controller = context.read<PostController>();
                 ScaffoldMessengerState messenger =
                     ScaffoldMessenger.of(context);
                 if (context.read<Client>().hasLogin) {
@@ -40,7 +40,7 @@ class LikeDisplay extends StatelessWidget {
                 }
               },
               onDownvote: (isLiked) async {
-                PostsController controller = context.read<PostsController>();
+                PostController controller = context.read<PostController>();
                 ScaffoldMessengerState messenger =
                     ScaffoldMessenger.of(context);
                 if (context.read<Client>().hasLogin) {
@@ -67,7 +67,9 @@ class LikeDisplay extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 8),
                   child: Icon(
                     Icons.favorite,
-                    color: post.isFavorited ? Colors.pinkAccent : IconTheme.of(context).color,
+                    color: post.isFavorited
+                        ? Colors.pinkAccent
+                        : IconTheme.of(context).color,
                   ),
                 ),
               ],
@@ -99,7 +101,7 @@ class FavoriteButton extends StatelessWidget {
           color: isLiked ? Colors.pinkAccent : IconTheme.of(context).color,
         ),
         onTap: (isLiked) async {
-          PostsController controller = context.read<PostsController>();
+          PostController controller = context.read<PostController>();
           ScaffoldMessengerState messenger = ScaffoldMessenger.of(context);
           if (isLiked) {
             controller.unfav(post).then((value) {

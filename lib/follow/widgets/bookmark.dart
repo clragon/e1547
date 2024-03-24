@@ -11,12 +11,12 @@ class FollowsBookmarkPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return RouterDrawerEntry<FollowsBookmarkPage>(
-      child: SubChangeNotifierProvider<Client, FollowsController>(
-        create: (context, client) => FollowsController(
+      child: SubChangeNotifierProvider<Client, FollowController>(
+        create: (context, client) => FollowController(
           client: client,
           types: [FollowType.bookmark],
         ),
-        child: Consumer<FollowsController>(
+        child: Consumer<FollowController>(
           builder: (context, controller, child) => SubEffect(
             effect: () {
               // remove this when the paged grid view is implemented

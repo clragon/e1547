@@ -36,7 +36,7 @@ class UserPage extends StatelessWidget {
             PreferredSizeWidget? appbar;
             Map<Widget, WidgetBuilder> tabs = {
               const Tab(text: 'Favorites'): (context) =>
-                  ChangeNotifierProvider<PostsController>.value(
+                  ChangeNotifierProvider<PostController>.value(
                     value: controllers.favoritePosts,
                     builder: (context, child) => postDisplay(
                       context: context,
@@ -44,7 +44,7 @@ class UserPage extends StatelessWidget {
                     ),
                   ),
               const Tab(text: 'Uploads'): (context) =>
-                  ChangeNotifierProvider<PostsController>.value(
+                  ChangeNotifierProvider<PostController>.value(
                     value: controllers.uploadedPosts,
                     builder: (context, child) => postDisplay(
                       context: context,
@@ -173,7 +173,7 @@ class UserPage extends StatelessWidget {
               );
             }
 
-            return ControllerHistoryConnector<PostsController?>(
+            return ControllerHistoryConnector<PostController?>(
               controller: controllers.profilePost,
               addToHistory: (context, client, controller) =>
                   client.histories.addUser(
@@ -214,7 +214,7 @@ class UserSliverAppBar extends StatelessWidget {
 
   final User user;
   final List<Widget>? tabs;
-  final PostsController? avatar;
+  final PostController? avatar;
 
   @override
   Widget build(BuildContext context) {
@@ -345,15 +345,15 @@ class _UserPageControllers {
     this.profilePost,
   });
 
-  List<PostsController> get all => [
+  List<PostController> get all => [
         favoritePosts,
         uploadedPosts,
         if (profilePost != null) profilePost!,
       ];
 
-  final PostsController favoritePosts;
-  final PostsController uploadedPosts;
-  final PostsController? profilePost;
+  final PostController favoritePosts;
+  final PostController uploadedPosts;
+  final PostController? profilePost;
 
   void dispose() => all.forEach((e) => e.dispose());
 }

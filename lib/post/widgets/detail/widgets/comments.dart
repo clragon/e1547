@@ -61,9 +61,9 @@ class SliverPostCommentSection extends StatelessWidget {
     if (!context.watch<Client>().hasFeature(ClientFeature.comments)) {
       return const SliverToBoxAdapter();
     }
-    return CommentsProvider(
+    return CommentProvider(
       postId: post.id,
-      child: Consumer<CommentsController>(
+      child: Consumer<CommentController>(
         builder: (context, controller, child) => Provider<UsernameGenerator>(
           create: (context) => UsernameGenerator(),
           child: SliverMainAxisGroup(
@@ -111,8 +111,8 @@ class SliverPostCommentSection extends StatelessWidget {
                                   value: () => guardWithLogin(
                                     context: context,
                                     callback: () async {
-                                      PostsController postsController =
-                                          context.read<PostsController>();
+                                      PostController postsController =
+                                          context.read<PostController>();
                                       bool success = await writeComment(
                                           context: context, postId: post.id);
                                       if (success) {

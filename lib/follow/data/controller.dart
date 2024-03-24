@@ -2,7 +2,7 @@ import 'package:e1547/client/client.dart';
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/post/post.dart';
 
-class FollowTimelineController extends PostsController {
+class FollowTimelineController extends PostController {
   FollowTimelineController({
     required super.client,
   }) : super(canSearch: false);
@@ -27,8 +27,8 @@ class FollowTimelineController extends PostsController {
   }
 }
 
-class FollowsController extends PageClientDataController<Follow> {
-  FollowsController({
+class FollowController extends PageClientDataController<Follow> {
+  FollowController({
     required this.client,
     this.types = FollowType.values,
     bool filterUnseen = false,

@@ -89,8 +89,8 @@ class CommentTile extends StatelessWidget {
                   status: vote.status,
                   onUpvote: context.read<Client>().hasLogin
                       ? (isLiked) async {
-                          CommentsController controller =
-                              context.read<CommentsController>();
+                          CommentController controller =
+                              context.read<CommentController>();
                           ScaffoldMessengerState messenger =
                               ScaffoldMessenger.of(context);
                           controller
@@ -112,8 +112,8 @@ class CommentTile extends StatelessWidget {
                       : null,
                   onDownvote: context.read<Client>().hasLogin
                       ? (isLiked) async {
-                          CommentsController controller =
-                              context.read<CommentsController>();
+                          CommentController controller =
+                              context.read<CommentController>();
                           ScaffoldMessengerState messenger =
                               ScaffoldMessenger.of(context);
                           controller
@@ -149,8 +149,8 @@ class CommentTile extends StatelessWidget {
                     value: () => guardWithLogin(
                       context: context,
                       callback: () {
-                        CommentsController controller =
-                            context.read<CommentsController>();
+                        CommentController controller =
+                            context.read<CommentController>();
                         editComment(
                           context: context,
                           comment: comment,
@@ -169,8 +169,8 @@ class CommentTile extends StatelessWidget {
                   value: () => guardWithLogin(
                     context: context,
                     callback: () {
-                      CommentsController controller =
-                          context.read<CommentsController>();
+                      CommentController controller =
+                          context.read<CommentController>();
                       replyComment(
                         context: context,
                         comment: comment,

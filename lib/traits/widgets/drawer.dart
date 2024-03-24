@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 class DrawerDenySwitch extends StatelessWidget {
   const DrawerDenySwitch({super.key, required this.controller});
 
-  final PostsController controller;
+  final PostController controller;
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +26,7 @@ class DrawerDenySwitch extends StatelessWidget {
 class DrawerMultiDenySwitch extends StatefulWidget {
   const DrawerMultiDenySwitch({super.key, required this.controllers});
 
-  final List<PostsController> controllers;
+  final List<PostController> controllers;
 
   @override
   State<DrawerMultiDenySwitch> createState() => _DrawerMultiDenySwitchState();
@@ -59,7 +59,7 @@ class _DrawerMultiDenySwitchState extends State<DrawerMultiDenySwitch> {
       builder: (context, child) {
         Map<Post, List<String>> denied = {};
         List<String> allowedList = [];
-        for (PostsController controller in widget.controllers) {
+        for (PostController controller in widget.controllers) {
           if (controller.deniedPosts != null) {
             denied.addAll(controller.deniedPosts!);
           }

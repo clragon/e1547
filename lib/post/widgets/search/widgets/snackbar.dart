@@ -46,10 +46,10 @@ Future<void> postDownloadingNotification(
 Future<void> postFavoritingNotification(
   BuildContext context,
   Set<Post> items,
-  PostsController controller,
+  PostController controller,
   bool isLiked,
 ) {
-  PostsController controller = context.read<PostsController>();
+  PostController controller = context.read<PostController>();
   bool upvote = context.read<Settings>().upvoteFavs.value;
   return loadingNotification<Post>(
     context: context,

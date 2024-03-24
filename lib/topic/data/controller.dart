@@ -2,8 +2,8 @@ import 'package:e1547/client/client.dart';
 import 'package:e1547/topic/topic.dart';
 import 'package:flutter/foundation.dart';
 
-class TopicsController extends PageClientDataController<Topic> {
-  TopicsController({required this.client, QueryMap? query})
+class TopicController extends PageClientDataController<Topic> {
+  TopicController({required this.client, QueryMap? query})
       : _query = query ?? QueryMap();
 
   @override
@@ -44,12 +44,11 @@ class TopicsController extends PageClientDataController<Topic> {
   }
 }
 
-class TopicsProvider
-    extends SubChangeNotifierProvider<Client, TopicsController> {
-  TopicsProvider({QueryMap? query, super.child, super.builder})
+class TopicProvider extends SubChangeNotifierProvider<Client, TopicController> {
+  TopicProvider({QueryMap? query, super.child, super.builder})
       : super(
           create: (context, client) =>
-              TopicsController(client: client, query: query),
+              TopicController(client: client, query: query),
           keys: (context) => [query],
         );
 }

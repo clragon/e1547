@@ -13,9 +13,9 @@ class PostLoadingPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return SingleFuturePostsProvider(
       id: id,
-      child: Consumer<Future<PostsController>>(
+      child: Consumer<Future<PostController>>(
         builder: (context, controller, child) =>
-            FutureLoadingPage<PostsController>(
+            FutureLoadingPage<PostController>(
           future: controller,
           builder: (context, value) => PostsRouteConnector(
             controller: value,
@@ -31,11 +31,11 @@ class PostLoadingPage extends StatelessWidget {
 }
 
 class SingleFuturePostsProvider
-    extends SubProvider<Client, Future<PostsController>> {
+    extends SubProvider<Client, Future<PostController>> {
   SingleFuturePostsProvider({required int id, super.child, super.builder})
       : super(
-          create: (context, client) => Future<PostsController>(() async {
-            PostsController controller = SinglePostController(
+          create: (context, client) => Future<PostController>(() async {
+            PostController controller = SinglePostController(
               id: id,
               client: client,
             );

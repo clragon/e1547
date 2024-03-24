@@ -32,10 +32,10 @@ class _PostsSearchPageState extends State<PostsSearchPage> {
 
   @override
   Widget build(BuildContext context) {
-    return PostsProvider(
+    return PostProvider(
       query: widget.query,
       orderPools: widget.orderPoolsByOldest,
-      child: Consumer2<PostsController, Client>(
+      child: Consumer2<PostController, Client>(
         builder: (context, controller, client, child) {
           Future<void> updateFollow() async {
             String? tags = controller.query['tags'];

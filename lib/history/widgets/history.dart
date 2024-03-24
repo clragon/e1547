@@ -11,9 +11,9 @@ class HistoriesPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Client client = context.watch<Client>();
-    return SubChangeNotifierProvider<Client, HistoriesController>(
-      create: (context, client) => HistoriesController(client: client),
-      child: Consumer<HistoriesController>(
+    return SubChangeNotifierProvider<Client, HistoryController>(
+      create: (context, client) => HistoryController(client: client),
+      child: Consumer<HistoryController>(
         builder: (context, controller, child) => SelectionLayout<History>(
           items: controller.items,
           child: RefreshableDataPage.builder(

@@ -12,7 +12,7 @@ class PostsRouteConnector extends StatefulWidget {
     required this.child,
   });
 
-  final PostsController controller;
+  final PostController controller;
   final Widget child;
 
   @override
@@ -72,7 +72,7 @@ class PostsIdConnector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    PostsController? controller = context.watch<PostsController>();
+    PostController? controller = context.watch<PostController>();
     return SubValue(
       create: () => controller.items?.firstWhereOrNull((e) => e.id == id),
       keys: [controller.items.hashCode],
@@ -90,12 +90,12 @@ class PostsControllerConnector extends StatelessWidget {
   });
 
   final int id;
-  final PostsController controller;
+  final PostController controller;
   final Widget Function(BuildContext context, Post? value) builder;
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider<PostsController>.value(
+    return ChangeNotifierProvider<PostController>.value(
       value: controller,
       child: PostsIdConnector(
         id: id,
@@ -153,12 +153,12 @@ class PostsControllerHistoryConnector extends StatelessWidget {
     required this.controller,
   });
 
-  final PostsController controller;
+  final PostController controller;
   final Widget child;
 
   @override
   Widget build(BuildContext context) =>
-      ControllerHistoryConnector<PostsController>(
+      ControllerHistoryConnector<PostController>(
         controller: controller,
         addToHistory: (context, client, data) => client.histories.addPostSearch(
           query: data.query,
