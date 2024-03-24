@@ -1,6 +1,5 @@
 // data
 export 'data/actions.dart';
-export 'data/service.dart';
 export 'data/controller.dart';
 export 'data/download.dart';
 export 'data/editing.dart';
@@ -8,6 +7,7 @@ export 'data/favorites.dart';
 export 'data/filter.dart';
 export 'data/image.dart';
 export 'data/post.dart';
+export 'data/service.dart';
 // widgets
 export 'widgets/detail.dart';
 export 'widgets/fullscreen.dart';

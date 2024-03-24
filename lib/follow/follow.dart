@@ -1,10 +1,10 @@
 // data
 export 'data/actions.dart';
-export 'data/service.dart';
 export 'data/controller.dart';
 export 'data/database.dart';
 export 'data/follow.dart';
 export 'data/notifications.dart';
+export 'data/service.dart';
 // widgets
 export 'widgets/appbar.dart';
 export 'widgets/bookmark.dart';

@@ -1,8 +1,8 @@
 // data
 export 'data/actions.dart';
-export 'data/service.dart';
 export 'data/controller.dart';
 export 'data/pool.dart';
+export 'data/service.dart';
 // widgets
 export 'widgets/input.dart';
 export 'widgets/loading.dart';

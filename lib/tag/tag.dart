@@ -1,10 +1,10 @@
 // data
 export 'data/actions.dart';
-export 'data/service.dart';
 export 'data/count.dart';
 export 'data/filter.dart';
 export 'data/map.dart';
 export 'data/regex.dart';
+export 'data/service.dart';
 export 'data/tag.dart';
 // widgets
 export 'widgets/actions.dart';
