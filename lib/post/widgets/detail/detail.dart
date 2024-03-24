@@ -144,35 +144,39 @@ class PostDetail extends StatelessWidget {
                     } else {
                       sideBarWidth = 304;
                     }
-                    return Row(
-                      children: [
-                        Expanded(
-                          child: PostDetailCommentsWrapper(
-                            post: post,
-                            children: [
-                              image(context, constraints),
-                              upperBody(context),
-                            ],
-                          ),
-                        ),
-                        AnimatedSize(
-                          duration: defaultAnimationDuration,
-                          child: SizedBox(
-                            width: sideBarWidth,
-                            child: ListView(
-                              primary: false,
-                              padding: EdgeInsets.only(
-                                top: MediaQuery.of(context).padding.top,
-                                bottom: defaultActionListPadding.bottom,
-                              ),
-                              children: [
-                                const SizedBox(
-                                  height: 56,
+                    return CustomScrollView(
+                      primary: true,
+                      slivers: [
+                        SliverCrossAxisGroup(
+                          slivers: [
+                            SliverMainAxisGroup(
+                              slivers: [
+                                SliverToBoxAdapter(
+                                  child: Column(
+                                    children: [
+                                      image(context, constraints),
+                                      upperBody(context),
+                                    ],
+                                  ),
                                 ),
-                                lowerBody(context),
+                                SliverPostCommentSection(post: post),
                               ],
                             ),
-                          ),
+                            SliverConstrainedCrossAxis(
+                              maxExtent: sideBarWidth,
+                              sliver: SliverToBoxAdapter(
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const SizedBox(
+                                      height: 56,
+                                    ),
+                                    lowerBody(context),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     );

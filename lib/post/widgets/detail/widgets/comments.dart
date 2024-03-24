@@ -44,35 +44,21 @@ class CommentDisplay extends StatelessWidget {
   }
 }
 
-class PostDetailCommentsWrapper extends StatelessWidget {
-  const PostDetailCommentsWrapper({
+class SliverPostCommentSection extends StatelessWidget {
+  const SliverPostCommentSection({
     super.key,
     required this.post,
-    required this.children,
   });
 
   final Post post;
-  final List<Widget> children;
 
   @override
   Widget build(BuildContext context) {
-    if (!context.watch<Client>().hasFeature(ClientFeature.comments)) {
-      return SingleChildScrollView(child: Column(children: children));
-    }
     return CommentsProvider(
       postId: post.id,
       child: Consumer<CommentsController>(
-        builder: (context, controller, child) => CustomScrollView(
-          primary: true,
+        builder: (context, controller, child) => SliverMainAxisGroup(
           slivers: [
-            SliverToBoxAdapter(
-              child: SizedBox(height: MediaQuery.of(context).padding.top),
-            ),
-            SliverToBoxAdapter(
-              child: Column(
-                children: children,
-              ),
-            ),
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
