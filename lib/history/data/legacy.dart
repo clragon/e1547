@@ -120,7 +120,7 @@ Future<void> migrateHistory(
 
     await service.activate(identity.id);
 
-    HistoriesRepository historiesService = HistoriesRepository(
+    HistoryRepository historiesService = HistoryRepository(
       database: db,
       identity: identity.id,
     );

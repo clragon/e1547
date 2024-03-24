@@ -13,12 +13,11 @@ abstract class DiskFollowService extends FollowService with Disposable {
   DiskFollowService({
     required this.database,
     required this.identity,
-  }) : repository =
-            FollowsRepository(database: database, identity: identity.id);
+  }) : repository = FollowRepository(database: database, identity: identity.id);
 
   final GeneratedDatabase database;
   final Identity identity;
-  final FollowsRepository repository;
+  final FollowRepository repository;
 
   @override
   Set<FollowFeature> get features => {

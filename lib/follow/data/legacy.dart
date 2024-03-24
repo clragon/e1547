@@ -85,7 +85,7 @@ Future<void> migrateFollows(
 
     await service.activate(identity.id);
 
-    FollowsRepository repo = FollowsRepository(
+    FollowRepository repo = FollowRepository(
       database: db,
       identity: identity.id,
     );

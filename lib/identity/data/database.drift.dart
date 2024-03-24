@@ -8,7 +8,7 @@ import 'package:e1547/client/data/factory.dart' as i5;
 import 'package:e1547/identity/data/database.dart' as i6;
 import 'package:e1547/interface/data/sql.dart' as i7;
 
-mixin $IdentitiesDaoMixin on i0.DatabaseAccessor<i1.GeneratedDatabase> {
+mixin $IdentityRepositoryMixin on i0.DatabaseAccessor<i1.GeneratedDatabase> {
   i2.$IdentitiesTableTable get identitiesTable =>
       i3.ReadDatabaseContainer(attachedDatabase).resultSet('identities_table');
 }

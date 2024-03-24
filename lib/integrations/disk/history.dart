@@ -16,7 +16,7 @@ class DiskHistoryService extends HistoryService with Disposable {
     required this.identity,
     required this.traits,
   }) : repository =
-            HistoriesRepository(database: database, identity: identity.id);
+            HistoryRepository(database: database, identity: identity.id);
 
   final GeneratedDatabase database;
   final Identity identity;
@@ -24,7 +24,7 @@ class DiskHistoryService extends HistoryService with Disposable {
   final ValueNotifier<Traits> traits;
   // TODO: this is jank
   final SharedPreferences preferences;
-  final HistoriesRepository repository;
+  final HistoryRepository repository;
 
   @override
   Future<History> get({

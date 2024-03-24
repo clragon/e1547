@@ -56,7 +56,7 @@ class E621FollowSync implements FollowSync {
   final int refreshAmount = 5;
   final Duration refreshRate = const Duration(hours: 1);
 
-  final FollowsRepository repository;
+  final FollowRepository repository;
   final ValueNotifier<Traits> traits;
   final PostService postsClient;
   final PoolService? poolsClient;

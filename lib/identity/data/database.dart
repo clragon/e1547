@@ -34,9 +34,9 @@ class IdentitiesTable extends Table {
 }
 
 @DriftAccessor(tables: [IdentitiesTable])
-class IdentitiesDao extends DatabaseAccessor<GeneratedDatabase>
-    with $IdentitiesDaoMixin {
-  IdentitiesDao(super.db);
+class IdentityRepository extends DatabaseAccessor<GeneratedDatabase>
+    with $IdentityRepositoryMixin {
+  IdentityRepository(super.db);
 
   StreamFuture<int> length() {
     final Expression<int> count = identitiesTable.id.count();

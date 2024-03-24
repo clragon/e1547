@@ -7,7 +7,7 @@ import 'package:e1547/identity/data/database.drift.dart' as i4;
 import 'package:e1547/follow/data/follow.dart' as i5;
 import 'package:e1547/follow/data/database.dart' as i6;
 
-mixin $FollowsRepositoryMixin on i0.DatabaseAccessor<i1.GeneratedDatabase> {
+mixin $FollowRepositoryMixin on i0.DatabaseAccessor<i1.GeneratedDatabase> {
   i2.$FollowsTableTable get followsTable =>
       i3.ReadDatabaseContainer(attachedDatabase).resultSet('follows_table');
   i4.$IdentitiesTableTable get identitiesTable =>
