@@ -274,33 +274,29 @@ class E621PostService extends PostService {
   }
 
   @override
-  Future<void> report(int postId, int reportId, String reason) async {
-    await dio.post(
-      '/tickets',
-      queryParameters: {
-        'ticket[reason]': reason,
-        'ticket[report_reason]': reportId,
-        'ticket[disp_id]': postId,
-        'ticket[qtype]': 'post',
-      },
-      options: Options(
-        validateStatus: (status) => status == 302,
-      ),
-    );
-  }
+  Future<void> report(int postId, int reportId, String reason) => dio.post(
+        '/tickets',
+        queryParameters: {
+          'ticket[reason]': reason,
+          'ticket[report_reason]': reportId,
+          'ticket[disp_id]': postId,
+          'ticket[qtype]': 'post',
+        },
+        options: Options(
+          validateStatus: (status) => status == 302,
+        ),
+      );
 
   @override
-  Future<void> addFlag(int postId, String flag, {int? parent}) async {
-    await dio.post(
-      '/post_flags.json',
-      queryParameters: {
-        'post_flag[post_id]': postId,
-        'post_flag[reason_name]': flag,
-        if (flag == 'inferior' && parent != null)
-          'post_flag[parent_id]': parent,
-      },
-    );
-  }
+  Future<void> addFlag(int postId, String flag, {int? parent}) => dio.post(
+        '/post_flags.json',
+        queryParameters: {
+          'post_flag[post_id]': postId,
+          'post_flag[reason_name]': flag,
+          if (flag == 'inferior' && parent != null)
+            'post_flag[parent_id]': parent,
+        },
+      );
 
   @override
   Future<List<PostFlag>> flags({
