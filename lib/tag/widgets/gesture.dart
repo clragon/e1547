@@ -25,7 +25,7 @@ class TagGesture extends StatelessWidget {
     return InkWell(
       borderRadius: BorderRadius.circular(4),
       onTap: () async {
-        Traits traits = context.read<Client>().traitsState.value;
+        Traits traits = context.read<Client>().traits.value;
         if (wiki || (safe && traits.denylist.contains(tag))) {
           sheet();
         } else {

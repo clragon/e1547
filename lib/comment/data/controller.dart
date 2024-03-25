@@ -9,7 +9,7 @@ class CommentController extends PageClientDataController<Comment> {
     required this.postId,
     bool? orderByOldest,
   }) : _orderByOldest = orderByOldest ?? true {
-    client.traitsState.addListener(applyFilter);
+    client.traits.addListener(applyFilter);
   }
 
   @override
@@ -40,8 +40,8 @@ class CommentController extends PageClientDataController<Comment> {
 
   @override
   List<Comment>? filter(List<Comment>? items) => super.filter(items
-      ?.whereNot((e) =>
-          client.traitsState.value.denylist.contains('user:${e.creatorId}'))
+      ?.whereNot(
+          (e) => client.traits.value.denylist.contains('user:${e.creatorId}'))
       .toList());
 
   void replaceComment(Comment comment) => updateItem(
@@ -79,7 +79,7 @@ class CommentController extends PageClientDataController<Comment> {
 
   @override
   void dispose() {
-    client.traitsState.removeListener(applyFilter);
+    client.traits.removeListener(applyFilter);
     super.dispose();
   }
 }

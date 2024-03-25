@@ -286,7 +286,7 @@ class _UserProfileActions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    ValueNotifier<Traits> traits = context.watch<Client>().traitsState;
+    ValueNotifier<Traits> traits = context.watch<Client>().traits;
     String userTag = 'user:${user.id}';
     bool blocked = traits.value.denylist.contains(userTag);
     return PopupMenuButton<VoidCallback>(

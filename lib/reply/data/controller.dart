@@ -8,7 +8,7 @@ class ReplyController extends PageClientDataController<Reply> {
     required this.topicId,
     bool? orderByOldest,
   }) : _orderByOldest = orderByOldest ?? true {
-    client.traitsState.addListener(applyFilter);
+    client.traits.addListener(applyFilter);
   }
 
   @override
@@ -35,7 +35,7 @@ class ReplyController extends PageClientDataController<Reply> {
 
   @override
   void dispose() {
-    client.traitsState.removeListener(applyFilter);
+    client.traits.removeListener(applyFilter);
     super.dispose();
   }
 }

@@ -45,7 +45,7 @@ class SettingsPage extends StatelessWidget {
               const ListTileHeader(title: 'User'),
               Consumer<Client>(
                 builder: (context, client, child) => ValueListenableBuilder(
-                  valueListenable: client.traitsState,
+                  valueListenable: client.traits,
                   builder: (context, traits, child) => ListTile(
                     title: const Text('Blacklist'),
                     leading: const Icon(Icons.block),

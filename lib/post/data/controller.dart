@@ -16,7 +16,7 @@ class PostController extends PageClientDataController<Post>
         _orderFavorites = orderFavorites,
         _orderPools = orderPools {
     this.denying = denying;
-    client.traitsState.addListener(applyFilter);
+    client.traits.addListener(applyFilter);
   }
 
   @override
@@ -67,7 +67,7 @@ class PostController extends PageClientDataController<Post>
 
   @override
   void dispose() {
-    client.traitsState.removeListener(applyFilter);
+    client.traits.removeListener(applyFilter);
     super.dispose();
   }
 }

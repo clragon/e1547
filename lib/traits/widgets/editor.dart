@@ -17,14 +17,14 @@ class DenyListEditor extends StatelessWidget {
               showTagSearchPrompt(context: context, tag: 'e621:blacklist'),
         )
       ],
-      content: client.traitsState.value.denylist.join('\n'),
+      content: client.traits.value.denylist.join('\n'),
       onSubmitted: (value) async {
         List<String> tags = value.split('\n');
         tags = tags.trim();
         tags.removeWhere((tag) => tag.isEmpty);
         try {
-          await client.traits.push(
-            traits: client.traitsState.value.copyWith(denylist: tags),
+          await client.bridge.push(
+            traits: client.traits.value.copyWith(denylist: tags),
           );
         } on ClientException {
           return 'Failed to update blacklist!';

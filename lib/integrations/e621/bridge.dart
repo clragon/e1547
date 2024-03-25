@@ -1,21 +1,18 @@
 import 'package:dio/dio.dart';
-import 'package:e1547/identity/identity.dart';
+import 'package:e1547/integrations/http.dart';
 import 'package:e1547/traits/traits.dart';
 import 'package:e1547/user/user.dart';
 import 'package:flutter/foundation.dart';
 
-class E621TraitsClient extends TraitsClient {
-  E621TraitsClient({
-    required this.dio,
-    required this.identity,
-    required this.traits,
-    required this.accountsClient,
+class E621BridgeService extends HttpBridgeService {
+  E621BridgeService({
+    required super.dio,
+    required super.identity,
+    required super.traits,
+    required this.accountsService,
   });
 
-  final Dio dio;
-  final Identity identity;
-  final ValueNotifier<Traits> traits;
-  final AccountService accountsClient;
+  final AccountService accountsService;
 
   @override
   Future<void> push({
@@ -47,7 +44,7 @@ class E621TraitsClient extends TraitsClient {
 
   @override
   Future<void> pull({bool? force, CancelToken? cancelToken}) =>
-      accountsClient.get(
+      accountsService.get(
         force: force,
         cancelToken: cancelToken,
       );

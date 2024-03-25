@@ -31,12 +31,12 @@ class ClientFactory {
   Client create(ClientConfig config) => switch (config.identity.type) {
         ClientType.e621 => E621Client(
             identity: config.identity,
-            traitsState: config.traits,
+            traits: config.traits,
             storage: config.storage,
           ),
         ClientType.danbooru => DanbooruClient(
             identity: config.identity,
-            traitsState: config.traits,
+            traits: config.traits,
             storage: config.storage,
           ),
       };

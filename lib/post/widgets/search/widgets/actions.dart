@@ -23,7 +23,7 @@ class TagListActions extends StatelessWidget {
             : Stream.value(null),
         keys: [client, tag],
         builder: (context, snapshot) => ValueListenableBuilder(
-          valueListenable: client.traitsState,
+          valueListenable: client.traits,
           builder: (context, traits, child) {
             if ([
               ConnectionState.none,
@@ -62,7 +62,7 @@ class TagListActions extends StatelessWidget {
                 } else {
                   client.follows.create(tags: tag, type: type);
                   if (denied) {
-                    client.traitsState.value = traits.copyWith(
+                    client.traits.value = traits.copyWith(
                       denylist: traits.denylist..remove(tag),
                     );
                   }
@@ -138,7 +138,7 @@ class TagListActions extends StatelessWidget {
                           denied ? const Text('Unblock') : const Text('Block'),
                       onTap: () {
                         if (denied) {
-                          client.traits.push(
+                          client.bridge.push(
                             traits: traits.copyWith(
                               denylist: traits.denylist
                                   .whereNot((element) => element == tag)
@@ -149,7 +149,7 @@ class TagListActions extends StatelessWidget {
                           if (hasFollow) {
                             client.follows.delete(id: follow.id);
                           }
-                          client.traits.push(
+                          client.bridge.push(
                             traits: traits.copyWith(
                               denylist: [...traits.denylist, tag],
                             ),

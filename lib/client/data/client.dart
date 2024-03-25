@@ -17,14 +17,13 @@ export 'package:dio/dio.dart' show CancelToken;
 
 enum ClientFeature {
   accounts,
-  availability,
+  bridge,
   comments,
   pools,
   posts,
   replies,
   tags,
   topics,
-  traits,
   users,
   wikis,
   follows,
@@ -33,18 +32,16 @@ enum ClientFeature {
 
 abstract class Client with FeatureFlagging<Enum>, Disposable {
   Identity get identity;
-  ValueNotifier<Traits> get traitsState;
+  ValueNotifier<Traits> get traits;
 
   AccountService get accounts => throwUnsupported(ClientFeature.accounts);
-  AvailabilityService get availability =>
-      throwUnsupported(ClientFeature.availability);
+  BridgeService get bridge => throwUnsupported(ClientFeature.bridge);
   CommentService get comments => throwUnsupported(ClientFeature.comments);
   PoolService get pools => throwUnsupported(ClientFeature.pools);
   PostService get posts => throwUnsupported(ClientFeature.posts);
   ReplyService get replies => throwUnsupported(ClientFeature.replies);
   TagService get tags => throwUnsupported(ClientFeature.tags);
   TopicService get topics => throwUnsupported(ClientFeature.topics);
-  TraitsClient get traits => throwUnsupported(ClientFeature.traits);
   UserService get users => throwUnsupported(ClientFeature.users);
   WikiService get wikis => throwUnsupported(ClientFeature.wikis);
   FollowService get follows => throwUnsupported(ClientFeature.follows);
@@ -61,28 +58,26 @@ mixin ClientAssembly on Client {
   @protected
   void enableServices({
     AccountService? accounts,
-    AvailabilityService? availability,
+    BridgeService? bridge,
     CommentService? comments,
     PoolService? pools,
     PostService? posts,
     ReplyService? replies,
     TagService? tags,
     TopicService? topics,
-    TraitsClient? traits,
     UserService? users,
     WikiService? wikis,
     FollowService? follows,
     HistoryService? histories,
   }) {
     _accounts = accounts;
-    _availability = availability;
+    _bridge = bridge;
     _comments = comments;
     _pools = pools;
     _posts = posts;
     _replies = replies;
     _tags = tags;
     _topics = topics;
-    _traits = traits;
     _users = users;
     _wikis = wikis;
     _follows = follows;
@@ -98,14 +93,13 @@ mixin ClientAssembly on Client {
 
   Set<Object?> get _services => {
         _accounts,
-        _availability,
+        _bridge,
         _comments,
         _pools,
         _posts,
         _replies,
         _tags,
         _topics,
-        _traits,
         _users,
         _wikis,
         _follows,
@@ -115,14 +109,13 @@ mixin ClientAssembly on Client {
   Set<Enum> _generateFeatures() => {
         // client features
         if (_accounts != null) ClientFeature.accounts,
-        if (_availability != null) ClientFeature.availability,
+        if (_bridge != null) ClientFeature.bridge,
         if (_comments != null) ClientFeature.comments,
         if (_pools != null) ClientFeature.pools,
         if (_posts != null) ClientFeature.posts,
         if (_replies != null) ClientFeature.replies,
         if (_tags != null) ClientFeature.tags,
         if (_topics != null) ClientFeature.topics,
-        if (_traits != null) ClientFeature.traits,
         if (_users != null) ClientFeature.users,
         if (_wikis != null) ClientFeature.wikis,
         if (_follows != null) ClientFeature.follows,
@@ -134,14 +127,13 @@ mixin ClientAssembly on Client {
       };
 
   late final AccountService? _accounts;
-  late final AvailabilityService? _availability;
+  late final BridgeService? _bridge;
   late final CommentService? _comments;
   late final PoolService? _pools;
   late final PostService? _posts;
   late final ReplyService? _replies;
   late final TagService? _tags;
   late final TopicService? _topics;
-  late final TraitsClient? _traits;
   late final UserService? _users;
   late final WikiService? _wikis;
   late final FollowService? _follows;
@@ -156,8 +148,8 @@ mixin ClientAssembly on Client {
   AccountService get accounts =>
       _throwOnMissingService(_accounts, ClientFeature.accounts);
   @override
-  AvailabilityService get availability =>
-      _throwOnMissingService(_availability, ClientFeature.availability);
+  BridgeService get bridge =>
+      _throwOnMissingService(_bridge, ClientFeature.bridge);
   @override
   CommentService get comments =>
       _throwOnMissingService(_comments, ClientFeature.comments);
@@ -173,9 +165,6 @@ mixin ClientAssembly on Client {
   @override
   TopicService get topics =>
       _throwOnMissingService(_topics, ClientFeature.topics);
-  @override
-  TraitsClient get traits =>
-      _throwOnMissingService(_traits, ClientFeature.traits);
   @override
   UserService get users => _throwOnMissingService(_users, ClientFeature.users);
   @override

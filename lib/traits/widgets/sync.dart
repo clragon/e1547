@@ -16,8 +16,8 @@ class ClientSync extends StatelessWidget {
     return SubEffect(
       effect: () {
         final client = context.read<Client>();
-        if (client.hasFeature(ClientFeature.traits)) {
-          client.traits.pull();
+        if (client.hasFeature(ClientFeature.bridge)) {
+          client.bridge.pull();
         }
         if (client.hasFeature(FollowFeature.database)) {
           client.follows.sync();
@@ -26,9 +26,9 @@ class ClientSync extends StatelessWidget {
       },
       keys: [context.watch<Client>()],
       child: SubValueListener(
-        listenable: context.watch<Client>().traitsState,
+        listenable: context.watch<Client>().traits,
         listener: (traits) =>
-            context.read<Client>().traits.push(traits: traits),
+            context.read<Client>().bridge.push(traits: traits),
         builder: (context, traits) => child,
       ),
     );

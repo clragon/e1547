@@ -6,37 +6,34 @@ import 'package:e1547/integrations/danbooru/comment.dart';
 import 'package:e1547/integrations/danbooru/pool.dart';
 import 'package:e1547/integrations/danbooru/post.dart';
 import 'package:e1547/integrations/danbooru/tags.dart';
-import 'package:e1547/integrations/danbooru/traits.dart';
 import 'package:e1547/integrations/danbooru/wiki.dart';
-import 'package:e1547/integrations/http/availability.dart';
+import 'package:e1547/integrations/http/bridge.dart';
 import 'package:e1547/traits/data/traits.dart';
 import 'package:flutter/foundation.dart';
 
 class DanbooruClient extends Client with ClientAssembly {
   DanbooruClient({
     required this.identity,
-    required this.traitsState,
+    required this.traits,
     required this.storage,
   }) : dio = createDefaultDio(identity, cache: storage.httpCache) {
-    final availability = HttpAvailabilityService(
+    final bridge = HttpBridgeService(
       dio: dio,
       identity: identity,
-      traits: traitsState,
+      traits: traits,
     );
     final posts = DanbooruPostService(dio: dio, identity: identity);
     final comments = DanbooruCommentService(dio: dio);
     final pools = DanbooruPoolService(dio: dio, postsClient: posts);
     final tags = DanbooruTagService(dio: dio);
-    final traits = DanbooruTraitsClient(traits: traitsState);
     final wikis = DanbooruWikiService(dio: dio);
 
     enableServices(
-      availability: availability,
+      bridge: bridge,
       comments: comments,
       pools: pools,
       posts: posts,
       tags: tags,
-      traits: traits,
       wikis: wikis,
     );
   }
@@ -49,5 +46,5 @@ class DanbooruClient extends Client with ClientAssembly {
   final Identity identity;
 
   @override
-  final ValueNotifier<Traits> traitsState;
+  final ValueNotifier<Traits> traits;
 }
