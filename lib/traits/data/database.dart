@@ -20,9 +20,9 @@ class TraitsTable extends Table {
 }
 
 @DriftAccessor(tables: [IdentitiesTable, TraitsTable])
-class TraitsDao extends DatabaseAccessor<GeneratedDatabase>
-    with $TraitsDaoMixin {
-  TraitsDao(super.db);
+class TraitsRepository extends DatabaseAccessor<GeneratedDatabase>
+    with $TraitsRepositoryMixin {
+  TraitsRepository(super.db);
 
   StreamFuture<Traits?> getOrNull(int id) {
     return (select(traitsTable)..where((t) => t.id.equals(id)))

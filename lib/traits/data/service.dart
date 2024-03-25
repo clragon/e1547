@@ -5,7 +5,7 @@ import 'package:drift/drift.dart';
 import 'package:e1547/traits/traits.dart';
 import 'package:flutter/foundation.dart';
 
-class TraitsService extends TraitsDao with ChangeNotifier {
+class TraitsService extends TraitsRepository with ChangeNotifier {
   TraitsService({
     required GeneratedDatabase database,
     this.onCreate,
