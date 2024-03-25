@@ -19,6 +19,8 @@ class CommentTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Client client = context.watch<Client>();
+
     Widget title() {
       return TimedText(
         created: comment.createdAt,
@@ -81,68 +83,68 @@ class CommentTile extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            if (comment.vote case final vote?)
-              Dimmed(
-                child: VoteDisplay(
-                  padding: EdgeInsets.zero,
-                  score: vote.score,
-                  status: vote.status,
-                  onUpvote: context.read<Client>().hasLogin
-                      ? (isLiked) async {
-                          CommentController controller =
-                              context.read<CommentController>();
-                          ScaffoldMessengerState messenger =
-                              ScaffoldMessenger.of(context);
-                          controller
-                              .vote(
-                                  comment: comment,
-                                  upvote: true,
-                                  replace: !isLiked)
-                              .then((value) {
-                            if (!value) {
-                              messenger.showSnackBar(SnackBar(
-                                duration: const Duration(seconds: 1),
-                                content: Text(
-                                    'Failed to upvote comment #${comment.id}'),
-                              ));
-                            }
-                          });
-                          return !isLiked;
-                        }
-                      : null,
-                  onDownvote: context.read<Client>().hasLogin
-                      ? (isLiked) async {
-                          CommentController controller =
-                              context.read<CommentController>();
-                          ScaffoldMessengerState messenger =
-                              ScaffoldMessenger.of(context);
-                          controller
-                              .vote(
-                                  comment: comment,
-                                  upvote: false,
-                                  replace: !isLiked)
-                              .then((value) {
-                            if (!value) {
-                              messenger.showSnackBar(SnackBar(
-                                duration: const Duration(seconds: 1),
-                                content: Text(
-                                    'Failed to downvote comment #${comment.id}'),
-                              ));
-                            }
-                          });
-                          return !isLiked;
-                        }
-                      : null,
+            if (client.hasFeature(CommentFeature.vote))
+              if (comment.vote case final vote?)
+                Dimmed(
+                  child: VoteDisplay(
+                    padding: EdgeInsets.zero,
+                    score: vote.score,
+                    status: vote.status,
+                    onUpvote: client.hasLogin
+                        ? (isLiked) async {
+                            CommentController controller =
+                                context.read<CommentController>();
+                            ScaffoldMessengerState messenger =
+                                ScaffoldMessenger.of(context);
+                            controller
+                                .vote(
+                                    comment: comment,
+                                    upvote: true,
+                                    replace: !isLiked)
+                                .then((value) {
+                              if (!value) {
+                                messenger.showSnackBar(SnackBar(
+                                  duration: const Duration(seconds: 1),
+                                  content: Text(
+                                      'Failed to upvote comment #${comment.id}'),
+                                ));
+                              }
+                            });
+                            return !isLiked;
+                          }
+                        : null,
+                    onDownvote: client.hasLogin
+                        ? (isLiked) async {
+                            CommentController controller =
+                                context.read<CommentController>();
+                            ScaffoldMessengerState messenger =
+                                ScaffoldMessenger.of(context);
+                            controller
+                                .vote(
+                                    comment: comment,
+                                    upvote: false,
+                                    replace: !isLiked)
+                                .then((value) {
+                              if (!value) {
+                                messenger.showSnackBar(SnackBar(
+                                  duration: const Duration(seconds: 1),
+                                  content: Text(
+                                      'Failed to downvote comment #${comment.id}'),
+                                ));
+                              }
+                            });
+                            return !isLiked;
+                          }
+                        : null,
+                  ),
                 ),
-              ),
             const Spacer(),
             PopupMenuButton<VoidCallback>(
               icon: const Dimmed(child: Icon(Icons.more_vert)),
               onSelected: (value) => value(),
               itemBuilder: (context) => [
-                if (context.read<Client>().identity.username ==
-                        comment.creatorName &&
-                    context.read<Client>().hasFeature(CommentFeature.update))
+                if (client.hasFeature(CommentFeature.update) &&
+                    client.identity.username == comment.creatorName)
                   PopupMenuTile(
                     title: 'Edit',
                     icon: Icons.edit,
@@ -163,26 +165,27 @@ class CommentTile extends StatelessWidget {
                       error: 'You must be logged in to edit comments!',
                     ),
                   ),
-                PopupMenuTile(
-                  title: 'Reply',
-                  icon: Icons.reply,
-                  value: () => guardWithLogin(
-                    context: context,
-                    callback: () {
-                      CommentController controller =
-                          context.read<CommentController>();
-                      replyComment(
-                        context: context,
-                        comment: comment,
-                      ).then((value) {
-                        if (value) {
-                          controller.refresh(force: true);
-                        }
-                      });
-                    },
-                    error: 'You must be logged in to reply to comments!',
+                if (client.hasFeature(CommentFeature.post))
+                  PopupMenuTile(
+                    title: 'Reply',
+                    icon: Icons.reply,
+                    value: () => guardWithLogin(
+                      context: context,
+                      callback: () {
+                        CommentController controller =
+                            context.read<CommentController>();
+                        replyComment(
+                          context: context,
+                          comment: comment,
+                        ).then((value) {
+                          if (value) {
+                            controller.refresh(force: true);
+                          }
+                        });
+                      },
+                      error: 'You must be logged in to reply to comments!',
+                    ),
                   ),
-                ),
                 PopupMenuTile(
                   title: 'Copy ID',
                   icon: Icons.tag,
@@ -196,7 +199,7 @@ class CommentTile extends StatelessWidget {
                     ));
                   },
                 ),
-                if (context.read<Client>().hasFeature(CommentFeature.report))
+                if (client.hasFeature(CommentFeature.report))
                   PopupMenuTile(
                     title: 'Report',
                     icon: Icons.report,
