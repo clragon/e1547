@@ -21,7 +21,7 @@ dependencies:
   media_kit_video: ^1.1.7
   media_kit_libs_video: ^1.0.0
   flutter_cache_manager: ^3.3.1
-  flutter_custom_tabs: ^1.0.4
+  flutter_custom_tabs: ^2.0.0+1
   flutter_screen_lock: ^9.0.1
   flutter_sub: ^3.0.0
   flutter_sub_provider: ^3.0.0
@@ -32,10 +32,10 @@ dependencies:
   infinite_scroll_pagination: ^4.0.0
   keyboard_dismisser: ^3.0.0
   like_button: ^2.0.4
-  local_auth: ^2.1.5
+  local_auth: ^2.2.0
   overflow_view: ^0.3.1
   photo_view: ^0.14.0
-  provider: ^6.0.4
+  provider: ^6.1.2
   pull_to_refresh: ^2.0.0
   secure_app_switcher: ^0.1.0+1
   sliding_sheet:
@@ -45,17 +45,17 @@ dependencies:
   webview_flutter: ^4.2.2
 
   # data
-  app_links: ^3.3.0
+  app_links: ^4.0.1
   async: ^2.9.0
   collection: ^1.16.0
   deep_pick: ^1.0.0
   dio: ^5.3.2
   dio_cache_interceptor: ^3.4.0
   dio_cache_interceptor_db_store: ^5.1.0
-  drift: ^2.11.1
+  drift: ^2.16.0
   external_path: ^1.0.1
   filesize: ^2.0.1
-  flutter_local_notifications: ^16.2.0
+  flutter_local_notifications: ^17.0.0
   freezed_annotation: ^2.4.1
   image_gallery_saver: ^2.0.3
   intl: ^0.18.0
@@ -95,18 +95,19 @@ dependency_overrides:
       url: https://github.com/EdsonBueno/infinite_scroll_pagination.git
       ref: e92ef95
   collection: 1.18.0
+  package_info_plus: 6.0.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   # dart run build_runner build
   build_runner: ^2.4.6
-  drift_dev: ^2.11.1
+  drift_dev: ^2.16.0
   flutter_lints: ^3.0.1
   # dart run flutter_launcher_icons
   flutter_launcher_icons: ^0.13.0
   # dart run flutter_native_splash:create
-  flutter_native_splash: ^2.3.1
+  flutter_native_splash: ^2.4.0
   freezed: ^2.4.1
   json_serializable: ^6.7.1
 

@@ -17,7 +17,7 @@ Future<void> launch(String url) async {
   Uri uri = Uri.parse(url);
   if ((Platform.isAndroid || Platform.isIOS) &&
       ['e621.net', 'e926.net'].contains(uri.host)) {
-    await tabs.launch(url);
+    await tabs.launchUrl(uri);
   } else {
     await urls.launchUrl(
       uri,
