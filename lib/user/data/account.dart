@@ -15,7 +15,3 @@ class Account with _$Account {
 
   factory Account.fromJson(dynamic json) => _$AccountFromJson(json);
 }
-
-extension E621Account on Account {
-  static Account fromJson(dynamic json) => Account.fromJson(json);
-}

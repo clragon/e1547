@@ -1,3 +1,4 @@
+import 'package:deep_pick/deep_pick.dart';
 import 'package:dio/dio.dart';
 import 'package:e1547/identity/identity.dart';
 import 'package:e1547/interface/interface.dart';
@@ -46,6 +47,7 @@ class E621AccountService extends AccountService {
     }
 
     traits.value = traits.value.copyWith(
+      // TODO: also store "id"
       denylist: result.blacklistedTags?.split('\n').trim() ?? [],
       // TODO: also store "perPage"
       avatar: avatar?.file,
@@ -53,4 +55,16 @@ class E621AccountService extends AccountService {
 
     return result;
   }
+}
+
+extension E621Account on Account {
+  static Account fromJson(dynamic json) => pick(json).letOrThrow(
+        (pick) => Account(
+          id: pick('id').asIntOrThrow(),
+          name: pick('name').asStringOrThrow(),
+          avatarId: pick('avatar_id').asIntOrNull(),
+          blacklistedTags: pick('blacklisted_tags').asStringOrNull(),
+          perPage: pick('per_page').asIntOrNull(),
+        ),
+      );
 }
