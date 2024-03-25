@@ -14,6 +14,8 @@ Future<bool> backgroundUpdateFollows({
   required Client client,
   required FlutterLocalNotificationsPlugin notifications,
 }) async {
+  if (!client.hasFeature(FollowFeature.database)) return true;
+
   final Logger logger = Logger('BackgroundFollows');
 
   logger.info('Starting follow update');
