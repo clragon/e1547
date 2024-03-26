@@ -22,14 +22,14 @@ class DanbooruPostService extends PostService {
       };
 
   @override
-  Future<Post> get(
-    int postId, {
+  Future<Post> get({
+    required int id,
     bool? force,
     CancelToken? cancelToken,
   }) =>
       dio
           .get(
-            '/posts/$postId.json',
+            '/posts/$id.json',
             options: forceOptions(force),
             cancelToken: cancelToken,
           )

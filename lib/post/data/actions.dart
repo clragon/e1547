@@ -256,7 +256,7 @@ mixin PostActionController<KeyType> on ClientDataController<KeyType, Post> {
 
   Future<void> resetPost(Post post) async {
     assertOwnsItem(post);
-    replacePost(await client.posts.get(post.id, force: true));
+    replacePost(await client.posts.get(id: post.id, force: true));
     evictCache();
   }
 

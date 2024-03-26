@@ -30,15 +30,20 @@ class E621PostService extends PostService {
       };
 
   @override
-  Future<Post> get(int postId, {bool? force, CancelToken? cancelToken}) => dio
-      .get(
-        '/posts/$postId.json',
-        options: forceOptions(force),
-        cancelToken: cancelToken,
-      )
-      .then(
-        (response) => E621Post.fromJson(response.data['post']),
-      );
+  Future<Post> get({
+    required int id,
+    bool? force,
+    CancelToken? cancelToken,
+  }) =>
+      dio
+          .get(
+            '/posts/$id.json',
+            options: forceOptions(force),
+            cancelToken: cancelToken,
+          )
+          .then(
+            (response) => E621Post.fromJson(response.data['post']),
+          );
 
   @override
   Future<List<Post>> page({

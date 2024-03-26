@@ -85,7 +85,7 @@ class SinglePostController extends PostController {
   Future<List<Post>> fetch(int page, bool force) async => [
         if (page == firstPageKey)
           await client.posts.get(
-            id,
+            id: id,
             force: force,
             cancelToken: cancelToken,
           ),

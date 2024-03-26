@@ -11,8 +11,8 @@ enum PostFeature {
 }
 
 abstract class PostService with FeatureFlagging {
-  Future<Post> get(
-    int postId, {
+  Future<Post> get({
+    required int id,
     bool? force,
     CancelToken? cancelToken,
   });

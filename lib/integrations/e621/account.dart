@@ -40,7 +40,7 @@ class E621AccountService extends AccountService {
 
     if (result.avatarId != null) {
       avatar = await postsClient.get(
-        result.avatarId!,
+        id: result.avatarId!,
         force: force,
         cancelToken: cancelToken,
       );
