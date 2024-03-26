@@ -52,17 +52,17 @@ class ControllerBundle {
 Future<void> initializeBackgroundTasks() async {
   if (!PlatformCapabilities.hasBackgroundWorker) return;
   await Workmanager().initialize(executeBackgroundTasks);
-  _logger.fine('Initialized background tasks!');
+  _logger.fine('Initialized background tasks');
 }
 
 Future<void> registerFollowBackgroundTask(List<Follow> follows) async {
   if (!PlatformCapabilities.hasBackgroundWorker) return;
   if (follows.where((e) => e.type == FollowType.notify).isEmpty) {
-    _logger.fine('Cancelled background tasks!');
+    _logger.fine('Cancelled background tasks');
     return Workmanager().cancelByUniqueName(followsBackgroundTaskKey);
   }
   if (Platform.isIOS) {
-    _logger.fine('Registered iOS one-off task!');
+    _logger.fine('Registered iOS one-off task');
     Workmanager().registerOneOffTask(
       followsBackgroundTaskKey,
       followsBackgroundTaskKey,
@@ -71,7 +71,7 @@ Future<void> registerFollowBackgroundTask(List<Follow> follows) async {
       constraints: Constraints(networkType: NetworkType.connected),
     );
   } else if (Platform.isAndroid) {
-    _logger.fine('Registered Android periodic task!');
+    _logger.fine('Registered Android periodic task');
     await Workmanager().registerPeriodicTask(
       followsBackgroundTaskKey,
       followsBackgroundTaskKey,

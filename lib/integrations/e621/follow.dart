@@ -5,6 +5,7 @@ import 'package:async/async.dart';
 import 'package:collection/collection.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/follow/follow.dart';
+import 'package:e1547/identity/identity.dart';
 import 'package:e1547/integrations/disk/follow.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/logs/logs.dart';
@@ -33,6 +34,7 @@ class E621FollowService extends DiskFollowService {
   @override
   FollowSync createSync({bool? force}) => E621FollowSync(
         repository: repository,
+        identity: identity,
         traits: traits,
         postsClient: postsClient,
         poolsClient: poolsClient,
@@ -44,6 +46,7 @@ class E621FollowService extends DiskFollowService {
 class E621FollowSync implements FollowSync {
   E621FollowSync({
     required this.repository,
+    required this.identity,
     required this.traits,
     required this.postsClient,
     this.poolsClient,
@@ -57,6 +60,7 @@ class E621FollowSync implements FollowSync {
   final Duration refreshRate = const Duration(hours: 1);
 
   final FollowRepository repository;
+  final Identity identity;
   final ValueNotifier<Traits> traits;
   final PostService postsClient;
   final PoolService? poolsClient;
@@ -123,7 +127,10 @@ class E621FollowSync implements FollowSync {
   }
 
   Future<void> _run() async {
-    logger.info('Sync started!');
+    logger.info(
+      'Sync started for '
+      '${identity.usernameOrAnon} on ${identity.host}',
+    );
     try {
       if (force ?? false) {
         logger.fine('Force refreshing follows...');

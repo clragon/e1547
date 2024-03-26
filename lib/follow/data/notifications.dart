@@ -16,10 +16,6 @@ Future<bool> backgroundUpdateFollows({
 }) async {
   if (!client.hasFeature(FollowFeature.database)) return true;
 
-  final Logger logger = Logger('BackgroundFollows');
-
-  logger.info('Starting follow update');
-
   List<Follow> previous = await client.follows.all(
     query: FollowsQuery(types: [FollowType.notify]),
   );
@@ -29,8 +25,6 @@ Future<bool> backgroundUpdateFollows({
   List<Follow> updated = await client.follows.all(
     query: FollowsQuery(types: [FollowType.notify]),
   );
-
-  logger.info('Completed follow update');
 
   await updateFollowNotifications(
     identity: client.identity.id,

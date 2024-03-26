@@ -50,7 +50,13 @@ class _NotificationHandlerState extends State<NotificationHandler> {
 
   Future<void> setupFollowBackground(List<Follow> follows) async {
     if (!PlatformCapabilities.hasNotifications) return;
-    if (follows.where((e) => e.type == FollowType.notify).isNotEmpty) {
+    bool wasNotifying = previousFollows != null &&
+        previousFollows!.where((e) => e.type == FollowType.notify).isNotEmpty;
+    bool isNotifying =
+        follows.where((e) => e.type == FollowType.notify).isNotEmpty;
+    if (wasNotifying == isNotifying) return;
+
+    if (isNotifying) {
       bool? result;
       result = await (await notifications)
           .resolvePlatformSpecificImplementation<
@@ -79,7 +85,6 @@ class _NotificationHandlerState extends State<NotificationHandler> {
         notifications: await notifications,
       );
     }
-    previousFollows = follows;
   }
 
   Future<void> handle(NotificationResponse response) async {
@@ -135,9 +140,12 @@ class _NotificationHandlerState extends State<NotificationHandler> {
           .all(query: FollowsQuery(types: [FollowType.notify]))
           .streamed,
       keys: [client],
-      listener: (event) {
-        setupFollowBackground(event);
-        sendNotifications(event, client.identity.id);
+      listener: (event) async {
+        await Future.wait([
+          setupFollowBackground(event),
+          sendNotifications(event, client.identity.id),
+        ]);
+        previousFollows = event;
       },
       builder: (context, stream) => widget.child,
     );

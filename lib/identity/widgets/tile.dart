@@ -19,7 +19,7 @@ class IdentityTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       key: ValueKey(identity.id),
-      title: Text(identity.username ?? 'Anonymous'),
+      title: Text(identity.usernameOrAnon),
       subtitle: Text(linkToDisplay(identity.host)),
       leading: IdentityAvatar(identity.id),
       trailing: trailing,
@@ -63,7 +63,7 @@ class CurrentIdentityTile extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            identity.username ?? 'Anonymous',
+                            identity.usernameOrAnon,
                             style: Theme.of(context).textTheme.titleLarge,
                           ),
                           Text(

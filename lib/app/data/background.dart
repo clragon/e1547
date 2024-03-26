@@ -22,10 +22,9 @@ void executeBackgroundTasks() => Workmanager().executeTask(
                 database: bundle.storage.sqlite,
                 identity: null,
               );
-              allFollows
-                  .all(types: [FollowType.notify])
-                  .stream
-                  .listen(registerFollowBackgroundTask);
+              registerFollowBackgroundTask(
+                await allFollows.all(types: [FollowType.notify]),
+              );
 
               List<Identity> identities = await bundle.identities.all();
               List<bool> result = [];
@@ -52,6 +51,11 @@ void executeBackgroundTasks() => Workmanager().executeTask(
                   ),
                 );
               }
+
+              registerFollowBackgroundTask(
+                await allFollows.all(types: [FollowType.notify]),
+              );
+
               return result.every((e) => e);
             default:
               throw StateError('Background task $task is unknown!');
