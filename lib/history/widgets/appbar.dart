@@ -26,7 +26,7 @@ class HistorySelectionAppBar extends StatelessWidget with AppBarBuilderWidget {
             await context
                 .read<Client>()
                 .histories
-                .removeAll(ids: data.selections.map((e) => e.id).toList());
+                .removeAll(data.selections.map((e) => e.id).toList());
           },
         ),
       ],

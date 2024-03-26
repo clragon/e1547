@@ -36,14 +36,14 @@ class HistoriesIdentitiesTable extends Table {
 ])
 class HistoryRepository extends DatabaseAccessor<GeneratedDatabase>
     with $HistoryRepositoryMixin {
-  HistoryRepository({
-    required GeneratedDatabase database,
-    required this.identity,
-  }) : super(database);
+  HistoryRepository({required GeneratedDatabase database}) : super(database);
 
-  final int? identity;
+  StreamFuture<History> get(int id) =>
+      (select(historiesTable)..where((tbl) => tbl.id.equals(id)))
+          .watchSingle()
+          .future;
 
-  Expression<bool> _identityQuery($HistoriesTableTable tbl) {
+  Expression<bool> _identityQuery($HistoriesTableTable tbl, int? identity) {
     final subQuery = historiesIdentitiesTable.selectOnly()
       ..addColumns([historiesIdentitiesTable.history])
       ..where(Variable(identity).isNull() |
@@ -52,42 +52,8 @@ class HistoryRepository extends DatabaseAccessor<GeneratedDatabase>
     return tbl.id.isInQuery(subQuery);
   }
 
-  StreamFuture<int> length() {
-    final Expression<int> count = historiesTable.id.count();
-    final Expression<bool> identified = _identityQuery(historiesTable);
-
-    return (selectOnly(historiesTable)
-          ..where(identified)
-          ..addColumns([count]))
-        .map((row) => row.read(count)!)
-        .watchSingle()
-        .future;
-  }
-
-  StreamFuture<List<DateTime>> dates() {
-    final Expression<DateTime> time = historiesTable.visitedAt;
-    final Expression<String> date = historiesTable.visitedAt.date;
-    final Expression<bool> hosted = _identityQuery(historiesTable);
-
-    return (selectOnly(historiesTable)
-          ..where(hosted)
-          ..orderBy([OrderingTerm(expression: time)])
-          ..groupBy([date])
-          ..addColumns([time]))
-        .map((row) {
-          DateTime source = row.read(time)!;
-          return DateTime(source.year, source.month, source.day);
-        })
-        .watch()
-        .future;
-  }
-
-  StreamFuture<History> get(int id) =>
-      (select(historiesTable)..where((tbl) => tbl.id.equals(id)))
-          .watchSingle()
-          .future;
-
   SimpleSelectStatement<HistoriesTable, History> _querySelect({
+    int? identity,
     int? limit,
     int? offset,
     DateTime? day,
@@ -100,7 +66,7 @@ class HistoryRepository extends DatabaseAccessor<GeneratedDatabase>
       ..orderBy([
         (t) => OrderingTerm(expression: t.visitedAt, mode: OrderingMode.desc)
       ])
-      ..where(_identityQuery);
+      ..where((tbl) => _identityQuery(tbl, identity));
     if (linkRegex != null) {
       selectable
           .where((tbl) => tbl.link.regexp(linkRegex, caseSensitive: false));
@@ -137,16 +103,19 @@ class HistoryRepository extends DatabaseAccessor<GeneratedDatabase>
   }
 
   StreamFuture<List<History>> page({
-    required int page,
+    int? identity,
+    int? page,
     int? limit,
     DateTime? day,
     String? linkRegex,
     String? titleRegex,
     String? subtitleRegex,
   }) {
+    page ??= 1;
     limit ??= 80;
     int offset = (max(1, page) - 1) * limit;
     return _querySelect(
+      identity: identity,
       day: day,
       linkRegex: linkRegex,
       titleRegex: titleRegex,
@@ -156,13 +125,37 @@ class HistoryRepository extends DatabaseAccessor<GeneratedDatabase>
     ).watch().future;
   }
 
-  SimpleSelectStatement<HistoriesTable, History> _recentSelect({
-    int? limit,
-    required Duration maxAge,
-  }) =>
-      (_querySelect(limit: limit)
-        ..where((tbl) => (tbl.visitedAt
-            .isBiggerThanValue(DateTime.now().subtract(maxAge)))));
+  StreamFuture<int> length({int? identity}) {
+    final Expression<int> count = historiesTable.id.count();
+    final Expression<bool> identified =
+        _identityQuery(historiesTable, identity);
+
+    return (selectOnly(historiesTable)
+          ..where(identified)
+          ..addColumns([count]))
+        .map((row) => row.read(count)!)
+        .watchSingle()
+        .future;
+  }
+
+  StreamFuture<List<DateTime>> days({int? identity}) {
+    final Expression<DateTime> time = historiesTable.visitedAt;
+    final Expression<String> date = historiesTable.visitedAt.date;
+    final Expression<bool> identified =
+        _identityQuery(historiesTable, identity);
+
+    return (selectOnly(historiesTable)
+          ..where(identified)
+          ..orderBy([OrderingTerm(expression: time)])
+          ..groupBy([date])
+          ..addColumns([time]))
+        .map((row) {
+          DateTime source = row.read(time)!;
+          return DateTime(source.year, source.month, source.day);
+        })
+        .watch()
+        .future;
+  }
 
   Future<bool> isDuplicate(HistoryRequest item) =>
       (_querySelect(limit: 1, maxAge: const Duration(minutes: 3))
@@ -174,10 +167,7 @@ class HistoryRepository extends DatabaseAccessor<GeneratedDatabase>
           .get()
           .then((e) => e.isNotEmpty);
 
-  Future<void> add(HistoryRequest item, {int? identity}) async {
-    if (identity == null && this.identity == null) {
-      throw ArgumentError('Cannot add history without identity!');
-    }
+  Future<void> add(HistoryRequest item, int identity) async {
     History history = await into(historiesTable).insertReturning(
       HistoryCompanion(
         visitedAt: Value(item.visitedAt),
@@ -189,27 +179,37 @@ class HistoryRepository extends DatabaseAccessor<GeneratedDatabase>
     );
     await into(historiesIdentitiesTable).insert(
       HistoryIdentityCompanion(
-        identity: Value(identity ?? this.identity!),
+        identity: Value(identity),
         history: Value(history.id),
       ),
     );
   }
 
-  Future<void> remove(int id) async =>
-      (delete(historiesTable)..where((tbl) => tbl.id.equals(id))).go();
+  Future<void> remove(int id) => removeAll([id]);
 
-  Future<void> removeAll(List<int> ids) async =>
-      (delete(historiesTable)..where((tbl) => tbl.id.isIn(ids))).go();
+  Future<void> removeAll(List<int>? ids, {int? identity}) =>
+      (delete(historiesTable)
+            ..where((tbl) => _identityQuery(tbl, identity))
+            ..where((tbl) => Variable(ids).isNull() | tbl.id.isIn(ids!)))
+          .go();
 
   Future<void> trim({
     required int maxAmount,
     required Duration maxAge,
-  }) async =>
-      transaction(() async {
-        await (delete(historiesTable)
-              ..where(_identityQuery)
-              ..where((tbl) => tbl.id.isNotInQuery(
-                  _recentSelect(limit: maxAmount, maxAge: maxAge))))
-            .go();
-      });
+    int? identity,
+  }) =>
+      transaction(
+        () => (delete(historiesTable)
+              ..where((tbl) => _identityQuery(tbl, identity))
+              ..where(
+                (tbl) => tbl.id.isNotInQuery(
+                  _querySelect(
+                    limit: maxAmount,
+                    maxAge: maxAge,
+                    identity: identity,
+                  ),
+                ),
+              ))
+            .go(),
+      );
 }

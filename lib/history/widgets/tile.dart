@@ -90,7 +90,7 @@ class HistoryTile extends StatelessWidget {
                               value: () => context
                                   .read<Client>()
                                   .histories
-                                  .remove(id: entry.id),
+                                  .remove(entry.id),
                             ),
                           ],
                         ),

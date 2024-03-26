@@ -28,11 +28,11 @@ abstract class HistoryService {
     CancelToken? cancelToken,
   });
 
-  Future<void> add({required HistoryRequest request});
+  Future<void> add(HistoryRequest request);
 
-  Future<void> addMaybe({required HistoryRequest request}) async {
+  Future<void> addMaybe(HistoryRequest request) async {
     if (!enabled) return;
-    return add(request: request);
+    return add(request);
   }
 
   // section
@@ -40,7 +40,7 @@ abstract class HistoryService {
   // We need to figure out a way to make them dynamic.
 
   Future<void> addPost({required Post post}) => addMaybe(
-        request: HistoryRequest(
+        HistoryRequest(
           visitedAt: DateTime.now(),
           link: post.link,
           thumbnails: _getThumbnails([post]),
@@ -53,7 +53,7 @@ abstract class HistoryService {
     List<Post>? posts,
   }) =>
       addMaybe(
-        request: HistoryRequest(
+        HistoryRequest(
           visitedAt: DateTime.now(),
           link: Uri(
             path: '/posts',
@@ -68,7 +68,7 @@ abstract class HistoryService {
     List<Post>? posts,
   }) =>
       addMaybe(
-        request: HistoryRequest(
+        HistoryRequest(
           visitedAt: DateTime.now(),
           link: pool.link,
           thumbnails: _getThumbnails(posts),
@@ -83,7 +83,7 @@ abstract class HistoryService {
     List<Post>? posts,
   }) =>
       addMaybe(
-        request: HistoryRequest(
+        HistoryRequest(
           visitedAt: DateTime.now(),
           link: Uri(
             path: '/pools',
@@ -113,7 +113,7 @@ abstract class HistoryService {
     List<Reply>? replies,
   }) =>
       addMaybe(
-        request: HistoryRequest(
+        HistoryRequest(
           visitedAt: DateTime.now(),
           link: '/forum_topics/${topic.id}',
           title: topic.title,
@@ -126,7 +126,7 @@ abstract class HistoryService {
     List<Topic>? topics,
   }) =>
       addMaybe(
-        request: HistoryRequest(
+        HistoryRequest(
           visitedAt: DateTime.now(),
           link: Uri(
             path: '/forum_topics',
@@ -141,7 +141,7 @@ abstract class HistoryService {
       );
 
   Future<void> addUser({required User user, Post? avatar}) => addMaybe(
-        request: HistoryRequest(
+        HistoryRequest(
           visitedAt: DateTime.now(),
           link: '/users/${user.name}',
           thumbnails: [if (avatar?.sample != null) avatar!.sample!],
@@ -149,7 +149,7 @@ abstract class HistoryService {
       );
 
   Future<void> addWiki({required Wiki wiki}) => addMaybe(
-        request: HistoryRequest(
+        HistoryRequest(
           visitedAt: DateTime.now(),
           link: '/wiki_pages/${wiki.title}',
           subtitle: wiki.body.nullWhenEmpty,
@@ -161,7 +161,7 @@ abstract class HistoryService {
     List<Wiki>? wikis,
   }) =>
       addMaybe(
-        request: HistoryRequest(
+        HistoryRequest(
           visitedAt: DateTime.now(),
           link: Uri(
             path: '/wiki_pages',
@@ -190,9 +190,9 @@ abstract class HistoryService {
 
   // endsection
 
-  Future<void> remove({required int id}) => removeAll(ids: [id]);
+  Future<void> remove(int id) => removeAll([id]);
 
-  Future<void> removeAll({required List<int>? ids});
+  Future<void> removeAll(List<int>? ids);
 
   Future<int> count();
 

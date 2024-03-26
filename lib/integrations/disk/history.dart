@@ -15,8 +15,7 @@ class DiskHistoryService extends HistoryService with Disposable {
     required this.preferences,
     required this.identity,
     required this.traits,
-  }) : repository =
-            HistoryRepository(database: database, identity: identity.id);
+  }) : repository = HistoryRepository(database: database);
 
   final GeneratedDatabase database;
   final Identity identity;
@@ -44,7 +43,8 @@ class DiskHistoryService extends HistoryService with Disposable {
   }) {
     final search = HistoryQuery.maybeFrom(query);
     return repository.page(
-      page: page ?? 1,
+      identity: identity.id,
+      page: page,
       limit: limit,
       day: search?.date,
       linkRegex: search?.link != null
@@ -59,11 +59,11 @@ class DiskHistoryService extends HistoryService with Disposable {
   }
 
   @override
-  Future<void> add({required HistoryRequest request}) =>
-      repository.add(request);
+  Future<void> add(HistoryRequest request) =>
+      repository.add(request, identity.id);
 
   @override
-  Future<void> addMaybe({required HistoryRequest request}) async {
+  Future<void> addMaybe(HistoryRequest request) async {
     if (!enabled) return;
     return repository.transaction(() async {
       if (await repository.isDuplicate(request)) return;
@@ -71,23 +71,22 @@ class DiskHistoryService extends HistoryService with Disposable {
         await repository.trim(
           maxAmount: trimAmount,
           maxAge: trimAge,
+          identity: identity.id,
         );
       }
-      return super.addMaybe(request: request);
+      return super.addMaybe(request);
     });
   }
 
   @override
-  Future<void> removeAll({required List<int>? ids}) =>
-      (repository.delete(repository.historiesTable)
-            ..where((tbl) => Variable(ids).isNull() | tbl.id.isIn(ids!)))
-          .go();
+  Future<void> removeAll(List<int>? ids) =>
+      repository.removeAll(ids, identity: identity.id);
 
   @override
-  Future<int> count() => repository.length();
+  Future<int> count() => repository.length(identity: identity.id);
 
   @override
-  Future<List<DateTime>> days() => repository.dates();
+  Future<List<DateTime>> days() => repository.days(identity: identity.id);
 
   @override
   bool get enabled => _enabled;
@@ -99,12 +98,14 @@ class DiskHistoryService extends HistoryService with Disposable {
     preferences.setBool('writeHistory', value);
   }
 
+  // TODO: this should be a trait, not a setting
   late bool _enabled = preferences.getBool('writeHistory') ?? true;
 
   @override
   Stream<bool> get enabledStream => _enabledStream.stream;
   final StreamController<bool> _enabledStream = BehaviorSubject<bool>();
 
+  // TODO: this should be a trait, not a setting
   late bool _trimming = preferences.getBool('trimHistory') ?? false;
 
   @override
