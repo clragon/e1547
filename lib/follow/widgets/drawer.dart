@@ -34,7 +34,7 @@ class FollowMarkReadTile extends StatelessWidget {
               : const Text('no unseen posts'),
           onTap: () {
             Scaffold.of(context).closeEndDrawer();
-            context.read<Client>().follows.markAllSeen(ids: null);
+            context.read<Client>().follows.markAllSeen(null);
             onTap?.call();
           },
         );

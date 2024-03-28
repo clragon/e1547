@@ -51,11 +51,11 @@ class TagListActions extends StatelessWidget {
               return () {
                 if (hasFollow) {
                   if (follow.type == type) {
-                    client.follows.delete(id: follow.id);
+                    client.follows.delete(follow.id);
                   }
                   if (follow.type == FollowType.notify &&
                       type == FollowType.update) {
-                    client.follows.delete(id: follow.id);
+                    client.follows.delete(follow.id);
                   } else {
                     client.follows.update(id: follow.id, type: type);
                   }
@@ -147,7 +147,7 @@ class TagListActions extends StatelessWidget {
                           );
                         } else {
                           if (hasFollow) {
-                            client.follows.delete(id: follow.id);
+                            client.follows.delete(follow.id);
                           }
                           client.bridge.push(
                             traits: traits.copyWith(

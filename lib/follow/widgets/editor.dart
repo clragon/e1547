@@ -62,7 +62,7 @@ class _FollowEditorState extends State<FollowEditor> {
     }
 
     for (final follow in allRemoved) {
-      await client.follows.delete(id: follow.id);
+      await client.follows.delete(follow.id);
     }
     for (final follow in allAdded) {
       await client.follows.create(

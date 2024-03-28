@@ -85,10 +85,7 @@ Future<void> migrateFollows(
 
     await service.activate(identity.id);
 
-    FollowRepository repo = FollowRepository(
-      database: db,
-      identity: identity.id,
-    );
+    FollowRepository repo = FollowRepository(database: db);
 
     List<OldFollowsTableData> entries =
         await (oldDb.select(oldDb.oldFollowsTable)

@@ -18,10 +18,8 @@ void executeBackgroundTasks() => Workmanager().executeTask(
                   await initializeNotifications();
 
               // this ensures continued scheduling on iOS.
-              FollowRepository allFollows = FollowRepository(
-                database: bundle.storage.sqlite,
-                identity: null,
-              );
+              FollowRepository allFollows =
+                  FollowRepository(database: bundle.storage.sqlite);
               registerFollowBackgroundTask(
                 await allFollows.all(types: [FollowType.notify]),
               );

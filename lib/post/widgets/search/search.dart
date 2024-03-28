@@ -47,7 +47,7 @@ class _PostsSearchPageState extends State<PostsSearchPage> {
             if (follow != null) {
               await client.follows.syncWith(
                 id: follow!.id,
-                post: controller.items,
+                posts: controller.items,
                 pool: pool,
               );
               if (!context.mounted) return;

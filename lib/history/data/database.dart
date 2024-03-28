@@ -53,9 +53,9 @@ class HistoryRepository extends DatabaseAccessor<GeneratedDatabase>
   }
 
   SimpleSelectStatement<HistoriesTable, History> _querySelect({
-    int? identity,
     int? limit,
     int? offset,
+    int? identity,
     DateTime? day,
     String? linkRegex,
     String? titleRegex,
@@ -103,9 +103,9 @@ class HistoryRepository extends DatabaseAccessor<GeneratedDatabase>
   }
 
   StreamFuture<List<History>> page({
-    int? identity,
     int? page,
     int? limit,
+    int? identity,
     DateTime? day,
     String? linkRegex,
     String? titleRegex,
@@ -115,13 +115,13 @@ class HistoryRepository extends DatabaseAccessor<GeneratedDatabase>
     limit ??= 80;
     int offset = (max(1, page) - 1) * limit;
     return _querySelect(
+      limit: limit,
+      offset: offset,
       identity: identity,
       day: day,
       linkRegex: linkRegex,
       titleRegex: titleRegex,
       subtitleRegex: subtitleRegex,
-      limit: limit,
-      offset: offset,
     ).watch().future;
   }
 

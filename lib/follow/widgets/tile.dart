@@ -55,7 +55,7 @@ class FollowTile extends StatelessWidget {
                 tags: value,
               );
             } else {
-              client.follows.delete(id: follow.id);
+              client.follows.delete(follow.id);
             }
           },
           actionController: promptController,
@@ -75,7 +75,7 @@ class FollowTile extends StatelessWidget {
         itemBuilder: (context) => [
           if ((follow.unseen ?? 0) > 0)
             PopupMenuTile(
-              value: () => client.follows.markSeen(id: follow.id),
+              value: () => client.follows.markSeen(follow.id),
               title: 'Mark as read',
               icon: Icons.mark_email_read,
             ),
@@ -113,7 +113,7 @@ class FollowTile extends StatelessWidget {
               icon: Icons.edit,
             ),
           PopupMenuTile(
-            value: () => client.follows.delete(id: follow.id),
+            value: () => client.follows.delete(follow.id),
             title: 'Unfollow',
             icon: Icons.person_remove,
           ),

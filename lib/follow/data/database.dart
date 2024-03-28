@@ -39,12 +39,19 @@ class FollowsIdentitiesTable extends Table {
 ])
 class FollowRepository extends DatabaseAccessor<GeneratedDatabase>
     with $FollowRepositoryMixin {
-  FollowRepository({
-    required GeneratedDatabase database,
-    required this.identity,
-  }) : super(database);
+  FollowRepository({required GeneratedDatabase database}) : super(database);
 
-  final int? identity;
+  StreamFuture<Follow> get(int id) =>
+      (select(followsTable)..where((tbl) => tbl.id.equals(id)))
+          .watchSingle()
+          .future;
+
+  StreamFuture<Follow?> getByTags(String tags, int identity) =>
+      (select(followsTable)
+            ..where((tbl) => _identityQuery(tbl, identity))
+            ..where((tbl) => tbl.tags.equals(tags)))
+          .watchSingleOrNull()
+          .future;
 
   Expression<bool> _identityQuery($FollowsTableTable tbl, int? identity) {
     final subQuery = followsIdentitiesTable.selectOnly()
@@ -55,31 +62,14 @@ class FollowRepository extends DatabaseAccessor<GeneratedDatabase>
     return tbl.id.isInQuery(subQuery);
   }
 
-  StreamFuture<int> length() {
-    final Expression<int> count = followsTable.id.count();
-    final Expression<bool> identified = _identityQuery(followsTable, identity);
-
-    return (selectOnly(followsTable)
-          ..where(identified)
-          ..addColumns([count]))
-        .map((row) => row.read(count)!)
-        .watchSingle()
-        .future;
-  }
-
-  StreamFuture<Follow> get(int id) {
-    return (select(followsTable)..where((tbl) => tbl.id.equals(id)))
-        .watchSingle()
-        .future;
-  }
-
-  SimpleSelectStatement<FollowsTable, Follow> _queryExpression({
+  SimpleSelectStatement<FollowsTable, Follow> _querySelect({
+    int? limit,
+    int? offset,
+    int? identity,
     String? tagRegex,
     String? titleRegex,
     List<FollowType>? types,
     bool? hasUnseen,
-    int? limit,
-    int? offset,
   }) {
     final selectable = select(followsTable)
       ..orderBy([
@@ -113,45 +103,62 @@ class FollowRepository extends DatabaseAccessor<GeneratedDatabase>
   }
 
   StreamFuture<List<Follow>> page({
-    required int page,
+    int? page,
     int? limit,
+    int? identity,
     String? tagRegex,
     String? titleRegex,
     List<FollowType>? types,
     bool? hasUnseen,
   }) {
+    page ??= 1;
     limit ??= 80;
     int offset = (max(1, page) - 1) * limit;
-    return _queryExpression(
+    return _querySelect(
+      limit: limit,
+      offset: offset,
+      identity: identity,
       tagRegex: tagRegex,
       titleRegex: titleRegex,
       types: types,
       hasUnseen: hasUnseen,
-      limit: limit,
-      offset: offset,
     ).watch().future;
   }
 
   StreamFuture<List<Follow>> all({
+    int? limit,
+    int? identity,
     String? tagRegex,
     String? titleRegex,
     List<FollowType>? types,
     bool? hasUnseen,
-    int? limit,
   }) =>
-      _queryExpression(
+      _querySelect(
+        limit: limit,
+        identity: identity,
         tagRegex: tagRegex,
         titleRegex: titleRegex,
         types: types,
         hasUnseen: hasUnseen,
-        limit: limit,
       ).watch().future;
+
+  StreamFuture<int> length({int? identity}) {
+    final Expression<int> count = followsTable.id.count();
+    final Expression<bool> identified = _identityQuery(followsTable, identity);
+
+    return (selectOnly(followsTable)
+          ..where(identified)
+          ..addColumns([count]))
+        .map((row) => row.read(count)!)
+        .watchSingle()
+        .future;
+  }
 
   StreamFuture<List<Follow>> outdated({
     required Duration minAge,
     List<FollowType>? types,
   }) =>
-      (_queryExpression(types: types)
+      (_querySelect(types: types)
             ..where((tbl) =>
                 (tbl.updated
                     .isSmallerThanValue(DateTime.now().subtract(minAge))) |
@@ -162,27 +169,18 @@ class FollowRepository extends DatabaseAccessor<GeneratedDatabase>
   StreamFuture<List<Follow>> fresh({
     List<FollowType>? types,
   }) =>
-      (_queryExpression(types: types)..where((tbl) => tbl.updated.isNull()))
+      (_querySelect(types: types)..where((tbl) => tbl.updated.isNull()))
           .watch()
           .future;
 
   StreamFuture<List<Follow>> unseen() =>
-      (_queryExpression()..where((tbl) => (tbl.unseen.isBiggerThanValue(0))))
+      (_querySelect()..where((tbl) => (tbl.unseen.isBiggerThanValue(0))))
           .watch()
           .future;
 
-  Future<void> markAsSeen() => (update(followsTable)
-        ..where((tbl) => _identityQuery(tbl, identity))
-        ..where((tbl) => (tbl.unseen.isBiggerThanValue(0))))
-      .write(const FollowCompanion(unseen: Value(0)));
-
-  Future<void> add(FollowRequest item, {int? identity}) async {
-    if (this.identity == null && identity == null) {
-      throw ArgumentError('Cannot add follow without identity!');
-    }
-
+  Future<void> add(FollowRequest item, int identity) async {
     Follow follow;
-    Follow? existing = await _queryExpression(
+    Follow? existing = await _querySelect(
       tagRegex: r'^' + RegExp.escape(item.tags) + r'$',
     ).getSingleOrNull();
     if (existing != null) {
@@ -204,12 +202,22 @@ class FollowRepository extends DatabaseAccessor<GeneratedDatabase>
       );
       await into(followsIdentitiesTable).insert(
         FollowIdentityCompanion(
-          identity: Value(this.identity ?? identity!),
+          identity: Value(identity),
           follow: Value(follow.id),
         ),
       );
     }
   }
+
+  Future<void> markAllSeen({
+    List<int>? ids,
+    int? identity,
+  }) =>
+      (update(followsTable)
+            ..where((tbl) => _identityQuery(tbl, identity))
+            ..where((tbl) => Variable(ids).isNull() | tbl.id.isIn(ids!))
+            ..where((tbl) => (tbl.unseen.isBiggerThanValue(0))))
+          .write(const FollowCompanion(unseen: Value(0)));
 
   Future<void> replace(Follow item) =>
       ((update(followsTable))..where((tbl) => tbl.id.equals(item.id)))

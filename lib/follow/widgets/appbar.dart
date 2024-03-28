@@ -83,7 +83,7 @@ class FollowSelectionAppBar extends StatelessWidget with AppBarBuilderWidget {
                 ? () async {
                     data.clear();
                     client.follows.markAllSeen(
-                      ids: data.selections.map((e) => e.id).toList(),
+                      data.selections.map((e) => e.id).toList(),
                     );
                   }
                 : null,

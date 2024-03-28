@@ -11,11 +11,10 @@ import 'package:rxdart/rxdart.dart';
 
 abstract class DiskFollowService extends FollowService with Disposable {
   DiskFollowService({
-    required this.database,
+    required GeneratedDatabase database,
     required this.identity,
-  }) : repository = FollowRepository(database: database, identity: identity.id);
+  }) : repository = FollowRepository(database: database);
 
-  final GeneratedDatabase database;
   final Identity identity;
   final FollowRepository repository;
 
@@ -38,10 +37,7 @@ abstract class DiskFollowService extends FollowService with Disposable {
     bool? force,
     CancelToken? cancelToken,
   }) =>
-      (repository.select(repository.followsTable)
-            ..where((tbl) => tbl.tags.equals(tags)))
-          .watchSingleOrNull()
-          .future;
+      repository.getByTags(tags, identity.id);
 
   @override
   Future<List<Follow>> page({
@@ -53,6 +49,7 @@ abstract class DiskFollowService extends FollowService with Disposable {
   }) {
     final search = FollowsQuery.from(query);
     return repository.page(
+      identity: identity.id,
       page: page ?? 1,
       limit: limit,
       tagRegex: search?.tags?.infixRegex,
@@ -70,6 +67,7 @@ abstract class DiskFollowService extends FollowService with Disposable {
   }) {
     final search = FollowsQuery.from(query);
     return repository.all(
+      identity: identity.id,
       tagRegex: search?.tags?.infixRegex,
       titleRegex: search?.title?.infixRegex,
       types: search?.type,
@@ -91,6 +89,7 @@ abstract class DiskFollowService extends FollowService with Disposable {
           title: title,
           alias: alias,
         ),
+        identity.id,
       );
 
   @override
@@ -122,16 +121,14 @@ abstract class DiskFollowService extends FollowService with Disposable {
       });
 
   @override
-  Future<void> markAllSeen({required List<int>? ids}) =>
-      ((repository.update(repository.followsTable))
-            ..where((tbl) => Variable(ids).isNull() | tbl.id.isIn(ids!)))
-          .write(const FollowCompanion(unseen: Value(0)));
+  Future<void> markAllSeen(List<int>? ids) =>
+      repository.markAllSeen(ids: ids, identity: identity.id);
 
   @override
-  Future<void> delete({required int id}) => repository.remove(id);
+  Future<void> delete(int id) => repository.remove(id);
 
   @override
-  Future<int> count() => repository.length();
+  Future<int> count() => repository.length(identity: identity.id);
 
   @override
   Stream<FollowSync?> get syncStream => _syncStream.stream;
@@ -157,7 +154,7 @@ abstract class DiskFollowService extends FollowService with Disposable {
   @override
   Future<void> syncWith({
     required int id,
-    List<Post>? post,
+    List<Post>? posts,
     Pool? pool,
     bool? seen,
   }) =>
@@ -165,11 +162,11 @@ abstract class DiskFollowService extends FollowService with Disposable {
             ..where((tbl) => tbl.id.equals(id)))
           .write(
         FollowCompanion(
-          latest: post?.isNotEmpty ?? false
-              ? Value(post!.first.id)
+          latest: posts?.isNotEmpty ?? false
+              ? Value(posts!.first.id)
               : const Value.absent(),
-          thumbnail: post?.isNotEmpty ?? false
-              ? Value(post!.first.sample)
+          thumbnail: posts?.isNotEmpty ?? false
+              ? Value(posts!.first.sample)
               : const Value.absent(),
           title: pool?.name != null ? Value(pool!.name) : const Value.absent(),
           unseen: seen ?? true ? const Value(0) : const Value.absent(),

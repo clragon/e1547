@@ -47,11 +47,11 @@ abstract class FollowService with FeatureFlagging<FollowFeature> {
     FollowType? type,
   });
 
-  Future<void> markSeen({required int id}) => markAllSeen(ids: [id]);
+  Future<void> markSeen(int id) => markAllSeen([id]);
 
-  Future<void> markAllSeen({required List<int>? ids});
+  Future<void> markAllSeen(List<int>? ids);
 
-  Future<void> delete({required int id});
+  Future<void> delete(int id);
 
   Future<int> count();
 
@@ -64,7 +64,7 @@ abstract class FollowService with FeatureFlagging<FollowFeature> {
 
   Future<void> syncWith({
     required int id,
-    List<Post>? post,
+    List<Post>? posts,
     Pool? pool,
     bool? seen,
   }) =>
