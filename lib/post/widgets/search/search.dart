@@ -94,13 +94,15 @@ class _PostsSearchPageState extends State<PostsSearchPage> {
             await controller.waitForNextPage();
             if (controller.error != null) return;
             await updateFollow();
-            if (pool != null) {
-              client.histories.addPool(pool: pool!, posts: controller.items);
-            } else {
-              client.histories.addPostSearch(
-                query: controller.query,
-                posts: controller.items,
-              );
+            if (client.hasFeature(ClientFeature.histories)) {
+              if (pool != null) {
+                client.histories.addPool(pool: pool!, posts: controller.items);
+              } else {
+                client.histories.addPostSearch(
+                  query: controller.query,
+                  posts: controller.items,
+                );
+              }
             }
           }
 
