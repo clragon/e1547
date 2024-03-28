@@ -1,3 +1,13 @@
+/// Why does this file contain only Widget functions, and not Widget classes?
+///
+/// I am glad you asked. This is actually a hack to solve the annoying problem
+/// that is introduced by the pull_to_refresh package. The package requires
+/// the ScrollView to be the direct child of the SmartRefresher widget. This
+/// means we cannot introduce any intermediary classes between the ScrollView
+/// and the SmartRefresher. This issue also causes a lot of other weird design
+/// choices, but alas. One day, we'll switch to custom scroll views.
+library post_display_widgets;
+
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
