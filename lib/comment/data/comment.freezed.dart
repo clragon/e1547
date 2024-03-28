@@ -28,7 +28,7 @@ mixin _$Comment {
   int get creatorId => throw _privateConstructorUsedError;
   String? get creatorName => throw _privateConstructorUsedError;
   VoteInfo? get vote => throw _privateConstructorUsedError;
-  CommentWarning? get warning => throw _privateConstructorUsedError;
+  WarningType? get warning => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -49,9 +49,7 @@ abstract class $CommentCopyWith<$Res> {
       int creatorId,
       String? creatorName,
       VoteInfo? vote,
-      CommentWarning? warning});
-
-  $CommentWarningCopyWith<$Res>? get warning;
+      WarningType? warning});
 }
 
 /// @nodoc
@@ -113,20 +111,8 @@ class _$CommentCopyWithImpl<$Res, $Val extends Comment>
       warning: freezed == warning
           ? _value.warning
           : warning // ignore: cast_nullable_to_non_nullable
-              as CommentWarning?,
+              as WarningType?,
     ) as $Val);
-  }
-
-  @override
-  @pragma('vm:prefer-inline')
-  $CommentWarningCopyWith<$Res>? get warning {
-    if (_value.warning == null) {
-      return null;
-    }
-
-    return $CommentWarningCopyWith<$Res>(_value.warning!, (value) {
-      return _then(_value.copyWith(warning: value) as $Val);
-    });
   }
 }
 
@@ -146,10 +132,7 @@ abstract class _$$CommentImplCopyWith<$Res> implements $CommentCopyWith<$Res> {
       int creatorId,
       String? creatorName,
       VoteInfo? vote,
-      CommentWarning? warning});
-
-  @override
-  $CommentWarningCopyWith<$Res>? get warning;
+      WarningType? warning});
 }
 
 /// @nodoc
@@ -209,7 +192,7 @@ class __$$CommentImplCopyWithImpl<$Res>
       warning: freezed == warning
           ? _value.warning
           : warning // ignore: cast_nullable_to_non_nullable
-              as CommentWarning?,
+              as WarningType?,
     ));
   }
 }
@@ -248,7 +231,7 @@ class _$CommentImpl implements _Comment {
   @override
   final VoteInfo? vote;
   @override
-  final CommentWarning? warning;
+  final WarningType? warning;
 
   @override
   String toString() {
@@ -304,7 +287,7 @@ abstract class _Comment implements Comment {
       required final int creatorId,
       required final String? creatorName,
       required final VoteInfo? vote,
-      required final CommentWarning? warning}) = _$CommentImpl;
+      required final WarningType? warning}) = _$CommentImpl;
 
   factory _Comment.fromJson(Map<String, dynamic> json) = _$CommentImpl.fromJson;
 
@@ -325,147 +308,9 @@ abstract class _Comment implements Comment {
   @override
   VoteInfo? get vote;
   @override
-  CommentWarning? get warning;
+  WarningType? get warning;
   @override
   @JsonKey(ignore: true)
   _$$CommentImplCopyWith<_$CommentImpl> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
-CommentWarning _$CommentWarningFromJson(Map<String, dynamic> json) {
-  return _CommentWarning.fromJson(json);
-}
-
-/// @nodoc
-mixin _$CommentWarning {
-  WarningType? get type => throw _privateConstructorUsedError;
-
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
-  $CommentWarningCopyWith<CommentWarning> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class $CommentWarningCopyWith<$Res> {
-  factory $CommentWarningCopyWith(
-          CommentWarning value, $Res Function(CommentWarning) then) =
-      _$CommentWarningCopyWithImpl<$Res, CommentWarning>;
-  @useResult
-  $Res call({WarningType? type});
-}
-
-/// @nodoc
-class _$CommentWarningCopyWithImpl<$Res, $Val extends CommentWarning>
-    implements $CommentWarningCopyWith<$Res> {
-  _$CommentWarningCopyWithImpl(this._value, this._then);
-
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
-
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? type = freezed,
-  }) {
-    return _then(_value.copyWith(
-      type: freezed == type
-          ? _value.type
-          : type // ignore: cast_nullable_to_non_nullable
-              as WarningType?,
-    ) as $Val);
-  }
-}
-
-/// @nodoc
-abstract class _$$CommentWarningImplCopyWith<$Res>
-    implements $CommentWarningCopyWith<$Res> {
-  factory _$$CommentWarningImplCopyWith(_$CommentWarningImpl value,
-          $Res Function(_$CommentWarningImpl) then) =
-      __$$CommentWarningImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({WarningType? type});
-}
-
-/// @nodoc
-class __$$CommentWarningImplCopyWithImpl<$Res>
-    extends _$CommentWarningCopyWithImpl<$Res, _$CommentWarningImpl>
-    implements _$$CommentWarningImplCopyWith<$Res> {
-  __$$CommentWarningImplCopyWithImpl(
-      _$CommentWarningImpl _value, $Res Function(_$CommentWarningImpl) _then)
-      : super(_value, _then);
-
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? type = freezed,
-  }) {
-    return _then(_$CommentWarningImpl(
-      type: freezed == type
-          ? _value.type
-          : type // ignore: cast_nullable_to_non_nullable
-              as WarningType?,
-    ));
-  }
-}
-
-/// @nodoc
-@JsonSerializable()
-class _$CommentWarningImpl implements _CommentWarning {
-  const _$CommentWarningImpl({required this.type});
-
-  factory _$CommentWarningImpl.fromJson(Map<String, dynamic> json) =>
-      _$$CommentWarningImplFromJson(json);
-
-  @override
-  final WarningType? type;
-
-  @override
-  String toString() {
-    return 'CommentWarning(type: $type)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$CommentWarningImpl &&
-            (identical(other.type, type) || other.type == type));
-  }
-
-  @JsonKey(ignore: true)
-  @override
-  int get hashCode => Object.hash(runtimeType, type);
-
-  @JsonKey(ignore: true)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$CommentWarningImplCopyWith<_$CommentWarningImpl> get copyWith =>
-      __$$CommentWarningImplCopyWithImpl<_$CommentWarningImpl>(
-          this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$CommentWarningImplToJson(
-      this,
-    );
-  }
-}
-
-abstract class _CommentWarning implements CommentWarning {
-  const factory _CommentWarning({required final WarningType? type}) =
-      _$CommentWarningImpl;
-
-  factory _CommentWarning.fromJson(Map<String, dynamic> json) =
-      _$CommentWarningImpl.fromJson;
-
-  @override
-  WarningType? get type;
-  @override
-  @JsonKey(ignore: true)
-  _$$CommentWarningImplCopyWith<_$CommentWarningImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

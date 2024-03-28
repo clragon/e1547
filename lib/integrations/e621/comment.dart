@@ -171,10 +171,8 @@ extension E621Comment on Comment {
           vote: VoteInfo(
             score: pick('score').asIntOrThrow(),
           ),
-          warning: CommentWarning(
-            type: pick('warning_type').letOrNull(
-                (pick) => WarningType.values.asNameMap()[pick.asString()]!),
-          ),
+          warning: pick('warning_type').letOrNull(
+              (pick) => WarningType.values.asNameMap()[pick.asString()]!),
         ),
       );
 }

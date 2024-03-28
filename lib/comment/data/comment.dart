@@ -15,20 +15,10 @@ class Comment with _$Comment {
     required int creatorId,
     required String? creatorName,
     required VoteInfo? vote,
-    required CommentWarning? warning,
+    required WarningType? warning,
   }) = _Comment;
 
   factory Comment.fromJson(dynamic json) => _$CommentFromJson(json);
-}
-
-@freezed
-class CommentWarning with _$CommentWarning {
-  const factory CommentWarning({
-    required WarningType? type,
-  }) = _CommentWarning;
-
-  factory CommentWarning.fromJson(dynamic json) =>
-      _$CommentWarningFromJson(json);
 }
 
 @JsonEnum()

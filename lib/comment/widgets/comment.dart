@@ -300,7 +300,7 @@ class CommentWarnings extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    WarningType? warning = comment.warning?.type;
+    WarningType? warning = comment.warning;
     if (warning == null) return const SizedBox();
     return Padding(
       padding: const EdgeInsets.only(left: 24),
