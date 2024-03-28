@@ -188,7 +188,8 @@ class PostInfoBar extends StatelessWidget {
                     Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text(post.commentCount.toString()),
+                        Text(
+                            '${post.commentCount ?? (post.hasComments ?? false ? '+1' : 0)}'),
                         const Padding(
                           padding: EdgeInsets.symmetric(horizontal: 4),
                           child: Icon(Icons.comment),

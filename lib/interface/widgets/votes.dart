@@ -92,7 +92,7 @@ class VoteDisplay extends StatelessWidget {
     return Row(
       children: [
         InkResponse(
-          onTap: () {},
+          onTap: onUpvote != null ? () {} : null,
           child: LikeButton(
             isLiked: status == VoteStatus.upvoted,
             circleColor:
@@ -124,7 +124,7 @@ class VoteDisplay extends StatelessWidget {
           ),
         ),
         InkResponse(
-          onTap: () {},
+          onTap: onDownvote != null ? () {} : null,
           child: LikeButton(
             isLiked: status == VoteStatus.downvoted,
             circleColor:
