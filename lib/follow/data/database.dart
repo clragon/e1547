@@ -157,8 +157,9 @@ class FollowRepository extends DatabaseAccessor<GeneratedDatabase>
   StreamFuture<List<Follow>> outdated({
     required Duration minAge,
     List<FollowType>? types,
+    int? identity,
   }) =>
-      (_querySelect(types: types)
+      (_querySelect(types: types, identity: identity)
             ..where((tbl) =>
                 (tbl.updated
                     .isSmallerThanValue(DateTime.now().subtract(minAge))) |
@@ -168,13 +169,12 @@ class FollowRepository extends DatabaseAccessor<GeneratedDatabase>
 
   StreamFuture<List<Follow>> fresh({
     List<FollowType>? types,
+    int? identity,
   }) =>
-      (_querySelect(types: types)..where((tbl) => tbl.updated.isNull()))
-          .watch()
-          .future;
-
-  StreamFuture<List<Follow>> unseen() =>
-      (_querySelect()..where((tbl) => (tbl.unseen.isBiggerThanValue(0))))
+      (_querySelect(
+        types: types,
+        identity: identity,
+      )..where((tbl) => tbl.updated.isNull()))
           .watch()
           .future;
 
@@ -215,7 +215,7 @@ class FollowRepository extends DatabaseAccessor<GeneratedDatabase>
   }) =>
       (update(followsTable)
             ..where((tbl) => _identityQuery(tbl, identity))
-            ..where((tbl) => Variable(ids).isNull() | tbl.id.isIn(ids!))
+            ..where((tbl) => Variable(ids).isNull() | tbl.id.isIn(ids ?? []))
             ..where((tbl) => (tbl.unseen.isBiggerThanValue(0))))
           .write(const FollowCompanion(unseen: Value(0)));
 

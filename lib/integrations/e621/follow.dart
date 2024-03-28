@@ -152,10 +152,12 @@ class E621FollowSync implements FollowSync {
         follows.addAll(await repository.outdated(
           minAge: refreshRate,
           types: [FollowType.notify, FollowType.update],
+          identity: identity.id,
         ));
 
         follows.addAll(await repository.fresh(
           types: [FollowType.bookmark],
+          identity: identity.id,
         ));
 
         _total ??= follows.length;
