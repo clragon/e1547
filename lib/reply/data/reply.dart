@@ -13,18 +13,8 @@ class Reply with _$Reply {
     required String body,
     required int creatorId,
     required int topicId,
-    required ReplyWarning? warning,
+    required WarningType? warning,
   }) = _Reply;
 
   factory Reply.fromJson(Map<String, dynamic> json) => _$ReplyFromJson(json);
-}
-
-@freezed
-class ReplyWarning with _$ReplyWarning {
-  const factory ReplyWarning({
-    required WarningType? type,
-  }) = _ReplyWarning;
-
-  factory ReplyWarning.fromJson(Map<String, dynamic> json) =>
-      _$ReplyWarningFromJson(json);
 }

@@ -69,8 +69,7 @@ class RepliesPage extends StatelessWidget {
                 pagingController: controller.paging,
                 builderDelegate: defaultPagedChildBuilderDelegate<Reply>(
                   pagingController: controller.paging,
-                  itemBuilder: (context, item, index) =>
-                      ReplyTile(reply: item, topic: topic),
+                  itemBuilder: (context, item, index) => ReplyTile(reply: item),
                   onEmpty: const IconMessage(
                     icon: Icon(Icons.clear),
                     title: Text('No replies'),

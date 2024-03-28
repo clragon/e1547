@@ -13,9 +13,7 @@ _$ReplyImpl _$$ReplyImplFromJson(Map<String, dynamic> json) => _$ReplyImpl(
       body: json['body'] as String,
       creatorId: json['creator_id'] as int,
       topicId: json['topic_id'] as int,
-      warning: json['warning'] == null
-          ? null
-          : ReplyWarning.fromJson(json['warning'] as Map<String, dynamic>),
+      warning: $enumDecodeNullable(_$WarningTypeEnumMap, json['warning']),
     );
 
 Map<String, dynamic> _$$ReplyImplToJson(_$ReplyImpl instance) =>
@@ -26,17 +24,7 @@ Map<String, dynamic> _$$ReplyImplToJson(_$ReplyImpl instance) =>
       'body': instance.body,
       'creator_id': instance.creatorId,
       'topic_id': instance.topicId,
-      'warning': instance.warning,
-    };
-
-_$ReplyWarningImpl _$$ReplyWarningImplFromJson(Map<String, dynamic> json) =>
-    _$ReplyWarningImpl(
-      type: $enumDecodeNullable(_$WarningTypeEnumMap, json['type']),
-    );
-
-Map<String, dynamic> _$$ReplyWarningImplToJson(_$ReplyWarningImpl instance) =>
-    <String, dynamic>{
-      'type': _$WarningTypeEnumMap[instance.type],
+      'warning': _$WarningTypeEnumMap[instance.warning],
     };
 
 const _$WarningTypeEnumMap = {

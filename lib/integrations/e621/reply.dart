@@ -82,10 +82,8 @@ extension E621Reply on Reply {
           body: pick('body').asStringOrThrow(),
           creatorId: pick('creator_id').asIntOrThrow(),
           topicId: pick('topic_id').asIntOrThrow(),
-          warning: ReplyWarning(
-            type: pick('warning_type').letOrNull(
-                (pick) => WarningType.values.asNameMap()[pick.asString()]!),
-          ),
+          warning: pick('warning_type').letOrNull(
+              (pick) => WarningType.values.asNameMap()[pick.asString()]!),
         ),
       );
 }

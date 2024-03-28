@@ -6,4 +6,4 @@ export 'data/service.dart';
 // widgets
 export 'widgets/loading.dart';
 export 'widgets/replies.dart';
-export 'widgets/tile.dart';
+export 'widgets/reply.dart';

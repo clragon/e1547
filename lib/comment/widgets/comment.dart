@@ -94,21 +94,21 @@ class CommentHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TimedText(
-      created: comment.createdAt,
-      updated: comment.updatedAt,
-      child: Dimmed(
-        child: InkWell(
-          borderRadius: BorderRadius.circular(4),
-          onTap: context.watch<Client>().hasFeature(ClientFeature.users)
-              ? () => Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => UserLoadingPage(
-                        comment.creatorId.toString(),
-                      ),
+    return Dimmed(
+      child: InkWell(
+        borderRadius: BorderRadius.circular(4),
+        onTap: context.watch<Client>().hasFeature(ClientFeature.users)
+            ? () => Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => UserLoadingPage(
+                      comment.creatorId.toString(),
                     ),
-                  )
-              : null,
+                  ),
+                )
+            : null,
+        child: TimedText(
+          created: comment.createdAt,
+          updated: comment.updatedAt,
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 4),
             child: Row(
