@@ -300,7 +300,7 @@ class _UserProfileActions extends StatelessWidget {
             context.read<Client>().withHost(user.link),
           ),
         ),
-        if (context.watch<Client>().hasFeature(UserFeature.report))
+        if (context.read<Client>().hasFeature(UserFeature.report))
           PopupMenuTile(
             title: 'Report',
             icon: Icons.report,
