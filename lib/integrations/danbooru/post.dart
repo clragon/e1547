@@ -174,7 +174,14 @@ extension DanbooruPost on Post {
         (pick) => Post(
           id: pick('id').asIntOrThrow(),
           file: pick('file_url').asStringOrNull(),
-          sample: pick('large_file_url').asStringOrNull(),
+          sample: pick('large_file_url').letOrThrow((inner) {
+            final result = inner.asStringOrNull();
+            if (result == null) return null;
+            if (result.endsWith('webm') || result.endsWith('mp4')) {
+              return pick('preview_file_url').asStringOrNull();
+            }
+            return result;
+          }),
           preview: pick('preview_file_url').asStringOrNull(),
           width: pick('image_width').asIntOrThrow(),
           height: pick('image_height').asIntOrThrow(),
