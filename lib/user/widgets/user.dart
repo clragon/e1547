@@ -131,34 +131,12 @@ class UserPage extends StatelessWidget {
                   Expanded(
                     child: LimitedWidthLayout(
                       child: TileLayout(
-                        child: Builder(
-                          builder: (context) => NestedScrollView(
-                            controller: PrimaryScrollController.of(context),
-                            headerSliverBuilder:
-                                (context, innerBoxIsScrolled) => [
-                              SliverAppBar(
-                                pinned: true,
-                                automaticallyImplyLeading: false,
-                                actions: const [SizedBox()],
-                                flexibleSpace: TabBar(
-                                  labelColor: Theme.of(context).iconTheme.color,
-                                  indicatorColor:
-                                      Theme.of(context).iconTheme.color,
-                                  tabs: tabs.keys
-                                      .toList()
-                                      .sublist(0, tabs.length)
-                                      .toList(),
-                                ),
-                              ),
-                            ],
-                            body: TabBarView(
-                              children: tabs.values
-                                  .toList()
-                                  .sublist(0, tabs.length)
-                                  .map((e) => e(context))
-                                  .toList(),
-                            ),
-                          ),
+                        child: TabBarView(
+                          children: tabs.values
+                              .toList()
+                              .sublist(0, tabs.length)
+                              .map((e) => e(context))
+                              .toList(),
                         ),
                       ),
                     ),
@@ -166,6 +144,13 @@ class UserPage extends StatelessWidget {
                 ],
               );
               appbar = DefaultAppBar(
+                ignoreTitlePointer: false,
+                title: TabBar(
+                  isScrollable: true,
+                  labelColor: Theme.of(context).iconTheme.color,
+                  indicatorColor: Theme.of(context).iconTheme.color,
+                  tabs: tabs.keys.toList().sublist(0, tabs.length).toList(),
+                ),
                 actions: [
                   _UserProfileActions(user: user),
                   const ContextDrawerButton(),

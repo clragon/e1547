@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:async/async.dart';
 import 'package:collection/collection.dart';
-import 'package:e1547/client/client.dart';
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/identity/identity.dart';
 import 'package:e1547/integrations/disk/follow.dart';
