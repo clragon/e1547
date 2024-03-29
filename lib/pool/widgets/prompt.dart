@@ -79,32 +79,6 @@ class PoolSheet extends StatelessWidget {
   }
 }
 
-class PoolActions extends StatelessWidget {
-  const PoolActions({
-    super.key,
-    required this.pool,
-  });
-
-  final Pool pool;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        ActionButton(
-          icon: const Icon(Icons.share),
-          label: const Text('share'),
-          onTap: () async => Share.share(
-            context,
-            context.read<Client>().withHost(pool.link),
-          ),
-        ),
-        TagListActions(tag: 'pool:${pool.id}'),
-      ],
-    );
-  }
-}
-
 Future<void> showPoolDialog({
   required BuildContext context,
   required Pool pool,
@@ -131,15 +105,14 @@ class PoolDialog extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          OverflowBar(
+            alignment: MainAxisAlignment.spaceBetween,
+            overflowSpacing: 8,
             children: [
-              Flexible(
-                child: Text(
-                  tagToName(pool.name),
-                  style: Theme.of(context).textTheme.titleLarge,
-                  softWrap: true,
-                ),
+              Text(
+                tagToName(pool.name),
+                style: Theme.of(context).textTheme.titleLarge,
+                softWrap: true,
               ),
               PoolActions(pool: pool),
             ],
@@ -148,6 +121,7 @@ class PoolDialog extends StatelessWidget {
           Flexible(
             child: SingleChildScrollView(
               child: Column(
+                mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Padding(
@@ -172,5 +146,36 @@ class PoolDialog extends StatelessWidget {
         ],
       ),
     ));
+  }
+}
+
+class PoolActions extends StatelessWidget {
+  const PoolActions({
+    super.key,
+    required this.pool,
+  });
+
+  final Pool pool;
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      primary: false,
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ActionButton(
+            icon: const Icon(Icons.share),
+            label: const Text('share'),
+            onTap: () async => Share.share(
+              context,
+              context.read<Client>().withHost(pool.link),
+            ),
+          ),
+          TagListActions(tag: 'pool:${pool.id}'),
+        ],
+      ),
+    );
   }
 }
