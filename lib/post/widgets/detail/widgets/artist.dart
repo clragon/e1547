@@ -1,3 +1,4 @@
+import 'package:e1547/client/client.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/tag/tag.dart';
@@ -7,8 +8,6 @@ import 'package:flutter/services.dart';
 
 class ArtistDisplay extends StatelessWidget {
   const ArtistDisplay({super.key, required this.post});
-
-  final Post post;
 
   @override
   Widget build(BuildContext context) {
@@ -40,6 +39,16 @@ class ArtistDisplay extends StatelessWidget {
                 ),
                 InkWell(
                   borderRadius: BorderRadius.circular(4),
+                  onTap: context.watch<Client>().hasFeature(ClientFeature.users)
+                      ? () => Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => UserLoadingPage(
+                                post.uploaderId.toString(),
+                                initalPage: UserPageSection.uploads,
+                              ),
+                            ),
+                          )
+                      : null,
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 4),
                     child: Row(
@@ -51,14 +60,6 @@ class ArtistDisplay extends StatelessWidget {
                       ],
                     ),
                   ),
-                  onTap: () => Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => UserLoadingPage(
-                        post.uploaderId.toString(),
-                        initalPage: UserPageSection.uploads,
-                      ),
-                    ),
-                  ),
                 ),
               ],
             ),
@@ -68,6 +69,8 @@ class ArtistDisplay extends StatelessWidget {
       ],
     );
   }
+
+  final Post post;
 }
 
 class ArtistName extends StatelessWidget {
