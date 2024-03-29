@@ -59,6 +59,9 @@ class TagCounterCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ColoredCard(
+      onTap: () => showTagSearchPrompt(context: context, tag: tag),
+      onLongPress: () => showTagSearchPrompt(context: context, tag: tag),
+      onSecondaryTap: () => showTagSearchPrompt(context: context, tag: tag),
       color: (category != null ? TagCategory.byName(category!)?.color : null),
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
