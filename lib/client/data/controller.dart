@@ -4,6 +4,7 @@ import 'package:deep_pick/deep_pick.dart';
 import 'package:drift/drift.dart';
 import 'package:drift/isolate.dart';
 import 'package:e1547/client/client.dart';
+import 'package:e1547/interface/interface.dart';
 import 'package:e1547/logs/logs.dart';
 import 'package:flutter/foundation.dart';
 import 'package:rxdart/rxdart.dart';

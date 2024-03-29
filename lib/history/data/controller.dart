@@ -1,5 +1,6 @@
 import 'package:e1547/client/client.dart';
 import 'package:e1547/history/history.dart';
+import 'package:e1547/interface/interface.dart';
 import 'package:flutter/foundation.dart';
 
 class HistoryController extends PageClientDataController<History> {

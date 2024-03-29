@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:e1547/client/client.dart';
+import 'package:e1547/interface/interface.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../test/mock_item.dart';
