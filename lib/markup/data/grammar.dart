@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:e1547/markup/markup.dart';
 import 'package:petitparser/petitparser.dart';
 
@@ -5,17 +6,17 @@ class DTextGrammar extends GrammarDefinition<List<DTextElement>> {
   @override
   Parser<List<DTextElement>> start() => body().end();
 
-  Parser<List<DTextElement>> body([Parser<void>? limit]) => ref1(
-        trimmed,
+  Parser<List<DTextElement>> body([Parser<void>? limit]) => (
+        whitespace().star().optional(),
         (
           ref0(structures).optional(),
           ref2(
             withText,
             [
               (
-                newline(),
+                newline().map(DTextContent.new),
                 ref0(structures),
-              ).toSequenceParser().map((e) => e.$2),
+              ).toSequenceParser().map((e) => [e.$1, e.$2]),
               ref0(blocks),
               ref0(textElement),
             ].toChoiceParser(),
@@ -25,31 +26,28 @@ class DTextGrammar extends GrammarDefinition<List<DTextElement>> {
               if (e.$1 != null) e.$1!,
               ...e.$2,
             ]),
-      );
-
-  Parser<List<DTextElement>> trimmed(Parser<List<DTextElement>> parser) {
-    return parser.map((l) {
-      if (l.firstOrNull is DTextContent) {
-        final first = l.first as DTextContent;
-        l[0] = DTextContent(first.content.trimLeft());
-      }
-      if (l.lastOrNull is DTextContent) {
-        final last = l.last as DTextContent;
-        l[l.length - 1] = DTextContent(last.content.trimRight());
-      }
-      return l;
-    });
-  }
+        whitespace().star().optional(),
+      ).toSequenceParser().map((e) => e.$2);
 
   Parser<List<DTextElement>> withText([
-    Parser<DTextElement>? other,
+    Parser<Object /* DTextElement | List<DTextElement> */ >? other,
     Parser<void>? limit,
   ]) =>
       condense(
         [
           if (other != null) other,
-          ref0(character),
-        ].toChoiceParser().starLazy(limit ?? endOfInput()),
+          ref0(character).map((e) => [e]),
+        ].toChoiceParser().starLazy(limit ?? endOfInput()).map((e) {
+          List<DTextElement> result = [];
+          for (final element in e) {
+            if (element is DTextElement) {
+              result.add(element);
+            } else if (element is List<DTextElement>) {
+              result.addAll(element);
+            }
+          }
+          return result;
+        }),
       );
 
   Parser<List<DTextElement>> condense(Parser<List<DTextElement>> parser) =>
