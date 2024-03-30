@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:e1547/interface/interface.dart';
+import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
 
 typedef TextEditorSubmit = FutureOr<String?> Function(String value);
@@ -169,6 +170,8 @@ class _MultiTextEditorState extends State<MultiTextEditor> {
                         ),
                         maxLines: null,
                         enabled: !actionController.isLoading,
+                        enableIMEPersonalizedLearning:
+                            !PrivateTextFields.of(context),
                       ),
                     ],
                   ),

@@ -282,6 +282,18 @@ class SettingsPage extends StatelessWidget {
                     onChanged: (value) => settings.secureDisplay.value = value,
                   ),
                 ),
+              if (Platform.isAndroid)
+                ValueListenableBuilder<bool>(
+                  valueListenable: settings.incognitoKeyboard,
+                  builder: (context, value, child) => SwitchListTile(
+                    title: const Text('Incognito keyboard'),
+                    subtitle: Text(value ? 'enabled' : 'disabled'),
+                    secondary: const Icon(Icons.keyboard),
+                    value: value,
+                    onChanged: (value) =>
+                        settings.incognitoKeyboard.value = value,
+                  ),
+                ),
               ValueListenableBuilder<String?>(
                 valueListenable: settings.appPin,
                 builder: (context, value, child) => SwitchListTile(

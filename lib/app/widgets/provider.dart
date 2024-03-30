@@ -81,10 +81,13 @@ class TraitsServiceProvider extends SubChangeNotifierProvider3<AppStorage,
 }
 
 class SettingsProvider extends SubProvider<AppStorage, Settings> {
-  SettingsProvider({super.child, super.builder})
+  SettingsProvider({super.child, TransitionBuilder? builder})
       : super(
           create: (context, databases) => Settings(
             databases.preferences,
+          ),
+          builder: (context, child) => PrivateTextFields(
+            child: builder?.call(context, child) ?? child!,
           ),
         );
 }
@@ -138,8 +141,10 @@ class _IdentityHttpFileService extends HttpFileService {
   final Identity identity;
 
   @override
-  Future<FileServiceResponse> get(String url,
-      {Map<String, String>? headers}) async {
+  Future<FileServiceResponse> get(
+    String url, {
+    Map<String, String>? headers,
+  }) async {
     return super.get(url, headers: {
       ...headers ?? {},
       HttpHeaders.userAgentHeader: AppInfo.instance.userAgent,

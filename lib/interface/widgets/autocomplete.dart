@@ -15,6 +15,8 @@ class AutocompleteTextField<T> extends StatelessWidget {
     this.controller,
     this.direction,
     this.readOnly = false,
+    this.autofocus = true,
+    this.private = false,
     this.labelText,
     this.decoration,
     this.textInputAction,
@@ -34,6 +36,8 @@ class AutocompleteTextField<T> extends StatelessWidget {
   final ValueSetter<T> onSelected;
   final Widget Function(BuildContext context, T value) itemBuilder;
   final FutureOr<List<T>> Function(String search) suggestionsCallback;
+  final bool autofocus;
+  final bool private;
 
   @override
   Widget build(BuildContext context) {
@@ -55,6 +59,7 @@ class AutocompleteTextField<T> extends StatelessWidget {
         onSubmitted: submit,
         textInputAction: textInputAction ?? TextInputAction.search,
         readOnly: readOnly,
+        enableIMEPersonalizedLearning: !private,
       ),
       decorationBuilder: (context, child) {
         Widget result = Card(

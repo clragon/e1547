@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:e1547/interface/interface.dart';
+import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
 
 typedef SubmitString = FutureOr<void> Function(String result);
@@ -81,6 +82,7 @@ class ControlledTextField extends StatelessWidget {
       builder: (context, controller, submit) => TextField(
         controller: controller,
         autofocus: true,
+        enableIMEPersonalizedLearning: !PrivateTextFields.of(context),
         keyboardType: TextInputType.text,
         onSubmitted: submit,
         decoration: InputDecoration(labelText: labelText),

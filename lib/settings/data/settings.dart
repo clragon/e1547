@@ -77,6 +77,8 @@ class Settings extends NotifiedSettings {
 
   late final ValueNotifier<bool> secureDisplay =
       createSetting<bool>(key: 'secureDisplay', initialValue: false);
+  late final ValueNotifier<bool> incognitoKeyboard =
+      createSetting<bool>(key: 'incognitoKeyboard', initialValue: false);
   late final ValueNotifier<String?> appPin =
       createSetting(key: 'appPin', initialValue: null);
   late final ValueNotifier<bool> biometricAuth =
