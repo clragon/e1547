@@ -3,13 +3,13 @@ import 'package:dio/dio.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/user/user.dart';
 
-class E621UserService extends UserService {
-  E621UserService({required this.dio});
+class DanbooruUserService extends UserService {
+  DanbooruUserService({required this.dio});
 
   final Dio dio;
 
   @override
-  Set<UserFeature> get features => {UserFeature.report};
+  Set<UserFeature> get features => {};
 
   @override
   Future<User> get({
@@ -24,38 +24,24 @@ class E621UserService extends UserService {
             cancelToken: cancelToken,
           )
           .then(
-            (response) => E621User.fromJson(response.data),
+            (response) => DanbooruUser.fromJson(response.data),
           );
-
-  @override
-  Future<void> report({
-    required int id,
-    required String reason,
-  }) =>
-      dio.post(
-        '/tickets',
-        queryParameters: {
-          'ticket[reason]': reason,
-          'ticket[disp_id]': id,
-          'ticket[qtype]': 'user',
-        },
-      );
 }
 
-extension E621User on User {
+extension DanbooruUser on User {
   static User fromJson(dynamic json) => pick(json).letOrThrow(
         (pick) => User(
-          id: json['id'],
-          name: json['name'],
-          avatarId: json['avatar_id'],
+          id: pick('id').asIntOrThrow(),
+          name: pick('name').asStringOrThrow(),
+          avatarId: null,
           stats: UserStats(
             createdAt: pick('created_at').asDateTimeOrThrow(),
             levelString: pick('level_string').asStringOrThrow(),
-            favoriteCount: pick('favorite_count').asIntOrThrow(),
+            favoriteCount: null,
             postUpdateCount: pick('post_update_count').asIntOrThrow(),
             postUploadCount: pick('post_upload_count').asIntOrThrow(),
-            forumPostCount: pick('forum_post_count').asIntOrThrow(),
-            commentCount: pick('comment_count').asIntOrThrow(),
+            forumPostCount: null,
+            commentCount: null,
           ),
         ),
       );

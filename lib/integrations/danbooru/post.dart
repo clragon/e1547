@@ -135,6 +135,40 @@ class DanbooruPostService extends PostService {
   }
 
   @override
+  Future<List<Post>> byFavoriter({
+    required String username,
+    int? page,
+    int? limit,
+    bool? force,
+    CancelToken? cancelToken,
+  }) =>
+      this.page(
+        page: page,
+        query: {'tags': 'ordfav:$username'},
+        limit: limit,
+        ordered: false,
+        force: force,
+        cancelToken: cancelToken,
+      );
+
+  @override
+  Future<List<Post>> byUploader({
+    required String username,
+    int? page,
+    int? limit,
+    bool? force,
+    CancelToken? cancelToken,
+  }) =>
+      this.page(
+        page: page,
+        query: {'tags': 'user:$username'},
+        limit: limit,
+        ordered: false,
+        force: force,
+        cancelToken: cancelToken,
+      );
+
+  @override
   Future<List<Post>> favorites({
     int? page,
     int? limit,

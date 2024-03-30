@@ -147,7 +147,7 @@ class _$UserImpl implements _User {
       {required this.id,
       required this.name,
       required this.avatarId,
-      this.stats});
+      required this.stats});
 
   factory _$UserImpl.fromJson(Map<String, dynamic> json) =>
       _$$UserImplFromJson(json);
@@ -201,7 +201,7 @@ abstract class _User implements User {
       {required final int id,
       required final String name,
       required final int? avatarId,
-      final UserStats? stats}) = _$UserImpl;
+      required final UserStats? stats}) = _$UserImpl;
 
   factory _User.fromJson(Map<String, dynamic> json) = _$UserImpl.fromJson;
 
@@ -225,12 +225,13 @@ UserStats _$UserStatsFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$UserStats {
-  String get levelString => throw _privateConstructorUsedError;
-  int get favoriteCount => throw _privateConstructorUsedError;
-  int get postUpdateCount => throw _privateConstructorUsedError;
-  int get postUploadCount => throw _privateConstructorUsedError;
-  int get forumPostCount => throw _privateConstructorUsedError;
-  int get commentCount => throw _privateConstructorUsedError;
+  DateTime? get createdAt => throw _privateConstructorUsedError;
+  String? get levelString => throw _privateConstructorUsedError;
+  int? get favoriteCount => throw _privateConstructorUsedError;
+  int? get postUpdateCount => throw _privateConstructorUsedError;
+  int? get postUploadCount => throw _privateConstructorUsedError;
+  int? get forumPostCount => throw _privateConstructorUsedError;
+  int? get commentCount => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -244,12 +245,13 @@ abstract class $UserStatsCopyWith<$Res> {
       _$UserStatsCopyWithImpl<$Res, UserStats>;
   @useResult
   $Res call(
-      {String levelString,
-      int favoriteCount,
-      int postUpdateCount,
-      int postUploadCount,
-      int forumPostCount,
-      int commentCount});
+      {DateTime? createdAt,
+      String? levelString,
+      int? favoriteCount,
+      int? postUpdateCount,
+      int? postUploadCount,
+      int? forumPostCount,
+      int? commentCount});
 }
 
 /// @nodoc
@@ -265,38 +267,43 @@ class _$UserStatsCopyWithImpl<$Res, $Val extends UserStats>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? levelString = null,
-    Object? favoriteCount = null,
-    Object? postUpdateCount = null,
-    Object? postUploadCount = null,
-    Object? forumPostCount = null,
-    Object? commentCount = null,
+    Object? createdAt = freezed,
+    Object? levelString = freezed,
+    Object? favoriteCount = freezed,
+    Object? postUpdateCount = freezed,
+    Object? postUploadCount = freezed,
+    Object? forumPostCount = freezed,
+    Object? commentCount = freezed,
   }) {
     return _then(_value.copyWith(
-      levelString: null == levelString
+      createdAt: freezed == createdAt
+          ? _value.createdAt
+          : createdAt // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+      levelString: freezed == levelString
           ? _value.levelString
           : levelString // ignore: cast_nullable_to_non_nullable
-              as String,
-      favoriteCount: null == favoriteCount
+              as String?,
+      favoriteCount: freezed == favoriteCount
           ? _value.favoriteCount
           : favoriteCount // ignore: cast_nullable_to_non_nullable
-              as int,
-      postUpdateCount: null == postUpdateCount
+              as int?,
+      postUpdateCount: freezed == postUpdateCount
           ? _value.postUpdateCount
           : postUpdateCount // ignore: cast_nullable_to_non_nullable
-              as int,
-      postUploadCount: null == postUploadCount
+              as int?,
+      postUploadCount: freezed == postUploadCount
           ? _value.postUploadCount
           : postUploadCount // ignore: cast_nullable_to_non_nullable
-              as int,
-      forumPostCount: null == forumPostCount
+              as int?,
+      forumPostCount: freezed == forumPostCount
           ? _value.forumPostCount
           : forumPostCount // ignore: cast_nullable_to_non_nullable
-              as int,
-      commentCount: null == commentCount
+              as int?,
+      commentCount: freezed == commentCount
           ? _value.commentCount
           : commentCount // ignore: cast_nullable_to_non_nullable
-              as int,
+              as int?,
     ) as $Val);
   }
 }
@@ -310,12 +317,13 @@ abstract class _$$UserStatsImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {String levelString,
-      int favoriteCount,
-      int postUpdateCount,
-      int postUploadCount,
-      int forumPostCount,
-      int commentCount});
+      {DateTime? createdAt,
+      String? levelString,
+      int? favoriteCount,
+      int? postUpdateCount,
+      int? postUploadCount,
+      int? forumPostCount,
+      int? commentCount});
 }
 
 /// @nodoc
@@ -329,38 +337,43 @@ class __$$UserStatsImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? levelString = null,
-    Object? favoriteCount = null,
-    Object? postUpdateCount = null,
-    Object? postUploadCount = null,
-    Object? forumPostCount = null,
-    Object? commentCount = null,
+    Object? createdAt = freezed,
+    Object? levelString = freezed,
+    Object? favoriteCount = freezed,
+    Object? postUpdateCount = freezed,
+    Object? postUploadCount = freezed,
+    Object? forumPostCount = freezed,
+    Object? commentCount = freezed,
   }) {
     return _then(_$UserStatsImpl(
-      levelString: null == levelString
+      createdAt: freezed == createdAt
+          ? _value.createdAt
+          : createdAt // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+      levelString: freezed == levelString
           ? _value.levelString
           : levelString // ignore: cast_nullable_to_non_nullable
-              as String,
-      favoriteCount: null == favoriteCount
+              as String?,
+      favoriteCount: freezed == favoriteCount
           ? _value.favoriteCount
           : favoriteCount // ignore: cast_nullable_to_non_nullable
-              as int,
-      postUpdateCount: null == postUpdateCount
+              as int?,
+      postUpdateCount: freezed == postUpdateCount
           ? _value.postUpdateCount
           : postUpdateCount // ignore: cast_nullable_to_non_nullable
-              as int,
-      postUploadCount: null == postUploadCount
+              as int?,
+      postUploadCount: freezed == postUploadCount
           ? _value.postUploadCount
           : postUploadCount // ignore: cast_nullable_to_non_nullable
-              as int,
-      forumPostCount: null == forumPostCount
+              as int?,
+      forumPostCount: freezed == forumPostCount
           ? _value.forumPostCount
           : forumPostCount // ignore: cast_nullable_to_non_nullable
-              as int,
-      commentCount: null == commentCount
+              as int?,
+      commentCount: freezed == commentCount
           ? _value.commentCount
           : commentCount // ignore: cast_nullable_to_non_nullable
-              as int,
+              as int?,
     ));
   }
 }
@@ -369,7 +382,8 @@ class __$$UserStatsImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$UserStatsImpl implements _UserStats {
   const _$UserStatsImpl(
-      {required this.levelString,
+      {required this.createdAt,
+      required this.levelString,
       required this.favoriteCount,
       required this.postUpdateCount,
       required this.postUploadCount,
@@ -380,21 +394,23 @@ class _$UserStatsImpl implements _UserStats {
       _$$UserStatsImplFromJson(json);
 
   @override
-  final String levelString;
+  final DateTime? createdAt;
   @override
-  final int favoriteCount;
+  final String? levelString;
   @override
-  final int postUpdateCount;
+  final int? favoriteCount;
   @override
-  final int postUploadCount;
+  final int? postUpdateCount;
   @override
-  final int forumPostCount;
+  final int? postUploadCount;
   @override
-  final int commentCount;
+  final int? forumPostCount;
+  @override
+  final int? commentCount;
 
   @override
   String toString() {
-    return 'UserStats(levelString: $levelString, favoriteCount: $favoriteCount, postUpdateCount: $postUpdateCount, postUploadCount: $postUploadCount, forumPostCount: $forumPostCount, commentCount: $commentCount)';
+    return 'UserStats(createdAt: $createdAt, levelString: $levelString, favoriteCount: $favoriteCount, postUpdateCount: $postUpdateCount, postUploadCount: $postUploadCount, forumPostCount: $forumPostCount, commentCount: $commentCount)';
   }
 
   @override
@@ -402,6 +418,8 @@ class _$UserStatsImpl implements _UserStats {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$UserStatsImpl &&
+            (identical(other.createdAt, createdAt) ||
+                other.createdAt == createdAt) &&
             (identical(other.levelString, levelString) ||
                 other.levelString == levelString) &&
             (identical(other.favoriteCount, favoriteCount) ||
@@ -418,8 +436,15 @@ class _$UserStatsImpl implements _UserStats {
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, levelString, favoriteCount,
-      postUpdateCount, postUploadCount, forumPostCount, commentCount);
+  int get hashCode => Object.hash(
+      runtimeType,
+      createdAt,
+      levelString,
+      favoriteCount,
+      postUpdateCount,
+      postUploadCount,
+      forumPostCount,
+      commentCount);
 
   @JsonKey(ignore: true)
   @override
@@ -437,28 +462,31 @@ class _$UserStatsImpl implements _UserStats {
 
 abstract class _UserStats implements UserStats {
   const factory _UserStats(
-      {required final String levelString,
-      required final int favoriteCount,
-      required final int postUpdateCount,
-      required final int postUploadCount,
-      required final int forumPostCount,
-      required final int commentCount}) = _$UserStatsImpl;
+      {required final DateTime? createdAt,
+      required final String? levelString,
+      required final int? favoriteCount,
+      required final int? postUpdateCount,
+      required final int? postUploadCount,
+      required final int? forumPostCount,
+      required final int? commentCount}) = _$UserStatsImpl;
 
   factory _UserStats.fromJson(Map<String, dynamic> json) =
       _$UserStatsImpl.fromJson;
 
   @override
-  String get levelString;
+  DateTime? get createdAt;
   @override
-  int get favoriteCount;
+  String? get levelString;
   @override
-  int get postUpdateCount;
+  int? get favoriteCount;
   @override
-  int get postUploadCount;
+  int? get postUpdateCount;
   @override
-  int get forumPostCount;
+  int? get postUploadCount;
   @override
-  int get commentCount;
+  int? get forumPostCount;
+  @override
+  int? get commentCount;
   @override
   @JsonKey(ignore: true)
   _$$UserStatsImplCopyWith<_$UserStatsImpl> get copyWith =>

@@ -379,9 +379,10 @@ class UserInfo extends StatelessWidget {
     Widget info(
       IconData icon,
       String title,
-      Object value, {
+      Object? value, {
       VoidCallback? onLongPress,
     }) {
+      if (value == null) return const SizedBox();
       return UserInfoTile(
         icon: icon,
         title: title,
@@ -406,7 +407,14 @@ class UserInfo extends StatelessWidget {
           },
         ),
         if (user.stats case final stats?) ...[
-          info(Icons.shield, 'rank', stats.levelString.toLowerCase()),
+          info(
+            Icons.calendar_today,
+            'joined',
+            stats.createdAt != null
+                ? DateFormatting.named(stats.createdAt!)
+                : null,
+          ),
+          info(Icons.shield, 'rank', stats.levelString?.toLowerCase()),
           info(Icons.upload, 'posts', stats.postUploadCount),
           info(Icons.edit, 'edits', stats.postUpdateCount),
           info(Icons.favorite, 'favorites', stats.favoriteCount),

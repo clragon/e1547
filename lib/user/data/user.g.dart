@@ -23,16 +23,20 @@ Map<String, dynamic> _$$UserImplToJson(_$UserImpl instance) =>
 
 _$UserStatsImpl _$$UserStatsImplFromJson(Map<String, dynamic> json) =>
     _$UserStatsImpl(
-      levelString: json['level_string'] as String,
-      favoriteCount: json['favorite_count'] as int,
-      postUpdateCount: json['post_update_count'] as int,
-      postUploadCount: json['post_upload_count'] as int,
-      forumPostCount: json['forum_post_count'] as int,
-      commentCount: json['comment_count'] as int,
+      createdAt: json['created_at'] == null
+          ? null
+          : DateTime.parse(json['created_at'] as String),
+      levelString: json['level_string'] as String?,
+      favoriteCount: json['favorite_count'] as int?,
+      postUpdateCount: json['post_update_count'] as int?,
+      postUploadCount: json['post_upload_count'] as int?,
+      forumPostCount: json['forum_post_count'] as int?,
+      commentCount: json['comment_count'] as int?,
     );
 
 Map<String, dynamic> _$$UserStatsImplToJson(_$UserStatsImpl instance) =>
     <String, dynamic>{
+      'created_at': instance.createdAt?.toIso8601String(),
       'level_string': instance.levelString,
       'favorite_count': instance.favoriteCount,
       'post_update_count': instance.postUpdateCount,
