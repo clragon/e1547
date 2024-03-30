@@ -17,30 +17,44 @@ class BridgeConnector extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final client = context.watch<Client>();
-    return AvailabilityCheck(
-      navigatorKey: navigatorKey,
-      child: SubEffect(
+    Widget child = this.child;
+
+    if (client.hasFeature(ClientFeature.bridge)) {
+      Widget inner = child;
+      child = SubEffect(
         effect: () {
-          if (client.hasFeature(ClientFeature.bridge)) {
-            client.bridge.pull(force: true);
-          }
-          if (client.hasFeature(FollowFeature.database)) {
-            client.follows.sync();
-          }
+          client.bridge.pull(force: true);
           return null;
         },
         keys: [client],
         child: SubValueListener(
           listenable: client.traits,
           listener: (traits) => client.bridge.push(traits: traits),
-          builder: (context, _) => SubStream<List<Follow>>(
-            create: () => client.follows.all().streamed,
-            keys: [client],
-            listener: (event) => client.follows.sync(),
-            builder: (context, _) => child,
-          ),
+          builder: (context, _) => inner,
         ),
-      ),
+      );
+    }
+
+    if (client.hasFeature(FollowFeature.database)) {
+      Widget inner = child;
+      child = SubEffect(
+        effect: () {
+          client.follows.sync();
+          return null;
+        },
+        keys: [client],
+        child: SubStream<List<Follow>>(
+          create: () => client.follows.all().streamed,
+          keys: [client],
+          listener: (event) => client.follows.sync(),
+          builder: (context, _) => inner,
+        ),
+      );
+    }
+
+    return AvailabilityCheck(
+      navigatorKey: navigatorKey,
+      child: child,
     );
   }
 }
