@@ -6,8 +6,8 @@ class DTextGrammar extends GrammarDefinition<List<DTextElement>> {
   @override
   Parser<List<DTextElement>> start() => body().end();
 
-  Parser<List<DTextElement>> body([Parser<void>? limit]) => (
-        whitespace().star().optional(),
+  Parser<List<DTextElement>> body([Parser<void>? limit]) => ref1(
+        trimmed,
         (
           ref0(structures).optional(),
           ref2(
@@ -26,8 +26,21 @@ class DTextGrammar extends GrammarDefinition<List<DTextElement>> {
               if (e.$1 != null) e.$1!,
               ...e.$2,
             ]),
-        whitespace().star().optional(),
-      ).toSequenceParser().map((e) => e.$2);
+      );
+
+  Parser<List<DTextElement>> trimmed(Parser<List<DTextElement>> parser) {
+    return parser.map((l) {
+      if (l.firstOrNull is DTextContent) {
+        final first = l.first as DTextContent;
+        l[0] = DTextContent(first.content.trimLeft());
+      }
+      if (l.lastOrNull is DTextContent) {
+        final last = l.last as DTextContent;
+        l[l.length - 1] = DTextContent(last.content.trimRight());
+      }
+      return l;
+    });
+  }
 
   Parser<List<DTextElement>> withText([
     Parser<Object /* DTextElement | List<DTextElement> */ >? other,
