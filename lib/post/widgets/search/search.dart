@@ -94,7 +94,9 @@ class _PostsSearchPageState extends State<PostsSearchPage> {
             await updatePool();
             await controller.waitForNextPage();
             if (controller.error != null) return;
-            await updateFollow();
+            if (client.hasFeature(ClientFeature.follows)) {
+              await updateFollow();
+            }
             if (client.hasFeature(ClientFeature.histories)) {
               if (pool != null) {
                 client.histories.addPool(pool: pool!, posts: controller.items);
