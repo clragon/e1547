@@ -22,7 +22,7 @@ class BridgeConnector extends StatelessWidget {
       child: SubEffect(
         effect: () {
           if (client.hasFeature(ClientFeature.bridge)) {
-            client.bridge.pull();
+            client.bridge.pull(force: true);
           }
           if (client.hasFeature(FollowFeature.database)) {
             client.follows.sync();
