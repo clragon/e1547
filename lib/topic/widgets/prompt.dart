@@ -58,7 +58,7 @@ class TopicSheet extends StatelessWidget {
                 ),
                 ActionButton(
                   icon: const Icon(Icons.share),
-                  onTap: () async => Share.share(
+                  onTap: () async => Share.text(
                     context,
                     context.read<Client>().withHost(topic.link),
                   ),
@@ -187,7 +187,7 @@ class TopicDialog extends StatelessWidget {
                 ),
                 ActionButton(
                   icon: const Icon(Icons.share),
-                  onTap: () async => Share.share(
+                  onTap: () async => Share.text(
                     context,
                     context.read<Client>().withHost(topic.link),
                   ),

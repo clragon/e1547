@@ -372,7 +372,7 @@ class PostFeedTile extends StatelessWidget {
             ),
             IconButton(
               icon: const Icon(Icons.share),
-              onPressed: () => Share.share(
+              onPressed: () => Share.text(
                 context,
                 context.read<Client>().withHost(post.link),
               ),

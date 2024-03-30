@@ -354,7 +354,7 @@ class _LogPageState extends State<LogPage> {
               }),
               floatingActionButton: (logs?.isNotEmpty ?? false)
                   ? FloatingActionButton(
-                      onPressed: () => Share.shareAsFile(
+                      onPressed: () => Share.asFile(
                         context,
                         logs!.map((e) => e.toString()).join('\n'),
                         name: '${logFileDateFormat.format(DateTime.now())}.log',

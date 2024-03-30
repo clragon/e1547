@@ -10,7 +10,7 @@ List<PopupMenuItem<VoidCallback>> postMenuPostActions(
     BuildContext context, Post post) {
   return [
     PopupMenuTile(
-      value: () async => Share.share(
+      value: () async => Share.text(
         context,
         context.read<Client>().withHost(post.link),
       ),

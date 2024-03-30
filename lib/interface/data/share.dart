@@ -8,7 +8,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart' as plus;
 
 abstract final class Share {
-  static Future<void> share(BuildContext context, String text) async {
+  static Future<void> text(BuildContext context, String text) async {
     if (Platform.isAndroid || Platform.isIOS) {
       return plus.Share.share(text);
     } else {
@@ -16,7 +16,7 @@ abstract final class Share {
     }
   }
 
-  static Future<void> shareAsFile(
+  static Future<void> asFile(
     BuildContext context,
     String text, {
     String? name,
@@ -35,7 +35,7 @@ abstract final class Share {
     }
   }
 
-  static Future<void> shareFile(BuildContext context, String path) async {
+  static Future<void> file(BuildContext context, String path) async {
     plus.XFile file = plus.XFile(path);
     if (Platform.isAndroid || Platform.isIOS) {
       await plus.Share.shareXFiles([file]);

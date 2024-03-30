@@ -80,7 +80,7 @@ class HistoryTile extends StatelessWidget {
                             PopupMenuTile(
                               title: 'Share',
                               icon: Icons.share,
-                              value: () => Share.share(
+                              value: () => Share.text(
                                 context,
                                 context.read<Client>().withHost(entry.link),
                               ),

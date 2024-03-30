@@ -168,7 +168,7 @@ class PoolActions extends StatelessWidget {
           ActionButton(
             icon: const Icon(Icons.share),
             label: const Text('share'),
-            onTap: () async => Share.share(
+            onTap: () async => Share.text(
               context,
               context.read<Client>().withHost(pool.link),
             ),
