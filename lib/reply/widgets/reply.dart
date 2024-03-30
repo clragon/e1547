@@ -48,6 +48,7 @@ class ReplyTile extends StatelessWidget {
             ),
           ),
           ReplyWarning(reply: reply),
+          const SizedBox(height: 8),
           const Divider(),
         ],
       ),
