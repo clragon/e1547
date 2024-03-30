@@ -9,8 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:webview_cookie_manager/webview_cookie_manager.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
-class ClientAvailabilityCheck extends StatefulWidget {
-  const ClientAvailabilityCheck({
+class AvailabilityCheck extends StatefulWidget {
+  const AvailabilityCheck({
     super.key,
     required this.child,
     required this.navigatorKey,
@@ -20,11 +20,10 @@ class ClientAvailabilityCheck extends StatefulWidget {
   final GlobalKey<NavigatorState> navigatorKey;
 
   @override
-  State<ClientAvailabilityCheck> createState() =>
-      _ClientAvailabilityCheckState();
+  State<AvailabilityCheck> createState() => _AvailabilityCheckState();
 }
 
-class _ClientAvailabilityCheckState extends State<ClientAvailabilityCheck> {
+class _AvailabilityCheckState extends State<AvailabilityCheck> {
   final Logger logger = Logger('ClientAvailability');
 
   @override

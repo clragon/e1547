@@ -7,5 +7,4 @@ export 'data/traits.dart';
 export 'widgets/drawer.dart';
 export 'widgets/editor.dart';
 export 'widgets/settings.dart';
-export 'widgets/sync.dart';
 export 'widgets/tile.dart';

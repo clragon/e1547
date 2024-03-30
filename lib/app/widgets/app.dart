@@ -3,7 +3,6 @@ import 'package:e1547/client/client.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/logs/logs.dart';
 import 'package:e1547/settings/settings.dart';
-import 'package:e1547/traits/traits.dart';
 import 'package:e1547/user/user.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -74,15 +73,13 @@ class App extends StatelessWidget {
                               child: LoadingCore(
                                 child: ErrorNotifier(
                                   navigatorKey: navigatorKey,
-                                  child: ClientAvailabilityCheck(
+                                  child: BridgeConnector(
                                     navigatorKey: navigatorKey,
-                                    child: ClientSync(
-                                      child: AppLinkHandler(
+                                    child: AppLinkHandler(
+                                      navigatorKey: navigatorKey,
+                                      child: NotificationHandler(
                                         navigatorKey: navigatorKey,
-                                        child: NotificationHandler(
-                                          navigatorKey: navigatorKey,
-                                          child: child!,
-                                        ),
+                                        child: child!,
                                       ),
                                     ),
                                   ),

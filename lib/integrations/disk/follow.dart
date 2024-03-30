@@ -7,6 +7,7 @@ import 'package:e1547/identity/identity.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/pool/pool.dart';
 import 'package:e1547/post/post.dart';
+import 'package:e1547/tag/tag.dart';
 import 'package:rxdart/rxdart.dart';
 
 abstract class DiskFollowService extends FollowService with Disposable {
@@ -168,7 +169,9 @@ abstract class DiskFollowService extends FollowService with Disposable {
           thumbnail: posts?.isNotEmpty ?? false
               ? Value(posts!.first.sample)
               : const Value.absent(),
-          title: pool?.name != null ? Value(pool!.name) : const Value.absent(),
+          title: pool?.name != null
+              ? Value(tagToName(pool!.name))
+              : const Value.absent(),
           unseen: seen ?? true ? const Value(0) : const Value.absent(),
         ),
       );
