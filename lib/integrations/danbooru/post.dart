@@ -179,6 +179,7 @@ extension DanbooruPost on Post {
             final sample = pick('large_file_url').asStringOrNull();
             if (sample == null) return null;
             if (sample.endsWith('webm') || sample.endsWith('mp4')) {
+              // TODO: use media_asset.variants best picture instead
               return pick('preview_file_url').asStringOrNull();
             }
             return sample;
@@ -188,6 +189,11 @@ extension DanbooruPost on Post {
           height: pick('image_height').asIntOrThrow(),
           ext: pick('file_ext').asStringOrThrow(),
           size: pick('file_size').asIntOrThrow(),
+          variants: pick('media_asset', 'variants').asListOrNull((p0) {
+            final value = p0.asMapOrThrow();
+            return MapEntry(
+                '${value['width']}x${value['height']}', value['url']);
+          })?.fold<Map<String, String>>({}, (acc, e) => acc..[e.key] = e.value),
           tags: {
             'general':
                 pick('tag_string_general').asStringOrThrow().split(' ').trim(),

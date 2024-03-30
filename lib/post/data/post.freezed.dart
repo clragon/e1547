@@ -28,6 +28,7 @@ mixin _$Post {
   int get height => throw _privateConstructorUsedError;
   String get ext => throw _privateConstructorUsedError;
   int get size => throw _privateConstructorUsedError;
+  Map<String, String>? get variants => throw _privateConstructorUsedError;
   Map<String, List<String>> get tags => throw _privateConstructorUsedError;
   int get uploaderId => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
@@ -64,6 +65,7 @@ abstract class $PostCopyWith<$Res> {
       int height,
       String ext,
       int size,
+      Map<String, String>? variants,
       Map<String, List<String>> tags,
       int uploaderId,
       DateTime createdAt,
@@ -104,6 +106,7 @@ class _$PostCopyWithImpl<$Res, $Val extends Post>
     Object? height = null,
     Object? ext = null,
     Object? size = null,
+    Object? variants = freezed,
     Object? tags = null,
     Object? uploaderId = null,
     Object? createdAt = null,
@@ -153,6 +156,10 @@ class _$PostCopyWithImpl<$Res, $Val extends Post>
           ? _value.size
           : size // ignore: cast_nullable_to_non_nullable
               as int,
+      variants: freezed == variants
+          ? _value.variants
+          : variants // ignore: cast_nullable_to_non_nullable
+              as Map<String, String>?,
       tags: null == tags
           ? _value.tags
           : tags // ignore: cast_nullable_to_non_nullable
@@ -241,6 +248,7 @@ abstract class _$$PostImplCopyWith<$Res> implements $PostCopyWith<$Res> {
       int height,
       String ext,
       int size,
+      Map<String, String>? variants,
       Map<String, List<String>> tags,
       int uploaderId,
       DateTime createdAt,
@@ -279,6 +287,7 @@ class __$$PostImplCopyWithImpl<$Res>
     Object? height = null,
     Object? ext = null,
     Object? size = null,
+    Object? variants = freezed,
     Object? tags = null,
     Object? uploaderId = null,
     Object? createdAt = null,
@@ -328,6 +337,10 @@ class __$$PostImplCopyWithImpl<$Res>
           ? _value.size
           : size // ignore: cast_nullable_to_non_nullable
               as int,
+      variants: freezed == variants
+          ? _value._variants
+          : variants // ignore: cast_nullable_to_non_nullable
+              as Map<String, String>?,
       tags: null == tags
           ? _value._tags
           : tags // ignore: cast_nullable_to_non_nullable
@@ -404,6 +417,7 @@ class _$PostImpl implements _Post {
       required this.height,
       required this.ext,
       required this.size,
+      required final Map<String, String>? variants,
       required final Map<String, List<String>> tags,
       required this.uploaderId,
       required this.createdAt,
@@ -419,7 +433,8 @@ class _$PostImpl implements _Post {
       required final List<String> sources,
       required final List<int>? pools,
       required this.relationships})
-      : _tags = tags,
+      : _variants = variants,
+        _tags = tags,
         _sources = sources,
         _pools = pools;
 
@@ -442,6 +457,16 @@ class _$PostImpl implements _Post {
   final String ext;
   @override
   final int size;
+  final Map<String, String>? _variants;
+  @override
+  Map<String, String>? get variants {
+    final value = _variants;
+    if (value == null) return null;
+    if (_variants is EqualUnmodifiableMapView) return _variants;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableMapView(value);
+  }
+
   final Map<String, List<String>> _tags;
   @override
   Map<String, List<String>> get tags {
@@ -496,7 +521,7 @@ class _$PostImpl implements _Post {
 
   @override
   String toString() {
-    return 'Post(id: $id, file: $file, sample: $sample, preview: $preview, width: $width, height: $height, ext: $ext, size: $size, tags: $tags, uploaderId: $uploaderId, createdAt: $createdAt, updatedAt: $updatedAt, vote: $vote, isDeleted: $isDeleted, rating: $rating, favCount: $favCount, isFavorited: $isFavorited, commentCount: $commentCount, hasComments: $hasComments, description: $description, sources: $sources, pools: $pools, relationships: $relationships)';
+    return 'Post(id: $id, file: $file, sample: $sample, preview: $preview, width: $width, height: $height, ext: $ext, size: $size, variants: $variants, tags: $tags, uploaderId: $uploaderId, createdAt: $createdAt, updatedAt: $updatedAt, vote: $vote, isDeleted: $isDeleted, rating: $rating, favCount: $favCount, isFavorited: $isFavorited, commentCount: $commentCount, hasComments: $hasComments, description: $description, sources: $sources, pools: $pools, relationships: $relationships)';
   }
 
   @override
@@ -512,6 +537,7 @@ class _$PostImpl implements _Post {
             (identical(other.height, height) || other.height == height) &&
             (identical(other.ext, ext) || other.ext == ext) &&
             (identical(other.size, size) || other.size == size) &&
+            const DeepCollectionEquality().equals(other._variants, _variants) &&
             const DeepCollectionEquality().equals(other._tags, _tags) &&
             (identical(other.uploaderId, uploaderId) ||
                 other.uploaderId == uploaderId) &&
@@ -551,6 +577,7 @@ class _$PostImpl implements _Post {
         height,
         ext,
         size,
+        const DeepCollectionEquality().hash(_variants),
         const DeepCollectionEquality().hash(_tags),
         uploaderId,
         createdAt,
@@ -592,6 +619,7 @@ abstract class _Post implements Post {
       required final int height,
       required final String ext,
       required final int size,
+      required final Map<String, String>? variants,
       required final Map<String, List<String>> tags,
       required final int uploaderId,
       required final DateTime createdAt,
@@ -626,6 +654,8 @@ abstract class _Post implements Post {
   String get ext;
   @override
   int get size;
+  @override
+  Map<String, String>? get variants;
   @override
   Map<String, List<String>> get tags;
   @override

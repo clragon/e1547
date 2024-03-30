@@ -345,6 +345,14 @@ extension E621Post on Post {
               pick('file').letOrThrow((pick) => pick('height').asIntOrThrow()),
           ext: pick('file').letOrThrow((pick) => pick('ext').asStringOrThrow()),
           size: pick('file').letOrThrow((pick) => pick('size').asIntOrThrow()),
+          variants: pick('sample').letOrThrow(
+            (pick) => pick('alternates').asMapOrNull()?.map(
+                  (key, value) => MapEntry(
+                    '${value['width']}x${value['height']}',
+                    List.from(value['urls']).whereType<String>().first,
+                  ),
+                ),
+          ),
           tags: pick('tags').letOrThrow(
             (pick) => pick.asMapOrThrow<String, List<dynamic>>().map(
                   (key, value) => MapEntry(key, List.from(value)),

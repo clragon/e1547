@@ -60,6 +60,7 @@ class VideoService extends ChangeNotifier {
       key,
       () {
         VideoPlayer player = VideoPlayer();
+        // TODO: this is missing client auth headers
         player.open(Media(key), play: false);
         player.setPlaylistMode(PlaylistMode.single);
         player.setVolume(_muteVideos ? 0 : 100);
@@ -109,4 +110,28 @@ class VideoServiceVolumeControl extends StatelessWidget {
       ),
     );
   }
+}
+
+enum VideoResolution {
+  standard,
+  high,
+  full,
+  ultra,
+  source;
+
+  String get title => switch (this) {
+        VideoResolution.standard => 'Standard (480p)',
+        VideoResolution.high => 'High (720p)',
+        VideoResolution.full => 'Full (1080p)',
+        VideoResolution.ultra => 'Ultra (4K)',
+        VideoResolution.source => 'Source',
+      };
+
+  int get pixels => switch (this) {
+        VideoResolution.standard => 640 * 480,
+        VideoResolution.high => 1280 * 720,
+        VideoResolution.full => 1920 * 1080,
+        VideoResolution.ultra => 3840 * 2160,
+        VideoResolution.source => 4096 * 2160,
+      };
 }

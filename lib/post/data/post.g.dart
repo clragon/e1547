@@ -15,6 +15,9 @@ _$PostImpl _$$PostImplFromJson(Map<String, dynamic> json) => _$PostImpl(
       height: json['height'] as int,
       ext: json['ext'] as String,
       size: json['size'] as int,
+      variants: (json['variants'] as Map<String, dynamic>?)?.map(
+        (k, e) => MapEntry(k, e as String),
+      ),
       tags: (json['tags'] as Map<String, dynamic>).map(
         (k, e) =>
             MapEntry(k, (e as List<dynamic>).map((e) => e as String).toList()),
@@ -48,6 +51,7 @@ Map<String, dynamic> _$$PostImplToJson(_$PostImpl instance) =>
       'height': instance.height,
       'ext': instance.ext,
       'size': instance.size,
+      'variants': instance.variants,
       'tags': instance.tags,
       'uploader_id': instance.uploaderId,
       'created_at': instance.createdAt.toIso8601String(),

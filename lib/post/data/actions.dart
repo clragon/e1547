@@ -3,6 +3,7 @@ import 'package:e1547/app/app.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
+import 'package:e1547/settings/settings.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
 
@@ -162,7 +163,33 @@ extension PostVideoPlaying on Post {
       } else {
         service = context.read<VideoService>();
       }
-      return service.getVideo(file!);
+      Settings settings;
+      if (listen ?? true) {
+        settings = context.watch<Settings>();
+      } else {
+        settings = context.read<Settings>();
+      }
+
+      VideoResolution target = settings.videoResolution.value;
+      String closestUrl = file!;
+      int? closestDifference;
+
+      // maybe move this logic into the VideoService
+      if (variants != null && variants!.isNotEmpty) {
+        for (final MapEntry(:key, :value) in variants!.entries) {
+          if (!value.endsWith('mp4') && !value.endsWith('webm')) continue;
+          final dimensions = key.split('x').map(int.parse).toList();
+          final pixelSize = dimensions[0] * dimensions[1];
+          final difference = (target.pixels - pixelSize).abs();
+
+          if (closestDifference == null || difference < closestDifference) {
+            closestDifference = difference;
+            closestUrl = value;
+          }
+        }
+      }
+
+      return service.getVideo(closestUrl);
     }
     return null;
   }

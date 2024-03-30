@@ -243,6 +243,31 @@ class SettingsPage extends StatelessWidget {
                   onChanged: (value) => settings.muteVideos.value = value,
                 ),
               ),
+              ValueListenableBuilder<VideoResolution>(
+                valueListenable: settings.videoResolution,
+                builder: (context, value, child) => ListTile(
+                  title: const Text('Video resolution'),
+                  subtitle: Text(value.title),
+                  leading: const Icon(Icons.video_settings),
+                  onTap: () => showDialog(
+                    context: context,
+                    builder: (context) => SimpleDialog(
+                      title: const Text('Video resolution'),
+                      children: VideoResolution.values
+                          .map(
+                            (resolution) => ListTile(
+                              title: Text(resolution.title),
+                              onTap: () {
+                                settings.videoResolution.value = resolution;
+                                Navigator.of(context).maybePop();
+                              },
+                            ),
+                          )
+                          .toList(),
+                    ),
+                  ),
+                ),
+              ),
               const Divider(),
               const ListTileHeader(title: 'Security'),
               if (PlatformCapabilities.hasSecureDisplay)
