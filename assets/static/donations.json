@@ -300,5 +300,19 @@
         "platform": "ko-fi"
       }
     ]
+  },
+  {
+    "name": "ekatn",
+    "handles": {
+      "ko-fi": "ekatn"
+    },
+    "donations": [
+      {
+        "amount": 25.0,
+        "currency": "USD",
+        "date": "2024-03-29T23:29:00",
+        "platform": "ko-fi"
+      }
+    ]
   }
 ]
