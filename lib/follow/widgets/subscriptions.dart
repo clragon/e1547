@@ -4,7 +4,6 @@ import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_sub/flutter_sub.dart';
 
 class FollowsSubscriptionsPage extends StatelessWidget {
@@ -43,13 +42,23 @@ class FollowsSubscriptionsPage extends StatelessWidget {
                 child: RefreshableDataPage.builder(
                   controller: controller,
                   builder: (context, child) => TileLayout(child: child),
-                  child: (context) => AlignedGridView.count(
+                  child: (context) => PagedAlignedGridView<int, Follow>.count(
+                    pagingController: controller.paging,
                     primary: true,
                     padding: defaultActionListPadding,
                     addAutomaticKeepAlives: false,
-                    itemCount: controller.items?.length ?? 0,
-                    itemBuilder: (context, index) => FollowTile(
-                      follow: controller.items![index],
+                    builderDelegate: defaultPagedChildBuilderDelegate(
+                      pagingController: controller.paging,
+                      itemBuilder: (context, item, index) =>
+                          FollowTile(follow: item),
+                      onEmpty: const IconMessage(
+                        title: Text('No subscriptions'),
+                        icon: Icon(Icons.clear),
+                      ),
+                      onError: const IconMessage(
+                        title: Text('Failed to load subscriptions'),
+                        icon: Icon(Icons.warning_amber),
+                      ),
                     ),
                     crossAxisCount: TileLayout.of(context).crossAxisCount,
                   ),

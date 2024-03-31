@@ -93,7 +93,7 @@ dependency_overrides:
   infinite_scroll_pagination:
     git:
       url: https://github.com/EdsonBueno/infinite_scroll_pagination.git
-      ref: e92ef95
+      ref: b25e96d
   collection: 1.18.0
   package_info_plus: 6.0.0
 

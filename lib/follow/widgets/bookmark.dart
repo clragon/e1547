@@ -3,7 +3,6 @@ import 'package:e1547/follow/follow.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_sub/flutter_sub.dart';
 
 class FollowsBookmarkPage extends StatelessWidget {
@@ -53,25 +52,23 @@ class FollowsBookmarkPage extends StatelessWidget {
                   ),
                   builder: (context, child) =>
                       LimitedWidthLayout(child: TileLayout(child: child)),
-                  child: (context) =>
-                      // TODO: Implement PagedAlignedGridView and PagedSliverAlignedGrid
-                      /*
-                        onEmpty: const IconMessage(
-                          title: Text('No bookmarks'),
-                          icon: Icon(Icons.clear),
-                        ),
-                        onError: const IconMessage(
-                          title: Text('Failed to load bookmarks'),
-                          icon: Icon(Icons.warning_amber),
-                        ),
-                        */
-                      AlignedGridView.count(
+                  child: (context) => PagedAlignedGridView<int, Follow>.count(
+                    pagingController: controller.paging,
                     primary: true,
                     padding: defaultActionListPadding,
                     addAutomaticKeepAlives: false,
-                    itemCount: controller.items?.length ?? 0,
-                    itemBuilder: (context, index) => FollowTile(
-                      follow: controller.items![index],
+                    builderDelegate: defaultPagedChildBuilderDelegate(
+                      pagingController: controller.paging,
+                      itemBuilder: (context, item, index) =>
+                          FollowTile(follow: item),
+                      onEmpty: const IconMessage(
+                        title: Text('No bookmarks'),
+                        icon: Icon(Icons.clear),
+                      ),
+                      onError: const IconMessage(
+                        title: Text('Failed to load bookmarks'),
+                        icon: Icon(Icons.warning_amber),
+                      ),
                     ),
                     crossAxisCount: TileLayout.of(context).crossAxisCount,
                   ),
