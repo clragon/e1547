@@ -314,5 +314,22 @@
         "platform": "ko-fi"
       }
     ]
+  },
+  {
+    "name": "Liuk",
+    "avatar": "https://github.com/FuzzyLiuk.png",
+    "handles": {
+      "ko-fi": "Liuk",
+      "github": "FuzzyLiuk",
+      "e621": "FuzzyLiuk"
+    },
+    "donations": [
+      {
+        "amount": 3.0,
+        "currency": "USD",
+        "date": "2024-03-30T23:32:00",
+        "platform": "ko-fi"
+      }
+    ]
   }
 ]
