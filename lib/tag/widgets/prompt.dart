@@ -110,7 +110,11 @@ class TagSearchSheet extends StatelessWidget {
 }
 
 class TagSearchInfo extends StatelessWidget {
-  const TagSearchInfo({super.key, required this.tag, this.controller});
+  const TagSearchInfo({
+    super.key,
+    required this.tag,
+    this.controller,
+  });
 
   final String tag;
   final PostController? controller;
@@ -243,7 +247,11 @@ class _SearchTagDisplayState extends State<SearchTagDisplay> {
   late Future<Wiki?> wiki = retrieveWiki();
 
   Future<Wiki?> retrieveWiki() async {
-    List<Wiki> results = await context.read<Client>().wikis.page(
+    Client client = context.read<Client>();
+    if (!client.hasFeature(ClientFeature.wikis)) {
+      return null;
+    }
+    List<Wiki> results = await client.wikis.page(
       query: {'search[title]': tagToRaw(widget.tag)},
     );
     return results.firstWhereOrNull((e) => e.title == tagToRaw(widget.tag));
