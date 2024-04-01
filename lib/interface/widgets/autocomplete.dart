@@ -35,7 +35,7 @@ class AutocompleteTextField<T> extends StatelessWidget {
   final List<TextInputFormatter>? inputFormatters;
   final ValueSetter<T> onSelected;
   final Widget Function(BuildContext context, T value) itemBuilder;
-  final FutureOr<List<T>> Function(String search) suggestionsCallback;
+  final FutureOr<List<T>?> Function(String search) suggestionsCallback;
   final bool autofocus;
   final bool private;
 

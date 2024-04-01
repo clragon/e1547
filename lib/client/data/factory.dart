@@ -8,6 +8,7 @@ import 'package:flutter/foundation.dart';
 enum ClientType {
   e621,
   danbooru,
+  gelbooru,
 }
 
 class ClientConfig {
@@ -26,6 +27,7 @@ const String _e621Host = 'https://e621.net';
 const String _e926Host = 'https://e926.net';
 const String _danbooruHost = 'https://danbooru.donmai.us';
 const String _safeDanbooruHost = 'https://safebooru.donmai.us';
+const String _gelbooruHost = 'https://gelbooru.com';
 
 class ClientFactory {
   Client create(ClientConfig config) => switch (config.identity.type) {
@@ -35,6 +37,11 @@ class ClientFactory {
             storage: config.storage,
           ),
         ClientType.danbooru => DanbooruClient(
+            identity: config.identity,
+            traits: config.traits,
+            storage: config.storage,
+          ),
+        ClientType.gelbooru => GelbooruClient(
             identity: config.identity,
             traits: config.traits,
             storage: config.storage,
@@ -70,6 +77,7 @@ class ClientFactory {
     return switch (normalizeHostUrl(host)) {
       _e621Host || _e926Host => '$host/users/new',
       _danbooruHost || _safeDanbooruHost => '$host/users/new',
+      _gelbooruHost => '$host/index.php?page=account&s=reg',
       _ => null,
     };
   }
@@ -95,6 +103,7 @@ class ClientFactory {
     return switch (normalizeHostUrl(url)) {
       _e621Host || _e926Host => ClientType.e621,
       _danbooruHost || _safeDanbooruHost => ClientType.danbooru,
+      _gelbooruHost => ClientType.gelbooru,
       _ => null,
     };
   }

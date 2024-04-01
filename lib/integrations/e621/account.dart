@@ -39,6 +39,7 @@ class E621AccountService extends AccountService {
     Post? avatar;
 
     if (result.avatarId != null) {
+      // TODO: this shouldnt be here
       avatar = await postsClient.get(
         id: result.avatarId!,
         force: force,

@@ -101,40 +101,6 @@ class DanbooruPostService extends PostService {
   }
 
   @override
-  Future<List<Post>> byTags({
-    required List<String> tags,
-    int? page,
-    int? limit,
-    bool? force,
-    CancelToken? cancelToken,
-  }) async {
-    // TODO: this is extremely inefficient
-    // its unclear how we can replace this functionality, given that
-    // danbooru has a limit of 2 tags per query for free users.
-    page ??= 1;
-    tags.removeWhere((e) => e.contains(' ') || e.contains(':'));
-    if (tags.isEmpty) return [];
-    int max = 2;
-    int pages = (tags.length / max).ceil();
-    int chunkSize = (tags.length / pages).ceil();
-
-    int tagPage = page % pages != 0 ? page % pages : pages;
-    int sitePage = (page / pages).ceil();
-
-    List<String> chunk =
-        tags.sublist((tagPage - 1) * chunkSize).take(chunkSize).toList();
-    String filter = chunk.map((e) => '~$e').join(' ');
-    return this.page(
-      page: sitePage,
-      query: QueryMap()..['tags'] = filter,
-      limit: limit,
-      ordered: false,
-      force: force,
-      cancelToken: cancelToken,
-    );
-  }
-
-  @override
   Future<List<Post>> byFavoriter({
     required String username,
     int? page,

@@ -25,11 +25,16 @@ class _HomePageState extends State<HomePage> with RouterDrawerEntryWidget {
           child: SubListener(
             initialize: true,
             listenable: controller,
-            listener: () => client.bridge.push(
-              traits: client.traits.value.copyWith(
-                homeTags: controller.query['tags'].toString(),
-              ),
-            ),
+            listener: () {
+              if (!client.hasFeature(ClientFeature.bridge)) return;
+              // TODO: instead of client.bridge, use TraitsService
+              // then, TraitsService must trigger a push event, if supported by the current client.
+              client.bridge.push(
+                traits: client.traits.value.copyWith(
+                  homeTags: controller.query['tags'].toString(),
+                ),
+              );
+            },
             builder: (context) => PostsPage(
               appBar: const ContextSizedAppBar(
                 title: Text('Home'),

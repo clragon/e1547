@@ -79,7 +79,7 @@ _$RelationshipsImpl _$$RelationshipsImplFromJson(Map<String, dynamic> json) =>
     _$RelationshipsImpl(
       parentId: json['parent_id'] as int?,
       hasChildren: json['has_children'] as bool,
-      hasActiveChildren: json['has_active_children'] as bool,
+      hasActiveChildren: json['has_active_children'] as bool?,
       children:
           (json['children'] as List<dynamic>).map((e) => e as int).toList(),
     );

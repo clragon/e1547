@@ -153,10 +153,11 @@ class RawPostImageWidget extends StatelessWidget {
     }
 
     String url = switch (size) {
-      PostImageSize.preview => post.preview!,
-      PostImageSize.sample => post.sample!,
-      PostImageSize.file => post.file!
-    };
+          PostImageSize.preview => post.preview,
+          PostImageSize.sample => post.sample,
+          PostImageSize.file => post.file!
+        } ??
+        post.file!;
     Size dimensions = Size(post.width.toDouble(), post.height.toDouble());
 
     double aspectRatio = dimensions.width / dimensions.height;

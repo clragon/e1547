@@ -44,7 +44,7 @@ class Relationships with _$Relationships {
   const factory Relationships({
     required int? parentId,
     required bool hasChildren,
-    required bool hasActiveChildren,
+    required bool? hasActiveChildren,
     required List<int> children,
   }) = _Relationships;
 

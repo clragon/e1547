@@ -67,7 +67,7 @@ class RelationshipDisplay extends StatelessWidget {
         ),
         HiddenWidget(
           show: post.relationships.children.isNotEmpty &&
-              post.relationships.hasActiveChildren &&
+              (post.relationships.hasActiveChildren ?? true) &&
               !editing,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

@@ -700,7 +700,7 @@ Relationships _$RelationshipsFromJson(Map<String, dynamic> json) {
 mixin _$Relationships {
   int? get parentId => throw _privateConstructorUsedError;
   bool get hasChildren => throw _privateConstructorUsedError;
-  bool get hasActiveChildren => throw _privateConstructorUsedError;
+  bool? get hasActiveChildren => throw _privateConstructorUsedError;
   List<int> get children => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -718,7 +718,7 @@ abstract class $RelationshipsCopyWith<$Res> {
   $Res call(
       {int? parentId,
       bool hasChildren,
-      bool hasActiveChildren,
+      bool? hasActiveChildren,
       List<int> children});
 }
 
@@ -737,7 +737,7 @@ class _$RelationshipsCopyWithImpl<$Res, $Val extends Relationships>
   $Res call({
     Object? parentId = freezed,
     Object? hasChildren = null,
-    Object? hasActiveChildren = null,
+    Object? hasActiveChildren = freezed,
     Object? children = null,
   }) {
     return _then(_value.copyWith(
@@ -749,10 +749,10 @@ class _$RelationshipsCopyWithImpl<$Res, $Val extends Relationships>
           ? _value.hasChildren
           : hasChildren // ignore: cast_nullable_to_non_nullable
               as bool,
-      hasActiveChildren: null == hasActiveChildren
+      hasActiveChildren: freezed == hasActiveChildren
           ? _value.hasActiveChildren
           : hasActiveChildren // ignore: cast_nullable_to_non_nullable
-              as bool,
+              as bool?,
       children: null == children
           ? _value.children
           : children // ignore: cast_nullable_to_non_nullable
@@ -772,7 +772,7 @@ abstract class _$$RelationshipsImplCopyWith<$Res>
   $Res call(
       {int? parentId,
       bool hasChildren,
-      bool hasActiveChildren,
+      bool? hasActiveChildren,
       List<int> children});
 }
 
@@ -789,7 +789,7 @@ class __$$RelationshipsImplCopyWithImpl<$Res>
   $Res call({
     Object? parentId = freezed,
     Object? hasChildren = null,
-    Object? hasActiveChildren = null,
+    Object? hasActiveChildren = freezed,
     Object? children = null,
   }) {
     return _then(_$RelationshipsImpl(
@@ -801,10 +801,10 @@ class __$$RelationshipsImplCopyWithImpl<$Res>
           ? _value.hasChildren
           : hasChildren // ignore: cast_nullable_to_non_nullable
               as bool,
-      hasActiveChildren: null == hasActiveChildren
+      hasActiveChildren: freezed == hasActiveChildren
           ? _value.hasActiveChildren
           : hasActiveChildren // ignore: cast_nullable_to_non_nullable
-              as bool,
+              as bool?,
       children: null == children
           ? _value._children
           : children // ignore: cast_nullable_to_non_nullable
@@ -831,7 +831,7 @@ class _$RelationshipsImpl implements _Relationships {
   @override
   final bool hasChildren;
   @override
-  final bool hasActiveChildren;
+  final bool? hasActiveChildren;
   final List<int> _children;
   @override
   List<int> get children {
@@ -882,7 +882,7 @@ abstract class _Relationships implements Relationships {
   const factory _Relationships(
       {required final int? parentId,
       required final bool hasChildren,
-      required final bool hasActiveChildren,
+      required final bool? hasActiveChildren,
       required final List<int> children}) = _$RelationshipsImpl;
 
   factory _Relationships.fromJson(Map<String, dynamic> json) =
@@ -893,7 +893,7 @@ abstract class _Relationships implements Relationships {
   @override
   bool get hasChildren;
   @override
-  bool get hasActiveChildren;
+  bool? get hasActiveChildren;
   @override
   List<int> get children;
   @override

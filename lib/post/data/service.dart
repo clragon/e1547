@@ -37,7 +37,9 @@ abstract class PostService with FeatureFlagging {
     int? limit,
     bool? force,
     CancelToken? cancelToken,
-  });
+  }) =>
+      // TODO: this is only relevent if pools are supported
+      throw UnsupportedError('byIds');
 
   Future<List<Post>> byTags({
     required List<String> tags,
@@ -45,7 +47,9 @@ abstract class PostService with FeatureFlagging {
     int? limit,
     bool? force,
     CancelToken? cancelToken,
-  });
+  }) =>
+      // TODO: this is only relevant if follows are supported
+      throw UnsupportedError('byTags');
 
   Future<List<Post>> byFavoriter({
     required String username,
