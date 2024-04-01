@@ -661,6 +661,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.15.4"
+  html_character_entities:
+    dependency: "direct main"
+    description:
+      name: html_character_entities
+      sha256: "0eaf2acb67feeae8aba67c113aedbda71a57a36c38e3670fd677ec26e397faa3"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.0+1"
   http:
     dependency: transitive
     description:

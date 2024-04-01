@@ -3,6 +3,7 @@ import 'package:dio/dio.dart';
 import 'package:e1547/identity/identity.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
+import 'package:html_character_entities/html_character_entities.dart';
 import 'package:intl/intl.dart';
 
 class GelbooruPostService extends PostService {
@@ -73,6 +74,52 @@ class GelbooruPostService extends PostService {
                     .toList() ??
                 [],
           );
+
+  Future<Map<String, String>> categorizeTags({
+    required List<String> tags,
+    bool? force,
+    CancelToken? cancelToken,
+  }) async {
+    Map<String, String> results = await dio
+        .get(
+          '/index.php',
+          queryParameters: {
+            'page': 'dapi',
+            's': 'tag',
+            'json': '1',
+            'q': 'index',
+            'names': tags.join(' '),
+          },
+          options: forceOptions(force),
+          cancelToken: cancelToken,
+        )
+        .then(
+          (response) => (response.data?['tag'] as List<dynamic>? ?? [])
+              .fold<Map<String, String>>(
+            {},
+            (acc, e) {
+              int category = e['type'] as int;
+              String name = HtmlCharacterEntities.decode(e['name'] as String);
+              return acc..[name] = category.toString();
+            },
+          ),
+        );
+
+    return results.map(
+      (key, value) => MapEntry(
+        key,
+        switch (value) {
+          '0' => 'general',
+          '1' => 'character',
+          '2' => 'invalid',
+          '3' => 'copyright',
+          '4' => 'character',
+          '5' => 'meta',
+          _ => 'invalid',
+        },
+      ),
+    );
+  }
 }
 
 extension GelbooruPost on Post {
@@ -103,7 +150,12 @@ extension GelbooruPost on Post {
           size: 0,
           variants: null,
           tags: {
-            'general': pick('tags').asStringOrThrow().split(' ').trim(),
+            'unknown': pick('tags')
+                .asStringOrThrow()
+                .split(' ')
+                .trim()
+                .map(HtmlCharacterEntities.decode)
+                .toList(),
           },
           uploaderId: pick('creator_id').asIntOrThrow(),
           createdAt: () {
