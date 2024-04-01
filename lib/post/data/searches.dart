@@ -3,8 +3,8 @@ import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
 
-class FavoritePostsController extends PostController {
-  FavoritePostsController({required super.client});
+class FavoritePostController extends PostController {
+  FavoritePostController({required super.client});
 
   @override
   @protected
@@ -38,5 +38,20 @@ class FavoritePostsController extends PostController {
     } on NoUserLoginException catch (e) {
       return PageResponse.error(error: e);
     }
+  }
+}
+
+class HotPostController extends PostController {
+  HotPostController({required super.client});
+
+  @override
+  @protected
+  Future<List<Post>> fetch(int page, bool force) async {
+    return client.posts.byHot(
+      page: page,
+      query: query,
+      force: force,
+      cancelToken: cancelToken,
+    );
   }
 }

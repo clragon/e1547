@@ -3,7 +3,7 @@ export 'data/actions.dart';
 export 'data/controller.dart';
 export 'data/download.dart';
 export 'data/editing.dart';
-export 'data/favorites.dart';
+export 'data/searches.dart';
 export 'data/filter.dart';
 export 'data/image.dart';
 export 'data/post.dart';

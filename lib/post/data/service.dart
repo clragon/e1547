@@ -3,6 +3,7 @@ import 'package:e1547/post/post.dart';
 import 'package:e1547/ticket/ticket.dart';
 
 enum PostFeature {
+  hot,
   uploads,
   update,
   favorite,
@@ -31,6 +32,15 @@ abstract class PostService with FeatureFlagging {
     bool? force,
     CancelToken? cancelToken,
   });
+
+  Future<List<Post>> byHot({
+    int? page,
+    int? limit,
+    QueryMap? query,
+    bool? force,
+    CancelToken? cancelToken,
+  }) =>
+      throwUnsupported(PostFeature.hot);
 
   Future<List<Post>> byIds({
     required List<int> ids,

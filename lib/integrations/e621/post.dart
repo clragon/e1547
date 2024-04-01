@@ -24,6 +24,7 @@ class E621PostService extends PostService {
 
   @override
   Set<Enum> get features => {
+        PostFeature.hot,
         PostFeature.update,
         PostFeature.favorite,
         PostFeature.report,
@@ -101,6 +102,27 @@ class E621PostService extends PostService {
               )
               .toList(),
         );
+  }
+
+  @override
+  Future<List<Post>> byHot({
+    int? page,
+    int? limit,
+    QueryMap? query,
+    bool? force,
+    CancelToken? cancelToken,
+  }) {
+    return this.page(
+      page: page,
+      query: {
+        ...?query,
+        'tags':
+            (TagMap.parse(query?['tags'] ?? '')..['order'] = 'rank').toString(),
+      },
+      limit: limit,
+      force: force,
+      cancelToken: cancelToken,
+    );
   }
 
   @override

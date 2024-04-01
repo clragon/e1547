@@ -11,7 +11,7 @@ class FavPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return RouterDrawerEntry<FavPage>(
       child: PostProvider.builder(
-        create: (context, client) => FavoritePostsController(client: client),
+        create: (context, client) => FavoritePostController(client: client),
         child: Consumer<PostController>(
           builder: (context, controller, child) => ControllerHistoryConnector(
             controller: controller,

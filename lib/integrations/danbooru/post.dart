@@ -19,6 +19,7 @@ class DanbooruPostService extends PostService {
 
   @override
   Set<Enum> get features => {
+        PostFeature.hot,
         PostFeature.favorite,
       };
 
@@ -65,6 +66,27 @@ class DanbooruPostService extends PostService {
                 .map(DanbooruPost.fromJson)
                 .toList(),
           );
+
+  @override
+  Future<List<Post>> byHot({
+    int? page,
+    int? limit,
+    QueryMap? query,
+    bool? force,
+    CancelToken? cancelToken,
+  }) {
+    return this.page(
+      page: page,
+      query: {
+        ...?query,
+        'tags':
+            (TagMap.parse(query?['tags'] ?? '')..['order'] = 'rank').toString(),
+      },
+      limit: limit,
+      force: force,
+      cancelToken: cancelToken,
+    );
+  }
 
   @override
   Future<List<Post>> byIds({

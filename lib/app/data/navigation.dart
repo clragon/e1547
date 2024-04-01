@@ -30,6 +30,7 @@ final List<RouterDrawerDestination> rootDestintations = [
     builder: (context) => const HotPage(),
     unique: true,
     group: _drawerSearchGroup,
+    visible: (context) => context.watch<Client>().hasFeature(PostFeature.hot),
   ),
   NamedRouterDrawerDestination(
     path: '/search',
