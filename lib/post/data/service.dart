@@ -6,6 +6,7 @@ enum PostFeature {
   hot,
   uploads,
   update,
+  vote,
   favorite,
   report,
   flag,
@@ -83,7 +84,7 @@ abstract class PostService with FeatureFlagging {
       throwUnsupported(PostFeature.update);
 
   Future<void> vote(int postId, bool upvote, bool replace) =>
-      throwUnsupported(PostFeature.update);
+      throwUnsupported(PostFeature.vote);
 
   Future<List<Post>> favorites({
     int? page,

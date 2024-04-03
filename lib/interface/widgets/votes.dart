@@ -107,7 +107,7 @@ class VoteDisplay extends StatelessWidget {
               Icons.arrow_upward,
               color: isLiked ? Colors.deepOrange : null,
             ),
-            onTap: onUpvote,
+            onTap: onUpvote ?? (_) async => status == VoteStatus.upvoted,
           ),
         ),
         Padding(
@@ -139,7 +139,7 @@ class VoteDisplay extends StatelessWidget {
               Icons.arrow_downward,
               color: isLiked ? Colors.blue : null,
             ),
-            onTap: onDownvote,
+            onTap: onDownvote ?? (_) async => status == VoteStatus.downvoted,
           ),
         ),
       ],

@@ -12,6 +12,10 @@ class LikeDisplay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Client client = context.watch<Client>();
+    PostController controller = context.watch<PostController>();
+    ScaffoldMessengerState messenger = ScaffoldMessenger.of(context);
+    bool canVote = client.hasFeature(PostFeature.vote) && client.hasLogin;
     return Column(
       children: [
         Row(
@@ -20,46 +24,37 @@ class LikeDisplay extends StatelessWidget {
             VoteDisplay(
               status: post.vote.status,
               score: post.vote.score,
-              onUpvote: (isLiked) async {
-                PostController controller = context.read<PostController>();
-                ScaffoldMessengerState messenger =
-                    ScaffoldMessenger.of(context);
-                if (context.read<Client>().hasLogin) {
-                  controller
-                      .vote(post: post, upvote: true, replace: !isLiked)
-                      .then((value) {
-                    if (!value) {
-                      messenger.showSnackBar(SnackBar(
-                        duration: const Duration(seconds: 1),
-                        content: Text('Failed to upvote Post #${post.id}'),
-                      ));
+              onUpvote: canVote
+                  ? (isLiked) async {
+                      controller
+                          .vote(post: post, upvote: true, replace: !isLiked)
+                          .then((value) {
+                        if (!value) {
+                          messenger.showSnackBar(SnackBar(
+                            duration: const Duration(seconds: 1),
+                            content: Text('Failed to upvote Post #${post.id}'),
+                          ));
+                        }
+                      });
+                      return !isLiked;
                     }
-                  });
-                  return !isLiked;
-                } else {
-                  return false;
-                }
-              },
-              onDownvote: (isLiked) async {
-                PostController controller = context.read<PostController>();
-                ScaffoldMessengerState messenger =
-                    ScaffoldMessenger.of(context);
-                if (context.read<Client>().hasLogin) {
-                  controller
-                      .vote(post: post, upvote: false, replace: !isLiked)
-                      .then((value) {
-                    if (!value) {
-                      messenger.showSnackBar(SnackBar(
-                        duration: const Duration(seconds: 1),
-                        content: Text('Failed to downvote Post #${post.id}'),
-                      ));
+                  : null,
+              onDownvote: canVote
+                  ? (isLiked) async {
+                      controller
+                          .vote(post: post, upvote: false, replace: !isLiked)
+                          .then((value) {
+                        if (!value) {
+                          messenger.showSnackBar(SnackBar(
+                            duration: const Duration(seconds: 1),
+                            content:
+                                Text('Failed to downvote Post #${post.id}'),
+                          ));
+                        }
+                      });
+                      return !isLiked;
                     }
-                  });
-                  return !isLiked;
-                } else {
-                  return false;
-                }
-              },
+                  : null,
             ),
             Row(
               children: [
