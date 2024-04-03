@@ -28,6 +28,7 @@ const String _e926Host = 'https://e926.net';
 const String _danbooruHost = 'https://danbooru.donmai.us';
 const String _safeDanbooruHost = 'https://safebooru.donmai.us';
 const String _gelbooruHost = 'https://gelbooru.com';
+const String _safeGelbooruHost = 'https://safebooru.org';
 
 class ClientFactory {
   Client create(ClientConfig config) => switch (config.identity.type) {
@@ -67,6 +68,10 @@ class ClientFactory {
           denylist: ['loli', 'shota', 'guro'],
           homeTags: 'score:>=20',
         ),
+      _gelbooruHost || _safeDanbooruHost => TraitsRequest(
+          identity: identity.id,
+          denylist: ['loli', 'shota', 'guro'],
+        ),
       _ => TraitsRequest(
           identity: identity.id,
         ),
@@ -77,7 +82,9 @@ class ClientFactory {
     return switch (normalizeHostUrl(host)) {
       _e621Host || _e926Host => '$host/users/new',
       _danbooruHost || _safeDanbooruHost => '$host/users/new',
-      _gelbooruHost => '$host/index.php?page=account&s=reg',
+      _gelbooruHost ||
+      _safeGelbooruHost =>
+        '$host/index.php?page=account&s=reg',
       _ => null,
     };
   }
@@ -95,6 +102,7 @@ class ClientFactory {
     return switch (normalizeHostUrl(host)) {
       _e926Host => _e621Host,
       _safeDanbooruHost => _danbooruHost,
+      _safeGelbooruHost => _gelbooruHost,
       _ => null,
     };
   }
@@ -103,7 +111,7 @@ class ClientFactory {
     return switch (normalizeHostUrl(url)) {
       _e621Host || _e926Host => ClientType.e621,
       _danbooruHost || _safeDanbooruHost => ClientType.danbooru,
-      _gelbooruHost => ClientType.gelbooru,
+      _gelbooruHost || _safeGelbooruHost => ClientType.gelbooru,
       _ => null,
     };
   }
