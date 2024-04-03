@@ -26,6 +26,7 @@ class E621PostService extends PostService {
   Set<Enum> get features => {
         PostFeature.hot,
         PostFeature.update,
+        PostFeature.vote,
         PostFeature.favorite,
         PostFeature.report,
         PostFeature.flag,
