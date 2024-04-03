@@ -2,6 +2,7 @@ import 'package:e1547/app/app.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/identity/identity.dart';
 import 'package:e1547/integrations/integrations.dart';
+import 'package:e1547/integrations/moebooru.dart';
 import 'package:e1547/traits/traits.dart';
 import 'package:flutter/foundation.dart';
 
@@ -9,6 +10,7 @@ enum ClientType {
   e621,
   danbooru,
   gelbooru,
+  moebooru,
 }
 
 class ClientConfig {
@@ -29,6 +31,7 @@ const String _danbooruHost = 'https://danbooru.donmai.us';
 const String _safeDanbooruHost = 'https://safebooru.donmai.us';
 const String _gelbooruHost = 'https://gelbooru.com';
 const String _safeGelbooruHost = 'https://safebooru.org';
+const String _yandereHost = 'https://yande.re';
 
 class ClientFactory {
   Client create(ClientConfig config) => switch (config.identity.type) {
@@ -43,6 +46,11 @@ class ClientFactory {
             storage: config.storage,
           ),
         ClientType.gelbooru => GelbooruClient(
+            identity: config.identity,
+            traits: config.traits,
+            storage: config.storage,
+          ),
+        ClientType.moebooru => MoebooruClient(
             identity: config.identity,
             traits: config.traits,
             storage: config.storage,
@@ -69,6 +77,10 @@ class ClientFactory {
           homeTags: 'score:>=20',
         ),
       _gelbooruHost || _safeDanbooruHost => TraitsRequest(
+          identity: identity.id,
+          denylist: ['loli', 'shota', 'guro'],
+        ),
+      _yandereHost => TraitsRequest(
           identity: identity.id,
           denylist: ['loli', 'shota', 'guro'],
         ),
@@ -112,6 +124,7 @@ class ClientFactory {
       _e621Host || _e926Host => ClientType.e621,
       _danbooruHost || _safeDanbooruHost => ClientType.danbooru,
       _gelbooruHost || _safeGelbooruHost => ClientType.gelbooru,
+      _yandereHost => ClientType.moebooru,
       _ => null,
     };
   }

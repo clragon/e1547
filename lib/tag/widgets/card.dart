@@ -18,7 +18,8 @@ class TagCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ColoredCard(
-      color: (category != null ? TagCategory.byName(category!)?.color : null),
+      color: (category != null ? TagCategory.byName(category!)?.color : null) ??
+          Colors.grey,
       onTap: () => Navigator.of(context).push(
         MaterialPageRoute(
           builder: (context) => PostsSearchPage(
