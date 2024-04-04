@@ -3,6 +3,7 @@ import 'package:e1547/app/app.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/identity/identity.dart';
 import 'package:e1547/integrations/gelbooru/post.dart';
+import 'package:e1547/integrations/gelbooru/tags.dart';
 import 'package:e1547/integrations/http.dart';
 import 'package:e1547/traits/traits.dart';
 import 'package:flutter/foundation.dart';
@@ -20,10 +21,14 @@ class GelbooruClient extends Client with ClientAssembly {
       dio: dio,
       identity: identity,
     );
+    final tags = GelbooruTagService(
+      dio: dio,
+    );
 
     enableServices(
       bridge: bridge,
       posts: posts,
+      tags: tags,
     );
   }
 

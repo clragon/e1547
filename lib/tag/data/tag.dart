@@ -8,7 +8,7 @@ class Tag with _$Tag {
   const factory Tag({
     required int id,
     required String name,
-    required int postCount,
+    required int count,
     required int category,
   }) = _Tag;
 

@@ -83,11 +83,11 @@ class TagInput extends StatelessWidget {
             controller.text = '${TagMap.parse(tags.join(' '))} ';
             controller.setFocusToEnd();
           },
-          itemBuilder: (context, itemData) => Row(
+          itemBuilder: (context, value) => Row(
             children: [
               Container(
                 color: TagCategory.values
-                    .firstWhereOrNull((e) => e.id == itemData.category)
+                    .firstWhereOrNull((e) => e.id == value.category)
                     ?.color,
                 height: 54,
                 width: 5,
@@ -95,7 +95,7 @@ class TagInput extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.all(16),
                 child: Text(
-                  itemData.name,
+                  value.name,
                   style: const TextStyle(fontSize: 16),
                 ),
               ),
@@ -103,7 +103,7 @@ class TagInput extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.all(16),
                 child: Text(
-                  NumberFormat.compact().format(itemData.postCount),
+                  NumberFormat.compact().format(value.count),
                   style: const TextStyle(fontSize: 16),
                 ),
               ),
@@ -116,12 +116,11 @@ class TagInput extends StatelessWidget {
             int selection = findTag(tags, controller.selection.extent.offset);
             String tag = tags[selection];
             if (tag.isEmpty) return [];
-            return client.tags
-                .autocomplete(
-                  search: tagToRaw(tags[selection]),
-                  category: category,
-                )
-                .then((value) => value.take(3).toList());
+            return client.tags.autocomplete(
+              search: tagToRaw(tags[selection]),
+              category: category,
+              limit: 3,
+            );
           },
         ),
       ),

@@ -22,7 +22,7 @@ Tag _$TagFromJson(Map<String, dynamic> json) {
 mixin _$Tag {
   int get id => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
-  int get postCount => throw _privateConstructorUsedError;
+  int get count => throw _privateConstructorUsedError;
   int get category => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -35,7 +35,7 @@ abstract class $TagCopyWith<$Res> {
   factory $TagCopyWith(Tag value, $Res Function(Tag) then) =
       _$TagCopyWithImpl<$Res, Tag>;
   @useResult
-  $Res call({int id, String name, int postCount, int category});
+  $Res call({int id, String name, int count, int category});
 }
 
 /// @nodoc
@@ -52,7 +52,7 @@ class _$TagCopyWithImpl<$Res, $Val extends Tag> implements $TagCopyWith<$Res> {
   $Res call({
     Object? id = null,
     Object? name = null,
-    Object? postCount = null,
+    Object? count = null,
     Object? category = null,
   }) {
     return _then(_value.copyWith(
@@ -64,9 +64,9 @@ class _$TagCopyWithImpl<$Res, $Val extends Tag> implements $TagCopyWith<$Res> {
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String,
-      postCount: null == postCount
-          ? _value.postCount
-          : postCount // ignore: cast_nullable_to_non_nullable
+      count: null == count
+          ? _value.count
+          : count // ignore: cast_nullable_to_non_nullable
               as int,
       category: null == category
           ? _value.category
@@ -82,7 +82,7 @@ abstract class _$$TagImplCopyWith<$Res> implements $TagCopyWith<$Res> {
       __$$TagImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({int id, String name, int postCount, int category});
+  $Res call({int id, String name, int count, int category});
 }
 
 /// @nodoc
@@ -96,7 +96,7 @@ class __$$TagImplCopyWithImpl<$Res> extends _$TagCopyWithImpl<$Res, _$TagImpl>
   $Res call({
     Object? id = null,
     Object? name = null,
-    Object? postCount = null,
+    Object? count = null,
     Object? category = null,
   }) {
     return _then(_$TagImpl(
@@ -108,9 +108,9 @@ class __$$TagImplCopyWithImpl<$Res> extends _$TagCopyWithImpl<$Res, _$TagImpl>
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String,
-      postCount: null == postCount
-          ? _value.postCount
-          : postCount // ignore: cast_nullable_to_non_nullable
+      count: null == count
+          ? _value.count
+          : count // ignore: cast_nullable_to_non_nullable
               as int,
       category: null == category
           ? _value.category
@@ -126,7 +126,7 @@ class _$TagImpl implements _Tag {
   const _$TagImpl(
       {required this.id,
       required this.name,
-      required this.postCount,
+      required this.count,
       required this.category});
 
   factory _$TagImpl.fromJson(Map<String, dynamic> json) =>
@@ -137,13 +137,13 @@ class _$TagImpl implements _Tag {
   @override
   final String name;
   @override
-  final int postCount;
+  final int count;
   @override
   final int category;
 
   @override
   String toString() {
-    return 'Tag(id: $id, name: $name, postCount: $postCount, category: $category)';
+    return 'Tag(id: $id, name: $name, count: $count, category: $category)';
   }
 
   @override
@@ -153,15 +153,14 @@ class _$TagImpl implements _Tag {
             other is _$TagImpl &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.name, name) || other.name == name) &&
-            (identical(other.postCount, postCount) ||
-                other.postCount == postCount) &&
+            (identical(other.count, count) || other.count == count) &&
             (identical(other.category, category) ||
                 other.category == category));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, id, name, postCount, category);
+  int get hashCode => Object.hash(runtimeType, id, name, count, category);
 
   @JsonKey(ignore: true)
   @override
@@ -181,7 +180,7 @@ abstract class _Tag implements Tag {
   const factory _Tag(
       {required final int id,
       required final String name,
-      required final int postCount,
+      required final int count,
       required final int category}) = _$TagImpl;
 
   factory _Tag.fromJson(Map<String, dynamic> json) = _$TagImpl.fromJson;
@@ -191,7 +190,7 @@ abstract class _Tag implements Tag {
   @override
   String get name;
   @override
-  int get postCount;
+  int get count;
   @override
   int get category;
   @override

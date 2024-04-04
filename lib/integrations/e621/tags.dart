@@ -1,3 +1,4 @@
+import 'package:deep_pick/deep_pick.dart';
 import 'package:dio/dio.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/tag/tag.dart';
@@ -6,6 +7,11 @@ class E621TagService extends TagService {
   E621TagService({required this.dio});
 
   final Dio dio;
+
+  @override
+  Set<TagFeature> get features => {
+        TagFeature.aliases,
+      };
 
   @override
   Future<List<Tag>> page({
@@ -31,7 +37,7 @@ class E621TagService extends TagService {
     List<Tag> tags = [];
     if (body is List<dynamic>) {
       for (final tag in body) {
-        tags.add(Tag.fromJson(tag));
+        tags.add(E621Tag.fromJson(tag));
       }
     }
     return tags;
@@ -39,14 +45,16 @@ class E621TagService extends TagService {
 
   @override
   Future<List<Tag>> autocomplete({
-    required String search,
+    String? search,
+    int? limit,
     int? category,
     bool? force,
     CancelToken? cancelToken,
   }) async {
+    search ??= '';
     if (search.contains(':')) return [];
-    List<Tag> tags = [];
     if (category == null) {
+      List<Tag> tags = [];
       if (search.length < 3) return [];
       Object body = await dio
           .get(
@@ -61,30 +69,21 @@ class E621TagService extends TagService {
 
       if (body is List<dynamic>) {
         for (final tag in body) {
-          tags.add(Tag.fromJson(tag));
+          tags.add(E621Tag.fromJson(tag));
         }
       }
-      return tags;
+
+      return tags.take(3).toList();
     } else {
-      for (final tag in await page(
-        limit: 3,
+      return page(
+        limit: limit,
         query: {
           'search[name_matches]': '$search*',
           'search[category]': category,
           'search[order]': 'count',
         }.toQuery(),
         force: force,
-      )) {
-        tags.add(
-          Tag(
-            id: tag.id,
-            name: tag.name,
-            postCount: tag.postCount,
-            category: tag.category,
-          ),
-        );
-      }
-      return tags;
+      );
     }
   }
 
@@ -95,26 +94,34 @@ class E621TagService extends TagService {
     QueryMap? query,
     bool? force,
     CancelToken? cancelToken,
-  }) async {
-    Object body = await dio
-        .get(
-          '/tag_aliases.json',
-          queryParameters: {
-            'page': page,
-            'limit': limit,
-            ...?query,
-          },
-          options: forceOptions(force),
-          cancelToken: cancelToken,
-        )
-        .then((value) => value.data);
+  }) =>
+      dio
+          .get(
+            '/tag_aliases.json',
+            queryParameters: {
+              'page': page,
+              'limit': limit,
+              ...?query,
+            },
+            options: forceOptions(force),
+            cancelToken: cancelToken,
+          )
+          .then(
+            (response) => pick(response)
+                .asListOrEmpty((p0) => p0.asMapOrThrow())
+                .where((e) => e['status'] != 'deleted')
+                .map((e) => e['consequent_name'])
+                .firstOrNull,
+          );
+}
 
-    if (body is List<dynamic>) {
-      body.removeWhere((e) => e['status'] == 'deleted');
-      if (body.isEmpty) return null;
-      return body.first['consequent_name'];
-    }
-
-    return null;
-  }
+extension E621Tag on Tag {
+  static Tag fromJson(dynamic json) => pick(json).letOrThrow(
+        (pick) => Tag(
+          id: pick('id').asIntOrThrow(),
+          name: pick('name').asStringOrThrow(),
+          count: pick('post_count').asIntOrThrow(),
+          category: pick('category').asIntOrThrow(),
+        ),
+      );
 }

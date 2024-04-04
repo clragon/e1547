@@ -1,8 +1,12 @@
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/tag/tag.dart';
 
-abstract class TagService {
-  // Technically missing tags()
+enum TagFeature {
+  aliases,
+}
+
+abstract class TagService with FeatureFlagging<TagFeature> {
+  // Technically missing get()
   Future<List<Tag>> page({
     int? page,
     int? limit,
@@ -12,7 +16,8 @@ abstract class TagService {
   });
 
   Future<List<Tag>> autocomplete({
-    required String search,
+    String? search,
+    int? limit,
     int? category,
     bool? force,
     CancelToken? cancelToken,
@@ -24,5 +29,6 @@ abstract class TagService {
     QueryMap? query,
     bool? force,
     CancelToken? cancelToken,
-  });
+  }) =>
+      throwUnsupported(TagFeature.aliases);
 }

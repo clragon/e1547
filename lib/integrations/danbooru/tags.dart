@@ -9,6 +9,11 @@ class DanbooruTagService extends TagService {
   final Dio dio;
 
   @override
+  Set<TagFeature> get features => {
+        TagFeature.aliases,
+      };
+
+  @override
   Future<List<Tag>> page({
     int? page,
     int? limit,
@@ -41,32 +46,23 @@ class DanbooruTagService extends TagService {
 
   @override
   Future<List<Tag>> autocomplete({
-    required String search,
+    String? search,
+    int? limit,
     int? category,
     bool? force,
     CancelToken? cancelToken,
   }) async {
+    search ??= '';
     if (search.contains(':')) return [];
-    List<Tag> tags = [];
-    for (final tag in await page(
-      limit: 3,
+    return page(
+      limit: limit,
       query: {
         'search[fuzzy_name_matches]': search,
         'search[category]': category,
         'search[order]': 'count',
       }.toQuery(),
       force: force,
-    )) {
-      tags.add(
-        Tag(
-          id: tag.id,
-          name: tag.name,
-          postCount: tag.postCount,
-          category: tag.category,
-        ),
-      );
-    }
-    return tags;
+    );
   }
 
   @override
@@ -104,7 +100,7 @@ extension DanbooruTag on Tag {
         (pick) => Tag(
           id: pick('id').asIntOrThrow(),
           name: pick('name').asStringOrThrow(),
-          postCount: pick('post_count').asIntOrThrow(),
+          count: pick('post_count').asIntOrThrow(),
           category: pick('category').asIntOrThrow(),
         ),
       );
