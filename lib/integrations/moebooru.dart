@@ -4,6 +4,7 @@ import 'package:e1547/client/client.dart';
 import 'package:e1547/identity/identity.dart';
 import 'package:e1547/integrations/http/bridge.dart';
 import 'package:e1547/integrations/moebooru/post.dart';
+import 'package:e1547/integrations/moebooru/tags.dart';
 import 'package:e1547/traits/traits.dart';
 import 'package:flutter/foundation.dart';
 
@@ -18,10 +19,14 @@ class MoebooruClient extends Client with ClientAssembly {
     final posts = MoebooruPostService(
       dio: dio,
     );
+    final tags = MoebooruTagService(
+      dio: dio,
+    );
 
     enableServices(
       bridge: bridge,
       posts: posts,
+      tags: tags,
     );
   }
 

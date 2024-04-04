@@ -92,14 +92,16 @@ class TagInput extends StatelessWidget {
                 height: 54,
                 width: 5,
               ),
-              Padding(
-                padding: const EdgeInsets.all(16),
-                child: Text(
-                  value.name,
-                  style: const TextStyle(fontSize: 16),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Text(
+                    value.name,
+                    style: const TextStyle(fontSize: 16),
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
               ),
-              const Spacer(),
               Padding(
                 padding: const EdgeInsets.all(16),
                 child: Text(
