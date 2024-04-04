@@ -372,7 +372,7 @@ extension E621Post on Post {
             (pick) => pick('alternates').asMapOrNull()?.map(
                   (key, value) => MapEntry(
                     '${value['width']}x${value['height']}',
-                    List.from(value['urls']).whereType<String>().first,
+                    List.from(value['urls']).whereType<String>().firstOrNull,
                   ),
                 ),
           ),

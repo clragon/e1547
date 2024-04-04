@@ -28,7 +28,7 @@ mixin _$Post {
   int get height => throw _privateConstructorUsedError;
   String get ext => throw _privateConstructorUsedError;
   int get size => throw _privateConstructorUsedError;
-  Map<String, String>? get variants => throw _privateConstructorUsedError;
+  Map<String, String?>? get variants => throw _privateConstructorUsedError;
   Map<String, List<String>> get tags => throw _privateConstructorUsedError;
   int get uploaderId => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
@@ -65,7 +65,7 @@ abstract class $PostCopyWith<$Res> {
       int height,
       String ext,
       int size,
-      Map<String, String>? variants,
+      Map<String, String?>? variants,
       Map<String, List<String>> tags,
       int uploaderId,
       DateTime createdAt,
@@ -159,7 +159,7 @@ class _$PostCopyWithImpl<$Res, $Val extends Post>
       variants: freezed == variants
           ? _value.variants
           : variants // ignore: cast_nullable_to_non_nullable
-              as Map<String, String>?,
+              as Map<String, String?>?,
       tags: null == tags
           ? _value.tags
           : tags // ignore: cast_nullable_to_non_nullable
@@ -248,7 +248,7 @@ abstract class _$$PostImplCopyWith<$Res> implements $PostCopyWith<$Res> {
       int height,
       String ext,
       int size,
-      Map<String, String>? variants,
+      Map<String, String?>? variants,
       Map<String, List<String>> tags,
       int uploaderId,
       DateTime createdAt,
@@ -340,7 +340,7 @@ class __$$PostImplCopyWithImpl<$Res>
       variants: freezed == variants
           ? _value._variants
           : variants // ignore: cast_nullable_to_non_nullable
-              as Map<String, String>?,
+              as Map<String, String?>?,
       tags: null == tags
           ? _value._tags
           : tags // ignore: cast_nullable_to_non_nullable
@@ -417,7 +417,7 @@ class _$PostImpl implements _Post {
       required this.height,
       required this.ext,
       required this.size,
-      required final Map<String, String>? variants,
+      required final Map<String, String?>? variants,
       required final Map<String, List<String>> tags,
       required this.uploaderId,
       required this.createdAt,
@@ -457,9 +457,9 @@ class _$PostImpl implements _Post {
   final String ext;
   @override
   final int size;
-  final Map<String, String>? _variants;
+  final Map<String, String?>? _variants;
   @override
-  Map<String, String>? get variants {
+  Map<String, String?>? get variants {
     final value = _variants;
     if (value == null) return null;
     if (_variants is EqualUnmodifiableMapView) return _variants;
@@ -619,7 +619,7 @@ abstract class _Post implements Post {
       required final int height,
       required final String ext,
       required final int size,
-      required final Map<String, String>? variants,
+      required final Map<String, String?>? variants,
       required final Map<String, List<String>> tags,
       required final int uploaderId,
       required final DateTime createdAt,
@@ -655,7 +655,7 @@ abstract class _Post implements Post {
   @override
   int get size;
   @override
-  Map<String, String>? get variants;
+  Map<String, String?>? get variants;
   @override
   Map<String, List<String>> get tags;
   @override

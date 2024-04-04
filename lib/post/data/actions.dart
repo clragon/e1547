@@ -177,6 +177,7 @@ extension PostVideoPlaying on Post {
       // maybe move this logic into the VideoService
       if (variants != null && variants!.isNotEmpty) {
         for (final MapEntry(:key, :value) in variants!.entries) {
+          if (value == null) continue;
           if (!value.endsWith('mp4') && !value.endsWith('webm')) continue;
           final dimensions = key.split('x').map(int.parse).toList();
           final pixelSize = dimensions[0] * dimensions[1];

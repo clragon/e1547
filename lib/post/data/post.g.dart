@@ -16,7 +16,7 @@ _$PostImpl _$$PostImplFromJson(Map<String, dynamic> json) => _$PostImpl(
       ext: json['ext'] as String,
       size: json['size'] as int,
       variants: (json['variants'] as Map<String, dynamic>?)?.map(
-        (k, e) => MapEntry(k, e as String),
+        (k, e) => MapEntry(k, e as String?),
       ),
       tags: (json['tags'] as Map<String, dynamic>).map(
         (k, e) =>

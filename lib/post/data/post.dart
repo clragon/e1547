@@ -15,7 +15,7 @@ class Post with _$Post {
     required int height,
     required String ext,
     required int size,
-    required Map<String, String>? variants,
+    required Map<String, String?>? variants,
     required Map<String, List<String>> tags,
     required int uploaderId,
     required DateTime createdAt,
