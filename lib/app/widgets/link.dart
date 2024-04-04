@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:app_links/app_links.dart';
 import 'package:e1547/app/app.dart';
@@ -54,7 +53,7 @@ class _AppLinkHandlerState extends State<AppLinkHandler> {
   @override
   void initState() {
     super.initState();
-    if (Platform.isAndroid || Platform.isIOS) {
+    if (PlatformCapabilities.hasDeepLinks) {
       appLinks = AppLinks();
       appLinks.getInitialAppLink().then(onInitialLink);
       linkListener = appLinks.uriLinkStream.listen(onLink);

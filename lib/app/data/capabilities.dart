@@ -27,4 +27,8 @@ abstract final class PlatformCapabilities {
   /// This means that the platform supports hiding the app from the app switcher.
   static bool get hasSecureDisplay =>
       [Platform.isAndroid, Platform.isIOS].any((e) => e);
+
+  /// Whether this platform supports deep links.
+  /// This means that the platform supports opening the app from a URL.
+  static bool hasDeepLinks = [Platform.isAndroid, Platform.isIOS].any((e) => e);
 }
