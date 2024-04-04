@@ -8,7 +8,6 @@ import 'package:e1547/client/client.dart';
 import 'package:e1547/identity/identity.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/settings/settings.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:keyboard_dismisser/keyboard_dismisser.dart';
@@ -180,7 +179,7 @@ class _IdentityPageState extends State<IdentityPage> {
               controller: hostController,
               readOnly: widget.identity != null,
             ),
-            if (kDebugMode)
+            if (context.watch<Settings>().showBeta.value)
               ClientTypeFormField(
                 type: type,
                 enabled: !foundClient,
