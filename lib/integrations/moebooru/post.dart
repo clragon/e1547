@@ -84,7 +84,8 @@ extension MoebooruPost on Post {
           preview: pick('preview_url').asStringOrNull(),
           width: pick('width').asIntOrThrow(),
           height: pick('height').asIntOrThrow(),
-          ext: pick('file_ext').asStringOrThrow(),
+          ext: pick('file_ext').asStringOrNull() ??
+              pick('file_url').asStringOrThrow().split('.').last,
           size: pick('file_size').asIntOrThrow(),
           variants: null,
           tags: {
@@ -93,8 +94,12 @@ extension MoebooruPost on Post {
           uploaderId: pick('creator_id').asIntOrThrow(),
           createdAt: DateTime.fromMillisecondsSinceEpoch(
               pick('created_at').asIntOrThrow()),
-          updatedAt: DateTime.fromMillisecondsSinceEpoch(
-              pick('updated_at').asIntOrThrow()),
+          updatedAt: () {
+            final result = pick('updated_at').asIntOrNull();
+            return result == null
+                ? null
+                : DateTime.fromMillisecondsSinceEpoch(result);
+          }(),
           vote: VoteInfo(score: 0), // TODO: this is not available
           isDeleted: false,
           rating: pick('rating').letOrThrow(
@@ -109,7 +114,8 @@ extension MoebooruPost on Post {
           favCount: 0, // TODO: this is not available
           isFavorited: false, // TODO: this is not available
           commentCount: null,
-          hasComments: pick('last_commented_at').asIntOrThrow() != 0,
+          hasComments:
+              ![0, null].contains(pick('last_commented_at').asIntOrNull()),
           description: '',
           sources: [pick('source').asStringOrThrow()],
           pools: null,
