@@ -51,14 +51,8 @@ class FollowsSubscriptionsPage extends StatelessWidget {
                       pagingController: controller.paging,
                       itemBuilder: (context, item, index) =>
                           FollowTile(follow: item),
-                      onEmpty: const IconMessage(
-                        title: Text('No subscriptions'),
-                        icon: Icon(Icons.clear),
-                      ),
-                      onError: const IconMessage(
-                        title: Text('Failed to load subscriptions'),
-                        icon: Icon(Icons.warning_amber),
-                      ),
+                      onEmpty: const Text('No subscriptions'),
+                      onError: const Text('Failed to load subscriptions'),
                     ),
                     crossAxisCount: TileLayout.of(context).crossAxisCount,
                   ),
