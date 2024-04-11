@@ -99,10 +99,10 @@ class AddTagFloatingActionButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return PromptFloatingActionButton(
       controller: controller,
-      builder: (context, actionController) => EditTagPrompt(
+      builder: (context) => EditTagPrompt(
         tag: tag,
         onSubmit: onSubmit,
-        actionController: actionController,
+        actionController: controller,
         title: title,
       ),
       icon: const Icon(Icons.add),

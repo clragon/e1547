@@ -142,7 +142,7 @@ class PostEdit {
   }
 }
 
-class PostEditingController extends SheetActionController
+class PostEditingController extends PromptActionController
     implements ValueNotifier<PostEdit?> {
   PostEditingController({required Post post}) : _post = post;
 

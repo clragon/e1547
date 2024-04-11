@@ -63,6 +63,9 @@ class ActionController extends ChangeNotifier {
   @protected
   void onSuccess() {}
 
+  @protected
+  void onForgive() {}
+
   @mustCallSuper
   void setAction(ActionControllerCallback submit) {
     isLoading = false;

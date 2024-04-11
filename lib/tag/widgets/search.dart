@@ -21,24 +21,17 @@ class SearchPromptFloatingActionButton extends StatelessWidget {
   Widget build(BuildContext context) {
     bool isDesktop = Theme.of(context).isDesktop;
     return SubValue<PromptActionController>(
-      create: () =>
-          isDesktop ? DialogActionController() : SheetActionController(),
-      keys: [isDesktop],
+      create: () => PromptActionController(),
       builder: (context, actionController) => PromptFloatingActionButton(
         controller: actionController,
-        builder: (context, actionController) => ConstrainedBox(
-          constraints: BoxConstraints(
-            minWidth: isDesktop ? 600 : 0,
-          ),
-          child: Material(
-            child: PromptFilterList(
-              tags: tags,
-              onChanged: onChanged,
-              onSubmit: onSubmit,
-              submitIcon: isDesktop ? const Icon(Icons.search) : null,
-              filters: filters,
-              controller: actionController,
-            ),
+        builder: (context) => Material(
+          child: PromptFilterList(
+            tags: tags,
+            onChanged: onChanged,
+            onSubmit: onSubmit,
+            submitIcon: isDesktop ? const Icon(Icons.search) : null,
+            filters: filters,
+            controller: actionController,
           ),
         ),
         icon: const Icon(Icons.search),

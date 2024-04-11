@@ -5,12 +5,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_sub/flutter_sub.dart';
 import 'package:sliding_sheet/sliding_sheet.dart';
 
-abstract class PromptActionController extends ActionController {
-  bool get isShown;
+class PromptActionController extends ActionController {
+  Route? _dialog;
 
-  void close();
+  bool get isShown => _dialog != null;
 
   @override
+  @protected
+  void onForgive() => close();
+
+  @override
+  @protected
   void onSuccess() => close();
 
   @override
@@ -19,8 +24,6 @@ abstract class PromptActionController extends ActionController {
       super.setAction(submit);
     });
   }
-
-  FutureOr<void> show(BuildContext context, Widget? child);
 
   FutureOr<void> showOrAction(
     BuildContext context,
@@ -41,45 +44,37 @@ abstract class PromptActionController extends ActionController {
     action!();
     await show(context, null);
   }
-}
 
-class SheetActionController extends PromptActionController {
-  PersistentBottomSheetController? sheetController;
-
-  @override
-  bool get isShown => sheetController != null;
-
-  @override
-  void close() => sheetController?.close();
-
-  @override
-  void reset() {
-    sheetController = null;
-    super.reset();
-  }
-
-  @override
-  FutureOr<void> show(BuildContext context, Widget? child) async {
-    sheetController = Scaffold.of(context).showBottomSheet(
-      (context) => PromptActions(
+  Widget build(BuildContext context, Widget? child) {
+    _dialog = ModalRoute.of(context);
+    return PromptActions(
+      controller: this,
+      child: ActionIndicators(
         controller: this,
-        child: ActionIndicators(
-          controller: this,
-          child: child,
-        ),
+        child: child,
       ),
     );
-    await sheetController!.closed.then((_) => reset());
   }
-}
 
-class DialogActionController extends PromptActionController {
-  Route? _dialog;
+  FutureOr<void> show(BuildContext context, Widget? child) {
+    if (Theme.of(context).isDesktop) {
+      return showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          content: SizedBox(
+            width: 600,
+            child: build(context, child),
+          ),
+        ),
+      ).then((_) => reset());
+    } else {
+      final sheetController = Scaffold.of(context).showBottomSheet(
+        (context) => build(context, child),
+      );
+      return sheetController.closed.then((_) => reset());
+    }
+  }
 
-  @override
-  bool get isShown => _dialog != null;
-
-  @override
   void close() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_dialog == null) return;
@@ -94,38 +89,9 @@ class DialogActionController extends PromptActionController {
       reset();
     });
   }
-
-  @override
-  void reset() {
-    _dialog = null;
-    super.reset();
-  }
-
-  @override
-  void forgive() {
-    super.forgive();
-    close();
-  }
-
-  @override
-  FutureOr<void> show(BuildContext context, Widget? child) => showDialog(
-        context: context,
-        builder: (context) {
-          _dialog = ModalRoute.of(context);
-          return PromptActions(
-            controller: this,
-            child: AlertDialog(
-              content: ActionIndicators(
-                controller: this,
-                child: child,
-              ),
-            ),
-          );
-        },
-      ).then((_) => reset());
 }
 
-class LoadingDialogActionController extends DialogActionController {
+class LoadingDialogActionController extends PromptActionController {
   @override
   FutureOr<void> show(BuildContext context, [Widget? child]) => super.show(
         context,
@@ -171,9 +137,7 @@ class PromptActions extends StatelessWidget {
   Widget build(BuildContext context) {
     return SubDefault<PromptActionController?>(
       value: controller,
-      create: () => Theme.of(context).isDesktop
-          ? DialogActionController()
-          : SheetActionController(),
+      create: () => PromptActionController(),
       dispose: (value) => value?.dispose(),
       keys: [controller, Theme.of(context).isDesktop],
       builder: (context, controller) => _PromptActions(
@@ -252,13 +216,13 @@ class PromptFloatingActionButton extends StatelessWidget {
   final Widget icon;
   final Widget? confirmIcon;
   final PromptActionController? controller;
-  final Widget Function(BuildContext context, ActionController actionController)
-      builder;
+  final WidgetBuilder builder;
 
   @override
   Widget build(BuildContext context) {
     PromptActionController controller =
         this.controller ?? PromptActions.of(context);
+
     return AnimatedBuilder(
       animation: controller,
       builder: (context, child) => FloatingActionButton(
@@ -266,13 +230,39 @@ class PromptFloatingActionButton extends StatelessWidget {
             ? null
             : () => controller.showOrAction(
                   context,
-                  builder(context, controller),
+                  builder(context),
                 ),
         child: controller.isShown
             ? (confirmIcon ?? const Icon(Icons.check))
             : icon,
       ),
     );
+  }
+}
+
+class PromptTextFieldSuffix extends StatelessWidget {
+  const PromptTextFieldSuffix({
+    super.key,
+    this.icon,
+    this.controller,
+  });
+
+  final Widget? icon;
+  final PromptActionController? controller;
+
+  @override
+  Widget build(BuildContext context) {
+    PromptActionController controller =
+        this.controller ?? PromptActions.of(context);
+    bool hasFab = Scaffold.maybeOf(context)?.hasFloatingActionButton ?? false;
+    if (hasFab || !controller.isShown) {
+      return const SizedBox();
+    } else {
+      return IconButton(
+        icon: icon ?? const Icon(Icons.check),
+        onPressed: controller.isLoading ? null : controller.action,
+      );
+    }
   }
 }
 

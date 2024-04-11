@@ -3,6 +3,7 @@ import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_sub/flutter_sub.dart';
 
 class RelationshipDisplay extends StatelessWidget {
   const RelationshipDisplay({super.key, required this.post});
@@ -105,83 +106,59 @@ class RelationshipDisplay extends StatelessWidget {
   }
 }
 
-class ParentEditor extends StatefulWidget {
+class ParentEditor extends StatelessWidget {
   const ParentEditor({super.key, required this.editingController});
 
   final PostEditingController editingController;
 
   @override
-  State<ParentEditor> createState() => _ParentEditorState();
-}
-
-class _ParentEditorState extends State<ParentEditor> {
-  TextEditingController textController = TextEditingController();
-
-  @override
-  void initState() {
-    super.initState();
-    textController.text =
-        widget.editingController.value?.parentId?.toString() ?? ' ';
-    textController.setFocusToEnd();
-    widget.editingController.setAction(submit);
-  }
-
-  @override
-  void dispose() {
-    textController.dispose();
-    super.dispose();
-  }
-
-  void showError(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      duration: const Duration(seconds: 1),
-      content: Text(message),
-      behavior: SnackBarBehavior.floating,
-    ));
-    throw ActionControllerException(message: message);
-  }
-
-  Future<void> submit() async {
-    if (textController.text.trim().isEmpty) {
-      PostEdit previous = widget.editingController.value!;
-      widget.editingController.value = PostEdit(
-        post: previous.post,
-        editReason: previous.editReason,
-        rating: previous.rating,
-        description: previous.description,
-        parentId: null,
-        sources: previous.sources,
-        tags: previous.tags,
-      );
-      return;
-    }
-    try {
-      Post parent = await context
-          .read<Client>()
-          .posts
-          .get(id: int.parse(textController.text));
-      widget.editingController.value = widget.editingController.value!.copyWith(
-        parentId: parent.id,
-      );
-    } on ClientException {
-      showError('Invalid parent post');
-    } on FormatException {
-      showError('Invalid input');
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return TextField(
-      controller: textController,
-      autofocus: true,
-      keyboardType: TextInputType.number,
-      inputFormatters: [
-        FilteringTextInputFormatter.allow(RegExp(r'^ ?\d*')),
-      ],
-      decoration: const InputDecoration(labelText: 'Parent ID'),
-      onSubmitted: (_) => widget.editingController.action!(),
-      readOnly: widget.editingController.isLoading,
+    return SubTextEditingController(
+      text: editingController.value?.parentId?.toString(),
+      builder: (context, textController) => SubEffect(
+        effect: () {
+          textController.setFocusToEnd();
+          return null;
+        },
+        child: ControlledTextField(
+          actionController: editingController,
+          submit: (value) async {
+            if (value.trim().isEmpty) {
+              PostEdit previous = editingController.value!;
+              editingController.value = PostEdit(
+                post: previous.post,
+                editReason: previous.editReason,
+                rating: previous.rating,
+                description: previous.description,
+                parentId: null,
+                sources: previous.sources,
+                tags: previous.tags,
+              );
+              return;
+            }
+            try {
+              Post parent =
+                  await context.read<Client>().posts.get(id: int.parse(value));
+              editingController.value = editingController.value!.copyWith(
+                parentId: parent.id,
+              );
+            } on ClientException {
+              throw const ActionControllerException(
+                message: 'Invalid parent post',
+              );
+            } on FormatException {
+              throw const ActionControllerException(message: 'Invalid input');
+            }
+          },
+          textController: TextEditingController(
+              text: editingController.value?.parentId?.toString()),
+          labelText: 'Parent ID',
+          keyboardType: TextInputType.number,
+          inputFormatters: [
+            FilteringTextInputFormatter.allow(RegExp(r'^ ?\d*')),
+          ],
+        ),
+      ),
     );
   }
 }
