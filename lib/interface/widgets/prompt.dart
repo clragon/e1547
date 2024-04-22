@@ -230,7 +230,6 @@ class PromptFloatingActionButton extends StatelessWidget {
     return AnimatedBuilder(
       animation: controller,
       builder: (context, _) {
-        print(controller.isShown);
         return FloatingActionButton(
           onPressed: controller.isLoading
               ? null
