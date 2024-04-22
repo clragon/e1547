@@ -243,9 +243,7 @@ class E621FollowSync implements FollowSync {
         if (alias != follow.alias) {
           Follow updated = follow.copyWith(alias: alias);
           updates[updated] = updates.remove(follow)!;
-          logger.info(
-            'Sync corrected alias for ${follow.tags} to $alias',
-          );
+          await repository.replace(updated);
           updates = assign(updates.keys.toList(), allPosts);
           if (!hasLeftovers()) break;
         }

@@ -97,22 +97,24 @@ class E621TagService extends TagService {
   }) =>
       dio
           .get(
-            '/tag_aliases.json',
-            queryParameters: {
-              'page': page,
-              'limit': limit,
-              ...?query,
-            },
-            options: forceOptions(force),
-            cancelToken: cancelToken,
-          )
+        '/tag_aliases.json',
+        queryParameters: {
+          'page': page,
+          'limit': limit,
+          ...?query,
+        },
+        options: forceOptions(force),
+        cancelToken: cancelToken,
+      )
           .then(
-            (response) => pick(response)
-                .asListOrEmpty((p0) => p0.asMapOrThrow())
-                .where((e) => e['status'] != 'deleted')
-                .map((e) => e['consequent_name'])
-                .firstOrNull,
-          );
+        (response) {
+          return pick(response.data)
+              .asListOrEmpty((p0) => p0.asMapOrThrow())
+              .where((e) => e['status'] != 'deleted')
+              .map((e) => e['consequent_name'])
+              .firstOrNull;
+        },
+      );
 }
 
 extension E621Tag on Tag {
