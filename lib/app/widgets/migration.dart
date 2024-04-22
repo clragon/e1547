@@ -61,9 +61,8 @@ class DatabaseMigrationProviderState
     if (sentinel.existsSync()) {
       int? version = int.tryParse(sentinel.readAsStringSync());
 
-      if (version == null || version == this.version) {
-        return restartMigration();
-      }
+      if (version == this.version) return;
+      if (version == null) return restartMigration();
 
       if (version == 2 && this.version == 3) {
         if (followDb.existsSync()) {
@@ -72,6 +71,8 @@ class DatabaseMigrationProviderState
         if (historyDb.existsSync()) {
           historyDb.deleteSync();
         }
+        sentinel.writeAsStringSync(this.version.toString());
+        return;
       } else {
         return restartMigration();
       }
