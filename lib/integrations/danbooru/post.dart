@@ -235,7 +235,9 @@ extension DanbooruPost on Post {
           createdAt: pick('created_at').asDateTimeOrThrow(),
           updatedAt: pick('updated_at').asDateTimeOrThrow(),
           vote: VoteInfo(score: pick('score').asIntOrThrow()),
-          isDeleted: pick('is_deleted').asBoolOrThrow(),
+          // despite the model containing this field, images are not actually deleted
+          // this "soft delete" is not well represented in the UI, so we ignore it
+          isDeleted: false, // pick('is_deleted').asBoolOrThrow(),
           rating: pick('rating').letOrThrow(
               (pick) => switch (pick.asStringOrThrow().toLowerCase()) {
                     's' || 'g' => Rating.s,

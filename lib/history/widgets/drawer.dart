@@ -110,8 +110,8 @@ class HistoryCategoryFilterTile extends StatelessWidget {
                     value: query.categories?.contains(filter) ?? true,
                     onChanged: (value) {
                       if (value == null) return;
-                      List<HistoryCategory> filters =
-                          query.categories ?? HistoryCategory.values.toList();
+                      Set<HistoryCategory> filters =
+                          query.categories ?? HistoryCategory.values.toSet();
                       if (value) {
                         filters.add(filter);
                       } else {
@@ -155,8 +155,8 @@ class HistoryTypeFilterTile extends StatelessWidget {
                     value: query.types?.contains(filter) ?? true,
                     onChanged: (value) {
                       if (value == null) return;
-                      List<HistoryType> filters =
-                          query.types ?? HistoryType.values.toList();
+                      Set<HistoryType> filters =
+                          query.types ?? HistoryType.values.toSet();
                       if (value) {
                         filters.add(filter);
                       } else {

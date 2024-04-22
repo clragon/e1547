@@ -37,26 +37,4 @@ extension HistoryTypeFilterDisplaying on HistoryType {
         HistoryType.users => const Icon(Icons.person),
         HistoryType.wikis => const Icon(Icons.info_outlined)
       };
-
-  // region
-  // TODO: these are all e6 specific
-  // We need to come up with a generic solution
-
-  String? get regex => switch (this) {
-        HistoryType.posts => r'/posts/\d+',
-        HistoryType.pools => r'/pools/\d+',
-        HistoryType.topics => r'/forum_topics/\d+',
-        HistoryType.wikis => r'/wiki_pages/\S+',
-        HistoryType.users => r'/users/\S+'
-      };
-
-  String? get searchRegex => switch (this) {
-        HistoryType.posts => r'/posts(\?.*)?',
-        HistoryType.pools => r'/pools(\?.*)?',
-        HistoryType.topics => r'/forum_topics(\?.*)?',
-        HistoryType.wikis => r'/wiki_pages(\?.*)?',
-        HistoryType.users => null
-      };
-
-  // endregion
 }

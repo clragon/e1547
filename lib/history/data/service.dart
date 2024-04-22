@@ -43,8 +43,10 @@ abstract class HistoryService {
         HistoryRequest(
           visitedAt: DateTime.now(),
           link: post.link,
-          thumbnails: _getThumbnails([post]),
+          category: HistoryCategory.items,
+          type: HistoryType.posts,
           subtitle: post.description.nullWhenEmpty,
+          thumbnails: _getThumbnails([post]),
         ),
       );
 
@@ -59,6 +61,8 @@ abstract class HistoryService {
             path: '/posts',
             queryParameters: query,
           ).toString(),
+          category: HistoryCategory.searches,
+          type: HistoryType.posts,
           thumbnails: _getThumbnails(posts),
         ),
       );
@@ -71,9 +75,11 @@ abstract class HistoryService {
         HistoryRequest(
           visitedAt: DateTime.now(),
           link: pool.link,
-          thumbnails: _getThumbnails(posts),
+          category: HistoryCategory.items,
+          type: HistoryType.pools,
           title: pool.name,
           subtitle: pool.description.nullWhenEmpty,
+          thumbnails: _getThumbnails(posts),
         ),
       );
 
@@ -89,6 +95,15 @@ abstract class HistoryService {
             path: '/pools',
             queryParameters: query,
           ).toString(),
+          category: HistoryCategory.searches,
+          type: HistoryType.pools,
+          subtitle: pools?.isNotEmpty ?? false
+              ? _composeSearchSubtitle({
+                  for (final value in pools!)
+                    // TODO: this should be part of the client parser
+                    value.link: value.name.replaceAll('_', ' ')
+                })
+              : null,
           thumbnails: [
             if (pools != null)
               ..._getThumbnails(
@@ -99,12 +114,6 @@ abstract class HistoryService {
                     .toList(),
               )
           ],
-          subtitle: pools?.isNotEmpty ?? false
-              ? _composeSearchSubtitle({
-                  for (final value in pools!)
-                    value.link: value.name.replaceAll('_', ' ')
-                })
-              : null,
         ),
       );
 
@@ -116,6 +125,8 @@ abstract class HistoryService {
         HistoryRequest(
           visitedAt: DateTime.now(),
           link: '/forum_topics/${topic.id}',
+          category: HistoryCategory.items,
+          type: HistoryType.topics,
           title: topic.title,
           subtitle: replies?.first.body,
         ),
@@ -132,6 +143,8 @@ abstract class HistoryService {
             path: '/forum_topics',
             queryParameters: query,
           ).toString(),
+          category: HistoryCategory.searches,
+          type: HistoryType.topics,
           subtitle: topics?.isNotEmpty ?? false
               ? _composeSearchSubtitle(
                   {for (final value in topics!) value.link: value.title},
@@ -144,6 +157,8 @@ abstract class HistoryService {
         HistoryRequest(
           visitedAt: DateTime.now(),
           link: '/users/${user.name}',
+          category: HistoryCategory.items,
+          type: HistoryType.users,
           thumbnails: [if (avatar?.sample != null) avatar!.sample!],
         ),
       );
@@ -152,6 +167,8 @@ abstract class HistoryService {
         HistoryRequest(
           visitedAt: DateTime.now(),
           link: '/wiki_pages/${wiki.title}',
+          category: HistoryCategory.items,
+          type: HistoryType.wikis,
           subtitle: wiki.body.nullWhenEmpty,
         ),
       );
@@ -167,6 +184,8 @@ abstract class HistoryService {
             path: '/wiki_pages',
             queryParameters: query,
           ).toString(),
+          category: HistoryCategory.searches,
+          type: HistoryType.wikis,
           subtitle: wikis?.isNotEmpty ?? false
               ? _composeSearchSubtitle(
                   {for (final value in wikis!) value.link: value.title})
@@ -265,34 +284,21 @@ extension type HistoryQuery._(QueryMap self) implements QueryMap {
 
   set subtitle(String? value) => setOrRemove('search[subtitle]', value);
 
-  List<HistoryCategory>? get categories => self['search[category]']
+  Set<HistoryCategory>? get categories => self['search[category]']
       ?.split(',')
       .map((e) => HistoryCategory.values.asNameMap()[e])
       .whereType<HistoryCategory>()
-      .toList();
+      .toSet();
 
-  set categories(List<HistoryCategory>? value) =>
+  set categories(Set<HistoryCategory>? value) =>
       setOrRemove('search[category]', value?.map((e) => e.name).join(','));
 
-  List<HistoryType>? get types => self['search[type]']
+  Set<HistoryType>? get types => self['search[type]']
       ?.split(',')
       .map((e) => HistoryType.values.asNameMap()[e])
       .whereType<HistoryType>()
-      .toList();
+      .toSet();
 
-  set types(List<HistoryType>? value) =>
+  set types(Set<HistoryType>? value) =>
       setOrRemove('search[type]', value?.map((e) => e.name).join(','));
-}
-
-enum HistoryCategory {
-  items,
-  searches,
-}
-
-enum HistoryType {
-  posts,
-  pools,
-  topics,
-  users,
-  wikis,
 }

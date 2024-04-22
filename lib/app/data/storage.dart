@@ -1,6 +1,8 @@
 import 'package:drift/drift.dart';
 import 'package:e1547/follow/data/database.dart';
-import 'package:e1547/history/data/database.dart';
+import 'package:e1547/history/data/database.drift.dart';
+import 'package:e1547/history/data/legacy.dart';
+import 'package:e1547/history/history.dart';
 import 'package:e1547/identity/data/database.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/traits/traits.dart';
@@ -21,11 +23,10 @@ class AppDatabase extends $AppDatabase {
   AppDatabase(super.e);
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
-        beforeOpen: (details) => customStatement('PRAGMA foreign_keys = ON'),
         onCreate: (m) {
           return m.createAll().then((_) async {
             await customStatement('''
@@ -49,7 +50,39 @@ class AppDatabase extends $AppDatabase {
             await m.addColumn(traitsTable, traitsTable.avatar);
             await m.addColumn(traitsTable, traitsTable.favicon);
           }
+          if (from < 3) {
+            await m.alterTable(TableMigration(historiesTable, newColumns: [
+              historiesTable.category,
+              historiesTable.type,
+            ], columnTransformer: {
+              historiesTable.category: Variable(HistoryCategory.items.name),
+              historiesTable.type: Variable(HistoryType.posts.name),
+            }));
+
+            await transaction(() async {
+              List<(int, String)> items = await (historiesTable.selectOnly()
+                    ..addColumns([historiesTable.id, historiesTable.link]))
+                  .map((row) => (
+                        row.read(historiesTable.id)!,
+                        row.read(historiesTable.link)!
+                      ))
+                  .get();
+              await batch((batch) async {
+                for (final (id, link) in items) {
+                  batch.update(
+                    historiesTable,
+                    HistoryCompanion(
+                      category: Value(getHistoryCategory(link)!),
+                      type: Value(getHistoryType(link)!),
+                    ),
+                    where: (tbl) => tbl.id.equals(id),
+                  );
+                }
+              });
+            });
+          }
         },
+        beforeOpen: (details) => customStatement('PRAGMA foreign_keys = ON'),
       );
 }
 

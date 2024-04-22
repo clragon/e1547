@@ -23,9 +23,11 @@ mixin _$History {
   int get id => throw _privateConstructorUsedError;
   DateTime get visitedAt => throw _privateConstructorUsedError;
   String get link => throw _privateConstructorUsedError;
-  List<String> get thumbnails => throw _privateConstructorUsedError;
+  HistoryCategory get category => throw _privateConstructorUsedError;
+  HistoryType get type => throw _privateConstructorUsedError;
   String? get title => throw _privateConstructorUsedError;
   String? get subtitle => throw _privateConstructorUsedError;
+  List<String> get thumbnails => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -41,9 +43,11 @@ abstract class $HistoryCopyWith<$Res> {
       {int id,
       DateTime visitedAt,
       String link,
-      List<String> thumbnails,
+      HistoryCategory category,
+      HistoryType type,
       String? title,
-      String? subtitle});
+      String? subtitle,
+      List<String> thumbnails});
 }
 
 /// @nodoc
@@ -62,9 +66,11 @@ class _$HistoryCopyWithImpl<$Res, $Val extends History>
     Object? id = null,
     Object? visitedAt = null,
     Object? link = null,
-    Object? thumbnails = null,
+    Object? category = null,
+    Object? type = null,
     Object? title = freezed,
     Object? subtitle = freezed,
+    Object? thumbnails = null,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -79,10 +85,14 @@ class _$HistoryCopyWithImpl<$Res, $Val extends History>
           ? _value.link
           : link // ignore: cast_nullable_to_non_nullable
               as String,
-      thumbnails: null == thumbnails
-          ? _value.thumbnails
-          : thumbnails // ignore: cast_nullable_to_non_nullable
-              as List<String>,
+      category: null == category
+          ? _value.category
+          : category // ignore: cast_nullable_to_non_nullable
+              as HistoryCategory,
+      type: null == type
+          ? _value.type
+          : type // ignore: cast_nullable_to_non_nullable
+              as HistoryType,
       title: freezed == title
           ? _value.title
           : title // ignore: cast_nullable_to_non_nullable
@@ -91,6 +101,10 @@ class _$HistoryCopyWithImpl<$Res, $Val extends History>
           ? _value.subtitle
           : subtitle // ignore: cast_nullable_to_non_nullable
               as String?,
+      thumbnails: null == thumbnails
+          ? _value.thumbnails
+          : thumbnails // ignore: cast_nullable_to_non_nullable
+              as List<String>,
     ) as $Val);
   }
 }
@@ -106,9 +120,11 @@ abstract class _$$HistoryImplCopyWith<$Res> implements $HistoryCopyWith<$Res> {
       {int id,
       DateTime visitedAt,
       String link,
-      List<String> thumbnails,
+      HistoryCategory category,
+      HistoryType type,
       String? title,
-      String? subtitle});
+      String? subtitle,
+      List<String> thumbnails});
 }
 
 /// @nodoc
@@ -125,9 +141,11 @@ class __$$HistoryImplCopyWithImpl<$Res>
     Object? id = null,
     Object? visitedAt = null,
     Object? link = null,
-    Object? thumbnails = null,
+    Object? category = null,
+    Object? type = null,
     Object? title = freezed,
     Object? subtitle = freezed,
+    Object? thumbnails = null,
   }) {
     return _then(_$HistoryImpl(
       id: null == id
@@ -142,10 +160,14 @@ class __$$HistoryImplCopyWithImpl<$Res>
           ? _value.link
           : link // ignore: cast_nullable_to_non_nullable
               as String,
-      thumbnails: null == thumbnails
-          ? _value._thumbnails
-          : thumbnails // ignore: cast_nullable_to_non_nullable
-              as List<String>,
+      category: null == category
+          ? _value.category
+          : category // ignore: cast_nullable_to_non_nullable
+              as HistoryCategory,
+      type: null == type
+          ? _value.type
+          : type // ignore: cast_nullable_to_non_nullable
+              as HistoryType,
       title: freezed == title
           ? _value.title
           : title // ignore: cast_nullable_to_non_nullable
@@ -154,6 +176,10 @@ class __$$HistoryImplCopyWithImpl<$Res>
           ? _value.subtitle
           : subtitle // ignore: cast_nullable_to_non_nullable
               as String?,
+      thumbnails: null == thumbnails
+          ? _value._thumbnails
+          : thumbnails // ignore: cast_nullable_to_non_nullable
+              as List<String>,
     ));
   }
 }
@@ -165,9 +191,11 @@ class _$HistoryImpl implements _History {
       {required this.id,
       required this.visitedAt,
       required this.link,
-      required final List<String> thumbnails,
+      required this.category,
+      required this.type,
       required this.title,
-      required this.subtitle})
+      required this.subtitle,
+      required final List<String> thumbnails})
       : _thumbnails = thumbnails;
 
   factory _$HistoryImpl.fromJson(Map<String, dynamic> json) =>
@@ -179,6 +207,14 @@ class _$HistoryImpl implements _History {
   final DateTime visitedAt;
   @override
   final String link;
+  @override
+  final HistoryCategory category;
+  @override
+  final HistoryType type;
+  @override
+  final String? title;
+  @override
+  final String? subtitle;
   final List<String> _thumbnails;
   @override
   List<String> get thumbnails {
@@ -188,13 +224,8 @@ class _$HistoryImpl implements _History {
   }
 
   @override
-  final String? title;
-  @override
-  final String? subtitle;
-
-  @override
   String toString() {
-    return 'History(id: $id, visitedAt: $visitedAt, link: $link, thumbnails: $thumbnails, title: $title, subtitle: $subtitle)';
+    return 'History(id: $id, visitedAt: $visitedAt, link: $link, category: $category, type: $type, title: $title, subtitle: $subtitle, thumbnails: $thumbnails)';
   }
 
   @override
@@ -206,17 +237,20 @@ class _$HistoryImpl implements _History {
             (identical(other.visitedAt, visitedAt) ||
                 other.visitedAt == visitedAt) &&
             (identical(other.link, link) || other.link == link) &&
-            const DeepCollectionEquality()
-                .equals(other._thumbnails, _thumbnails) &&
+            (identical(other.category, category) ||
+                other.category == category) &&
+            (identical(other.type, type) || other.type == type) &&
             (identical(other.title, title) || other.title == title) &&
             (identical(other.subtitle, subtitle) ||
-                other.subtitle == subtitle));
+                other.subtitle == subtitle) &&
+            const DeepCollectionEquality()
+                .equals(other._thumbnails, _thumbnails));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, id, visitedAt, link,
-      const DeepCollectionEquality().hash(_thumbnails), title, subtitle);
+  int get hashCode => Object.hash(runtimeType, id, visitedAt, link, category,
+      type, title, subtitle, const DeepCollectionEquality().hash(_thumbnails));
 
   @JsonKey(ignore: true)
   @override
@@ -237,9 +271,11 @@ abstract class _History implements History {
       {required final int id,
       required final DateTime visitedAt,
       required final String link,
-      required final List<String> thumbnails,
+      required final HistoryCategory category,
+      required final HistoryType type,
       required final String? title,
-      required final String? subtitle}) = _$HistoryImpl;
+      required final String? subtitle,
+      required final List<String> thumbnails}) = _$HistoryImpl;
 
   factory _History.fromJson(Map<String, dynamic> json) = _$HistoryImpl.fromJson;
 
@@ -250,11 +286,15 @@ abstract class _History implements History {
   @override
   String get link;
   @override
-  List<String> get thumbnails;
+  HistoryCategory get category;
+  @override
+  HistoryType get type;
   @override
   String? get title;
   @override
   String? get subtitle;
+  @override
+  List<String> get thumbnails;
   @override
   @JsonKey(ignore: true)
   _$$HistoryImplCopyWith<_$HistoryImpl> get copyWith =>
@@ -269,9 +309,11 @@ HistoryRequest _$HistoryRequestFromJson(Map<String, dynamic> json) {
 mixin _$HistoryRequest {
   DateTime get visitedAt => throw _privateConstructorUsedError;
   String get link => throw _privateConstructorUsedError;
-  List<String> get thumbnails => throw _privateConstructorUsedError;
+  HistoryCategory get category => throw _privateConstructorUsedError;
+  HistoryType get type => throw _privateConstructorUsedError;
   String? get title => throw _privateConstructorUsedError;
   String? get subtitle => throw _privateConstructorUsedError;
+  List<String> get thumbnails => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -288,9 +330,11 @@ abstract class $HistoryRequestCopyWith<$Res> {
   $Res call(
       {DateTime visitedAt,
       String link,
-      List<String> thumbnails,
+      HistoryCategory category,
+      HistoryType type,
       String? title,
-      String? subtitle});
+      String? subtitle,
+      List<String> thumbnails});
 }
 
 /// @nodoc
@@ -308,9 +352,11 @@ class _$HistoryRequestCopyWithImpl<$Res, $Val extends HistoryRequest>
   $Res call({
     Object? visitedAt = null,
     Object? link = null,
-    Object? thumbnails = null,
+    Object? category = null,
+    Object? type = null,
     Object? title = freezed,
     Object? subtitle = freezed,
+    Object? thumbnails = null,
   }) {
     return _then(_value.copyWith(
       visitedAt: null == visitedAt
@@ -321,10 +367,14 @@ class _$HistoryRequestCopyWithImpl<$Res, $Val extends HistoryRequest>
           ? _value.link
           : link // ignore: cast_nullable_to_non_nullable
               as String,
-      thumbnails: null == thumbnails
-          ? _value.thumbnails
-          : thumbnails // ignore: cast_nullable_to_non_nullable
-              as List<String>,
+      category: null == category
+          ? _value.category
+          : category // ignore: cast_nullable_to_non_nullable
+              as HistoryCategory,
+      type: null == type
+          ? _value.type
+          : type // ignore: cast_nullable_to_non_nullable
+              as HistoryType,
       title: freezed == title
           ? _value.title
           : title // ignore: cast_nullable_to_non_nullable
@@ -333,6 +383,10 @@ class _$HistoryRequestCopyWithImpl<$Res, $Val extends HistoryRequest>
           ? _value.subtitle
           : subtitle // ignore: cast_nullable_to_non_nullable
               as String?,
+      thumbnails: null == thumbnails
+          ? _value.thumbnails
+          : thumbnails // ignore: cast_nullable_to_non_nullable
+              as List<String>,
     ) as $Val);
   }
 }
@@ -348,9 +402,11 @@ abstract class _$$HistoryRequestImplCopyWith<$Res>
   $Res call(
       {DateTime visitedAt,
       String link,
-      List<String> thumbnails,
+      HistoryCategory category,
+      HistoryType type,
       String? title,
-      String? subtitle});
+      String? subtitle,
+      List<String> thumbnails});
 }
 
 /// @nodoc
@@ -366,9 +422,11 @@ class __$$HistoryRequestImplCopyWithImpl<$Res>
   $Res call({
     Object? visitedAt = null,
     Object? link = null,
-    Object? thumbnails = null,
+    Object? category = null,
+    Object? type = null,
     Object? title = freezed,
     Object? subtitle = freezed,
+    Object? thumbnails = null,
   }) {
     return _then(_$HistoryRequestImpl(
       visitedAt: null == visitedAt
@@ -379,10 +437,14 @@ class __$$HistoryRequestImplCopyWithImpl<$Res>
           ? _value.link
           : link // ignore: cast_nullable_to_non_nullable
               as String,
-      thumbnails: null == thumbnails
-          ? _value._thumbnails
-          : thumbnails // ignore: cast_nullable_to_non_nullable
-              as List<String>,
+      category: null == category
+          ? _value.category
+          : category // ignore: cast_nullable_to_non_nullable
+              as HistoryCategory,
+      type: null == type
+          ? _value.type
+          : type // ignore: cast_nullable_to_non_nullable
+              as HistoryType,
       title: freezed == title
           ? _value.title
           : title // ignore: cast_nullable_to_non_nullable
@@ -391,6 +453,10 @@ class __$$HistoryRequestImplCopyWithImpl<$Res>
           ? _value.subtitle
           : subtitle // ignore: cast_nullable_to_non_nullable
               as String?,
+      thumbnails: null == thumbnails
+          ? _value._thumbnails
+          : thumbnails // ignore: cast_nullable_to_non_nullable
+              as List<String>,
     ));
   }
 }
@@ -401,9 +467,11 @@ class _$HistoryRequestImpl implements _HistoryRequest {
   const _$HistoryRequestImpl(
       {required this.visitedAt,
       required this.link,
-      final List<String> thumbnails = const [],
+      required this.category,
+      required this.type,
       this.title,
-      this.subtitle})
+      this.subtitle,
+      final List<String> thumbnails = const []})
       : _thumbnails = thumbnails;
 
   factory _$HistoryRequestImpl.fromJson(Map<String, dynamic> json) =>
@@ -413,6 +481,14 @@ class _$HistoryRequestImpl implements _HistoryRequest {
   final DateTime visitedAt;
   @override
   final String link;
+  @override
+  final HistoryCategory category;
+  @override
+  final HistoryType type;
+  @override
+  final String? title;
+  @override
+  final String? subtitle;
   final List<String> _thumbnails;
   @override
   @JsonKey()
@@ -423,13 +499,8 @@ class _$HistoryRequestImpl implements _HistoryRequest {
   }
 
   @override
-  final String? title;
-  @override
-  final String? subtitle;
-
-  @override
   String toString() {
-    return 'HistoryRequest(visitedAt: $visitedAt, link: $link, thumbnails: $thumbnails, title: $title, subtitle: $subtitle)';
+    return 'HistoryRequest(visitedAt: $visitedAt, link: $link, category: $category, type: $type, title: $title, subtitle: $subtitle, thumbnails: $thumbnails)';
   }
 
   @override
@@ -440,17 +511,20 @@ class _$HistoryRequestImpl implements _HistoryRequest {
             (identical(other.visitedAt, visitedAt) ||
                 other.visitedAt == visitedAt) &&
             (identical(other.link, link) || other.link == link) &&
-            const DeepCollectionEquality()
-                .equals(other._thumbnails, _thumbnails) &&
+            (identical(other.category, category) ||
+                other.category == category) &&
+            (identical(other.type, type) || other.type == type) &&
             (identical(other.title, title) || other.title == title) &&
             (identical(other.subtitle, subtitle) ||
-                other.subtitle == subtitle));
+                other.subtitle == subtitle) &&
+            const DeepCollectionEquality()
+                .equals(other._thumbnails, _thumbnails));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, visitedAt, link,
-      const DeepCollectionEquality().hash(_thumbnails), title, subtitle);
+  int get hashCode => Object.hash(runtimeType, visitedAt, link, category, type,
+      title, subtitle, const DeepCollectionEquality().hash(_thumbnails));
 
   @JsonKey(ignore: true)
   @override
@@ -471,9 +545,11 @@ abstract class _HistoryRequest implements HistoryRequest {
   const factory _HistoryRequest(
       {required final DateTime visitedAt,
       required final String link,
-      final List<String> thumbnails,
+      required final HistoryCategory category,
+      required final HistoryType type,
       final String? title,
-      final String? subtitle}) = _$HistoryRequestImpl;
+      final String? subtitle,
+      final List<String> thumbnails}) = _$HistoryRequestImpl;
 
   factory _HistoryRequest.fromJson(Map<String, dynamic> json) =
       _$HistoryRequestImpl.fromJson;
@@ -483,11 +559,15 @@ abstract class _HistoryRequest implements HistoryRequest {
   @override
   String get link;
   @override
-  List<String> get thumbnails;
+  HistoryCategory get category;
+  @override
+  HistoryType get type;
   @override
   String? get title;
   @override
   String? get subtitle;
+  @override
+  List<String> get thumbnails;
   @override
   @JsonKey(ignore: true)
   _$$HistoryRequestImplCopyWith<_$HistoryRequestImpl> get copyWith =>

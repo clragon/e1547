@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:collection/collection.dart';
 import 'package:drift/drift.dart';
 import 'package:e1547/app/app.dart';
 import 'package:e1547/client/client.dart';
@@ -24,6 +25,59 @@ class OldHistoriesTable extends Table {
   TextColumn get thumbnails => text().map(JsonSqlConverter.list<String>())();
   TextColumn get title => text().nullable()();
   TextColumn get subtitle => text().nullable()();
+}
+
+extension LegacyHistoryFiltering on HistoryType {
+  String? get regex => switch (this) {
+        HistoryType.posts => r'/posts/\d+',
+        HistoryType.pools => r'/pools/\d+',
+        HistoryType.topics => r'/forum_topics/\d+',
+        HistoryType.wikis => r'/wiki_pages/\S+',
+        HistoryType.users => r'/users/\S+'
+      };
+
+  String? get searchRegex => switch (this) {
+        HistoryType.posts => r'/posts(\?.*)?',
+        HistoryType.pools => r'/pools(\?.*)?',
+        HistoryType.topics => r'/forum_topics(\?.*)?',
+        HistoryType.wikis => r'/wiki_pages(\?.*)?',
+        HistoryType.users => null
+      };
+}
+
+HistoryType? getHistoryType(String link) {
+  for (final type in HistoryType.values) {
+    RegExp? linkRegex =
+        type.regex != null ? RegExp(type.regex!, caseSensitive: false) : null;
+    if (linkRegex != null && linkRegex.hasMatch(link)) {
+      return type;
+    }
+    RegExp? searchRegex = type.searchRegex != null
+        ? RegExp(type.searchRegex!, caseSensitive: false)
+        : null;
+    if (searchRegex != null && searchRegex.hasMatch(link)) {
+      return type;
+    }
+  }
+  return null;
+}
+
+HistoryCategory? getHistoryCategory(String link) {
+  HistoryType? type = getHistoryType(link);
+  if (type != null) {
+    RegExp? linkRegex =
+        type.regex != null ? RegExp(type.regex!, caseSensitive: false) : null;
+    if (linkRegex != null && linkRegex.hasMatch(link)) {
+      return HistoryCategory.searches;
+    }
+    RegExp? searchRegex = type.searchRegex != null
+        ? RegExp(type.searchRegex!, caseSensitive: false)
+        : null;
+    if (searchRegex != null && searchRegex.hasMatch(link)) {
+      return HistoryCategory.searches;
+    }
+  }
+  return null;
 }
 
 @DriftDatabase(tables: [OldHistoriesTable])
@@ -134,9 +188,11 @@ Future<void> migrateHistory(
         HistoryCompanion.insert(
           link: history.link,
           visitedAt: history.visitedAt,
-          thumbnails: history.thumbnails,
+          category: getHistoryCategory(history.link)!,
+          type: getHistoryType(history.link)!,
           title: Value(history.title),
           subtitle: Value(history.subtitle),
+          thumbnails: history.thumbnails,
         ),
       );
     }

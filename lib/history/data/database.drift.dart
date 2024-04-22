@@ -45,14 +45,22 @@ class $HistoriesTableTable extends i6.HistoriesTable
   late final i0.GeneratedColumn<String> link = i0.GeneratedColumn<String>(
       'link', aliasedName, false,
       type: i0.DriftSqlType.string, requiredDuringInsert: true);
-  static const i0.VerificationMeta _thumbnailsMeta =
-      const i0.VerificationMeta('thumbnails');
+  static const i0.VerificationMeta _categoryMeta =
+      const i0.VerificationMeta('category');
   @override
-  late final i0.GeneratedColumnWithTypeConverter<List<String>, String>
-      thumbnails = i0.GeneratedColumn<String>('thumbnails', aliasedName, false,
+  late final i0.GeneratedColumnWithTypeConverter<i5.HistoryCategory, String>
+      category = i0.GeneratedColumn<String>('category', aliasedName, false,
               type: i0.DriftSqlType.string, requiredDuringInsert: true)
-          .withConverter<List<String>>(
-              i2.$HistoriesTableTable.$converterthumbnails);
+          .withConverter<i5.HistoryCategory>(
+              i2.$HistoriesTableTable.$convertercategory);
+  static const i0.VerificationMeta _typeMeta =
+      const i0.VerificationMeta('type');
+  @override
+  late final i0.GeneratedColumnWithTypeConverter<i5.HistoryType, String> type =
+      i0.GeneratedColumn<String>('type', aliasedName, false,
+              type: i0.DriftSqlType.string, requiredDuringInsert: true)
+          .withConverter<i5.HistoryType>(
+              i2.$HistoriesTableTable.$convertertype);
   static const i0.VerificationMeta _titleMeta =
       const i0.VerificationMeta('title');
   @override
@@ -65,9 +73,17 @@ class $HistoriesTableTable extends i6.HistoriesTable
   late final i0.GeneratedColumn<String> subtitle = i0.GeneratedColumn<String>(
       'subtitle', aliasedName, true,
       type: i0.DriftSqlType.string, requiredDuringInsert: false);
+  static const i0.VerificationMeta _thumbnailsMeta =
+      const i0.VerificationMeta('thumbnails');
+  @override
+  late final i0.GeneratedColumnWithTypeConverter<List<String>, String>
+      thumbnails = i0.GeneratedColumn<String>('thumbnails', aliasedName, false,
+              type: i0.DriftSqlType.string, requiredDuringInsert: true)
+          .withConverter<List<String>>(
+              i2.$HistoriesTableTable.$converterthumbnails);
   @override
   List<i0.GeneratedColumn> get $columns =>
-      [id, visitedAt, link, thumbnails, title, subtitle];
+      [id, visitedAt, link, category, type, title, subtitle, thumbnails];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -93,7 +109,8 @@ class $HistoriesTableTable extends i6.HistoriesTable
     } else if (isInserting) {
       context.missing(_linkMeta);
     }
-    context.handle(_thumbnailsMeta, const i0.VerificationResult.success());
+    context.handle(_categoryMeta, const i0.VerificationResult.success());
+    context.handle(_typeMeta, const i0.VerificationResult.success());
     if (data.containsKey('title')) {
       context.handle(
           _titleMeta, title.isAcceptableOrUnknown(data['title']!, _titleMeta));
@@ -102,6 +119,7 @@ class $HistoriesTableTable extends i6.HistoriesTable
       context.handle(_subtitleMeta,
           subtitle.isAcceptableOrUnknown(data['subtitle']!, _subtitleMeta));
     }
+    context.handle(_thumbnailsMeta, const i0.VerificationResult.success());
     return context;
   }
 
@@ -117,13 +135,19 @@ class $HistoriesTableTable extends i6.HistoriesTable
           i0.DriftSqlType.dateTime, data['${effectivePrefix}visited_at'])!,
       link: attachedDatabase.typeMapping
           .read(i0.DriftSqlType.string, data['${effectivePrefix}link'])!,
-      thumbnails: i2.$HistoriesTableTable.$converterthumbnails.fromSql(
+      category: i2.$HistoriesTableTable.$convertercategory.fromSql(
           attachedDatabase.typeMapping.read(
-              i0.DriftSqlType.string, data['${effectivePrefix}thumbnails'])!),
+              i0.DriftSqlType.string, data['${effectivePrefix}category'])!),
+      type: i2.$HistoriesTableTable.$convertertype.fromSql(attachedDatabase
+          .typeMapping
+          .read(i0.DriftSqlType.string, data['${effectivePrefix}type'])!),
       title: attachedDatabase.typeMapping
           .read(i0.DriftSqlType.string, data['${effectivePrefix}title']),
       subtitle: attachedDatabase.typeMapping
           .read(i0.DriftSqlType.string, data['${effectivePrefix}subtitle']),
+      thumbnails: i2.$HistoriesTableTable.$converterthumbnails.fromSql(
+          attachedDatabase.typeMapping.read(
+              i0.DriftSqlType.string, data['${effectivePrefix}thumbnails'])!),
     );
   }
 
@@ -132,6 +156,11 @@ class $HistoriesTableTable extends i6.HistoriesTable
     return $HistoriesTableTable(attachedDatabase, alias);
   }
 
+  static i0.JsonTypeConverter2<i5.HistoryCategory, String, String>
+      $convertercategory =
+      const i0.EnumNameConverter<i5.HistoryCategory>(i5.HistoryCategory.values);
+  static i0.JsonTypeConverter2<i5.HistoryType, String, String> $convertertype =
+      const i0.EnumNameConverter<i5.HistoryType>(i5.HistoryType.values);
   static i0.TypeConverter<List<String>, String> $converterthumbnails =
       i7.JsonSqlConverter.list<String>();
 }
@@ -140,42 +169,54 @@ class HistoryCompanion extends i0.UpdateCompanion<i5.History> {
   final i0.Value<int> id;
   final i0.Value<DateTime> visitedAt;
   final i0.Value<String> link;
-  final i0.Value<List<String>> thumbnails;
+  final i0.Value<i5.HistoryCategory> category;
+  final i0.Value<i5.HistoryType> type;
   final i0.Value<String?> title;
   final i0.Value<String?> subtitle;
+  final i0.Value<List<String>> thumbnails;
   const HistoryCompanion({
     this.id = const i0.Value.absent(),
     this.visitedAt = const i0.Value.absent(),
     this.link = const i0.Value.absent(),
-    this.thumbnails = const i0.Value.absent(),
+    this.category = const i0.Value.absent(),
+    this.type = const i0.Value.absent(),
     this.title = const i0.Value.absent(),
     this.subtitle = const i0.Value.absent(),
+    this.thumbnails = const i0.Value.absent(),
   });
   HistoryCompanion.insert({
     this.id = const i0.Value.absent(),
     required DateTime visitedAt,
     required String link,
-    required List<String> thumbnails,
+    required i5.HistoryCategory category,
+    required i5.HistoryType type,
     this.title = const i0.Value.absent(),
     this.subtitle = const i0.Value.absent(),
+    required List<String> thumbnails,
   })  : visitedAt = i0.Value(visitedAt),
         link = i0.Value(link),
+        category = i0.Value(category),
+        type = i0.Value(type),
         thumbnails = i0.Value(thumbnails);
   static i0.Insertable<i5.History> custom({
     i0.Expression<int>? id,
     i0.Expression<DateTime>? visitedAt,
     i0.Expression<String>? link,
-    i0.Expression<String>? thumbnails,
+    i0.Expression<String>? category,
+    i0.Expression<String>? type,
     i0.Expression<String>? title,
     i0.Expression<String>? subtitle,
+    i0.Expression<String>? thumbnails,
   }) {
     return i0.RawValuesInsertable({
       if (id != null) 'id': id,
       if (visitedAt != null) 'visited_at': visitedAt,
       if (link != null) 'link': link,
-      if (thumbnails != null) 'thumbnails': thumbnails,
+      if (category != null) 'category': category,
+      if (type != null) 'type': type,
       if (title != null) 'title': title,
       if (subtitle != null) 'subtitle': subtitle,
+      if (thumbnails != null) 'thumbnails': thumbnails,
     });
   }
 
@@ -183,16 +224,20 @@ class HistoryCompanion extends i0.UpdateCompanion<i5.History> {
       {i0.Value<int>? id,
       i0.Value<DateTime>? visitedAt,
       i0.Value<String>? link,
-      i0.Value<List<String>>? thumbnails,
+      i0.Value<i5.HistoryCategory>? category,
+      i0.Value<i5.HistoryType>? type,
       i0.Value<String?>? title,
-      i0.Value<String?>? subtitle}) {
+      i0.Value<String?>? subtitle,
+      i0.Value<List<String>>? thumbnails}) {
     return i2.HistoryCompanion(
       id: id ?? this.id,
       visitedAt: visitedAt ?? this.visitedAt,
       link: link ?? this.link,
-      thumbnails: thumbnails ?? this.thumbnails,
+      category: category ?? this.category,
+      type: type ?? this.type,
       title: title ?? this.title,
       subtitle: subtitle ?? this.subtitle,
+      thumbnails: thumbnails ?? this.thumbnails,
     );
   }
 
@@ -208,15 +253,23 @@ class HistoryCompanion extends i0.UpdateCompanion<i5.History> {
     if (link.present) {
       map['link'] = i0.Variable<String>(link.value);
     }
-    if (thumbnails.present) {
-      map['thumbnails'] = i0.Variable<String>(
-          i2.$HistoriesTableTable.$converterthumbnails.toSql(thumbnails.value));
+    if (category.present) {
+      map['category'] = i0.Variable<String>(
+          i2.$HistoriesTableTable.$convertercategory.toSql(category.value));
+    }
+    if (type.present) {
+      map['type'] = i0.Variable<String>(
+          i2.$HistoriesTableTable.$convertertype.toSql(type.value));
     }
     if (title.present) {
       map['title'] = i0.Variable<String>(title.value);
     }
     if (subtitle.present) {
       map['subtitle'] = i0.Variable<String>(subtitle.value);
+    }
+    if (thumbnails.present) {
+      map['thumbnails'] = i0.Variable<String>(
+          i2.$HistoriesTableTable.$converterthumbnails.toSql(thumbnails.value));
     }
     return map;
   }
@@ -227,9 +280,11 @@ class HistoryCompanion extends i0.UpdateCompanion<i5.History> {
           ..write('id: $id, ')
           ..write('visitedAt: $visitedAt, ')
           ..write('link: $link, ')
-          ..write('thumbnails: $thumbnails, ')
+          ..write('category: $category, ')
+          ..write('type: $type, ')
           ..write('title: $title, ')
-          ..write('subtitle: $subtitle')
+          ..write('subtitle: $subtitle, ')
+          ..write('thumbnails: $thumbnails')
           ..write(')'))
         .toString();
   }
@@ -244,9 +299,11 @@ class _$HistoryInsertable implements i0.Insertable<i5.History> {
       id: i0.Value(_object.id),
       visitedAt: i0.Value(_object.visitedAt),
       link: i0.Value(_object.link),
-      thumbnails: i0.Value(_object.thumbnails),
+      category: i0.Value(_object.category),
+      type: i0.Value(_object.type),
       title: i0.Value(_object.title),
       subtitle: i0.Value(_object.subtitle),
+      thumbnails: i0.Value(_object.thumbnails),
     ).toColumns(false);
   }
 }

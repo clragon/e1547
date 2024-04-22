@@ -47,14 +47,11 @@ class DiskHistoryService extends HistoryService with Disposable {
       page: page,
       limit: limit,
       day: search?.date,
-      linkRegex: search?.link != null
-          ? search?.link!.infixRegex
-          : _buildLinkFilter(
-              categories: search?.categories,
-              types: search?.types,
-            ),
-      titleRegex: search?.title?.infixRegex,
-      subtitleRegex: search?.subtitle?.infixRegex,
+      link: search?.link?.infixRegex,
+      category: search?.categories,
+      type: search?.types,
+      title: search?.title?.infixRegex,
+      subtitle: search?.subtitle?.infixRegex,
     );
   }
 
@@ -134,41 +131,4 @@ class DiskHistoryService extends HistoryService with Disposable {
     _trimmingStream.close();
     super.dispose();
   }
-}
-
-// this whole thing is kind of a mess.
-// we desire to sort histories by the two enums, but the database has no such concept.
-// instead, we build a complex link filter. however, the link filter
-// needs domain specific knowledge of link composition, which is suboptimal.
-// a solution would be to add these enums directly to the rows, and place
-// responsibility on the code that adds an entry. however, this requires
-// migration code. additionally, it cements this way of filtering, which
-// we are not sure about using forever.
-// TODO: consider adding categories and types to the database
-String? _buildLinkFilter({
-  List<HistoryCategory>? categories,
-  List<HistoryType>? types,
-}) {
-  if (categories == null && types == null) return null;
-  categories ??= HistoryCategory.values;
-  types ??= HistoryType.values;
-
-  String? regexWrap(String? regex) =>
-      regex != null ? r'^' '($regex)' r'$' : null;
-
-  List<String?> regexes = [];
-  for (final category in categories) {
-    switch (category) {
-      case HistoryCategory.items:
-        regexes.addAll((types.map((e) => regexWrap(e.regex))));
-        break;
-      case HistoryCategory.searches:
-        regexes.addAll((types.map((e) => regexWrap(e.searchRegex))));
-        break;
-    }
-  }
-
-  regexes.removeWhere((e) => e == null);
-  regexes.add(r'^$'); // empty list => match nothing
-  return regexes.join('|');
 }

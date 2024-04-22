@@ -13,9 +13,11 @@ class HistoriesTable extends Table {
   IntColumn get id => integer().autoIncrement()();
   DateTimeColumn get visitedAt => dateTime()();
   TextColumn get link => text()();
-  TextColumn get thumbnails => text().map(JsonSqlConverter.list<String>())();
+  TextColumn get category => textEnum<HistoryCategory>()();
+  TextColumn get type => textEnum<HistoryType>()();
   TextColumn get title => text().nullable()();
   TextColumn get subtitle => text().nullable()();
+  TextColumn get thumbnails => text().map(JsonSqlConverter.list<String>())();
 }
 
 @DataClassName('HistoryIdentity')
@@ -56,10 +58,12 @@ class HistoryRepository extends DatabaseAccessor<GeneratedDatabase>
     int? limit,
     int? offset,
     int? identity,
+    String? link,
+    String? title,
+    String? subtitle,
+    Set<HistoryCategory>? category,
+    Set<HistoryType>? type,
     DateTime? day,
-    String? linkRegex,
-    String? titleRegex,
-    String? subtitleRegex,
     Duration? maxAge,
   }) {
     final selectable = select(historiesTable)
@@ -67,17 +71,21 @@ class HistoryRepository extends DatabaseAccessor<GeneratedDatabase>
         (t) => OrderingTerm(expression: t.visitedAt, mode: OrderingMode.desc)
       ])
       ..where((tbl) => _identityQuery(tbl, identity));
-    if (linkRegex != null) {
-      selectable
-          .where((tbl) => tbl.link.regexp(linkRegex, caseSensitive: false));
+    if (link != null) {
+      selectable.where((tbl) => tbl.link.regexp(link, caseSensitive: false));
     }
-    if (titleRegex != null) {
-      selectable
-          .where((tbl) => tbl.title.regexp(titleRegex, caseSensitive: false));
+    if (title != null) {
+      selectable.where((tbl) => tbl.title.regexp(title, caseSensitive: false));
     }
-    if (subtitleRegex != null) {
-      selectable.where(
-          (tbl) => tbl.subtitle.regexp(subtitleRegex, caseSensitive: false));
+    if (subtitle != null) {
+      selectable
+          .where((tbl) => tbl.subtitle.regexp(subtitle, caseSensitive: false));
+    }
+    if (category != null) {
+      selectable.where((tbl) => tbl.category.isIn(category.map((e) => e.name)));
+    }
+    if (type != null) {
+      selectable.where((tbl) => tbl.type.isIn(type.map((e) => e.name)));
     }
     if (day != null) {
       day = DateTime(day.year, day.month, day.day);
@@ -107,9 +115,11 @@ class HistoryRepository extends DatabaseAccessor<GeneratedDatabase>
     int? limit,
     int? identity,
     DateTime? day,
-    String? linkRegex,
-    String? titleRegex,
-    String? subtitleRegex,
+    String? link,
+    String? title,
+    String? subtitle,
+    Set<HistoryCategory>? category,
+    Set<HistoryType>? type,
   }) {
     page ??= 1;
     limit ??= 80;
@@ -119,9 +129,11 @@ class HistoryRepository extends DatabaseAccessor<GeneratedDatabase>
       offset: offset,
       identity: identity,
       day: day,
-      linkRegex: linkRegex,
-      titleRegex: titleRegex,
-      subtitleRegex: subtitleRegex,
+      link: link,
+      title: title,
+      subtitle: subtitle,
+      category: category,
+      type: type,
     ).watch().future;
   }
 
@@ -161,6 +173,8 @@ class HistoryRepository extends DatabaseAccessor<GeneratedDatabase>
       (_querySelect(limit: 1, maxAge: const Duration(minutes: 3))
             ..where((tbl) => tbl.link.equals(item.link))
             ..where((tbl) => tbl.title.equalsNullable(item.title))
+            ..where((tbl) => tbl.category.equals(item.category.name))
+            ..where((tbl) => tbl.type.equals(item.type.name))
             ..where((tbl) => tbl.subtitle.equalsNullable(item.subtitle))
             ..where((tbl) => tbl.thumbnails.equalsNullable(
                 JsonSqlConverter.list().toSql(item.thumbnails))))
@@ -172,6 +186,8 @@ class HistoryRepository extends DatabaseAccessor<GeneratedDatabase>
       HistoryCompanion(
         visitedAt: Value(item.visitedAt),
         link: Value(item.link),
+        category: Value(item.category),
+        type: Value(item.type),
         thumbnails: Value(item.thumbnails),
         title: Value(item.title),
         subtitle: Value(item.subtitle),
