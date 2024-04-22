@@ -181,6 +181,7 @@ class FollowRepository extends DatabaseAccessor<GeneratedDatabase>
   Future<void> add(FollowRequest item, int identity) async {
     Follow follow;
     Follow? existing = await _querySelect(
+      identity: identity,
       tagRegex: r'^' + RegExp.escape(item.tags) + r'$',
     ).getSingleOrNull();
     if (existing != null) {
