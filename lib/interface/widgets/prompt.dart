@@ -66,26 +66,30 @@ class PromptActionController extends ActionController {
             child: build(context, child),
           ),
         ),
-      ).then((_) => reset());
+      ).then((_) => close());
     } else {
       final sheetController = Scaffold.of(context).showBottomSheet(
         (context) => build(context, child),
       );
-      return sheetController.closed.then((_) => reset());
+      return sheetController.closed.then((_) => close());
     }
   }
 
   void close() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_dialog == null) return;
-      NavigatorState? navigator = _dialog?.navigator;
-      if (navigator != null) {
-        if (_dialog!.isCurrent) {
-          navigator.pop();
-        } else {
-          navigator.removeRoute(_dialog!);
+      Route? dialog = _dialog;
+      if (dialog == null) return;
+      NavigatorState? navigator = dialog.navigator;
+      if (dialog.isActive) {
+        if (navigator != null) {
+          if (dialog.isCurrent) {
+            navigator.pop();
+          } else {
+            navigator.removeRoute(dialog);
+          }
         }
       }
+      _dialog = null;
       reset();
     });
   }
@@ -225,17 +229,20 @@ class PromptFloatingActionButton extends StatelessWidget {
 
     return AnimatedBuilder(
       animation: controller,
-      builder: (context, child) => FloatingActionButton(
-        onPressed: controller.isLoading
-            ? null
-            : () => controller.showOrAction(
-                  context,
-                  builder(context),
-                ),
-        child: controller.isShown
-            ? (confirmIcon ?? const Icon(Icons.check))
-            : icon,
-      ),
+      builder: (context, _) {
+        print(controller.isShown);
+        return FloatingActionButton(
+          onPressed: controller.isLoading
+              ? null
+              : () => controller.showOrAction(
+                    context,
+                    builder(context),
+                  ),
+          child: controller.isShown
+              ? (confirmIcon ?? const Icon(Icons.check))
+              : icon,
+        );
+      },
     );
   }
 }

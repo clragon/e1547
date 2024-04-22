@@ -97,6 +97,9 @@ class AddTagFloatingActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    PromptActionController controller =
+        this.controller ?? PromptActions.of(context);
+
     return PromptFloatingActionButton(
       controller: controller,
       builder: (context) => EditTagPrompt(
