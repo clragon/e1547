@@ -28,7 +28,7 @@ class DatabaseMigrationProviderState
     extends SingleChildState<DatabaseMigrationProvider> {
   late Future<void> migration;
   late LoadingShellController loader = LoadingShell.of(context);
-  final int version = 2;
+  final int version = 3;
 
   @override
   void initState() {
@@ -48,15 +48,33 @@ class DatabaseMigrationProviderState
   Future<void> _runMigrations() async {
     AppStorage storage = context.read<AppStorage>();
 
+    String followDbName = 'follows.sqlite';
+    String historyDbName = 'history.sqlite';
+
+    String dbDir = (await getApplicationSupportDirectory()).path;
+
+    File followDb = File(join(dbDir, followDbName));
+    File historyDb = File(join(dbDir, historyDbName));
+
     File sentinel = await _getMigrationSentinel();
 
     if (sentinel.existsSync()) {
-      String version = sentinel.readAsStringSync();
-      if (int.tryParse(version) == this.version) {
-        return;
+      int? version = int.tryParse(sentinel.readAsStringSync());
+
+      if (version == null || version == this.version) {
+        return restartMigration();
       }
 
-      return restartMigration();
+      if (version == 2 && this.version == 3) {
+        if (followDb.existsSync()) {
+          followDb.deleteSync();
+        }
+        if (historyDb.existsSync()) {
+          historyDb.deleteSync();
+        }
+      } else {
+        return restartMigration();
+      }
     }
 
     loader.value = loader.value.copyWith(
@@ -64,13 +82,9 @@ class DatabaseMigrationProviderState
     );
 
     try {
-      String followDbName = 'follows.sqlite';
-      if (File(
-              join((await getApplicationSupportDirectory()).path, followDbName))
-          .existsSync()) {
-        await migrateFollows(connectDatabase(followDbName), storage);
-        // TODO: enable deletion once this is tested
-        // File(followDbName).deleteSync();
+      if (followDb.existsSync()) {
+        await migrateFollows(connectDatabase(followDb.path), storage);
+        followDb.deleteSync();
       }
     } on Object catch (e) {
       loader.value = loader.value.copyWith(
@@ -84,13 +98,9 @@ class DatabaseMigrationProviderState
     );
 
     try {
-      String historyDbName = 'history.sqlite';
-      if (File(join(
-              (await getApplicationSupportDirectory()).path, historyDbName))
-          .existsSync()) {
+      if (historyDb.existsSync()) {
         await migrateHistory(connectDatabase(historyDbName), storage);
-        // TODO: enable deletion once this is tested
-        // File(historyDbName).deleteSync();
+        historyDb.deleteSync();
       }
     } on Object catch (e) {
       loader.value = loader.value.copyWith(
