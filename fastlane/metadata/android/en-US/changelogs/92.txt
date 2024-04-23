@@ -1,0 +1,12 @@
+### Added
+- video resolution setting
+- incognito keyboard
+
+### Changed
+- follow refresh ui
+- improved history search speed
+
+### Fixed
+- dtext header issues
+- secure display
+- downloads on certain hosts
