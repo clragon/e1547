@@ -1,12 +1,11 @@
-import 'package:collection/collection.dart';
 import 'package:e1547/markup/markup.dart';
 import 'package:petitparser/petitparser.dart';
 
-class DTextGrammar extends GrammarDefinition<List<DTextElement>> {
+class DTextGrammar extends GrammarDefinition<DTextElement> {
   @override
-  Parser<List<DTextElement>> start() => body().end();
+  Parser<DTextElement> start() => body().end();
 
-  Parser<List<DTextElement>> body([Parser<void>? limit]) => ref1(
+  Parser<DTextElement> body([Parser<void>? limit]) => ref1(
         trimmed,
         (
           ref0(structures).optional(),
@@ -16,63 +15,104 @@ class DTextGrammar extends GrammarDefinition<List<DTextElement>> {
               (
                 newline().map(DTextContent.new),
                 ref0(structures),
-              ).toSequenceParser().map((e) => [e.$1, e.$2]),
+              ).toSequenceParser().map((e) => DTextElements([e.$1, e.$2])),
               ref0(blocks),
               ref0(textElement),
             ].toChoiceParser(),
             limit,
           ),
-        ).toSequenceParser().map((e) => [
-              if (e.$1 != null) e.$1!,
-              ...e.$2,
-            ]),
+        ).toSequenceParser().map(
+              (e) => DTextElements([
+                if (e.$1 != null) e.$1!,
+                e.$2,
+              ]),
+            ),
       );
 
-  Parser<List<DTextElement>> trimmed(Parser<List<DTextElement>> parser) {
+  Parser<DTextElement> trimmed(Parser<DTextElement> parser) {
     return parser.map((l) {
-      if (l.firstOrNull is DTextContent) {
-        final first = l.first as DTextContent;
-        l[0] = DTextContent(first.content.trimLeft());
+      DTextElement trim(DTextElement element, [bool? left]) {
+        if (element is DTextContent) {
+          String text = element.content;
+          if (left == null) {
+            return DTextContent(text.trim());
+          } else if (left) {
+            return DTextContent(text.trimLeft());
+          } else {
+            return DTextContent(text.trimRight());
+          }
+        } else if (element is DTextElements) {
+          List<DTextElement> elements = element.elements;
+          if (elements.isEmpty) return element;
+          final first = elements.first;
+          final last = elements.last;
+          elements.remove(first);
+          elements.remove(last);
+          return DTextElements([
+            trim(first, true),
+            ...elements,
+            trim(last, false),
+          ]);
+        }
+        return element;
       }
-      if (l.lastOrNull is DTextContent) {
-        final last = l.last as DTextContent;
-        l[l.length - 1] = DTextContent(last.content.trimRight());
-      }
-      return l;
+
+      return trim(l);
     });
   }
 
-  Parser<List<DTextElement>> withText([
-    Parser<Object /* DTextElement | List<DTextElement> */ >? other,
+  Parser<DTextElement> withText([
+    Parser<DTextElement>? other,
     Parser<void>? limit,
   ]) =>
       condense(
         [
           if (other != null) other,
-          ref0(character).map((e) => [e]),
-        ].toChoiceParser().starLazy(limit ?? endOfInput()).map((e) {
-          List<DTextElement> result = [];
-          for (final element in e) {
-            if (element is DTextElement) {
-              result.add(element);
-            } else if (element is List<DTextElement>) {
-              result.addAll(element);
-            }
-          }
-          return result;
-        }),
+          ref0(character),
+        ]
+            .toChoiceParser()
+            .starLazy(limit ?? endOfInput())
+            .map(DTextElements.new),
       );
 
-  Parser<List<DTextElement>> condense(Parser<List<DTextElement>> parser) =>
-      parser.map((l) => l.fold(<DTextElement>[], (l, e) {
-            DTextElement current = e;
-            DTextElement? previous = l.lastOrNull;
-            if (current is DTextContent && previous is DTextContent) {
-              return [...l.take(l.length - 1), previous + current];
-            } else {
-              return [...l, current];
+  Parser<DTextElement> condense(Parser<DTextElement> parser) => parser.map((l) {
+        DTextElement condensed(DTextElement element) {
+          if (element is DTextContent) {
+            return element;
+          } else if (element is DTextElements) {
+            List<DTextElement> result = [];
+            StringBuffer bread = StringBuffer();
+
+            void bake() {
+              if (bread.isNotEmpty) {
+                result.add(DTextContent(bread.toString()));
+                bread.clear();
+              }
             }
-          }).toList());
+
+            for (DTextElement child in element.elements) {
+              DTextElement output = condensed(child);
+              if (output is DTextContent) {
+                bread.write(output.content);
+              } else {
+                bake();
+                result.add(output);
+              }
+            }
+
+            bake();
+
+            if (result.length == 1) {
+              return result.first;
+            } else {
+              return DTextElements(result);
+            }
+          }
+          return element;
+        }
+
+        return condensed(l);
+      });
 
   Parser<DTextElement> blocks() => [
         ref0(quote),
@@ -118,15 +158,15 @@ class DTextGrammar extends GrammarDefinition<List<DTextElement>> {
 
   Parser<DTextElement> character() => any().map((value) => DTextContent(value));
 
-  Parser<List<DTextElement>> simpleBlockTag(String tag) =>
+  Parser<DTextElement> simpleBlockTag(String tag) =>
       ref3(blockTag, tag, tag, null).map((e) => e.$2);
 
-  Parser<(String, List<DTextElement>)> blockTag(
+  Parser<(String, DTextElement)> blockTag(
     String start,
     String end,
     Parser<DTextElement>? inner,
   ) {
-    Parser limit = stringIgnoreCase('[/$end]') | endOfInput();
+    Parser<void> limit = stringIgnoreCase('[/$end]') | endOfInput();
     return (
       (
         char('['),
@@ -138,7 +178,8 @@ class DTextGrammar extends GrammarDefinition<List<DTextElement>> {
         char(']'),
       ).toSequenceParser().map((e) => e.$3),
       (
-        inner?.starLazy(limit) ?? ref1(body, limit),
+        inner?.starLazy(limit).map<DTextElement>((e) => DTextElements(e)) ??
+            ref1(body, limit),
         limit,
       ).toSequenceParser().map((e) => e.$1),
     ).toSequenceParser();
@@ -209,11 +250,17 @@ class DTextGrammar extends GrammarDefinition<List<DTextElement>> {
           char('.'),
           char(' ').star(),
         ).toSequenceParser().map((e) => e.$2),
-        condense(ref0(textElement).starLazy([
-          blocks(),
-          newline(),
-          endOfInput(),
-        ].toChoiceParser())),
+        condense(
+          ref0(textElement)
+              .starLazy([
+                blocks(),
+                newline(),
+                endOfInput(),
+              ].toChoiceParser())
+              .map(
+                (e) => DTextElements(e),
+              ),
+        ),
       ).toSequenceParser().map((e) => DTextHeader(e.$1, e.$2));
 
   Parser<DTextElement> list() => (
@@ -221,11 +268,17 @@ class DTextGrammar extends GrammarDefinition<List<DTextElement>> {
           char('*').plus().flatten().map((e) => e.length - 1),
           char(' '),
         ).toSequenceParser().map((e) => e.$1),
-        condense(ref0(textElement).starLazy([
-          blocks(),
-          newline(),
-          endOfInput(),
-        ].toChoiceParser())),
+        condense(
+          ref0(textElement)
+              .starLazy([
+                blocks(),
+                newline(),
+                endOfInput(),
+              ].toChoiceParser())
+              .map(
+                (e) => DTextElements(e),
+              ),
+        ),
       ).toSequenceParser().map((e) => DTextList(e.$1, e.$2));
 
   Parser<DTextElement> linkWord() => LinkWord.values
@@ -253,6 +306,26 @@ class DTextGrammar extends GrammarDefinition<List<DTextElement>> {
         endOfInput(),
       ].toChoiceParser();
 
+  Parser<String> url(Parser<String> startParser) {
+    Parser<String> enclosurePair(String open, String close) => (
+          char(open),
+          (
+            startParser,
+            any().starLazy(char(close) | ref0(linkEnd)),
+          ).toSequenceParser().flatten(),
+          char(close)
+        ).toSequenceParser().map((e) => e.$2);
+
+    return [
+      enclosurePair('<', '>'),
+      enclosurePair('[', ']'),
+      (
+        startParser,
+        any().starLazy(ref0(linkEnd)),
+      ).toSequenceParser().flatten(),
+    ].toChoiceParser();
+  }
+
   Parser<DTextElement> link() => (
         (
           char('"'),
@@ -260,12 +333,13 @@ class DTextGrammar extends GrammarDefinition<List<DTextElement>> {
           char('"'),
           char(':'),
         ).toSequenceParser().map((e) => e.$2).optional(),
-        (
-          stringIgnoreCase('http'),
-          stringIgnoreCase('s').optional(),
-          stringIgnoreCase('://'),
-          any().starLazy(ref0(linkEnd)).flatten(),
-        ).toSequenceParser().flatten(),
+        url(
+          (
+            stringIgnoreCase('http'),
+            stringIgnoreCase('s').optional(),
+            stringIgnoreCase('://'),
+          ).toSequenceParser().flatten(),
+        ),
       ).toSequenceParser().map((e) => DTextLink(e.$1, e.$2));
 
   Parser<DTextElement> localLink() => (
@@ -275,10 +349,12 @@ class DTextGrammar extends GrammarDefinition<List<DTextElement>> {
           char('"'),
           char(':'),
         ).toSequenceParser().map((e) => e.$2),
-        (
-          char('/'),
-          any().starLazy(ref0(linkEnd)).flatten(),
-        ).toSequenceParser().flatten(),
+        url(
+          (
+            char('/'),
+            any().starLazy(ref0(linkEnd)).flatten(),
+          ).toSequenceParser().flatten(),
+        ),
       ).toSequenceParser().map((e) => DTextLocalLink(e.$1, e.$2));
 
   Parser<DTextElement> tagLink() => (

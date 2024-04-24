@@ -32,12 +32,12 @@ class DText extends StatefulWidget {
 }
 
 class _DTextState extends State<DText> {
-  List<DTextElement>? elements;
+  DTextElement? content;
   Object? error;
 
   void _runParse() {
     try {
-      elements = DTextGrammar().build().parse(widget.value).value;
+      content = DTextGrammar().build().parse(widget.value).value;
     } on ParserException catch (e, s) {
       Logger('DText').shout('Failed to parse DText', e, s);
       error = e;
@@ -87,7 +87,7 @@ class _DTextState extends State<DText> {
     return LinkPreviewProvider(
       child: SelectionArea(
         child: DTextBody(
-          elements: elements!,
+          content: content!,
           style: widget.style,
           maxLines: widget.maxLines,
           overflow: widget.overflow,
@@ -102,7 +102,7 @@ class _DTextState extends State<DText> {
 class DTextBody extends StatelessWidget {
   const DTextBody({
     super.key,
-    required this.elements,
+    required this.content,
     this.style,
     this.maxLines,
     this.overflow = TextOverflow.clip,
@@ -110,7 +110,7 @@ class DTextBody extends StatelessWidget {
     this.softWrap = true,
   });
 
-  final List<DTextElement> elements;
+  final DTextElement content;
   final TextStyle? style;
   final int? maxLines;
   final TextOverflow overflow;
@@ -146,36 +146,13 @@ class DTextBody extends StatelessWidget {
         .toList();
   }
 
-  List<DTextElement> trimElements(List<DTextElement> elements) {
-    if (elements.isEmpty) {
-      return elements;
-    }
-    if (elements.first is DTextContent) {
-      elements.first = DTextContent(
-        (elements.first as DTextContent)
-            .content
-            .replaceAllMapped(RegExp(r'^\n+'), (_) => '')
-            .trimLeft(),
-      );
-    }
-    if (elements.last is DTextContent) {
-      elements.last = DTextContent(
-        (elements.last as DTextContent)
-            .content
-            .replaceAllMapped(RegExp(r'\n+$'), (_) => '')
-            .trimRight(),
-      );
-    }
-    return elements;
-  }
-
-  Widget _buildInner(BuildContext context, List<DTextElement> elements) {
+  Widget _buildInner(BuildContext context, DTextElement content) {
     return MediaQuery(
       data: MediaQuery.of(context).copyWith(
         textScaler: TextScaler.noScaling,
       ),
       child: DTextBody(
-        elements: elements,
+        content: content,
         style: style,
         maxLines: maxLines,
         overflow: overflow,
@@ -191,7 +168,7 @@ class DTextBody extends StatelessWidget {
     bool hidden = spoilerController.hidden(element.id);
     return TextSpan(
       children: wrapWithGesture(
-        spans: _buildSpans(context, element.children),
+        spans: [_buildSpan(context, element.children)],
         recognizer: spoilerController.recognizer(element.id),
       ),
       style: TextStyle(
@@ -205,15 +182,15 @@ class DTextBody extends StatelessWidget {
 
   InlineSpan _buildLink({
     required BuildContext context,
-    List<DTextElement>? name,
+    DTextElement? name,
     required String link,
     bool? local,
   }) {
     local ??= false;
     VoidCallback action = () => launch(link);
-    Uri uri = Uri.parse(link);
+    Uri? uri = Uri.tryParse(link);
     // TODO: this should not be hardcoded
-    bool home = ['e621.net', 'e926.net'].contains(uri.host);
+    bool home = uri != null && ['e621.net', 'e926.net'].contains(uri.host);
     if (local || home) {
       VoidCallback? linkAction =
           const E621LinkParser().parseOnTap(context, link);
@@ -231,18 +208,19 @@ class DTextBody extends StatelessWidget {
     RegExp userRegex = RegExp(r'/user(s|/show)/(?<id>\d+)');
     RegExpMatch? match = userRegex.firstMatch(link);
     if (usernameGenerator != null && match != null) {
-      name = [
-        DTextContent(
-          usernameGenerator.generate(int.parse(match.namedGroup('id')!)),
-        ),
-      ];
+      name = DTextContent(
+        usernameGenerator.generate(int.parse(match.namedGroup('id')!)),
+      );
     }
 
     return TextSpan(
       children: wrapWithGesture(
-        spans: name != null
-            ? _buildSpans(context, name)
-            : [TextSpan(text: linkToDisplay(link))],
+        spans: [
+          if (name != null)
+            _buildSpan(context, name)
+          else
+            TextSpan(text: linkToDisplay(link))
+        ],
         recognizer: TapGestureRecognizer()..onTap = action,
         onEnter: (_) => preview.showLink(previewLink),
         onExit: (_) => preview.hideLink(),
@@ -255,54 +233,58 @@ class DTextBody extends StatelessWidget {
 
   InlineSpan _buildSpan(BuildContext context, DTextElement element) {
     return switch (element) {
+      DTextElements() => TextSpan(
+          children:
+              element.elements.map((e) => _buildSpan(context, e)).toList(),
+        ),
       DTextContent() => TextSpan(text: element.content),
       DTextSection() => WidgetSpan(
           child: SectionWrap(
             key: ValueKey(element.id),
             title: element.title,
             expanded: element.expanded,
-            child: _buildInner(context, trimElements(element.children)),
+            child: _buildInner(context, element.children),
           ),
         ),
       DTextQuote() => WidgetSpan(
           child: QuoteWrap(
-            child: _buildInner(context, trimElements(element.children)),
+            child: _buildInner(context, element.children),
           ),
         ),
       DTextCode() => WidgetSpan(
           child: CodeWrap(
-            child: _buildInner(context, trimElements(element.children)),
+            child: _buildInner(context, element.children),
           ),
         ),
       DTextBold() => TextSpan(
-          children: _buildSpans(context, element.children),
+          children: [_buildSpan(context, element.children)],
           style: const TextStyle(fontWeight: FontWeight.bold),
         ),
       DTextItalic() => TextSpan(
-          children: _buildSpans(context, element.children),
+          children: [_buildSpan(context, element.children)],
           style: const TextStyle(fontStyle: FontStyle.italic),
         ),
       DTextOverline() => TextSpan(
-          children: _buildSpans(context, element.children),
+          children: [_buildSpan(context, element.children)],
           style: const TextStyle(decoration: TextDecoration.overline),
         ),
       DTextUnderline() => TextSpan(
-          children: _buildSpans(context, element.children),
+          children: [_buildSpan(context, element.children)],
           style: const TextStyle(decoration: TextDecoration.underline),
         ),
       DTextStrikethrough() => TextSpan(
-          children: _buildSpans(context, element.children),
+          children: [_buildSpan(context, element.children)],
           style: const TextStyle(decoration: TextDecoration.lineThrough),
         ),
       DTextSuperscript() => TextSpan(
-          children: _buildSpans(context, element.children),
+          children: [_buildSpan(context, element.children)],
         ),
       DTextSubscript() => TextSpan(
-          children: _buildSpans(context, element.children),
+          children: [_buildSpan(context, element.children)],
         ),
       DTextSpoiler() => _buildSpoiler(context, element),
       DTextColor() => TextSpan(
-          children: _buildSpans(context, element.children),
+          children: [_buildSpan(context, element.children)],
           style: TextStyle(
             color: parseColor(element.color),
           ),
@@ -315,7 +297,7 @@ class DTextBody extends StatelessWidget {
           ),
         ),
       DTextHeader() => TextSpan(
-          children: _buildSpans(context, element.children),
+          children: [_buildSpan(context, element.children)],
           style: TextStyle(
             fontSize: Theme.of(context).textTheme.bodyMedium!.fontSize! +
                 ((element.level - 7).abs() * 2),
@@ -324,12 +306,12 @@ class DTextBody extends StatelessWidget {
       DTextList() => TextSpan(
           children: [
             TextSpan(text: '${' ' * element.indent}• '),
-            ..._buildSpans(context, element.children),
+            _buildSpan(context, element.children),
           ],
         ),
       DTextLinkWord() => _buildLink(
           context: context,
-          name: [DTextContent('${element.type.name} #${element.id}')],
+          name: DTextContent('${element.type.name} #${element.id}'),
           link: element.type.toLink(element.id),
           local: true,
         ),
@@ -346,9 +328,8 @@ class DTextBody extends StatelessWidget {
         ),
       DTextTagLink() => _buildLink(
           context: context,
-          name: [
-            DTextContent((element.name ?? element.tag).replaceAll('\n', ' '))
-          ],
+          name:
+              DTextContent((element.name ?? element.tag).replaceAll('\n', ' ')),
           link: Uri(
             path: '/posts',
             queryParameters: {
@@ -362,7 +343,7 @@ class DTextBody extends StatelessWidget {
         ),
       DTextTagSearchLink() => _buildLink(
           context: context,
-          name: [DTextContent(element.tags.replaceAll('\n', ' '))],
+          name: DTextContent(element.tags.replaceAll('\n', ' ')),
           link: Uri(
             path: '/posts',
             queryParameters: {
@@ -374,12 +355,6 @@ class DTextBody extends StatelessWidget {
     };
   }
 
-  List<InlineSpan> _buildSpans(
-    BuildContext context,
-    List<DTextElement> elements,
-  ) =>
-      elements.map((e) => _buildSpan(context, e)).toList();
-
   @override
   Widget build(BuildContext context) {
     return DefaultTextStyle(
@@ -387,7 +362,7 @@ class DTextBody extends StatelessWidget {
       child: Expandables(
         child: SpoilerProvider(
           builder: (context, child) => Text.rich(
-            TextSpan(children: _buildSpans(context, elements)),
+            _buildSpan(context, content),
             maxLines: maxLines,
             overflow: overflow,
             textAlign: textAlign,

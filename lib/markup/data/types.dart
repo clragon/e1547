@@ -37,6 +37,15 @@ sealed class DTextElement {
   const DTextElement();
 }
 
+class DTextElements extends DTextElement {
+  const DTextElements(this.elements);
+
+  final List<DTextElement> elements;
+
+  @override
+  String toString() => 'Elements($elements)';
+}
+
 class DTextContent extends DTextElement {
   const DTextContent(this.content);
 
@@ -52,7 +61,7 @@ class DTextContent extends DTextElement {
 sealed class DTextBlock extends DTextElement {
   const DTextBlock(this.children);
 
-  final List<DTextElement> children;
+  final DTextElement children;
 }
 
 class DTextBold extends DTextBlock {
@@ -232,7 +241,7 @@ class DTextLinkWord extends DTextElement {
 class DTextLink extends DTextElement {
   const DTextLink(this.name, this.link);
 
-  final List<DTextElement>? name;
+  final DTextElement? name;
   final String link;
 
   @override
@@ -242,7 +251,7 @@ class DTextLink extends DTextElement {
 class DTextLocalLink extends DTextElement {
   const DTextLocalLink(this.name, this.link);
 
-  final List<DTextElement> name;
+  final DTextElement name;
   final String link;
 
   @override

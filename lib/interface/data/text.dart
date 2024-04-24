@@ -84,7 +84,8 @@ extension StringInfixRegexing on String {
 }
 
 String linkToDisplay(String link) {
-  Uri url = Uri.parse(link.trim());
+  Uri? url = Uri.tryParse(link.trim());
+  if (url == null) return link;
   List<String> allowed = ['v'];
   Map<String, dynamic> parameters = Map.of(url.queryParameters);
   parameters.removeWhere((key, value) => !allowed.contains(key));
