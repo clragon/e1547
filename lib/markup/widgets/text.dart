@@ -41,6 +41,9 @@ class _DTextState extends State<DText> {
     } on ParserException catch (e, s) {
       Logger('DText').shout('Failed to parse DText', e, s);
       error = e;
+    } on Object catch (e, s) {
+      Logger('DText').severe('Catastropically failed to parse DText', e, s);
+      error = e;
     }
   }
 
