@@ -1,0 +1,3 @@
+### Fixed
+- black screens on closing search
+- certain dtext errors
