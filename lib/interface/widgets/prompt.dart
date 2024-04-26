@@ -5,10 +5,56 @@ import 'package:flutter/material.dart';
 import 'package:flutter_sub/flutter_sub.dart';
 import 'package:sliding_sheet/sliding_sheet.dart';
 
-class PromptActionController extends ActionController {
-  Route? _dialog;
+abstract class _PromptActionRoute {
+  /// Whether the dialog is open.
+  bool get isOpen;
 
-  bool get isShown => _dialog != null;
+  /// Close the dialog. Idempotent.
+  void close();
+}
+
+class _PromptActionDialog extends _PromptActionRoute {
+  _PromptActionDialog(this.route);
+
+  final Route route;
+
+  @override
+  bool get isOpen => route.isActive;
+
+  @override
+  void close() {
+    NavigatorState? navigator = route.navigator;
+    if (route.isActive) {
+      if (navigator != null) {
+        if (route.isCurrent) {
+          navigator.pop();
+        } else {
+          navigator.removeRoute(route);
+        }
+      }
+    }
+  }
+}
+
+class _PromptActionSheet extends _PromptActionRoute {
+  _PromptActionSheet(this.controller) {
+    controller.closed.then((_) => _completed = true);
+  }
+
+  final PersistentBottomSheetController controller;
+  bool _completed = false;
+
+  @override
+  bool get isOpen => !_completed;
+
+  @override
+  void close() => controller.close();
+}
+
+class PromptActionController extends ActionController {
+  _PromptActionRoute? _route;
+
+  bool get isShown => _route != null && _route!.isOpen;
 
   @override
   @protected
@@ -45,51 +91,40 @@ class PromptActionController extends ActionController {
     await show(context, null);
   }
 
-  Widget build(BuildContext context, Widget? child) {
-    _dialog = ModalRoute.of(context);
-    return PromptActions(
-      controller: this,
-      child: ActionIndicators(
+  Widget build(BuildContext context, Widget? child) => PromptActions(
         controller: this,
-        child: child,
-      ),
-    );
-  }
+        child: ActionIndicators(
+          controller: this,
+          child: child,
+        ),
+      );
 
   FutureOr<void> show(BuildContext context, Widget? child) {
     if (Theme.of(context).isDesktop) {
       return showDialog(
         context: context,
-        builder: (context) => AlertDialog(
-          content: SizedBox(
-            width: 600,
-            child: build(context, child),
-          ),
-        ),
+        builder: (context) {
+          _route = _PromptActionDialog(ModalRoute.of(context)!);
+          return AlertDialog(
+            content: SizedBox(
+              width: 600,
+              child: build(context, child),
+            ),
+          );
+        },
       ).then((_) => close());
     } else {
       final sheetController = Scaffold.of(context).showBottomSheet(
         (context) => build(context, child),
       );
+      _route = _PromptActionSheet(sheetController);
       return sheetController.closed.then((_) => close());
     }
   }
 
   void close() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Route? dialog = _dialog;
-      if (dialog == null) return;
-      NavigatorState? navigator = dialog.navigator;
-      if (dialog.isActive) {
-        if (navigator != null) {
-          if (dialog.isCurrent) {
-            navigator.pop();
-          } else {
-            navigator.removeRoute(dialog);
-          }
-        }
-      }
-      _dialog = null;
+      _route?.close();
       reset();
     });
   }
