@@ -47,11 +47,11 @@ class DTextGrammar extends GrammarDefinition<DTextElement> {
           final first = elements.first;
           final last = elements.last;
           elements.remove(first);
-          elements.remove(last);
+          bool hasLast = elements.remove(last);
           return DTextElements([
             trim(first, true),
             ...elements,
-            trim(last, false),
+            if (hasLast) trim(last, false),
           ]);
         }
         return element;
