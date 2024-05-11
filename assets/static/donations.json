@@ -329,6 +329,12 @@
         "currency": "USD",
         "date": "2024-03-30T23:32:00",
         "platform": "ko-fi"
+      },
+      {
+        "amount": 3.0,
+        "currency": "USD",
+        "date": "2024-05-10T15:29:00",
+        "platform": "ko-fi"
       }
     ]
   }
