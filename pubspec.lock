@@ -543,10 +543,10 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_screen_lock
-      sha256: f8e504aa0e5fe61ea13b66692ecdec3e8761118173b51c9b3b5518b8e2911e5b
+      sha256: "07cb55016cf16b0374e6f79918964c65f2f722a461d1f56eb79cb88e1123b9a7"
       url: "https://pub.dev"
     source: hosted
-    version: "9.0.2"
+    version: "9.1.0"
   flutter_staggered_grid_view:
     dependency: "direct main"
     description:
