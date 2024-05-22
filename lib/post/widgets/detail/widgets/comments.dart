@@ -36,7 +36,7 @@ class CommentDisplay extends StatelessWidget {
                   ),
                   child: Text(
                     'COMMENTS'
-                    '${post.commentCount != null ? '(${post.commentCount})' : ''}',
+                    '${post.commentCount != null ? ' (${post.commentCount})' : ''}',
                   ),
                 ),
               )
