@@ -8,7 +8,6 @@ import 'package:e1547/client/client.dart';
 import 'package:e1547/identity/identity.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/settings/settings.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:keyboard_dismisser/keyboard_dismisser.dart';
@@ -180,15 +179,20 @@ class _IdentityPageState extends State<IdentityPage> {
               controller: hostController,
               readOnly: widget.identity != null,
             ),
-            if (kDebugMode)
-              ClientTypeFormField(
-                type: type,
-                enabled: !foundClient,
-                onChanged: (value) {
-                  setState(() => type = value);
-                  resetErrors();
-                },
-              ),
+            ValueListenableBuilder<bool>(
+              valueListenable: context.read<Settings>().showDev,
+              builder: (context, value, child) {
+                if (!value) return const SizedBox();
+                return ClientTypeFormField(
+                  type: type,
+                  enabled: !foundClient && widget.identity == null,
+                  onChanged: (value) {
+                    setState(() => type = value);
+                    resetErrors();
+                  },
+                );
+              },
+            ),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 12),
               child: CheckboxFormField(

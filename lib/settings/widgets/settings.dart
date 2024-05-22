@@ -335,6 +335,19 @@ class SettingsPage extends StatelessWidget {
               const Divider(),
               const ListTileHeader(title: 'Development'),
               ValueListenableBuilder<bool>(
+                valueListenable: settings.showDev,
+                builder: (context, value, child) {
+                  if (!value) return const SizedBox();
+                  return SwitchListTile(
+                    title: const Text('Developer mode'),
+                    subtitle: Text(value ? 'options shown' : 'options hidden'),
+                    secondary: const Icon(Icons.bug_report),
+                    value: value,
+                    onChanged: (value) => settings.showDev.value = value,
+                  );
+                },
+              ),
+              ValueListenableBuilder<bool>(
                 valueListenable: settings.showBeta,
                 builder: (context, value, child) => SwitchListTile(
                   title: const Text('Experimental features'),

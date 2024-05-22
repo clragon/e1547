@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:e1547/app/app.dart';
@@ -57,7 +58,9 @@ class _AboutPageState extends State<AboutPage> {
           padding: LimitedWidthLayout.of(context).padding,
           children: [
             const SizedBox(height: 100),
-            const AboutLogo(),
+            const DevOptionEnabler(
+              child: AboutLogo(),
+            ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 32),
               child: Card(
@@ -83,6 +86,50 @@ class _AboutPageState extends State<AboutPage> {
           ],
         ),
       ),
+    );
+  }
+}
+
+class DevOptionEnabler extends StatefulWidget {
+  const DevOptionEnabler({
+    super.key,
+    required this.child,
+  });
+
+  final Widget child;
+
+  @override
+  State<DevOptionEnabler> createState() => _DevOptionEnablerState();
+}
+
+class _DevOptionEnablerState extends State<DevOptionEnabler> {
+  int taps = 0;
+  Timer? reset;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        final messenger = ScaffoldMessenger.of(context);
+        reset?.cancel();
+        setState(() => taps++);
+        if (taps == 7) {
+          messenger.clearSnackBars();
+          messenger.showSnackBar(
+            const SnackBar(
+              duration: Duration(seconds: 2),
+              content: Text('You are now a developer!'),
+            ),
+          );
+          context.read<Settings>().showDev.value = true;
+          taps = 0;
+        }
+        reset = Timer(const Duration(seconds: 2), () {
+          if (!mounted) return;
+          setState(() => taps = 0);
+        });
+      },
+      child: widget.child,
     );
   }
 }

@@ -20,11 +20,10 @@ Future<void> guardWithLogin({
   } else {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        duration: const Duration(seconds: 1),
-        content:
-            Text(error ?? 'This action is not available to anonymous users'),
+        duration: const Duration(seconds: 3),
+        content: Text(error ?? 'You must be logged in to perform this action.'),
         action: SnackBarAction(
-          label: 'Switch identity',
+          label: 'Choose identity',
           onPressed: () => Navigator.of(context).push(
             MaterialPageRoute(
               builder: (context) => const IdentitiesPage(),

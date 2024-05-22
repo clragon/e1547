@@ -45,8 +45,6 @@ class Settings extends NotifiedSettings {
       createSetting(key: 'filterUnseenFollows', initialValue: false);
   late final ValueNotifier<bool> showPostInfo =
       createSetting<bool>(key: 'showPostInfo', initialValue: false);
-  late final ValueNotifier<bool> showBeta =
-      createSetting<bool>(key: 'showBeta', initialValue: false);
   late final ValueNotifier<bool> upvoteFavs =
       createSetting<bool>(key: 'upvoteFavs', initialValue: false);
   late final ValueNotifier<String> downloadPath = createSetting<String>(
@@ -83,4 +81,9 @@ class Settings extends NotifiedSettings {
       createSetting(key: 'appPin', initialValue: null);
   late final ValueNotifier<bool> biometricAuth =
       createSetting<bool>(key: 'biometricAuth', initialValue: false);
+
+  late final ValueNotifier<bool> showBeta =
+      createSetting<bool>(key: 'showBeta', initialValue: false);
+  late final ValueNotifier<bool> showDev =
+      createSetting<bool>(key: 'showDev', initialValue: false);
 }
