@@ -90,7 +90,7 @@ ThemeData prepareTheme(ThemeData theme) => theme.copyWith(
       applyElevationOverlayColor: false,
       appBarTheme: theme.appBarTheme.copyWith(
         surfaceTintColor:
-            theme.appBarTheme.backgroundColor ?? theme.colorScheme.background,
+            theme.appBarTheme.backgroundColor ?? theme.colorScheme.surface,
         systemOverlayStyle: SystemUiOverlayStyle(
           statusBarColor: Colors.transparent,
           statusBarBrightness: theme.brightness,

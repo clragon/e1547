@@ -148,7 +148,7 @@ class _CookieCapturePageState extends State<CookieCapturePage> {
   late final WebViewController controller = WebViewController()
     ..setUserAgent(AppInfo.instance.userAgent)
     ..setJavaScriptMode(JavaScriptMode.unrestricted)
-    ..setBackgroundColor(Theme.of(context).colorScheme.background)
+    ..setBackgroundColor(Theme.of(context).colorScheme.surface)
     ..loadRequest(Uri.https(context.read<Client>().host));
 
   Future<void> setCookies(BuildContext context) async {

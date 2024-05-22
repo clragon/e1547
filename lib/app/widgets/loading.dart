@@ -229,11 +229,11 @@ class _LoadingLayerState<T> extends State<LoadingLayer<T>> {
         onSnapshotChanged(snapshot);
         if (snapshot.connectionState != ConnectionState.done) {
           return Container(
-            color: Theme.of(context).colorScheme.background,
+            color: Theme.of(context).colorScheme.surface,
           );
         } else if (snapshot.hasError) {
           return Container(
-            color: Theme.of(context).colorScheme.background,
+            color: Theme.of(context).colorScheme.surface,
           );
         } else {
           return widget.builder(context, snapshot.data as T);

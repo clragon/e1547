@@ -29,9 +29,9 @@ class CommentDisplay extends StatelessWidget {
                     ),
                   ),
                   style: ButtonStyle(
-                    foregroundColor: MaterialStateProperty.all(
+                    foregroundColor: WidgetStateProperty.all(
                         Theme.of(context).textTheme.bodyMedium!.color),
-                    overlayColor: MaterialStateProperty.all(
+                    overlayColor: WidgetStateProperty.all(
                         Theme.of(context).splashColor),
                   ),
                   child: Text(

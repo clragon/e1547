@@ -64,7 +64,7 @@ class AutocompleteTextField<T> extends StatelessWidget {
       decorationBuilder: (context, child) {
         Widget result = Card(
           margin: EdgeInsets.zero,
-          color: Theme.of(context).colorScheme.background,
+          color: Theme.of(context).colorScheme.surface,
           child: child,
         );
 

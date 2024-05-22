@@ -35,7 +35,7 @@ class IdentityAvatar extends StatelessWidget {
                 clipBehavior: Clip.antiAlias,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: Theme.of(context).colorScheme.background,
+                  color: Theme.of(context).colorScheme.surface,
                 ),
                 child: (snapshot.data?.favicon) != null
                     ? CachedNetworkImage(

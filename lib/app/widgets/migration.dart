@@ -157,7 +157,7 @@ class DatabaseMigrationProviderState
       builder: (context, snapshot) {
         if (snapshot.connectionState != ConnectionState.done) {
           return Container(
-            color: Theme.of(context).colorScheme.background,
+            color: Theme.of(context).colorScheme.surface,
           );
         }
 
