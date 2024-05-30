@@ -251,11 +251,15 @@ class TransparentAppBar extends StatelessWidget with AppBarBuilderWidget {
   Widget build(BuildContext context) {
     return AnimatedTheme(
       data: Theme.of(context).copyWith(
-        iconTheme: Theme.of(context).iconTheme.copyWith(
-          color: Colors.white,
-          shadows: const [Shadow(blurRadius: 9)],
-        ),
         appBarTheme: Theme.of(context).appBarTheme.copyWith(
+              iconTheme: Theme.of(context).iconTheme.copyWith(
+                shadows: [
+                  Shadow(
+                    color: Theme.of(context).canvasColor,
+                    blurRadius: 9,
+                  )
+                ],
+              ),
               elevation: transparent ? 0 : null,
               backgroundColor: transparent ? Colors.transparent : null,
             ),
