@@ -98,98 +98,97 @@ class IdentitiesPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return SubStream(
       create: () => context.watch<IdentityService>().all().stream,
-      builder: (context, snapshot) => LoadingPage(
-        isLoading: snapshot.connectionState == ConnectionState.waiting,
-        isError: snapshot.hasError,
-        isEmpty: snapshot.data?.isEmpty ?? true,
-        loadingBuilder: (context, child) => Scaffold(
-          appBar: const DefaultAppBar(
-            leading: CloseButton(),
-            elevation: 0,
-            title: Text('Identities'),
-          ),
-          body: child(context),
-        ),
-        child: (context) => LimitedWidthLayout.builder(
-          builder: (context) {
-            List<Identity> identities = snapshot.data!;
-            return Scaffold(
-              appBar: const DefaultAppBar(
-                leading: CloseButton(),
-                elevation: 0,
-              ),
-              floatingActionButton: FloatingActionButton(
-                child: const Icon(Icons.add),
-                onPressed: () => Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => const IdentityPage(),
-                  ),
-                ),
-              ),
-              body: LayoutBuilder(
-                builder: (context, constraints) {
-                  bool isWide = constraints.maxWidth > 1100;
-                  return Column(
-                    children: [
-                      Expanded(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: isWide
-                              ? CrossAxisAlignment.center
-                              : CrossAxisAlignment.start,
-                          children: [
-                            if (isWide)
-                              Expanded(
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
+      builder: (context, snapshot) => LimitedWidthLayout.builder(
+        builder: (context) {
+          List<Identity>? identities = snapshot.data;
+          return Scaffold(
+            appBar: const TransparentAppBar(
+              child: DefaultAppBar(leading: CloseButton()),
+            ),
+            floatingActionButton: identities != null
+                ? FloatingActionButton(
+                    child: const Icon(Icons.add),
+                    onPressed: () => Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => const IdentityPage(),
+                      ),
+                    ),
+                  )
+                : null,
+            body: LayoutBuilder(
+              builder: (context, constraints) {
+                bool isWide = constraints.maxWidth > 1100;
+                return Column(
+                  children: [
+                    Expanded(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: isWide
+                            ? CrossAxisAlignment.center
+                            : CrossAxisAlignment.start,
+                        children: [
+                          if (isWide)
+                            Expanded(
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const AppIcon(radius: 64),
+                                  const SizedBox(height: 32),
+                                  Text(
+                                    AppInfo.instance.appName,
+                                    style:
+                                        Theme.of(context).textTheme.titleLarge,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          SizedBox(
+                            width: isWide ? 700 : constraints.maxWidth,
+                            child: LimitedWidthLayout.builder(
+                              maxWidth: 520,
+                              builder: (context) => Center(
+                                child: ListView(
+                                  padding: LimitedWidthLayout.of(context)
+                                      .padding
+                                      .add(defaultActionListPadding),
+                                  shrinkWrap: true,
                                   children: [
-                                    const AppIcon(radius: 64),
-                                    const SizedBox(height: 32),
-                                    Text(
-                                      AppInfo.instance.appName,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleLarge,
-                                    ),
+                                    if (!isWide)
+                                      const SizedBox(
+                                        height: 300,
+                                        child: Center(
+                                          child: AppIcon(
+                                            radius: 64,
+                                          ),
+                                        ),
+                                      ),
+                                    if (identities == null)
+                                      const Center(
+                                        child: CircularProgressIndicator(),
+                                      )
+                                    else if (snapshot.hasError)
+                                      const IconMessage(
+                                        icon: Icon(Icons.warning_amber),
+                                        title: Text(
+                                          'Failed to load identities',
+                                        ),
+                                      )
+                                    else
+                                      form(context, identities),
                                   ],
                                 ),
                               ),
-                            SizedBox(
-                              width: isWide ? 700 : constraints.maxWidth,
-                              child: LimitedWidthLayout.builder(
-                                maxWidth: 520,
-                                builder: (context) => Center(
-                                  child: ListView(
-                                    padding: LimitedWidthLayout.of(context)
-                                        .padding
-                                        .add(defaultActionListPadding),
-                                    shrinkWrap: true,
-                                    children: [
-                                      if (!isWide)
-                                        const SizedBox(
-                                          height: 300,
-                                          child: Center(
-                                            child: AppIcon(
-                                              radius: 64,
-                                            ),
-                                          ),
-                                        ),
-                                      form(context, identities),
-                                    ],
-                                  ),
-                                ),
-                              ),
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
-                    ],
-                  );
-                },
-              ),
-            );
-          },
-        ),
+                    ),
+                  ],
+                );
+              },
+            ),
+          );
+        },
       ),
     );
   }
