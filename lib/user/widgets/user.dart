@@ -39,16 +39,14 @@ class UserPage extends StatelessWidget {
               const Tab(text: 'Favorites'): (context) =>
                   ChangeNotifierProvider<PostController>.value(
                     value: controllers.favoritePosts,
-                    builder: (context, child) => postDisplay(
-                      context: context,
+                    builder: (context, child) => PostSliverDisplay(
                       controller: controllers.favoritePosts,
                     ),
                   ),
               const Tab(text: 'Uploads'): (context) =>
                   ChangeNotifierProvider<PostController>.value(
                     value: controllers.uploadedPosts,
-                    builder: (context, child) => postDisplay(
-                      context: context,
+                    builder: (context, child) => PostSliverDisplay(
                       controller: controllers.uploadedPosts,
                     ),
                   ),
@@ -73,20 +71,34 @@ class UserPage extends StatelessWidget {
                   child: TileLayout(
                     child: Builder(
                       builder: (context) => TabBarView(
-                        children: tabs.values.map((e) => e(context)).toList(),
+                        children: tabs.values
+                            .map(
+                              (e) => CustomScrollView(
+                                slivers: [
+                                  SliverOverlapInjector(
+                                    handle: NestedScrollView
+                                        .sliverOverlapAbsorberHandleFor(
+                                      context,
+                                    ),
+                                  ),
+                                  e(context),
+                                ],
+                              ),
+                            )
+                            .toList(),
                       ),
                     ),
                   ),
                 ),
               );
-              tabs[const Tab(text: 'About')] =
-                  (context) => SingleChildScrollView(
-                        primary: true,
-                        padding: defaultListPadding
-                            .add(LimitedWidthLayout.of(context).padding),
-                        child: UserInfo(
-                            user: user, compact: constraints.maxWidth < 600),
-                      );
+              tabs[const Tab(text: 'About')] = (context) => SliverPadding(
+                    padding: defaultListPadding
+                        .add(LimitedWidthLayout.of(context).padding),
+                    sliver: SliverToBoxAdapter(
+                      child: UserInfo(
+                          user: user, compact: constraints.maxWidth < 600),
+                    ),
+                  );
             } else {
               body = Row(
                 children: [
@@ -135,7 +147,11 @@ class UserPage extends StatelessWidget {
                           children: tabs.values
                               .toList()
                               .sublist(0, tabs.length)
-                              .map((e) => e(context))
+                              .map(
+                                (e) => CustomScrollView(
+                                  slivers: [e(context)],
+                                ),
+                              )
                               .toList(),
                         ),
                       ),

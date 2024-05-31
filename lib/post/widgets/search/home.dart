@@ -1,6 +1,7 @@
 import 'package:e1547/client/client.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
+import 'package:e1547/settings/settings.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sub/flutter_sub.dart';
@@ -36,8 +37,9 @@ class _HomePageState extends State<HomePage> with RouterDrawerEntryWidget {
               );
             },
             builder: (context) => PostsPage(
-              appBar: const ContextSizedAppBar(
-                title: Text('Home'),
+              appBar: const DefaultAppBar(
+                title: Center(child: AppIcon()),
+                actions: [ContextDrawerButton()],
               ),
               controller: controller,
             ),

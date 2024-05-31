@@ -115,8 +115,7 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-    - assets/icon/app/round.png
-    - assets/icon/app/user.png
+    - assets/icon/app/
     - assets/static/
   fonts:
     - family: JetBrains Mono

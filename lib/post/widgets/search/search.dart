@@ -117,10 +117,8 @@ class _PostsSearchPageState extends State<PostsSearchPage> {
               return tagToName(pool!.name);
             }
             TagMap tags = TagMap.parse(controller.query['tags'] ?? '');
-            if (tags.length == 1) {
-              return tagToName(tags.toString());
-            }
-            return 'Search';
+            if (tags.isEmpty) return 'Search';
+            return tagToName(tags.toString());
           }
 
           return SubListener(

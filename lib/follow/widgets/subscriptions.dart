@@ -43,9 +43,9 @@ class FollowsSubscriptionsPage extends StatelessWidget {
                   controller: controller,
                   builder: (context, child) => TileLayout(child: child),
                   child: (context) => PagedAlignedGridView<int, Follow>.count(
-                    pagingController: controller.paging,
                     primary: true,
                     padding: defaultActionListPadding,
+                    pagingController: controller.paging,
                     addAutomaticKeepAlives: false,
                     builderDelegate: defaultPagedChildBuilderDelegate(
                       pagingController: controller.paging,

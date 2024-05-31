@@ -15,8 +15,9 @@ class HotPage extends StatelessWidget {
               PostsControllerHistoryConnector(
             controller: controller,
             child: PostsPage(
-              appBar: const ContextSizedAppBar(
+              appBar: const DefaultAppBar(
                 title: Text('Hot'),
+                actions: [ContextDrawerButton()],
               ),
               controller: controller,
             ),
