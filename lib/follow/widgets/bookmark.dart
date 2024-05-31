@@ -61,14 +61,8 @@ class FollowsBookmarkPage extends StatelessWidget {
                       pagingController: controller.paging,
                       itemBuilder: (context, item, index) =>
                           FollowTile(follow: item),
-                      onEmpty: const IconMessage(
-                        title: Text('No bookmarks'),
-                        icon: Icon(Icons.clear),
-                      ),
-                      onError: const IconMessage(
-                        title: Text('Failed to load bookmarks'),
-                        icon: Icon(Icons.warning_amber),
-                      ),
+                      onEmpty: const Text('No bookmarks'),
+                      onError: const Text('Failed to load bookmarks'),
                     ),
                     crossAxisCount: TileLayout.of(context).crossAxisCount,
                   ),
