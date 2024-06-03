@@ -383,7 +383,7 @@ extension E621Post on Post {
           ),
           uploaderId: pick('uploader_id').asIntOrThrow(),
           createdAt: pick('created_at').asDateTimeOrThrow(),
-          updatedAt: pick('updated_at').asDateTimeOrThrow(),
+          updatedAt: pick('updated_at').asDateTimeOrNull(),
           vote: VoteInfo(
             score: pick('score')
                 .letOrThrow((pick) => pick('total').asIntOrThrow()),
