@@ -40,7 +40,6 @@ class _DTextState extends State<DText> {
   void _runParse() {
     try {
       content = DTextGrammar().build().parse(widget.value).value;
-      _logger.fine('Parsed DText', content);
     } on ParserException catch (e, s) {
       _logger.shout('Failed to parse DText', e, s);
       error = e;
