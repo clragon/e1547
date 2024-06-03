@@ -10,6 +10,7 @@ _$UserImpl _$$UserImplFromJson(Map<String, dynamic> json) => _$UserImpl(
       id: json['id'] as int,
       name: json['name'] as String,
       avatarId: json['avatar_id'] as int?,
+      about: json['about'] == null ? null : UserAbout.fromJson(json['about']),
       stats: json['stats'] == null ? null : UserStats.fromJson(json['stats']),
     );
 
@@ -18,7 +19,20 @@ Map<String, dynamic> _$$UserImplToJson(_$UserImpl instance) =>
       'id': instance.id,
       'name': instance.name,
       'avatar_id': instance.avatarId,
+      'about': instance.about,
       'stats': instance.stats,
+    };
+
+_$UserAboutImpl _$$UserAboutImplFromJson(Map<String, dynamic> json) =>
+    _$UserAboutImpl(
+      bio: json['bio'] as String?,
+      comission: json['comission'] as String?,
+    );
+
+Map<String, dynamic> _$$UserAboutImplToJson(_$UserAboutImpl instance) =>
+    <String, dynamic>{
+      'bio': instance.bio,
+      'comission': instance.comission,
     };
 
 _$UserStatsImpl _$$UserStatsImplFromJson(Map<String, dynamic> json) =>

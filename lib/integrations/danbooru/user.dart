@@ -34,6 +34,7 @@ extension DanbooruUser on User {
           id: pick('id').asIntOrThrow(),
           name: pick('name').asStringOrThrow(),
           avatarId: null,
+          about: null,
           stats: UserStats(
             createdAt: pick('created_at').asDateTimeOrThrow(),
             levelString: pick('level_string').asStringOrThrow(),

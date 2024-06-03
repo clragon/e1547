@@ -2,6 +2,7 @@ import 'package:e1547/app/app.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/history/history.dart';
 import 'package:e1547/interface/interface.dart';
+import 'package:e1547/markup/markup.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:e1547/ticket/ticket.dart';
@@ -408,36 +409,94 @@ class UserInfo extends StatelessWidget {
       );
     }
 
-    return Column(
-      children: [
-        info(
-          Icons.tag,
-          'id',
-          user.id.toString(),
-          onLongPress: () {
-            Clipboard.setData(ClipboardData(text: user.id.toString()));
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              duration: const Duration(seconds: 1),
-              content: Text('Copied user id #${user.id}'),
-            ));
-          },
+    return Expandables(
+      expanded: true,
+      child: Builder(
+        builder: (context) => Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (user.about?.bio case final bio? when bio.isNotEmpty)
+              Card(
+                child: ExpandablePanel(
+                  controller: Expandables.of(context, 'about'),
+                  header: const ListTile(
+                    leading: Icon(Icons.person),
+                    title: Text('About'),
+                  ),
+                  collapsed: const SizedBox.shrink(),
+                  expanded: Padding(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    child: DText(bio),
+                  ),
+                ),
+              ),
+            if (user.about?.comission case final comission?
+                when comission.isNotEmpty)
+              Card(
+                child: ExpandablePanel(
+                  controller: Expandables.of(context, 'comission'),
+                  header: const ListTile(
+                    leading: Icon(Icons.attach_money),
+                    title: Text('Comission'),
+                  ),
+                  collapsed: const SizedBox.shrink(),
+                  expanded: Padding(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    child: DText(comission),
+                  ),
+                ),
+              ),
+            Card(
+              child: ExpandablePanel(
+                controller: Expandables.of(context, 'info'),
+                header: const ListTile(
+                  leading: Icon(Icons.info_outline),
+                  title: Text('Info'),
+                ),
+                collapsed: const SizedBox.shrink(),
+                expanded: Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: Column(
+                    children: [
+                      info(
+                        Icons.tag,
+                        'id',
+                        user.id.toString(),
+                        onLongPress: () {
+                          Clipboard.setData(
+                              ClipboardData(text: user.id.toString()));
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                            duration: const Duration(seconds: 1),
+                            content: Text('Copied user id #${user.id}'),
+                          ));
+                        },
+                      ),
+                      if (user.stats case final stats?) ...[
+                        info(
+                          Icons.calendar_today,
+                          'joined',
+                          stats.createdAt != null
+                              ? DateFormatting.named(stats.createdAt!)
+                              : null,
+                        ),
+                        info(Icons.shield, 'rank',
+                            stats.levelString?.toLowerCase()),
+                        info(Icons.upload, 'posts', stats.postUploadCount),
+                        info(Icons.edit, 'edits', stats.postUpdateCount),
+                        info(Icons.favorite, 'favorites', stats.favoriteCount),
+                        info(Icons.comment, 'comments', stats.commentCount),
+                        info(Icons.forum, 'forum', stats.forumPostCount),
+                      ],
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
-        if (user.stats case final stats?) ...[
-          info(
-            Icons.calendar_today,
-            'joined',
-            stats.createdAt != null
-                ? DateFormatting.named(stats.createdAt!)
-                : null,
-          ),
-          info(Icons.shield, 'rank', stats.levelString?.toLowerCase()),
-          info(Icons.upload, 'posts', stats.postUploadCount),
-          info(Icons.edit, 'edits', stats.postUpdateCount),
-          info(Icons.favorite, 'favorites', stats.favoriteCount),
-          info(Icons.comment, 'comments', stats.commentCount),
-          info(Icons.forum, 'forum', stats.forumPostCount),
-        ]
-      ],
+      ),
     );
   }
 }

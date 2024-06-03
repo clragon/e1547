@@ -1,6 +1,6 @@
 import 'package:expandable/expandable.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 
 export 'package:expandable/expandable.dart';
 
@@ -61,7 +61,13 @@ class _ExpandablesState extends State<Expandables> {
     return _Expandables(
       get: get,
       controllers: _controllers,
-      child: widget.child,
+      child: ExpandableTheme(
+        data: ExpandableThemeData(
+          headerAlignment: ExpandablePanelHeaderAlignment.center,
+          iconColor: Theme.of(context).iconTheme.color,
+        ),
+        child: widget.child,
+      ),
     );
   }
 }

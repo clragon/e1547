@@ -23,6 +23,7 @@ mixin _$User {
   int get id => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
   int? get avatarId => throw _privateConstructorUsedError;
+  UserAbout? get about => throw _privateConstructorUsedError;
   UserStats? get stats => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -35,8 +36,10 @@ abstract class $UserCopyWith<$Res> {
   factory $UserCopyWith(User value, $Res Function(User) then) =
       _$UserCopyWithImpl<$Res, User>;
   @useResult
-  $Res call({int id, String name, int? avatarId, UserStats? stats});
+  $Res call(
+      {int id, String name, int? avatarId, UserAbout? about, UserStats? stats});
 
+  $UserAboutCopyWith<$Res>? get about;
   $UserStatsCopyWith<$Res>? get stats;
 }
 
@@ -56,6 +59,7 @@ class _$UserCopyWithImpl<$Res, $Val extends User>
     Object? id = null,
     Object? name = null,
     Object? avatarId = freezed,
+    Object? about = freezed,
     Object? stats = freezed,
   }) {
     return _then(_value.copyWith(
@@ -71,11 +75,27 @@ class _$UserCopyWithImpl<$Res, $Val extends User>
           ? _value.avatarId
           : avatarId // ignore: cast_nullable_to_non_nullable
               as int?,
+      about: freezed == about
+          ? _value.about
+          : about // ignore: cast_nullable_to_non_nullable
+              as UserAbout?,
       stats: freezed == stats
           ? _value.stats
           : stats // ignore: cast_nullable_to_non_nullable
               as UserStats?,
     ) as $Val);
+  }
+
+  @override
+  @pragma('vm:prefer-inline')
+  $UserAboutCopyWith<$Res>? get about {
+    if (_value.about == null) {
+      return null;
+    }
+
+    return $UserAboutCopyWith<$Res>(_value.about!, (value) {
+      return _then(_value.copyWith(about: value) as $Val);
+    });
   }
 
   @override
@@ -98,8 +118,11 @@ abstract class _$$UserImplCopyWith<$Res> implements $UserCopyWith<$Res> {
       __$$UserImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({int id, String name, int? avatarId, UserStats? stats});
+  $Res call(
+      {int id, String name, int? avatarId, UserAbout? about, UserStats? stats});
 
+  @override
+  $UserAboutCopyWith<$Res>? get about;
   @override
   $UserStatsCopyWith<$Res>? get stats;
 }
@@ -117,6 +140,7 @@ class __$$UserImplCopyWithImpl<$Res>
     Object? id = null,
     Object? name = null,
     Object? avatarId = freezed,
+    Object? about = freezed,
     Object? stats = freezed,
   }) {
     return _then(_$UserImpl(
@@ -132,6 +156,10 @@ class __$$UserImplCopyWithImpl<$Res>
           ? _value.avatarId
           : avatarId // ignore: cast_nullable_to_non_nullable
               as int?,
+      about: freezed == about
+          ? _value.about
+          : about // ignore: cast_nullable_to_non_nullable
+              as UserAbout?,
       stats: freezed == stats
           ? _value.stats
           : stats // ignore: cast_nullable_to_non_nullable
@@ -147,6 +175,7 @@ class _$UserImpl implements _User {
       {required this.id,
       required this.name,
       required this.avatarId,
+      required this.about,
       required this.stats});
 
   factory _$UserImpl.fromJson(Map<String, dynamic> json) =>
@@ -159,11 +188,13 @@ class _$UserImpl implements _User {
   @override
   final int? avatarId;
   @override
+  final UserAbout? about;
+  @override
   final UserStats? stats;
 
   @override
   String toString() {
-    return 'User(id: $id, name: $name, avatarId: $avatarId, stats: $stats)';
+    return 'User(id: $id, name: $name, avatarId: $avatarId, about: $about, stats: $stats)';
   }
 
   @override
@@ -175,12 +206,14 @@ class _$UserImpl implements _User {
             (identical(other.name, name) || other.name == name) &&
             (identical(other.avatarId, avatarId) ||
                 other.avatarId == avatarId) &&
+            (identical(other.about, about) || other.about == about) &&
             (identical(other.stats, stats) || other.stats == stats));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, id, name, avatarId, stats);
+  int get hashCode =>
+      Object.hash(runtimeType, id, name, avatarId, about, stats);
 
   @JsonKey(ignore: true)
   @override
@@ -201,6 +234,7 @@ abstract class _User implements User {
       {required final int id,
       required final String name,
       required final int? avatarId,
+      required final UserAbout? about,
       required final UserStats? stats}) = _$UserImpl;
 
   factory _User.fromJson(Map<String, dynamic> json) = _$UserImpl.fromJson;
@@ -212,10 +246,166 @@ abstract class _User implements User {
   @override
   int? get avatarId;
   @override
+  UserAbout? get about;
+  @override
   UserStats? get stats;
   @override
   @JsonKey(ignore: true)
   _$$UserImplCopyWith<_$UserImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+UserAbout _$UserAboutFromJson(Map<String, dynamic> json) {
+  return _UserAbout.fromJson(json);
+}
+
+/// @nodoc
+mixin _$UserAbout {
+  String? get bio => throw _privateConstructorUsedError;
+  String? get comission => throw _privateConstructorUsedError;
+
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+  @JsonKey(ignore: true)
+  $UserAboutCopyWith<UserAbout> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $UserAboutCopyWith<$Res> {
+  factory $UserAboutCopyWith(UserAbout value, $Res Function(UserAbout) then) =
+      _$UserAboutCopyWithImpl<$Res, UserAbout>;
+  @useResult
+  $Res call({String? bio, String? comission});
+}
+
+/// @nodoc
+class _$UserAboutCopyWithImpl<$Res, $Val extends UserAbout>
+    implements $UserAboutCopyWith<$Res> {
+  _$UserAboutCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? bio = freezed,
+    Object? comission = freezed,
+  }) {
+    return _then(_value.copyWith(
+      bio: freezed == bio
+          ? _value.bio
+          : bio // ignore: cast_nullable_to_non_nullable
+              as String?,
+      comission: freezed == comission
+          ? _value.comission
+          : comission // ignore: cast_nullable_to_non_nullable
+              as String?,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$UserAboutImplCopyWith<$Res>
+    implements $UserAboutCopyWith<$Res> {
+  factory _$$UserAboutImplCopyWith(
+          _$UserAboutImpl value, $Res Function(_$UserAboutImpl) then) =
+      __$$UserAboutImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({String? bio, String? comission});
+}
+
+/// @nodoc
+class __$$UserAboutImplCopyWithImpl<$Res>
+    extends _$UserAboutCopyWithImpl<$Res, _$UserAboutImpl>
+    implements _$$UserAboutImplCopyWith<$Res> {
+  __$$UserAboutImplCopyWithImpl(
+      _$UserAboutImpl _value, $Res Function(_$UserAboutImpl) _then)
+      : super(_value, _then);
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? bio = freezed,
+    Object? comission = freezed,
+  }) {
+    return _then(_$UserAboutImpl(
+      bio: freezed == bio
+          ? _value.bio
+          : bio // ignore: cast_nullable_to_non_nullable
+              as String?,
+      comission: freezed == comission
+          ? _value.comission
+          : comission // ignore: cast_nullable_to_non_nullable
+              as String?,
+    ));
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$UserAboutImpl implements _UserAbout {
+  const _$UserAboutImpl({required this.bio, required this.comission});
+
+  factory _$UserAboutImpl.fromJson(Map<String, dynamic> json) =>
+      _$$UserAboutImplFromJson(json);
+
+  @override
+  final String? bio;
+  @override
+  final String? comission;
+
+  @override
+  String toString() {
+    return 'UserAbout(bio: $bio, comission: $comission)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$UserAboutImpl &&
+            (identical(other.bio, bio) || other.bio == bio) &&
+            (identical(other.comission, comission) ||
+                other.comission == comission));
+  }
+
+  @JsonKey(ignore: true)
+  @override
+  int get hashCode => Object.hash(runtimeType, bio, comission);
+
+  @JsonKey(ignore: true)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$UserAboutImplCopyWith<_$UserAboutImpl> get copyWith =>
+      __$$UserAboutImplCopyWithImpl<_$UserAboutImpl>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$UserAboutImplToJson(
+      this,
+    );
+  }
+}
+
+abstract class _UserAbout implements UserAbout {
+  const factory _UserAbout(
+      {required final String? bio,
+      required final String? comission}) = _$UserAboutImpl;
+
+  factory _UserAbout.fromJson(Map<String, dynamic> json) =
+      _$UserAboutImpl.fromJson;
+
+  @override
+  String? get bio;
+  @override
+  String? get comission;
+  @override
+  @JsonKey(ignore: true)
+  _$$UserAboutImplCopyWith<_$UserAboutImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 

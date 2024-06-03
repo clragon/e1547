@@ -18,38 +18,31 @@ class SectionWrap extends StatelessWidget {
     return IndentedCard(
       backgroundColor: Theme.of(context).canvasColor,
       color: dimTextColor(context),
-      child: ExpandableNotifier(
+      child: ExpandablePanel(
         controller: Expandables.of(context, key!, expanded: expanded),
-        child: ExpandableTheme(
-          data: ExpandableThemeData(
-            iconColor: Theme.of(context).iconTheme.color,
+        header: Padding(
+          padding: const EdgeInsets.all(8),
+          child: Text(
+            title?.replaceAll('\n', 'replace') ?? '',
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
+              fontSize: 16,
+            ),
           ),
-          child: ExpandablePanel(
-            header: Padding(
-              padding: const EdgeInsets.all(8),
-              child: Text(
-                title?.replaceAllMapped(RegExp(r'\n'), (_) => '') ?? '',
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                  fontSize: 16,
+        ),
+        collapsed: const SizedBox.shrink(),
+        expanded: Padding(
+          padding: const EdgeInsets.all(8),
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [child],
                 ),
               ),
-            ),
-            collapsed: const SizedBox.shrink(),
-            expanded: Padding(
-              padding: const EdgeInsets.all(8),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [child],
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            ],
           ),
         ),
       ),

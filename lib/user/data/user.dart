@@ -9,10 +9,21 @@ class User with _$User {
     required int id,
     required String name,
     required int? avatarId,
+    required UserAbout? about,
     required UserStats? stats,
   }) = _User;
 
   factory User.fromJson(dynamic json) => _$UserFromJson(json);
+}
+
+@freezed
+class UserAbout with _$UserAbout {
+  const factory UserAbout({
+    required String? bio,
+    required String? comission,
+  }) = _UserAbout;
+
+  factory UserAbout.fromJson(dynamic json) => _$UserAboutFromJson(json);
 }
 
 @freezed

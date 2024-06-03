@@ -48,6 +48,10 @@ extension E621User on User {
           id: json['id'],
           name: json['name'],
           avatarId: json['avatar_id'],
+          about: UserAbout(
+            bio: json['profile_about'],
+            comission: json['profile_artinfo'],
+          ),
           stats: UserStats(
             createdAt: pick('created_at').asDateTimeOrThrow(),
             levelString: pick('level_string').asStringOrThrow(),
