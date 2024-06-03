@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:e1547/app/app.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/interface/interface.dart';
@@ -32,17 +33,19 @@ class DText extends StatefulWidget {
 }
 
 class _DTextState extends State<DText> {
+  final Logger _logger = Logger('DText');
   DTextElement? content;
   Object? error;
 
   void _runParse() {
     try {
       content = DTextGrammar().build().parse(widget.value).value;
+      _logger.fine('Parsed DText', content);
     } on ParserException catch (e, s) {
-      Logger('DText').shout('Failed to parse DText', e, s);
+      _logger.shout('Failed to parse DText', e, s);
       error = e;
     } on Object catch (e, s) {
-      Logger('DText').severe('Catastropically failed to parse DText', e, s);
+      _logger.severe('Catastropically failed to parse DText', e, s);
       error = e;
     }
   }
@@ -304,6 +307,16 @@ class DTextBody extends StatelessWidget {
           ),
         ),
       DTextList() => TextSpan(
+          children: element.items
+              .map((e) => [
+                    if (element.items.indexOf(e) != 0)
+                      const TextSpan(text: '\n'),
+                    _buildSpan(context, e),
+                  ])
+              .flattened
+              .toList(),
+        ),
+      DTextBullet() => TextSpan(
           children: [
             TextSpan(text: '${' ' * element.indent}• '),
             _buildSpan(context, element.children),

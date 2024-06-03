@@ -23,7 +23,15 @@ class LogString {
     StringBuffer buffer = StringBuffer();
     buffer.writeln(record.message);
     if (record.error != null) {
-      buffer.write(prettyLogObject(record.error!, header: 'Error'));
+      buffer.write(
+        prettyLogObject(
+          record.error!,
+          header: switch (record.level) {
+            final level when level >= Level.FINE => 'Data',
+            _ => 'Error',
+          },
+        ),
+      );
     }
     if (record.error != null && record.stackTrace != null) {
       buffer.write(prettyLogObject(record.stackTrace!, header: 'Stacktrace'));

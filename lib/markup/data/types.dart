@@ -52,7 +52,7 @@ class DTextContent extends DTextElement {
   final String content;
 
   @override
-  String toString() => 'Text($content)';
+  String toString() => 'Text(${content.replaceAll('\r\n', r'\n')})';
 
   DTextContent operator +(DTextContent other) =>
       DTextContent(content + other.content);
@@ -219,13 +219,22 @@ class DTextHeader extends DTextBlock {
   String toString() => 'Header($level, $children)';
 }
 
-class DTextList extends DTextBlock {
-  const DTextList(this.indent, super.children);
+class DTextBullet extends DTextBlock {
+  const DTextBullet(this.indent, super.children);
 
   final int indent;
 
   @override
-  String toString() => 'List($indent, $children)';
+  String toString() => 'Bullet($indent, $children)';
+}
+
+class DTextList extends DTextElement {
+  const DTextList(this.items);
+
+  final List<DTextBullet> items;
+
+  @override
+  String toString() => 'List($items)';
 }
 
 class DTextLinkWord extends DTextElement {
