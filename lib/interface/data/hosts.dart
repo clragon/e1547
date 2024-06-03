@@ -11,6 +11,7 @@ final Map<IconData, List<String>> hostIcons = {
   FontAwesomeIcons.dropbox: ['dl.dropboxusercontent.com'],
   FontAwesomeIcons.facebookF: ['.fbcdn.net'],
   FontAwesomeIcons.twitter: ['.twimg.com', 'twitter.com'],
+  FontAwesomeIcons.xTwitter: ['x.com'],
   FontAwesomeIcons.redditAlien: ['reddit.com', 'i.redd.it'],
   FontAwesomeIcons.deviantart: ['.deviantart.com', '.deviantart.net'],
   FontAwesomeIcons.paw: ['furaffinity.net'],
