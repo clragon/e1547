@@ -37,18 +37,18 @@ extension Identification on History {
       return title!;
     }
 
-    if (parsed.id is String) {
+    if (parsed.id case final id when id is String) {
       switch (type) {
         case LinkType.user:
-          return '${parsed.id} - User';
+          return '$id - User';
         case LinkType.wiki:
-          return '${parsed.id} - Wiki';
+          return '$id - Wiki';
         default:
           break;
       }
     }
 
-    if (parsed.id is int) {
+    if (parsed.id case final id when id is int) {
       switch (type) {
         case LinkType.post:
           return 'Post #$id';
