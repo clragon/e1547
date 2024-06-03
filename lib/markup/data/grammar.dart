@@ -135,6 +135,12 @@ class DTextGrammar extends GrammarDefinition<DTextElement> {
         ref0(section),
       ].toChoiceParser();
 
+  Parser<void> blockMarkers() => [
+        ref1(blockMarker, 'quote'),
+        ref1(blockMarker, 'code'),
+        ref1(blockMarker, 'section'),
+      ].toChoiceParser();
+
   Parser<DTextElement> structures() => [
         ref0(header),
         ref0(list),
@@ -177,6 +183,16 @@ class DTextGrammar extends GrammarDefinition<DTextElement> {
       ].toChoiceParser();
 
   Parser<DTextElement> character() => any().map((value) => DTextContent(value));
+
+  Parser<void> blockMarker(String tag) => (
+        char('['),
+        char('/').optional(),
+        stringIgnoreCase(tag),
+        (char('='), any().starLazy(char(']')).flatten())
+            .toSequenceParser()
+            .optional(),
+        char(']'),
+      ).toSequenceParser();
 
   Parser<DTextElement> simpleBlockTag(String tag) =>
       ref3(blockTag, tag, tag, null).map((e) => e.$2);
@@ -273,7 +289,7 @@ class DTextGrammar extends GrammarDefinition<DTextElement> {
         condense(
           ref0(textElement)
               .starLazy([
-                blocks(),
+                blockMarkers(),
                 newline(),
                 endOfInput(),
               ].toChoiceParser())
@@ -289,7 +305,7 @@ class DTextGrammar extends GrammarDefinition<DTextElement> {
         condense(
           ref0(textElement)
               .starLazy([
-                blocks(),
+                blockMarkers(),
                 newline(),
                 endOfInput(),
               ].toChoiceParser())
