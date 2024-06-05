@@ -1,0 +1,10 @@
+### Added
+- X (formerly twitter) source icon
+
+### Changed
+- appbar filter icon
+
+### Fixed
+- light theme appbars
+- post updated\_at error
+- dtext newlines

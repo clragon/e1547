@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [19.1.0+94] - 2024-06-05
 ### Added
 - X (formerly twitter) source icon
 
@@ -873,7 +873,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Fixed
 - API client bindings
 
-[Unreleased]: https://github.com/clragon/e1547/compare/19.0.1+93...HEAD
+[19.1.0+94]: https://github.com/clragon/e1547/compare/19.0.1+93...19.1.0+94
 [19.0.1+93]: https://github.com/clragon/e1547/compare/19.0.0+92...19.0.1+93
 [19.0.0+92]: https://github.com/clragon/e1547/compare/18.1.0+91...19.0.0+92
 [18.1.0+91]: https://github.com/clragon/e1547/compare/18.0.0+90...18.1.0+91
