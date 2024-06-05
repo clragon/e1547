@@ -281,11 +281,12 @@ class DTextGrammar extends GrammarDefinition<DTextElement> {
 
   Parser<DTextElement> header() => (
         (
+          char(' ').star(),
           charIgnoringCase('h'),
           pattern('1-6').map(int.parse),
           char('.'),
           char(' ').star(),
-        ).toSequenceParser().map((e) => e.$2),
+        ).toSequenceParser().map((e) => e.$3),
         condense(
           ref0(textElement)
               .starLazy([
