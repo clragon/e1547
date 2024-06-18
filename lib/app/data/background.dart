@@ -3,9 +3,7 @@ import 'dart:async';
 import 'package:e1547/app/app.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/follow/follow.dart';
-import 'package:e1547/identity/identity.dart';
 import 'package:e1547/logs/logs.dart';
-import 'package:e1547/traits/traits.dart';
 import 'package:workmanager/workmanager.dart';
 
 /// Handles all background tasks that the app registered.
@@ -27,52 +25,18 @@ void executeBackgroundTasks() => Workmanager().executeTask(
           },
         );
 
+        ControllerBundle bundle = await prepareBackgroundIsolate();
+        FlutterLocalNotificationsPlugin notifications =
+            await initializeNotifications();
+
         try {
           switch (task) {
             case followsBackgroundTaskKey:
-              ControllerBundle bundle = await prepareBackgroundIsolate();
-              FlutterLocalNotificationsPlugin notifications =
-                  await initializeNotifications();
-
-              // this ensures continued scheduling on iOS.
-              FollowRepository allFollows =
-                  FollowRepository(database: bundle.storage.sqlite);
-              registerFollowBackgroundTask(
-                await allFollows.all(types: [FollowType.notify]),
+              return runFollowUpdates(
+                bundle: bundle,
+                notifications: notifications,
+                cancelToken: cancelToken,
               );
-
-              List<Identity> identities = await bundle.identities.all();
-              List<bool> result = [];
-
-              final clientFactory = ClientFactory();
-
-              for (final identity in identities) {
-                TraitsService traits =
-                    TraitsService(database: bundle.storage.sqlite);
-                await traits.activate(identity.id);
-
-                Client client = clientFactory.create(
-                  ClientConfig(
-                    identity: identity,
-                    traits: traits.notifier,
-                    storage: bundle.storage,
-                  ),
-                );
-
-                result.add(
-                  await backgroundUpdateFollows(
-                    client: client,
-                    notifications: notifications,
-                    cancelToken: cancelToken,
-                  ),
-                );
-              }
-
-              registerFollowBackgroundTask(
-                await allFollows.all(types: [FollowType.notify]),
-              );
-
-              return result.every((e) => e);
             default:
               throw StateError('Task $task is unknown!');
           }
