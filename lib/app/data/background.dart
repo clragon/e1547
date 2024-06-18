@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:e1547/app/app.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/follow/follow.dart';
@@ -10,6 +12,21 @@ import 'package:workmanager/workmanager.dart';
 @pragma('vm:entry-point')
 void executeBackgroundTasks() => Workmanager().executeTask(
       (task, inputData) async {
+        final logger = Logger('BackgroundTasks');
+
+        CancelToken cancelToken = CancelToken();
+        Timer(
+          // Android forces a 10 minute timeout on background tasks.
+          // We generally don't want to run for that long, so we'll
+          // cancel any task that runs for more than 5 minutes.
+          // This gives us ample time to shut down gracefully.
+          const Duration(minutes: 5),
+          () {
+            cancelToken.cancel();
+            logger.warning('Task $task took too long! Cancelling...');
+          },
+        );
+
         try {
           switch (task) {
             case followsBackgroundTaskKey:
@@ -46,6 +63,7 @@ void executeBackgroundTasks() => Workmanager().executeTask(
                   await backgroundUpdateFollows(
                     client: client,
                     notifications: notifications,
+                    cancelToken: cancelToken,
                   ),
                 );
               }
@@ -56,10 +74,10 @@ void executeBackgroundTasks() => Workmanager().executeTask(
 
               return result.every((e) => e);
             default:
-              throw StateError('Background task $task is unknown!');
+              throw StateError('Task $task is unknown!');
           }
         } on Object catch (e, stack) {
-          Logger('BackgroundTasks').severe('Error executing "$task"', e, stack);
+          logger.severe('Failed executing Task $task', e, stack);
           rethrow;
         }
       },

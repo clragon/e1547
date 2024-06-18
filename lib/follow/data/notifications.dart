@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -13,6 +14,7 @@ const String followsBackgroundTaskKey = 'net.clynamic.e1547.follows';
 Future<bool> backgroundUpdateFollows({
   required Client client,
   required FlutterLocalNotificationsPlugin notifications,
+  CancelToken? cancelToken,
 }) async {
   if (!client.hasFeature(FollowFeature.database)) return true;
 
@@ -20,7 +22,9 @@ Future<bool> backgroundUpdateFollows({
     query: FollowsQuery(types: [FollowType.notify]),
   );
 
-  await client.follows.sync(force: true);
+  cancelToken?.whenCancel.then((_) => client.follows.currentSync?.cancel());
+
+  await client.follows.sync();
 
   List<Follow> updated = await client.follows.all(
     query: FollowsQuery(types: [FollowType.notify]),
