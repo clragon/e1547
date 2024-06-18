@@ -60,7 +60,7 @@ class TraitsService extends TraitsRepository with ChangeNotifier {
     if (_traits == null) {
       throw StateError(
         'IdentitySettingsService was not activated before accessing '
-        'the settings property',
+        'the traits property',
       );
     }
     return _traits!;

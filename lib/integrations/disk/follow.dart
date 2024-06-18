@@ -143,11 +143,12 @@ abstract class DiskFollowService extends FollowService with Disposable {
   @override
   Future<void> sync({bool? force}) async {
     if (_currentSync != null) return;
-    _currentSync = createSync(force: force);
-    _syncStream.add(_currentSync);
-    await _currentSync!.run();
+    final sync = createSync(force: force);
+    _currentSync = sync;
+    _syncStream.add(sync);
+    await sync.run();
     _currentSync = null;
-    _syncStream.add(_currentSync);
+    _syncStream.add(null);
   }
 
   FollowSync createSync({bool? force});
