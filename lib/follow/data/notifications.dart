@@ -16,7 +16,6 @@ const String followsBackgroundTaskKey = 'net.clynamic.e1547.follows';
 Future<bool> runFollowUpdates({
   required ControllerBundle bundle,
   required FlutterLocalNotificationsPlugin notifications,
-  CancelToken? cancelToken,
 }) async {
   // this ensures continued scheduling on iOS.
   FollowRepository allFollows =
@@ -46,7 +45,7 @@ Future<bool> runFollowUpdates({
       await runClientFollowUpdate(
         client: client,
         notifications: notifications,
-        cancelToken: cancelToken,
+        cancelToken: bundle.cancelToken,
       ),
     );
   }

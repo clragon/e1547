@@ -15,7 +15,7 @@ export 'package:e1547/settings/settings.dart' show AppInfo;
 export 'package:window_manager/window_manager.dart' show WindowManager;
 
 /// Initializes an AppInfo with default production values.
-Future<void> initializeAppInfo() async => AppInfo.initializePlatform(
+Future<void> initializeAppInfo() => AppInfo.initializePlatform(
       developer: 'binaryfloof',
       github: 'clragon/e1547',
       discord: 'MRwKGqfmUz',
@@ -24,10 +24,12 @@ Future<void> initializeAppInfo() async => AppInfo.initializePlatform(
       email: 'support@clynamic.net',
     );
 
+Future<String> getTemporaryAppDirectory() => getTemporaryDirectory()
+    .then((dir) => join(dir.path, AppInfo.instance.appName));
+
 /// Initializes the storages used by the app with default production values.
 Future<AppStorage> initializeAppStorage() async {
-  final String temporaryFiles = await getTemporaryDirectory()
-      .then((value) => join(value.path, AppInfo.instance.appName));
+  final String temporaryFiles = await getTemporaryAppDirectory();
   return AppStorage(
     preferences: await SharedPreferences.getInstance(),
     temporaryFiles: temporaryFiles,
@@ -81,6 +83,9 @@ File createLogFile(String directoryPath, String? postfix) {
       '${logFileDateFormat.format(DateTime.now())}${postfix != null ? '.$postfix' : ''}.log'));
 
   Directory dir = Directory(directoryPath);
+  if (!dir.existsSync()) {
+    dir.createSync(recursive: true);
+  }
   List<File> logFiles = dir
       .listSync()
       .whereType<File>()

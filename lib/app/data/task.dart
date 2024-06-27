@@ -1,6 +1,10 @@
+import 'dart:async';
 import 'dart:io';
+import 'dart:isolate';
+import 'dart:ui';
 
 import 'package:e1547/app/app.dart';
+import 'package:e1547/client/client.dart';
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/identity/identity.dart';
 import 'package:e1547/logs/logs.dart';
@@ -11,13 +15,29 @@ export 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 final Logger _logger = Logger('BackgroundTask');
 
+/// Constants for inter-isolate communication.
+abstract final class BackgroundCommunication {
+  /// Key for background isolate port.
+  static const String backgroundKey = 'backgroundTaskPort';
+
+  /// Key for foreground isolate port.
+  static const String foregroundKey = 'foregroundTaskPort';
+
+  /// Sent by the foreground isolate to terminate the background isolate.
+  static const String terminateMessage = 'terminate';
+
+  /// Sent by the background isolate to the foreground isolate to notify it has started.
+  static const String startupMessage = 'startup';
+}
+
 /// Prepares controller objects necessary to run various tasks in a background isolate.
 Future<ControllerBundle> prepareBackgroundIsolate() async {
   await initializeAppInfo();
+  Logs logs = await initializeLogger(
+      path: await getTemporaryAppDirectory(), postfix: 'background');
+  CancelToken cancelToken = await setupBackgroundCommunication();
   AppStorage storage = await initializeAppStorage();
-  await initializeLogger(path: storage.temporaryFiles, postfix: 'background');
   Settings settings = Settings(storage.preferences);
-
   IdentityService identities = IdentityService(database: storage.sqlite);
   await identities.activate(settings.identity.value);
 
@@ -25,7 +45,14 @@ Future<ControllerBundle> prepareBackgroundIsolate() async {
     storage: storage,
     settings: settings,
     identities: identities,
+    logs: logs,
+    cancelToken: cancelToken,
   );
+}
+
+Future<void> prepareForegroundIsolate() async {
+  await setupForegroundCommunication();
+  unawaited(initializeBackgroundTasks());
 }
 
 class ControllerBundle {
@@ -36,6 +63,8 @@ class ControllerBundle {
     required this.storage,
     required this.settings,
     required this.identities,
+    required this.logs,
+    required this.cancelToken,
   });
 
   /// Application databases.
@@ -46,6 +75,66 @@ class ControllerBundle {
 
   /// Service of identities.
   final IdentityService identities;
+
+  /// Application logs.
+  final Logs logs;
+
+  /// Cancel token for the isolate.
+  final CancelToken cancelToken;
+}
+
+Future<CancelToken> setupBackgroundCommunication() async {
+  CancelToken cancelToken = CancelToken();
+  ReceivePort receivePort = ReceivePort();
+
+  IsolateNameServer.registerPortWithName(
+    receivePort.sendPort,
+    BackgroundCommunication.backgroundKey,
+  );
+
+  receivePort.listen((message) {
+    if (message is String &&
+        message == BackgroundCommunication.terminateMessage) {
+      cancelToken.cancel('Terminated by foreground isolate');
+      receivePort.close();
+      IsolateNameServer.removePortNameMapping(
+          BackgroundCommunication.backgroundKey);
+    }
+  });
+
+  SendPort? sendPort =
+      IsolateNameServer.lookupPortByName(BackgroundCommunication.foregroundKey);
+
+  if (sendPort != null) {
+    sendPort.send(BackgroundCommunication.startupMessage);
+  }
+
+  return cancelToken;
+}
+
+Future<void> setupForegroundCommunication() async {
+  ReceivePort receivePort = ReceivePort();
+
+  IsolateNameServer.registerPortWithName(
+    receivePort.sendPort,
+    BackgroundCommunication.foregroundKey,
+  );
+
+  SendPort? sendPort =
+      IsolateNameServer.lookupPortByName(BackgroundCommunication.backgroundKey);
+
+  if (sendPort != null) {
+    sendPort.send(BackgroundCommunication.startupMessage);
+  }
+
+  receivePort.listen((message) {
+    if (message is String &&
+        message == BackgroundCommunication.startupMessage) {
+      sendPort = IsolateNameServer.lookupPortByName(
+          BackgroundCommunication.backgroundKey);
+      sendPort?.send(BackgroundCommunication.terminateMessage);
+    }
+  });
 }
 
 /// Registers background tasks for the app.

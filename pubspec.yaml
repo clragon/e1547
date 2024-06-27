@@ -1,6 +1,6 @@
 name: e1547
 description: A sophisticated e621 browser
-version: 19.1.0+94
+version: 19.2.0-beta+93
 publish_to: none
 
 environment:
