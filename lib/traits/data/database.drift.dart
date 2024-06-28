@@ -103,8 +103,6 @@ class $TraitsTableTable extends i6.TraitsTable
           .read(i0.DriftSqlType.string, data['${effectivePrefix}home_tags'])!,
       avatar: attachedDatabase.typeMapping
           .read(i0.DriftSqlType.string, data['${effectivePrefix}avatar']),
-      favicon: attachedDatabase.typeMapping
-          .read(i0.DriftSqlType.string, data['${effectivePrefix}favicon']),
     );
   }
 
@@ -214,7 +212,6 @@ class _$TraitsInsertable implements i0.Insertable<i5.Traits> {
       denylist: i0.Value(_object.denylist),
       homeTags: i0.Value(_object.homeTags),
       avatar: i0.Value(_object.avatar),
-      favicon: i0.Value(_object.favicon),
     ).toColumns(false);
   }
 }

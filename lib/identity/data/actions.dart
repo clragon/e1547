@@ -70,3 +70,7 @@ String assembleHostedUrl(String host, String path) {
 extension HostedUrlsExtenstion on Identity {
   String withHost(String path) => assembleHostedUrl(host, path);
 }
+
+extension IdentityUsernaming on Identity {
+  String get usernameOrAnon => username ?? 'Anonymous';
+}
