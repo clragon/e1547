@@ -4,7 +4,6 @@ import 'package:e1547/client/client.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/post/widgets/detail/appbar.dart';
-import 'package:e1547/post/widgets/detail/inject.dart';
 import 'package:flutter/material.dart';
 
 class PostDetail extends StatelessWidget {
@@ -112,81 +111,78 @@ class PostDetail extends StatelessWidget {
       post: post,
       child: PostHistoryConnector(
         post: post,
-        child: TagInjector(
+        child: PostEditor(
           post: post,
-          child: PostEditor(
-            post: post,
-            child: Scaffold(
-              extendBodyBehindAppBar: true,
-              appBar: PostDetailAppBar(post: post),
-              floatingActionButton: context.read<Client>().hasLogin
-                  ? PostDetailFloatingActionButton(post: post)
-                  : null,
-              body: MediaQuery.removeViewInsets(
-                context: context,
-                removeTop: true,
-                child: LayoutBuilder(
-                  builder: (context, constraints) {
-                    if (constraints.maxWidth < 1000) {
-                      return ListView(
-                        primary: true,
-                        padding: EdgeInsets.only(
-                          top: MediaQuery.of(context).padding.top,
-                          bottom: kBottomNavigationBarHeight + 24,
-                        ),
-                        children: [
-                          image(context, constraints),
-                          upperBody(context),
-                          middleBody(context),
-                          lowerBody(context),
-                        ],
-                      );
+          child: Scaffold(
+            extendBodyBehindAppBar: true,
+            appBar: PostDetailAppBar(post: post),
+            floatingActionButton: context.read<Client>().hasLogin
+                ? PostDetailFloatingActionButton(post: post)
+                : null,
+            body: MediaQuery.removeViewInsets(
+              context: context,
+              removeTop: true,
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  if (constraints.maxWidth < 1000) {
+                    return ListView(
+                      primary: true,
+                      padding: EdgeInsets.only(
+                        top: MediaQuery.of(context).padding.top,
+                        bottom: kBottomNavigationBarHeight + 24,
+                      ),
+                      children: [
+                        image(context, constraints),
+                        upperBody(context),
+                        middleBody(context),
+                        lowerBody(context),
+                      ],
+                    );
+                  } else {
+                    double sideBarWidth;
+                    if (constraints.maxWidth > 1400) {
+                      sideBarWidth = 404;
                     } else {
-                      double sideBarWidth;
-                      if (constraints.maxWidth > 1400) {
-                        sideBarWidth = 404;
-                      } else {
-                        sideBarWidth = 304;
-                      }
-                      return CustomScrollView(
-                        primary: true,
-                        slivers: [
-                          SliverCrossAxisGroup(
-                            slivers: [
-                              SliverMainAxisGroup(
-                                slivers: [
-                                  SliverToBoxAdapter(
-                                    child: Column(
-                                      children: [
-                                        image(context, constraints),
-                                        upperBody(context),
-                                      ],
-                                    ),
-                                  ),
-                                  SliverPostCommentSection(post: post),
-                                ],
-                              ),
-                              SliverConstrainedCrossAxis(
-                                maxExtent: sideBarWidth,
-                                sliver: SliverToBoxAdapter(
+                      sideBarWidth = 304;
+                    }
+                    return CustomScrollView(
+                      primary: true,
+                      slivers: [
+                        SliverCrossAxisGroup(
+                          slivers: [
+                            SliverMainAxisGroup(
+                              slivers: [
+                                SliverToBoxAdapter(
                                   child: Column(
-                                    mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      const SizedBox(
-                                        height: 56,
-                                      ),
-                                      lowerBody(context),
+                                      image(context, constraints),
+                                      upperBody(context),
                                     ],
                                   ),
                                 ),
+                                SliverPostCommentSection(post: post),
+                              ],
+                            ),
+                            SliverConstrainedCrossAxis(
+                              maxExtent: sideBarWidth,
+                              sliver: SliverToBoxAdapter(
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const SizedBox(
+                                      height: 56,
+                                    ),
+                                    lowerBody(context),
+                                  ],
+                                ),
                               ),
-                            ],
-                          ),
-                        ],
-                      );
-                    }
-                  },
-                ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    );
+                  }
+                },
               ),
             ),
           ),

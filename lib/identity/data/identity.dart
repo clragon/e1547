@@ -29,7 +29,3 @@ class IdentityRequest with _$IdentityRequest {
   factory IdentityRequest.fromJson(dynamic json) =>
       _$IdentityRequestFromJson(json);
 }
-
-extension IdentityUsernaming on Identity {
-  String get usernameOrAnon => username ?? 'Anonymous';
-}

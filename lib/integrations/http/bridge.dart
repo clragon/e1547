@@ -16,13 +16,7 @@ class HttpBridgeService extends BridgeService {
   final ValueNotifier<Traits> traits;
 
   @override
-  Future<void> available() async {
-    String body = await dio.get('').then((response) => response.data);
-    String? favicon = findFavicon(body);
-    traits.value = traits.value.copyWith(
-      favicon: favicon != null ? identity.withHost(favicon) : null,
-    );
-  }
+  Future<void> available() => dio.get('');
 
   @override
   Future<void> push({
