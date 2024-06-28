@@ -98,15 +98,13 @@ class CommentHeader extends StatelessWidget {
     return Dimmed(
       child: InkWell(
         borderRadius: BorderRadius.circular(4),
-        onTap: context.watch<Client>().hasFeature(ClientFeature.users)
-            ? () => Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => UserLoadingPage(
-                      comment.creatorId.toString(),
-                    ),
-                  ),
-                )
-            : null,
+        onTap: () => Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => UserLoadingPage(
+              comment.creatorId.toString(),
+            ),
+          ),
+        ),
         child: TimedText(
           created: comment.createdAt,
           updated: comment.updatedAt,
@@ -152,7 +150,6 @@ class CommentVotes extends StatelessWidget {
   Widget build(BuildContext context) {
     Client client = context.watch<Client>();
     VoteInfo? vote = comment.vote;
-    if (!client.hasFeature(CommentFeature.vote)) return const SizedBox();
     if (vote == null) return const SizedBox();
 
     final controller = context.read<CommentController>();
@@ -214,8 +211,7 @@ class CommentMenu extends StatelessWidget {
       icon: const Dimmed(child: Icon(Icons.more_vert)),
       onSelected: (value) => value(),
       itemBuilder: (context) => [
-        if (client.hasFeature(CommentFeature.update) &&
-            client.identity.username == comment.creatorName)
+        if (client.identity.username == comment.creatorName)
           PopupMenuTile(
             title: 'Edit',
             icon: Icons.edit,
@@ -236,27 +232,25 @@ class CommentMenu extends StatelessWidget {
               error: 'You must be logged in to edit comments!',
             ),
           ),
-        if (client.hasFeature(CommentFeature.post))
-          PopupMenuTile(
-            title: 'Reply',
-            icon: Icons.reply,
-            value: () => guardWithLogin(
-              context: context,
-              callback: () {
-                CommentController controller =
-                    context.read<CommentController>();
-                replyComment(
-                  context: context,
-                  comment: comment,
-                ).then((value) {
-                  if (value) {
-                    controller.refresh(force: true);
-                  }
-                });
-              },
-              error: 'You must be logged in to reply to comments!',
-            ),
+        PopupMenuTile(
+          title: 'Reply',
+          icon: Icons.reply,
+          value: () => guardWithLogin(
+            context: context,
+            callback: () {
+              CommentController controller = context.read<CommentController>();
+              replyComment(
+                context: context,
+                comment: comment,
+              ).then((value) {
+                if (value) {
+                  controller.refresh(force: true);
+                }
+              });
+            },
+            error: 'You must be logged in to reply to comments!',
           ),
+        ),
         PopupMenuTile(
           title: 'Copy ID',
           icon: Icons.tag,
@@ -270,22 +264,21 @@ class CommentMenu extends StatelessWidget {
             ));
           },
         ),
-        if (client.hasFeature(CommentFeature.report))
-          PopupMenuTile(
-            title: 'Report',
-            icon: Icons.report,
-            value: () => guardWithLogin(
-              context: context,
-              callback: () => Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => CommentReportScreen(
-                    comment: comment,
-                  ),
+        PopupMenuTile(
+          title: 'Report',
+          icon: Icons.report,
+          value: () => guardWithLogin(
+            context: context,
+            callback: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => CommentReportScreen(
+                  comment: comment,
                 ),
               ),
-              error: 'You must be logged in to report comments!',
             ),
+            error: 'You must be logged in to report comments!',
           ),
+        ),
       ],
     );
   }

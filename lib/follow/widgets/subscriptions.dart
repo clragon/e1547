@@ -30,9 +30,7 @@ class FollowsSubscriptionsPage extends StatelessWidget {
               // remove this when the paged grid view is implemented
               controller.getNextPage();
               final client = context.read<Client>();
-              if (client.hasFeature(FollowFeature.database)) {
-                client.follows.sync();
-              }
+              client.follows.sync();
               return null;
             },
             keys: [controller],

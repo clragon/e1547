@@ -248,9 +248,6 @@ class _SearchTagDisplayState extends State<SearchTagDisplay> {
 
   Future<Wiki?> retrieveWiki() async {
     Client client = context.read<Client>();
-    if (!client.hasFeature(ClientFeature.wikis)) {
-      return null;
-    }
     List<Wiki> results = await client.wikis.page(
       query: {'search[title]': tagToRaw(widget.tag)},
     );
@@ -262,17 +259,15 @@ class _SearchTagDisplayState extends State<SearchTagDisplay> {
     super.initState();
     // TODO: history connector?
     Client client = context.read<Client>();
-    if (client.hasFeature(ClientFeature.histories)) {
-      wiki.then((value) {
-        if (value != null) {
-          client.histories.addWiki(wiki: value);
-        } else {
-          client.histories.addWikiSearch(
-            query: {'search[title]': tagToRaw(widget.tag)},
-          );
-        }
-      });
-    }
+    wiki.then((value) {
+      if (value != null) {
+        client.histories.addWiki(wiki: value);
+      } else {
+        client.histories.addWikiSearch(
+          query: {'search[title]': tagToRaw(widget.tag)},
+        );
+      }
+    });
   }
 
   @override

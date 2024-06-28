@@ -46,56 +46,52 @@ List<PopupMenuItem<VoidCallback>> postMenuUserActions(
           error: 'You must be logged in to edit posts!',
         ),
       ),
-    if (context.read<Client>().hasFeature(ClientFeature.comments))
-      PopupMenuTile(
-        title: 'Comment',
-        icon: Icons.comment,
-        value: () => guardWithLogin(
-          context: context,
-          callback: () async {
-            PostController controller = context.read<PostController>();
-            bool success =
-                await writeComment(context: context, postId: post.id);
-            if (success) {
-              controller.replacePost(
-                post.copyWith(
-                  commentCount:
-                      post.commentCount != null ? post.commentCount! + 1 : null,
-                  hasComments: post.hasComments != null ? true : null,
-                ),
-              );
-            }
-          },
-          error: 'You must be logged in to comment!',
-        ),
+    PopupMenuTile(
+      title: 'Comment',
+      icon: Icons.comment,
+      value: () => guardWithLogin(
+        context: context,
+        callback: () async {
+          PostController controller = context.read<PostController>();
+          bool success = await writeComment(context: context, postId: post.id);
+          if (success) {
+            controller.replacePost(
+              post.copyWith(
+                commentCount:
+                    post.commentCount != null ? post.commentCount! + 1 : null,
+                hasComments: post.hasComments != null ? true : null,
+              ),
+            );
+          }
+        },
+        error: 'You must be logged in to comment!',
       ),
-    if (context.read<Client>().hasFeature(PostFeature.report))
-      PopupMenuTile(
-        title: 'Report',
-        icon: Icons.report,
-        value: () => guardWithLogin(
-          context: context,
-          callback: () => Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => PostReportScreen(post: post),
-            ),
+    ),
+    PopupMenuTile(
+      title: 'Report',
+      icon: Icons.report,
+      value: () => guardWithLogin(
+        context: context,
+        callback: () => Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => PostReportScreen(post: post),
           ),
-          error: 'You must be logged in to report posts!',
         ),
+        error: 'You must be logged in to report posts!',
       ),
-    if (context.read<Client>().hasFeature(PostFeature.flag))
-      PopupMenuTile(
-        title: 'Flag',
-        icon: Icons.flag,
-        value: () => guardWithLogin(
-          context: context,
-          callback: () => Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => PostFlagScreen(post: post),
-            ),
+    ),
+    PopupMenuTile(
+      title: 'Flag',
+      icon: Icons.flag,
+      value: () => guardWithLogin(
+        context: context,
+        callback: () => Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => PostFlagScreen(post: post),
           ),
-          error: 'You must be logged in to flag posts!',
         ),
+        error: 'You must be logged in to flag posts!',
       ),
+    ),
   ];
 }

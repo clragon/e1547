@@ -133,9 +133,6 @@ class _NotificationHandlerState extends State<NotificationHandler> {
   @override
   Widget build(BuildContext context) {
     Client client = context.watch<Client>();
-    if (!client.hasFeature(FollowFeature.database)) {
-      return widget.child;
-    }
     return SubStream<List<Follow>>(
       create: () => client.follows
           .all(query: FollowsQuery(types: [FollowType.notify]))

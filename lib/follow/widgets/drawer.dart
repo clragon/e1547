@@ -94,9 +94,6 @@ class FollowForceSyncTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final client = context.watch<Client>();
-    if (!client.hasFeature(FollowFeature.database)) {
-      return const SizedBox();
-    }
     return SubStream<FollowSync?>(
       create: () => client.follows.syncStream,
       keys: [client],

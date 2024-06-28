@@ -20,11 +20,6 @@ abstract class DiskFollowService extends FollowService with Disposable {
   final FollowRepository repository;
 
   @override
-  Set<FollowFeature> get features => {
-        FollowFeature.database,
-      };
-
-  @override
   Future<Follow> get({
     required int id,
     bool? force,

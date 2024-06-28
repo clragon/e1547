@@ -113,7 +113,6 @@ class TagInput extends StatelessWidget {
           ),
           suggestionsCallback: (pattern) async {
             Client client = context.read<Client>();
-            if (!client.hasFeature(ClientFeature.tags)) return null;
             List<String> tags = controller.text.split(' ');
             int selection = findTag(tags, controller.selection.extent.offset);
             String tag = tags[selection];
