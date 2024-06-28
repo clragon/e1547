@@ -9,11 +9,6 @@ class E621TagService extends TagService {
   final Dio dio;
 
   @override
-  Set<TagFeature> get features => {
-        TagFeature.aliases,
-      };
-
-  @override
   Future<List<Tag>> page({
     int? page,
     int? limit,

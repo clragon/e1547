@@ -1,4 +1,3 @@
-import 'package:e1547/client/client.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/tag/tag.dart';
@@ -39,16 +38,14 @@ class ArtistDisplay extends StatelessWidget {
                 ),
                 InkWell(
                   borderRadius: BorderRadius.circular(4),
-                  onTap: context.watch<Client>().hasFeature(ClientFeature.users)
-                      ? () => Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => UserLoadingPage(
-                                post.uploaderId.toString(),
-                                initalPage: UserPageSection.uploads,
-                              ),
-                            ),
-                          )
-                      : null,
+                  onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => UserLoadingPage(
+                        post.uploaderId.toString(),
+                        initalPage: UserPageSection.uploads,
+                      ),
+                    ),
+                  ),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 4),
                     child: Row(

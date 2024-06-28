@@ -9,14 +9,6 @@ class E621CommentService extends CommentService {
   final Dio dio;
 
   @override
-  Set<CommentFeature> get features => {
-        CommentFeature.post,
-        CommentFeature.update,
-        CommentFeature.vote,
-        CommentFeature.report,
-      };
-
-  @override
   Future<Comment> get({
     required int id,
     bool? force,

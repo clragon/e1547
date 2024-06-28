@@ -27,7 +27,6 @@ class _HomePageState extends State<HomePage> with RouterDrawerEntryWidget {
             initialize: true,
             listenable: controller,
             listener: () {
-              if (!client.hasFeature(ClientFeature.bridge)) return;
               // TODO: instead of client.bridge, use TraitsService
               // then, TraitsService must trigger a push event, if supported by the current client.
               client.bridge.push(

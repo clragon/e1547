@@ -303,24 +303,23 @@ class _UserProfileActions extends StatelessWidget {
             context.read<Client>().withHost(user.link),
           ),
         ),
-        if (context.read<Client>().hasFeature(UserFeature.report))
-          PopupMenuTile(
-            title: 'Report',
-            icon: Icons.report,
-            value: () => guardWithLogin(
-              context: context,
-              callback: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => UserReportScreen(
-                      user: user,
-                    ),
+        PopupMenuTile(
+          title: 'Report',
+          icon: Icons.report,
+          value: () => guardWithLogin(
+            context: context,
+            callback: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => UserReportScreen(
+                    user: user,
                   ),
-                );
-              },
-              error: 'You must be logged in to report users!',
-            ),
+                ),
+              );
+            },
+            error: 'You must be logged in to report users!',
           ),
+        ),
         PopupMenuTile(
           title: blocked ? 'Unblock' : 'Block',
           icon: blocked ? Icons.check : Icons.block,

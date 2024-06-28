@@ -5,7 +5,6 @@ export 'data/action.dart';
 export 'data/controller.dart';
 export 'data/desktop.dart';
 export 'data/dio.dart';
-export 'data/feature.dart';
 export 'data/hosts.dart';
 export 'data/listenable.dart';
 export 'data/map.dart';

@@ -3,11 +3,7 @@ import 'package:e1547/interface/interface.dart';
 import 'package:e1547/pool/pool.dart';
 import 'package:e1547/post/post.dart';
 
-enum FollowFeature {
-  database,
-}
-
-abstract class FollowService with FeatureFlagging<FollowFeature> {
+abstract class FollowService {
   Future<Follow> get({
     required int id,
     bool? force,
@@ -55,20 +51,18 @@ abstract class FollowService with FeatureFlagging<FollowFeature> {
 
   Future<int> count();
 
-  Stream<FollowSync?> get syncStream =>
-      throwUnsupported(FollowFeature.database);
+  Stream<FollowSync?> get syncStream;
 
-  FollowSync? get currentSync => throwUnsupported(FollowFeature.database);
+  FollowSync? get currentSync;
 
-  Future<void> sync({bool? force}) => throwUnsupported(FollowFeature.database);
+  Future<void> sync({bool? force});
 
   Future<void> syncWith({
     required int id,
     List<Post>? posts,
     Pool? pool,
     bool? seen,
-  }) =>
-      throwUnsupported(FollowFeature.database);
+  });
 }
 
 abstract class FollowSync {
