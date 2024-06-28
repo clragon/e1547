@@ -21,36 +21,8 @@ class IdentityAvatar extends StatelessWidget {
     return Consumer<TraitsService>(
       builder: (context, service, child) => SubStream(
         create: () => service.getOrNull(id).stream,
-        builder: (context, snapshot) => Stack(
-          fit: StackFit.passthrough,
-          clipBehavior: Clip.none,
-          children: [
+        builder: (context, snapshot) =>
             Avatar(snapshot.data?.avatar, radius: radius),
-            Positioned(
-              bottom: -(radius * 0.2),
-              right: -(radius * 0.2),
-              child: Container(
-                height: radius,
-                width: radius,
-                clipBehavior: Clip.antiAlias,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Theme.of(context).colorScheme.surface,
-                ),
-                child: (snapshot.data?.favicon) != null
-                    ? CachedNetworkImage(
-                        imageUrl: snapshot.data!.favicon!,
-                        fit: BoxFit.contain,
-                        filterQuality: FilterQuality.none,
-                      )
-                    : const Icon(
-                        Icons.cloud,
-                        size: 16,
-                      ),
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }
