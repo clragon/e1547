@@ -31,18 +31,14 @@ class _ItemHistoryConnectorState<T> extends State<ItemHistoryConnector<T>> {
   void initState() {
     super.initState();
     Client client = context.read<Client>();
-    if (client.hasFeature(ClientFeature.histories)) {
-      widget.addToHistory(context, client, widget.item);
-    }
+    widget.addToHistory(context, client, widget.item);
   }
 
   @override
   void didUpdateWidget(covariant ItemHistoryConnector<T> oldWidget) {
     if (oldWidget.item != widget.item) {
       Client client = context.read<Client>();
-      if (client.hasFeature(ClientFeature.histories)) {
-        widget.addToHistory(context, client, widget.item);
-      }
+      widget.addToHistory(context, client, widget.item);
     }
     super.didUpdateWidget(oldWidget);
   }
@@ -83,13 +79,11 @@ class _ControllerHistoryConnectorState<T extends DataController?>
         if (controller.error != null) return;
         if (!context.mounted) return;
         Client client = context.read<Client>();
-        if (client.hasFeature(ClientFeature.histories)) {
-          widget.addToHistory(
-            context,
-            client,
-            controller,
-          );
-        }
+        widget.addToHistory(
+          context,
+          client,
+          controller,
+        );
       },
       builder: (context) => widget.child,
     );

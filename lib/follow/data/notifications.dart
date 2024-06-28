@@ -62,8 +62,6 @@ Future<bool> runClientFollowUpdate({
   required FlutterLocalNotificationsPlugin notifications,
   CancelToken? cancelToken,
 }) async {
-  if (!client.hasFeature(FollowFeature.database)) return true;
-
   List<Follow> previous = await client.follows.all(
     query: FollowsQuery(types: [FollowType.notify]),
   );

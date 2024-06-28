@@ -1,11 +1,7 @@
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/tag/tag.dart';
 
-enum TagFeature {
-  aliases,
-}
-
-abstract class TagService with FeatureFlagging<TagFeature> {
+abstract class TagService {
   // Technically missing get()
   Future<List<Tag>> page({
     int? page,
@@ -29,6 +25,5 @@ abstract class TagService with FeatureFlagging<TagFeature> {
     QueryMap? query,
     bool? force,
     CancelToken? cancelToken,
-  }) =>
-      throwUnsupported(TagFeature.aliases);
+  });
 }

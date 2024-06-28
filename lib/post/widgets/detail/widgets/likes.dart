@@ -15,7 +15,7 @@ class LikeDisplay extends StatelessWidget {
     Client client = context.watch<Client>();
     PostController controller = context.watch<PostController>();
     ScaffoldMessengerState messenger = ScaffoldMessenger.of(context);
-    bool canVote = client.hasFeature(PostFeature.vote) && client.hasLogin;
+    bool canVote = client.hasLogin;
     return Column(
       children: [
         Row(

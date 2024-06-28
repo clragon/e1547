@@ -138,10 +138,7 @@ class PoolNameFilter extends StatelessWidget {
         },
         suggestionsCallback: (value) async {
           value = value.trim();
-
           Client client = context.read<Client>();
-          if (!client.hasFeature(ClientFeature.histories)) return [];
-
           return (await client.histories.page(
             page: 1,
             query: HistoryQuery(

@@ -9,9 +9,6 @@ class E621UserService extends UserService {
   final Dio dio;
 
   @override
-  Set<UserFeature> get features => {UserFeature.report};
-
-  @override
   Future<User> get({
     required String id,
     bool? force,

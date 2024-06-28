@@ -57,59 +57,56 @@ class SettingsPage extends StatelessWidget {
                   ),
                 ),
               ),
-              if (context.watch<Client>().hasFeature(ClientFeature.follows))
-                Consumer<Client>(
-                  builder: (context, client, child) => SubStream<int>(
-                    create: () => client.follows.count().streamed,
-                    keys: [client],
-                    builder: (context, snapshot) => ListTile(
-                      title: const Text('Follows'),
-                      subtitle: snapshot.data != null && snapshot.data != 0
-                          ? Text('${snapshot.data} searches followed')
-                          : null,
-                      leading: const Icon(Icons.person_add),
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const FollowEditor(),
-                        ),
+              Consumer<Client>(
+                builder: (context, client, child) => SubStream<int>(
+                  create: () => client.follows.count().streamed,
+                  keys: [client],
+                  builder: (context, snapshot) => ListTile(
+                    title: const Text('Follows'),
+                    subtitle: snapshot.data != null && snapshot.data != 0
+                        ? Text('${snapshot.data} searches followed')
+                        : null,
+                    leading: const Icon(Icons.person_add),
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const FollowEditor(),
                       ),
                     ),
                   ),
                 ),
-              if (context.watch<Client>().hasFeature(ClientFeature.histories))
-                Consumer<Client>(
-                  builder: (context, client, child) => SubStream<int>(
-                    create: () => client.histories.count().streamed,
-                    keys: [client],
-                    builder: (context, countSnapshot) {
-                      int? count = countSnapshot.data;
-                      return SubStream(
-                        initialData: client.histories.enabled,
-                        create: () => client.histories.enabledStream,
-                        builder: (context, enabledSnapshot) {
-                          bool enabled = enabledSnapshot.data!;
-                          return DividerListTile(
-                            title: const Text('History'),
-                            subtitle: enabled && count != null
-                                ? Text('$count pages visited')
-                                : null,
-                            leading: const Icon(Icons.history),
-                            onTap: () =>
-                                Navigator.pushNamed(context, '/history'),
-                            onTapSeparated: () =>
-                                client.histories.enabled = !enabled,
-                            separated: Switch(
-                              value: enabled,
-                              onChanged: (value) =>
-                                  client.histories.enabled = value,
-                            ),
-                          );
-                        },
-                      );
-                    },
-                  ),
+              ),
+              Consumer<Client>(
+                builder: (context, client, child) => SubStream<int>(
+                  create: () => client.histories.count().streamed,
+                  keys: [client],
+                  builder: (context, countSnapshot) {
+                    int? count = countSnapshot.data;
+                    return SubStream(
+                      initialData: client.histories.enabled,
+                      create: () => client.histories.enabledStream,
+                      builder: (context, enabledSnapshot) {
+                        bool enabled = enabledSnapshot.data!;
+                        return DividerListTile(
+                          title: const Text('History'),
+                          subtitle: enabled && count != null
+                              ? Text('$count pages visited')
+                              : null,
+                          leading: const Icon(Icons.history),
+                          onTap: () => Navigator.pushNamed(context, '/history'),
+                          onTapSeparated: () =>
+                              client.histories.enabled = !enabled,
+                          separated: Switch(
+                            value: enabled,
+                            onChanged: (value) =>
+                                client.histories.enabled = value,
+                          ),
+                        );
+                      },
+                    );
+                  },
                 ),
+              ),
               const Divider(),
               const ListTileHeader(title: 'Appearance'),
               ValueListenableBuilder<AppTheme>(

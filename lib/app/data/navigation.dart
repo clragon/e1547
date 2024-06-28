@@ -1,4 +1,3 @@
-import 'package:e1547/client/client.dart';
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/history/history.dart';
 import 'package:e1547/interface/interface.dart';
@@ -30,7 +29,6 @@ final List<RouterDrawerDestination> rootDestintations = [
     builder: (context) => const HotPage(),
     unique: true,
     group: _drawerSearchGroup,
-    visible: (context) => context.watch<Client>().hasFeature(PostFeature.hot),
   ),
   NamedRouterDrawerDestination(
     path: '/search',
@@ -46,8 +44,6 @@ final List<RouterDrawerDestination> rootDestintations = [
     builder: (context) => const FavPage(),
     unique: true,
     group: _drawerFollowsGroup,
-    visible: (context) =>
-        context.watch<Client>().hasFeature(PostFeature.favorite),
   ),
   NamedRouterDrawerDestination(
     path: '/timeline',
@@ -56,8 +52,6 @@ final List<RouterDrawerDestination> rootDestintations = [
     builder: (context) => const FollowsTimelinePage(),
     unique: true,
     group: _drawerFollowsGroup,
-    visible: (context) =>
-        context.watch<Client>().hasFeature(ClientFeature.follows),
   ),
   NamedRouterDrawerDestination(
     path: '/subscriptions',
@@ -66,8 +60,6 @@ final List<RouterDrawerDestination> rootDestintations = [
     builder: (context) => const FollowsSubscriptionsPage(),
     unique: true,
     group: _drawerFollowsGroup,
-    visible: (context) =>
-        context.watch<Client>().hasFeature(ClientFeature.follows),
   ),
   NamedRouterDrawerDestination(
     path: '/bookmarks',
@@ -76,8 +68,6 @@ final List<RouterDrawerDestination> rootDestintations = [
     builder: (context) => const FollowsBookmarkPage(),
     unique: true,
     group: _drawerFollowsGroup,
-    visible: (context) =>
-        context.watch<Client>().hasFeature(ClientFeature.follows),
   ),
   NamedRouterDrawerDestination(
     path: '/pools',
@@ -86,8 +76,6 @@ final List<RouterDrawerDestination> rootDestintations = [
     builder: (context) => const PoolsPage(),
     unique: true,
     group: _drawerCollectionsGroup,
-    visible: (context) =>
-        context.watch<Client>().hasFeature(ClientFeature.pools),
   ),
   NamedRouterDrawerDestination(
     path: '/forum',
@@ -96,9 +84,7 @@ final List<RouterDrawerDestination> rootDestintations = [
     builder: (context) => const TopicsPage(),
     unique: true,
     group: _drawerCollectionsGroup,
-    visible: (context) =>
-        context.watch<Settings>().showBeta.value &&
-        context.watch<Client>().hasFeature(ClientFeature.topics),
+    visible: (context) => context.watch<Settings>().showBeta.value,
   ),
   NamedRouterDrawerDestination(
     path: '/history',
@@ -106,8 +92,6 @@ final List<RouterDrawerDestination> rootDestintations = [
     icon: const Icon(Icons.history),
     builder: (context) => const HistoriesPage(),
     group: _drawerSettingsGroup,
-    visible: (context) =>
-        context.watch<Client>().hasFeature(ClientFeature.histories),
   ),
   RouterDrawerDestination(
     path: '/blacklist',

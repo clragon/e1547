@@ -12,9 +12,6 @@ class CommentDisplay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (!context.watch<Client>().hasFeature(ClientFeature.comments)) {
-      return const SizedBox();
-    }
     return CrossFade(
       showChild: post.hasComments ?? false,
       child: Column(
@@ -31,8 +28,8 @@ class CommentDisplay extends StatelessWidget {
                   style: ButtonStyle(
                     foregroundColor: WidgetStateProperty.all(
                         Theme.of(context).textTheme.bodyMedium!.color),
-                    overlayColor: WidgetStateProperty.all(
-                        Theme.of(context).splashColor),
+                    overlayColor:
+                        WidgetStateProperty.all(Theme.of(context).splashColor),
                   ),
                   child: Text(
                     'COMMENTS'
@@ -59,9 +56,6 @@ class SliverPostCommentSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (!context.watch<Client>().hasFeature(ClientFeature.comments)) {
-      return const SliverToBoxAdapter();
-    }
     return CommentProvider(
       postId: post.id,
       child: Consumer<CommentController>(

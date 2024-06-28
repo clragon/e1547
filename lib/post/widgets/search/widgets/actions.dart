@@ -19,9 +19,7 @@ class TagListActions extends StatelessWidget {
     }
     return Consumer<Client>(
       builder: (context, client, child) => SubStream<Follow?>(
-        create: () => client.hasFeature(ClientFeature.follows)
-            ? client.follows.getByTags(tags: tag).streamed
-            : Stream.value(null),
+        create: () => client.follows.getByTags(tags: tag).streamed,
         keys: [client, tag],
         builder: (context, snapshot) => ValueListenableBuilder(
           valueListenable: client.traits,
@@ -76,57 +74,56 @@ class TagListActions extends StatelessWidget {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  if (client.hasFeature(ClientFeature.follows))
-                    CrossFade(
-                      showChild: !denied,
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          ActionButton(
-                            icon: following
-                                ? const Icon(Icons.person_remove_alt_1)
-                                : const Icon(Icons.person_add_alt_1),
-                            label: following
-                                ? const Text('Unfollow')
-                                : const Text('Follow'),
-                            onTap: followBookmarkToggle(FollowType.update),
+                  CrossFade(
+                    showChild: !denied,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        ActionButton(
+                          icon: following
+                              ? const Icon(Icons.person_remove_alt_1)
+                              : const Icon(Icons.person_add_alt_1),
+                          label: following
+                              ? const Text('Unfollow')
+                              : const Text('Follow'),
+                          onTap: followBookmarkToggle(FollowType.update),
+                        ),
+                        CrossFade(
+                          showChild: following,
+                          child: ActionButton(
+                            icon: notifying
+                                ? const Icon(Icons.notifications_active)
+                                : const Icon(Icons.notifications_none),
+                            label: notifying
+                                ? const Text('Mute')
+                                : const Text('Notify'),
+                            onTap: () {
+                              if (notifying) {
+                                client.follows.update(
+                                  id: follow!.id,
+                                  type: FollowType.update,
+                                );
+                              } else {
+                                client.follows.update(
+                                  id: follow!.id,
+                                  type: FollowType.notify,
+                                );
+                              }
+                            },
                           ),
-                          CrossFade(
-                            showChild: following,
-                            child: ActionButton(
-                              icon: notifying
-                                  ? const Icon(Icons.notifications_active)
-                                  : const Icon(Icons.notifications_none),
-                              label: notifying
-                                  ? const Text('Mute')
-                                  : const Text('Notify'),
-                              onTap: () {
-                                if (notifying) {
-                                  client.follows.update(
-                                    id: follow!.id,
-                                    type: FollowType.update,
-                                  );
-                                } else {
-                                  client.follows.update(
-                                    id: follow!.id,
-                                    type: FollowType.notify,
-                                  );
-                                }
-                              },
-                            ),
-                          ),
-                          ActionButton(
-                            icon: bookmarked
-                                ? const Icon(Icons.turned_in)
-                                : const Icon(Icons.turned_in_not),
-                            label: bookmarked
-                                ? const Text('Unbookmark')
-                                : const Text('Bookmark'),
-                            onTap: followBookmarkToggle(FollowType.bookmark),
-                          ),
-                        ],
-                      ),
+                        ),
+                        ActionButton(
+                          icon: bookmarked
+                              ? const Icon(Icons.turned_in)
+                              : const Icon(Icons.turned_in_not),
+                          label: bookmarked
+                              ? const Text('Unbookmark')
+                              : const Text('Bookmark'),
+                          onTap: followBookmarkToggle(FollowType.bookmark),
+                        ),
+                      ],
                     ),
+                  ),
                   CrossFade(
                     showChild: !hasFollow,
                     child: ActionButton(

@@ -61,7 +61,6 @@ class _PostsSearchPageState extends State<PostsSearchPage> {
 
           Future<void> updatePool() async {
             if (!mounted) return;
-            if (!client.hasFeature(ClientFeature.pools)) return;
             setState(() {
               loadingInfo = true;
             });
@@ -94,18 +93,14 @@ class _PostsSearchPageState extends State<PostsSearchPage> {
             await updatePool();
             await controller.waitForNextPage();
             if (controller.error != null) return;
-            if (client.hasFeature(ClientFeature.follows)) {
-              await updateFollow();
-            }
-            if (client.hasFeature(ClientFeature.histories)) {
-              if (pool != null) {
-                client.histories.addPool(pool: pool!, posts: controller.items);
-              } else {
-                client.histories.addPostSearch(
-                  query: controller.query,
-                  posts: controller.items,
-                );
-              }
+            await updateFollow();
+            if (pool != null) {
+              client.histories.addPool(pool: pool!, posts: controller.items);
+            } else {
+              client.histories.addPostSearch(
+                query: controller.query,
+                posts: controller.items,
+              );
             }
           }
 

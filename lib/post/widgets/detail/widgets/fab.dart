@@ -1,4 +1,3 @@
-import 'package:e1547/client/client.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
@@ -12,11 +11,6 @@ class PostDetailFloatingActionButton extends StatelessWidget {
   Widget build(BuildContext context) {
     PostEditingController editingController =
         context.watch<PostEditingController>();
-
-    if (!editingController.editing &&
-        !context.watch<Client>().hasFeature(PostFeature.favorite)) {
-      return const SizedBox();
-    }
 
     Future<void> editPost() async {
       ScaffoldMessengerState messenger = ScaffoldMessenger.of(context);

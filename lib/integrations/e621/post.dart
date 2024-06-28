@@ -23,16 +23,6 @@ class E621PostService extends PostService {
   final PoolService? poolsClient;
 
   @override
-  Set<Enum> get features => {
-        PostFeature.hot,
-        PostFeature.update,
-        PostFeature.vote,
-        PostFeature.favorite,
-        PostFeature.report,
-        PostFeature.flag,
-      };
-
-  @override
   Future<Post> get({
     required int id,
     bool? force,
