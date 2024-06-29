@@ -1,7 +1,9 @@
+import 'package:e1547/app/app.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_sub_provider/developer.dart';
 import 'package:window_manager/window_manager.dart';
 
 class WindowFrame extends StatefulWidget {
@@ -32,31 +34,31 @@ class _WindowFrameState extends State<WindowFrame> with WindowListener {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback(
       (_) async {
-        WindowManager? manager = context.read<WindowManager?>();
-        if (manager != null) {
-          _manager = manager;
-          manager.addListener(this);
-          await manager.setTitleBarStyle(TitleBarStyle.hidden);
-          bool fullscreen = await manager.isFullScreen();
-          bool focused = await manager.isFocused();
-          bool maximized = await manager.isMaximized();
-          setState(() {
-            isFullscreen = fullscreen;
-            isFocused = focused;
-            isMaximized = maximized;
-          });
-        }
+        _manager = context.read<WindowManager?>();
+        await initializeManager();
       },
     );
+  }
+
+  Future<void> initializeManager() async {
+    if (_manager case final manager?) {
+      manager.addListener(this);
+      await manager.setTitleBarStyle(TitleBarStyle.hidden);
+      isFullscreen = await manager.isFullScreen();
+      isFocused = await manager.isFocused();
+      isMaximized = await manager.isMaximized();
+      setState(() {});
+    }
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    WindowManager? manager = context.read<WindowManager?>();
-    if (manager != _manager) {
+    final manager = context.watch<WindowManager?>();
+    if (_manager != manager) {
       _manager?.removeListener(this);
-      _manager?.addListener(this);
+      _manager = manager;
+      initializeManager();
     }
   }
 
@@ -225,6 +227,34 @@ class WindowShortcuts extends StatelessWidget {
         },
       },
       child: child,
+    );
+  }
+}
+
+class WindowProvider extends SingleChildStatefulWidget {
+  const WindowProvider({super.key});
+
+  @override
+  State<WindowProvider> createState() => _WindowProviderState();
+}
+
+class _WindowProviderState extends SingleChildState<WindowProvider> {
+  WindowManager? manager;
+
+  @override
+  void initState() {
+    super.initState();
+    initializeWindowManager().then((manager) {
+      if (!mounted) return;
+      setState(() => this.manager = manager);
+    });
+  }
+
+  @override
+  Widget buildWithChild(BuildContext context, Widget? child) {
+    return Provider.value(
+      value: manager,
+      child: child!,
     );
   }
 }

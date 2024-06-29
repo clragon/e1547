@@ -17,6 +17,7 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        const WindowProvider(),
         AppInfoClientProvider(),
         ClientFactoryProvider(),
         SettingsProvider(),
