@@ -26,12 +26,15 @@ abstract final class BackgroundCommunication {
   /// Sent by the foreground isolate to terminate the background isolate.
   static const String terminateMessage = 'terminate';
 
+  /// Sent by the background isolate to the foreground isolate to confirm termination.
+  static const String confirmMessage = 'confirm';
+
   /// Sent by the background isolate to the foreground isolate to notify it has started.
   static const String startupMessage = 'startup';
 }
 
 /// Prepares controller objects necessary to run various tasks in a background isolate.
-Future<ControllerBundle> prepareBackgroundIsolate() async {
+Future<ControllerBundle> setupBackgroundIsolate() async {
   await initializeAppInfo();
   Logs logs = await initializeLogger(
       path: await getTemporaryAppDirectory(), postfix: 'background');
@@ -50,7 +53,7 @@ Future<ControllerBundle> prepareBackgroundIsolate() async {
   );
 }
 
-Future<void> prepareForegroundIsolate() async {
+Future<void> setupForegroundIsolate() async {
   await setupForegroundCommunication();
   unawaited(initializeBackgroundTasks());
 }
@@ -81,6 +84,14 @@ class ControllerBundle {
 
   /// Cancel token for the isolate.
   final CancelToken cancelToken;
+
+  /// Disposes all controllers in the bundle.
+  Future<void> dispose() async {
+    await storage.sqlite.close();
+    await storage.httpCache?.close();
+    cancelToken.cancel('Bundle was disposed');
+    logs.close();
+  }
 }
 
 Future<CancelToken> setupBackgroundCommunication() async {
@@ -112,8 +123,20 @@ Future<CancelToken> setupBackgroundCommunication() async {
   return cancelToken;
 }
 
+Future<void> teardownBackgroundIsolate(ControllerBundle bundle) async {
+  await bundle.dispose();
+
+  SendPort? sendPort =
+      IsolateNameServer.lookupPortByName(BackgroundCommunication.backgroundKey);
+
+  if (sendPort != null) {
+    sendPort.send(BackgroundCommunication.terminateMessage);
+  }
+}
+
 Future<void> setupForegroundCommunication() async {
   ReceivePort receivePort = ReceivePort();
+  Completer<void> completer = Completer<void>();
 
   IsolateNameServer.registerPortWithName(
     receivePort.sendPort,
@@ -124,7 +147,15 @@ Future<void> setupForegroundCommunication() async {
       IsolateNameServer.lookupPortByName(BackgroundCommunication.backgroundKey);
 
   if (sendPort != null) {
-    sendPort.send(BackgroundCommunication.startupMessage);
+    sendPort.send(BackgroundCommunication.terminateMessage);
+    receivePort.listen((message) {
+      if (message is String &&
+          message == BackgroundCommunication.confirmMessage) {
+        completer.complete();
+      }
+    });
+  } else {
+    completer.complete();
   }
 
   receivePort.listen((message) {
@@ -135,6 +166,8 @@ Future<void> setupForegroundCommunication() async {
       sendPort?.send(BackgroundCommunication.terminateMessage);
     }
   });
+
+  await completer.future;
 }
 
 /// Registers background tasks for the app.
