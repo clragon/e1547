@@ -29,7 +29,7 @@ class App extends StatelessWidget {
           drawerHeader: (context) => const UserDrawerHeader(),
         ),
       ],
-      child: ValueListenableBuilder<AppTheme>(
+      builder: (context, child) => ValueListenableBuilder<AppTheme>(
         valueListenable: context.watch<Settings>().theme,
         builder: (context, value, child) => ExcludeSemantics(
           child: AnnotatedRegion<SystemUiOverlayStyle>(
