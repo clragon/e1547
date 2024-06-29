@@ -90,82 +90,79 @@ class _WindowFrameState extends State<WindowFrame> with WindowListener {
   @override
   Widget build(BuildContext context) {
     WindowManager? manager = context.read<WindowManager?>();
-    if (manager != null) {
-      return Column(
-        children: [
-          if (!isFullscreen)
-            Material(
-              child: Row(
-                children: [
-                  Expanded(
-                    child: GestureDetector(
-                      onTapDown: (details) => manager.startDragging(),
-                      child: Row(
-                        children: [
-                          const Padding(
-                            padding: EdgeInsets.only(
-                                top: 4, bottom: 4, left: 12, right: 8),
-                            child: AppIcon(radius: 8),
-                          ),
-                          Expanded(
-                            child: AnimatedDefaultTextStyle(
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyMedium!
-                                  .copyWith(
-                                    color: isFocused
-                                        ? null
-                                        : dimTextColor(context),
-                                  ),
-                              duration: defaultAnimationDuration,
-                              child: Text(
-                                AppInfo.instance.appName,
-                              ),
+    if (manager == null) return widget.child;
+    return Column(
+      children: [
+        if (!isFullscreen)
+          Material(
+            child: Row(
+              children: [
+                Expanded(
+                  child: GestureDetector(
+                    onTapDown: (details) => manager.startDragging(),
+                    child: Row(
+                      children: [
+                        const Padding(
+                          padding: EdgeInsets.only(
+                              top: 4, bottom: 4, left: 12, right: 8),
+                          child: AppIcon(radius: 8),
+                        ),
+                        Expanded(
+                          child: AnimatedDefaultTextStyle(
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium!
+                                .copyWith(
+                                  color:
+                                      isFocused ? null : dimTextColor(context),
+                                ),
+                            duration: defaultAnimationDuration,
+                            child: Text(
+                              AppInfo.instance.appName,
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
-                  Row(
-                    children: [
-                      TitleBarButton(
-                        color: Colors.green,
-                        icon: const Icon(Icons.minimize),
-                        onPressed: manager.minimize,
-                      ),
-                      TitleBarButton(
-                        color: Colors.orange,
-                        icon: isMaximized
-                            ? const Icon(Icons.fullscreen_exit)
-                            : const Icon(Icons.fullscreen),
-                        onPressed: () async {
-                          if (await manager.isFullScreen()) {
-                            await manager.setFullScreen(false);
-                          } else if (await manager.isMaximized()) {
-                            await manager.unmaximize();
-                          } else {
-                            await manager.maximize();
-                          }
-                        },
-                      ),
-                      TitleBarButton(
-                        color: Colors.red,
-                        icon: const Icon(Icons.close),
-                        onPressed: manager.close,
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+                ),
+                Row(
+                  children: [
+                    TitleBarButton(
+                      color: Colors.green,
+                      icon: const Icon(Icons.minimize),
+                      onPressed: manager.minimize,
+                    ),
+                    TitleBarButton(
+                      color: Colors.orange,
+                      icon: isMaximized
+                          ? const Icon(Icons.fullscreen_exit)
+                          : const Icon(Icons.fullscreen),
+                      onPressed: () async {
+                        if (await manager.isFullScreen()) {
+                          await manager.setFullScreen(false);
+                        } else if (await manager.isMaximized()) {
+                          await manager.unmaximize();
+                        } else {
+                          await manager.maximize();
+                        }
+                      },
+                    ),
+                    TitleBarButton(
+                      color: Colors.red,
+                      icon: const Icon(Icons.close),
+                      onPressed: manager.close,
+                    ),
+                  ],
+                ),
+              ],
             ),
-          Expanded(
-            child: ClipRect(child: widget.child),
           ),
-        ],
-      );
-    }
-    return widget.child;
+        Expanded(
+          child: ClipRect(child: widget.child),
+        ),
+      ],
+    );
   }
 }
 

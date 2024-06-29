@@ -36,11 +36,9 @@ mixin _$Post {
   VoteInfo get vote => throw _privateConstructorUsedError;
   bool get isDeleted => throw _privateConstructorUsedError;
   Rating get rating => throw _privateConstructorUsedError;
-  int get favCount =>
-      throw _privateConstructorUsedError; // turn into class with bool isFavorited?
+  int get favCount => throw _privateConstructorUsedError;
   bool get isFavorited => throw _privateConstructorUsedError;
-  int? get commentCount => throw _privateConstructorUsedError;
-  bool? get hasComments => throw _privateConstructorUsedError;
+  int get commentCount => throw _privateConstructorUsedError;
   String get description => throw _privateConstructorUsedError;
   List<String> get sources => throw _privateConstructorUsedError;
   List<int>? get pools => throw _privateConstructorUsedError;
@@ -75,8 +73,7 @@ abstract class $PostCopyWith<$Res> {
       Rating rating,
       int favCount,
       bool isFavorited,
-      int? commentCount,
-      bool? hasComments,
+      int commentCount,
       String description,
       List<String> sources,
       List<int>? pools,
@@ -116,8 +113,7 @@ class _$PostCopyWithImpl<$Res, $Val extends Post>
     Object? rating = null,
     Object? favCount = null,
     Object? isFavorited = null,
-    Object? commentCount = freezed,
-    Object? hasComments = freezed,
+    Object? commentCount = null,
     Object? description = null,
     Object? sources = null,
     Object? pools = freezed,
@@ -196,14 +192,10 @@ class _$PostCopyWithImpl<$Res, $Val extends Post>
           ? _value.isFavorited
           : isFavorited // ignore: cast_nullable_to_non_nullable
               as bool,
-      commentCount: freezed == commentCount
+      commentCount: null == commentCount
           ? _value.commentCount
           : commentCount // ignore: cast_nullable_to_non_nullable
-              as int?,
-      hasComments: freezed == hasComments
-          ? _value.hasComments
-          : hasComments // ignore: cast_nullable_to_non_nullable
-              as bool?,
+              as int,
       description: null == description
           ? _value.description
           : description // ignore: cast_nullable_to_non_nullable
@@ -258,8 +250,7 @@ abstract class _$$PostImplCopyWith<$Res> implements $PostCopyWith<$Res> {
       Rating rating,
       int favCount,
       bool isFavorited,
-      int? commentCount,
-      bool? hasComments,
+      int commentCount,
       String description,
       List<String> sources,
       List<int>? pools,
@@ -297,8 +288,7 @@ class __$$PostImplCopyWithImpl<$Res>
     Object? rating = null,
     Object? favCount = null,
     Object? isFavorited = null,
-    Object? commentCount = freezed,
-    Object? hasComments = freezed,
+    Object? commentCount = null,
     Object? description = null,
     Object? sources = null,
     Object? pools = freezed,
@@ -377,14 +367,10 @@ class __$$PostImplCopyWithImpl<$Res>
           ? _value.isFavorited
           : isFavorited // ignore: cast_nullable_to_non_nullable
               as bool,
-      commentCount: freezed == commentCount
+      commentCount: null == commentCount
           ? _value.commentCount
           : commentCount // ignore: cast_nullable_to_non_nullable
-              as int?,
-      hasComments: freezed == hasComments
-          ? _value.hasComments
-          : hasComments // ignore: cast_nullable_to_non_nullable
-              as bool?,
+              as int,
       description: null == description
           ? _value.description
           : description // ignore: cast_nullable_to_non_nullable
@@ -428,7 +414,6 @@ class _$PostImpl implements _Post {
       required this.favCount,
       required this.isFavorited,
       required this.commentCount,
-      required this.hasComments,
       required this.description,
       required final List<String> sources,
       required final List<int>? pools,
@@ -489,13 +474,10 @@ class _$PostImpl implements _Post {
   final Rating rating;
   @override
   final int favCount;
-// turn into class with bool isFavorited?
   @override
   final bool isFavorited;
   @override
-  final int? commentCount;
-  @override
-  final bool? hasComments;
+  final int commentCount;
   @override
   final String description;
   final List<String> _sources;
@@ -521,7 +503,7 @@ class _$PostImpl implements _Post {
 
   @override
   String toString() {
-    return 'Post(id: $id, file: $file, sample: $sample, preview: $preview, width: $width, height: $height, ext: $ext, size: $size, variants: $variants, tags: $tags, uploaderId: $uploaderId, createdAt: $createdAt, updatedAt: $updatedAt, vote: $vote, isDeleted: $isDeleted, rating: $rating, favCount: $favCount, isFavorited: $isFavorited, commentCount: $commentCount, hasComments: $hasComments, description: $description, sources: $sources, pools: $pools, relationships: $relationships)';
+    return 'Post(id: $id, file: $file, sample: $sample, preview: $preview, width: $width, height: $height, ext: $ext, size: $size, variants: $variants, tags: $tags, uploaderId: $uploaderId, createdAt: $createdAt, updatedAt: $updatedAt, vote: $vote, isDeleted: $isDeleted, rating: $rating, favCount: $favCount, isFavorited: $isFavorited, commentCount: $commentCount, description: $description, sources: $sources, pools: $pools, relationships: $relationships)';
   }
 
   @override
@@ -555,8 +537,6 @@ class _$PostImpl implements _Post {
                 other.isFavorited == isFavorited) &&
             (identical(other.commentCount, commentCount) ||
                 other.commentCount == commentCount) &&
-            (identical(other.hasComments, hasComments) ||
-                other.hasComments == hasComments) &&
             (identical(other.description, description) ||
                 other.description == description) &&
             const DeepCollectionEquality().equals(other._sources, _sources) &&
@@ -588,7 +568,6 @@ class _$PostImpl implements _Post {
         favCount,
         isFavorited,
         commentCount,
-        hasComments,
         description,
         const DeepCollectionEquality().hash(_sources),
         const DeepCollectionEquality().hash(_pools),
@@ -629,8 +608,7 @@ abstract class _Post implements Post {
       required final Rating rating,
       required final int favCount,
       required final bool isFavorited,
-      required final int? commentCount,
-      required final bool? hasComments,
+      required final int commentCount,
       required final String description,
       required final List<String> sources,
       required final List<int>? pools,
@@ -672,12 +650,10 @@ abstract class _Post implements Post {
   Rating get rating;
   @override
   int get favCount;
-  @override // turn into class with bool isFavorited?
+  @override
   bool get isFavorited;
   @override
-  int? get commentCount;
-  @override
-  bool? get hasComments;
+  int get commentCount;
   @override
   String get description;
   @override

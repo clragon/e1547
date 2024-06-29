@@ -34,8 +34,6 @@ class _IdentityPageState extends State<IdentityPage> {
         ? OmittedPasswordTextInputFormatter.passwordOmitted
         : null,
   );
-  ClientType? type;
-  bool foundClient = false;
 
   late bool withAuth =
       widget.identity == null || widget.identity!.username != null;
@@ -51,26 +49,10 @@ class _IdentityPageState extends State<IdentityPage> {
   void initState() {
     super.initState();
     allFields.addListener(resetErrors);
-    hostController.addListener(onHostChange);
-    onHostChange();
   }
 
   void resetErrors() => WidgetsBinding.instance
       .addPostFrameCallback((_) => setState(() => error = null));
-
-  void onHostChange() {
-    ClientType? type =
-        context.read<ClientFactory>().typeFromUrl(hostController.text);
-    setState(() {
-      if (type != null) {
-        this.type = type;
-        foundClient = true;
-      } else {
-        this.type = null;
-        foundClient = false;
-      }
-    });
-  }
 
   @override
   void dispose() {
@@ -85,12 +67,6 @@ class _IdentityPageState extends State<IdentityPage> {
     FormState form = Form.of(context);
     if (form.validate()) {
       final navigator = Navigator.of(context);
-      if (type != ClientType.e621) {
-        bool agreed = await showUnknownHostDialog();
-        if (!agreed) return;
-        type ??= ClientType.e621;
-      }
-
       if (!context.mounted) return;
       showDialog(
         context: context,
@@ -98,7 +74,6 @@ class _IdentityPageState extends State<IdentityPage> {
         builder: (context) => LoginLoadingDialog(
           identity: widget.identity,
           host: hostController.text,
-          type: type!,
           username: withAuth ? usernameController.text : null,
           apikey: withAuth ? apikeyController.text : null,
           onError: (value) {
@@ -178,20 +153,6 @@ class _IdentityPageState extends State<IdentityPage> {
             HostFormField(
               controller: hostController,
               readOnly: widget.identity != null,
-            ),
-            ValueListenableBuilder<bool>(
-              valueListenable: context.read<Settings>().showDev,
-              builder: (context, value, child) {
-                if (!value) return const SizedBox();
-                return ClientTypeFormField(
-                  type: type,
-                  enabled: !foundClient && widget.identity == null,
-                  onChanged: (value) {
-                    setState(() => type = value);
-                    resetErrors();
-                  },
-                );
-              },
             ),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 12),
@@ -343,14 +304,12 @@ class LoginLoadingDialog extends StatefulWidget {
     required this.host,
     required this.username,
     required this.apikey,
-    required this.type,
     this.onError,
     this.onDone,
   });
 
   final Identity? identity;
   final String host;
-  final ClientType type;
   final String? username;
   final String? apikey;
   final ValueSetter<String?>? onError;
@@ -372,7 +331,6 @@ class _LoginLoadingDialogState extends State<LoginLoadingDialog> {
     IdentityService service = context.read<IdentityService>();
     Identity? identity = widget.identity;
     String host = widget.host;
-    ClientType type = widget.type;
     String? username = widget.username;
     String? apikey = widget.apikey;
     Map<String, String>? headers = Map.of(identity?.headers ?? {});
@@ -395,7 +353,6 @@ class _LoginLoadingDialogState extends State<LoginLoadingDialog> {
         await service.replace(
           identity.copyWith(
             host: host,
-            type: type,
             username: username,
             headers: headers,
           ),
@@ -404,7 +361,6 @@ class _LoginLoadingDialogState extends State<LoginLoadingDialog> {
         await service.add(
           IdentityRequest(
             host: host,
-            type: type,
             username: username,
             headers: headers,
           ),
@@ -670,47 +626,5 @@ class OmittedPasswordTextInputFormatter extends TextInputFormatter {
       );
     }
     return newValue;
-  }
-}
-
-class ClientTypeFormField extends StatelessWidget {
-  const ClientTypeFormField({
-    super.key,
-    required this.type,
-    required this.onChanged,
-    this.enabled,
-  });
-
-  final ClientType? type;
-  final ValueSetter<ClientType?> onChanged;
-  final bool? enabled;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 12),
-      child: DropdownButtonFormField<ClientType>(
-        value: type,
-        onChanged: enabled ?? true ? onChanged : null,
-        items: ClientType.values
-            .map(
-              (e) => DropdownMenuItem(
-                value: e,
-                child: Text(e.name),
-              ),
-            )
-            .toList(),
-        decoration: const InputDecoration(
-          labelText: 'Client type',
-          border: OutlineInputBorder(),
-        ),
-        validator: (value) {
-          if (value == null) {
-            return 'You must select a client type.';
-          }
-          return null;
-        },
-      ),
-    );
   }
 }

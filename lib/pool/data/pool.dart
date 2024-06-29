@@ -13,17 +13,8 @@ class Pool with _$Pool {
     required String description,
     required List<int> postIds,
     required int postCount,
-    required PoolActivity? activity,
+    required bool active,
   }) = _Pool;
 
   factory Pool.fromJson(dynamic json) => _$PoolFromJson(json);
-}
-
-@freezed
-class PoolActivity with _$PoolActivity {
-  const factory PoolActivity({
-    required bool isActive,
-  }) = _PoolActivity;
-
-  factory PoolActivity.fromJson(dynamic json) => _$PoolActivityFromJson(json);
 }

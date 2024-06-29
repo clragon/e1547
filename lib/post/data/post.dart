@@ -23,10 +23,9 @@ class Post with _$Post {
     required VoteInfo vote,
     required bool isDeleted,
     required Rating rating,
-    required int favCount, // turn into class with bool isFavorited?
+    required int favCount,
     required bool isFavorited,
-    required int? commentCount,
-    required bool? hasComments,
+    required int commentCount,
     required String description,
     required List<String> sources,
     required List<int>? pools,
@@ -36,7 +35,6 @@ class Post with _$Post {
   factory Post.fromJson(dynamic json) => _$PostFromJson(json);
 }
 
-@JsonEnum()
 enum Rating { s, q, e }
 
 @freezed

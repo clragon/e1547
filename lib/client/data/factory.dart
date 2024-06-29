@@ -37,7 +37,6 @@ class ClientFactory {
   IdentityRequest createDefaultIdentity() {
     return const IdentityRequest(
       host: _e926Host,
-      type: ClientType.e621,
     );
   }
 

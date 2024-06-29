@@ -32,8 +32,7 @@ _$PostImpl _$$PostImplFromJson(Map<String, dynamic> json) => _$PostImpl(
       rating: $enumDecode(_$RatingEnumMap, json['rating']),
       favCount: json['fav_count'] as int,
       isFavorited: json['is_favorited'] as bool,
-      commentCount: json['comment_count'] as int?,
-      hasComments: json['has_comments'] as bool?,
+      commentCount: json['comment_count'] as int,
       description: json['description'] as String,
       sources:
           (json['sources'] as List<dynamic>).map((e) => e as String).toList(),
@@ -62,7 +61,6 @@ Map<String, dynamic> _$$PostImplToJson(_$PostImpl instance) =>
       'fav_count': instance.favCount,
       'is_favorited': instance.isFavorited,
       'comment_count': instance.commentCount,
-      'has_comments': instance.hasComments,
       'description': instance.description,
       'sources': instance.sources,
       'pools': instance.pools,

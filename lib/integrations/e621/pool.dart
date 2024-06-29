@@ -96,9 +96,7 @@ extension E621Pool on Pool {
           postIds:
               pick('post_ids').asListOrThrow((pick) => pick.asIntOrThrow()),
           postCount: pick('post_count').asIntOrThrow(),
-          activity: PoolActivity(
-            isActive: pick('is_active').asBoolOrThrow(),
-          ),
+          active: pick('is_active').asBoolOrThrow(),
         ),
       );
 }
