@@ -10,7 +10,7 @@ import 'package:workmanager/workmanager.dart';
 void executeBackgroundTasks() => Workmanager().executeTask(
       (task, inputData) async {
         final logger = Logger('BackgroundTasks');
-        ControllerBundle bundle = await prepareBackgroundIsolate();
+        ControllerBundle bundle = await setupBackgroundIsolate();
 
         bundle.cancelToken.whenCancel.then((e) {
           logger.info('Task $task was cancelled: ${e.error}');
@@ -44,6 +44,8 @@ void executeBackgroundTasks() => Workmanager().executeTask(
         } on Object catch (e, stack) {
           logger.severe('Failed executing Task $task', e, stack);
           rethrow;
+        } finally {
+          await teardownBackgroundIsolate(bundle);
         }
       },
     );
