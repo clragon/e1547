@@ -22,9 +22,7 @@ class App extends StatelessWidget {
         ClientFactoryProvider(),
         SettingsProvider(),
         VideoServiceProvider(),
-        AdaptiveScaffoldScope(
-          isEndDrawerOpen: false,
-        ),
+        AdaptiveScaffoldScope(),
         DefaultRouteObserver(),
         NavigationProvider(
           destinations: rootDestintations,
