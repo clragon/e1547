@@ -1,7 +1,6 @@
 import 'dart:math';
 
 import 'package:drift/drift.dart';
-import 'package:e1547/client/client.dart';
 import 'package:e1547/identity/identity.dart';
 import 'package:e1547/interface/interface.dart';
 
@@ -22,7 +21,6 @@ class NullToEmptyStringSqlConverter extends TypeConverter<String?, String> {
 class IdentitiesTable extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get host => text()();
-  TextColumn get type => textEnum<ClientType>()();
   TextColumn get username =>
       text().map(const NullToEmptyStringSqlConverter())();
   TextColumn get headers =>
@@ -136,7 +134,6 @@ class IdentityRepository extends DatabaseAccessor<GeneratedDatabase>
 extension IdentityRequestCompanion on IdentityRequest {
   IdentityCompanion toCompanion() => IdentityCompanion(
         host: Value(normalizeHostUrl(host)),
-        type: Value(type),
         username: Value(username),
         headers: Value(headers),
       );

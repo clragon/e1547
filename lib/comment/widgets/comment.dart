@@ -6,7 +6,6 @@ import 'package:e1547/ticket/ticket.dart';
 import 'package:e1547/user/user.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:username_generator/username_generator.dart';
 
 class CommentTile extends StatelessWidget {
   const CommentTile({
@@ -113,22 +112,7 @@ class CommentHeader extends StatelessWidget {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Flexible(
-                  child: Text(
-                    comment.creatorName ??
-                        context
-                            .watch<UsernameGenerator>()
-                            .generate(comment.creatorId),
-                  ),
-                ),
-                if (comment.creatorName == null)
-                  const Tooltip(
-                    message: 'Generated username',
-                    child: Padding(
-                      padding: EdgeInsets.only(left: 4),
-                      child: Icon(Icons.theater_comedy),
-                    ),
-                  ),
+                Flexible(child: Text(comment.creatorName)),
               ],
             ),
           ),

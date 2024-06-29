@@ -22,7 +22,6 @@ Identity _$IdentityFromJson(Map<String, dynamic> json) {
 mixin _$Identity {
   int get id => throw _privateConstructorUsedError;
   String get host => throw _privateConstructorUsedError;
-  ClientType get type => throw _privateConstructorUsedError;
   String? get username => throw _privateConstructorUsedError;
   Map<String, String>? get headers => throw _privateConstructorUsedError;
 
@@ -38,11 +37,7 @@ abstract class $IdentityCopyWith<$Res> {
       _$IdentityCopyWithImpl<$Res, Identity>;
   @useResult
   $Res call(
-      {int id,
-      String host,
-      ClientType type,
-      String? username,
-      Map<String, String>? headers});
+      {int id, String host, String? username, Map<String, String>? headers});
 }
 
 /// @nodoc
@@ -60,7 +55,6 @@ class _$IdentityCopyWithImpl<$Res, $Val extends Identity>
   $Res call({
     Object? id = null,
     Object? host = null,
-    Object? type = null,
     Object? username = freezed,
     Object? headers = freezed,
   }) {
@@ -73,10 +67,6 @@ class _$IdentityCopyWithImpl<$Res, $Val extends Identity>
           ? _value.host
           : host // ignore: cast_nullable_to_non_nullable
               as String,
-      type: null == type
-          ? _value.type
-          : type // ignore: cast_nullable_to_non_nullable
-              as ClientType,
       username: freezed == username
           ? _value.username
           : username // ignore: cast_nullable_to_non_nullable
@@ -98,11 +88,7 @@ abstract class _$$IdentityImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {int id,
-      String host,
-      ClientType type,
-      String? username,
-      Map<String, String>? headers});
+      {int id, String host, String? username, Map<String, String>? headers});
 }
 
 /// @nodoc
@@ -118,7 +104,6 @@ class __$$IdentityImplCopyWithImpl<$Res>
   $Res call({
     Object? id = null,
     Object? host = null,
-    Object? type = null,
     Object? username = freezed,
     Object? headers = freezed,
   }) {
@@ -131,10 +116,6 @@ class __$$IdentityImplCopyWithImpl<$Res>
           ? _value.host
           : host // ignore: cast_nullable_to_non_nullable
               as String,
-      type: null == type
-          ? _value.type
-          : type // ignore: cast_nullable_to_non_nullable
-              as ClientType,
       username: freezed == username
           ? _value.username
           : username // ignore: cast_nullable_to_non_nullable
@@ -153,7 +134,6 @@ class _$IdentityImpl implements _Identity {
   const _$IdentityImpl(
       {required this.id,
       required this.host,
-      required this.type,
       required this.username,
       required final Map<String, String>? headers})
       : _headers = headers;
@@ -165,8 +145,6 @@ class _$IdentityImpl implements _Identity {
   final int id;
   @override
   final String host;
-  @override
-  final ClientType type;
   @override
   final String? username;
   final Map<String, String>? _headers;
@@ -181,7 +159,7 @@ class _$IdentityImpl implements _Identity {
 
   @override
   String toString() {
-    return 'Identity(id: $id, host: $host, type: $type, username: $username, headers: $headers)';
+    return 'Identity(id: $id, host: $host, username: $username, headers: $headers)';
   }
 
   @override
@@ -191,7 +169,6 @@ class _$IdentityImpl implements _Identity {
             other is _$IdentityImpl &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.host, host) || other.host == host) &&
-            (identical(other.type, type) || other.type == type) &&
             (identical(other.username, username) ||
                 other.username == username) &&
             const DeepCollectionEquality().equals(other._headers, _headers));
@@ -199,7 +176,7 @@ class _$IdentityImpl implements _Identity {
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, id, host, type, username,
+  int get hashCode => Object.hash(runtimeType, id, host, username,
       const DeepCollectionEquality().hash(_headers));
 
   @JsonKey(ignore: true)
@@ -220,7 +197,6 @@ abstract class _Identity implements Identity {
   const factory _Identity(
       {required final int id,
       required final String host,
-      required final ClientType type,
       required final String? username,
       required final Map<String, String>? headers}) = _$IdentityImpl;
 
@@ -231,8 +207,6 @@ abstract class _Identity implements Identity {
   int get id;
   @override
   String get host;
-  @override
-  ClientType get type;
   @override
   String? get username;
   @override
@@ -250,7 +224,6 @@ IdentityRequest _$IdentityRequestFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$IdentityRequest {
   String get host => throw _privateConstructorUsedError;
-  ClientType get type => throw _privateConstructorUsedError;
   String? get username => throw _privateConstructorUsedError;
   Map<String, String>? get headers => throw _privateConstructorUsedError;
 
@@ -266,11 +239,7 @@ abstract class $IdentityRequestCopyWith<$Res> {
           IdentityRequest value, $Res Function(IdentityRequest) then) =
       _$IdentityRequestCopyWithImpl<$Res, IdentityRequest>;
   @useResult
-  $Res call(
-      {String host,
-      ClientType type,
-      String? username,
-      Map<String, String>? headers});
+  $Res call({String host, String? username, Map<String, String>? headers});
 }
 
 /// @nodoc
@@ -287,7 +256,6 @@ class _$IdentityRequestCopyWithImpl<$Res, $Val extends IdentityRequest>
   @override
   $Res call({
     Object? host = null,
-    Object? type = null,
     Object? username = freezed,
     Object? headers = freezed,
   }) {
@@ -296,10 +264,6 @@ class _$IdentityRequestCopyWithImpl<$Res, $Val extends IdentityRequest>
           ? _value.host
           : host // ignore: cast_nullable_to_non_nullable
               as String,
-      type: null == type
-          ? _value.type
-          : type // ignore: cast_nullable_to_non_nullable
-              as ClientType,
       username: freezed == username
           ? _value.username
           : username // ignore: cast_nullable_to_non_nullable
@@ -320,11 +284,7 @@ abstract class _$$IdentityRequestImplCopyWith<$Res>
       __$$IdentityRequestImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call(
-      {String host,
-      ClientType type,
-      String? username,
-      Map<String, String>? headers});
+  $Res call({String host, String? username, Map<String, String>? headers});
 }
 
 /// @nodoc
@@ -339,7 +299,6 @@ class __$$IdentityRequestImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? host = null,
-    Object? type = null,
     Object? username = freezed,
     Object? headers = freezed,
   }) {
@@ -348,10 +307,6 @@ class __$$IdentityRequestImplCopyWithImpl<$Res>
           ? _value.host
           : host // ignore: cast_nullable_to_non_nullable
               as String,
-      type: null == type
-          ? _value.type
-          : type // ignore: cast_nullable_to_non_nullable
-              as ClientType,
       username: freezed == username
           ? _value.username
           : username // ignore: cast_nullable_to_non_nullable
@@ -368,10 +323,7 @@ class __$$IdentityRequestImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$IdentityRequestImpl implements _IdentityRequest {
   const _$IdentityRequestImpl(
-      {required this.host,
-      required this.type,
-      this.username,
-      final Map<String, String>? headers})
+      {required this.host, this.username, final Map<String, String>? headers})
       : _headers = headers;
 
   factory _$IdentityRequestImpl.fromJson(Map<String, dynamic> json) =>
@@ -379,8 +331,6 @@ class _$IdentityRequestImpl implements _IdentityRequest {
 
   @override
   final String host;
-  @override
-  final ClientType type;
   @override
   final String? username;
   final Map<String, String>? _headers;
@@ -395,7 +345,7 @@ class _$IdentityRequestImpl implements _IdentityRequest {
 
   @override
   String toString() {
-    return 'IdentityRequest(host: $host, type: $type, username: $username, headers: $headers)';
+    return 'IdentityRequest(host: $host, username: $username, headers: $headers)';
   }
 
   @override
@@ -404,7 +354,6 @@ class _$IdentityRequestImpl implements _IdentityRequest {
         (other.runtimeType == runtimeType &&
             other is _$IdentityRequestImpl &&
             (identical(other.host, host) || other.host == host) &&
-            (identical(other.type, type) || other.type == type) &&
             (identical(other.username, username) ||
                 other.username == username) &&
             const DeepCollectionEquality().equals(other._headers, _headers));
@@ -412,7 +361,7 @@ class _$IdentityRequestImpl implements _IdentityRequest {
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, host, type, username,
+  int get hashCode => Object.hash(runtimeType, host, username,
       const DeepCollectionEquality().hash(_headers));
 
   @JsonKey(ignore: true)
@@ -433,7 +382,6 @@ class _$IdentityRequestImpl implements _IdentityRequest {
 abstract class _IdentityRequest implements IdentityRequest {
   const factory _IdentityRequest(
       {required final String host,
-      required final ClientType type,
       final String? username,
       final Map<String, String>? headers}) = _$IdentityRequestImpl;
 
@@ -442,8 +390,6 @@ abstract class _IdentityRequest implements IdentityRequest {
 
   @override
   String get host;
-  @override
-  ClientType get type;
   @override
   String? get username;
   @override

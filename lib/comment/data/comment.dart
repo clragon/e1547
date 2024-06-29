@@ -13,7 +13,7 @@ class Comment with _$Comment {
     required DateTime createdAt,
     required DateTime updatedAt,
     required int creatorId,
-    required String? creatorName,
+    required String creatorName,
     required VoteInfo? vote,
     required WarningType? warning,
   }) = _Comment;

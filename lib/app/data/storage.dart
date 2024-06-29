@@ -1,7 +1,5 @@
 import 'package:drift/drift.dart';
 import 'package:e1547/follow/data/database.dart';
-import 'package:e1547/history/data/database.drift.dart';
-import 'package:e1547/history/data/legacy.dart';
 import 'package:e1547/history/history.dart';
 import 'package:e1547/identity/data/database.dart';
 import 'package:e1547/interface/interface.dart';
@@ -23,7 +21,7 @@ class AppDatabase extends $AppDatabase {
   AppDatabase(super.e);
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -46,40 +44,25 @@ class AppDatabase extends $AppDatabase {
           });
         },
         onUpgrade: (m, from, to) async {
-          if (from < 2) {
-            await m.addColumn(traitsTable, traitsTable.avatar);
-            await m.addColumn(traitsTable, traitsTable.favicon);
-          }
-          if (from < 3) {
-            await m.alterTable(TableMigration(historiesTable, newColumns: [
-              historiesTable.category,
-              historiesTable.type,
-            ], columnTransformer: {
-              historiesTable.category: Variable(HistoryCategory.items.name),
-              historiesTable.type: Variable(HistoryType.posts.name),
-            }));
-
-            await transaction(() async {
-              List<(int, String)> items = await (historiesTable.selectOnly()
-                    ..addColumns([historiesTable.id, historiesTable.link]))
-                  .map((row) => (
-                        row.read(historiesTable.id)!,
-                        row.read(historiesTable.link)!
-                      ))
-                  .get();
-              await batch((batch) async {
-                for (final (id, link) in items) {
-                  batch.update(
-                    historiesTable,
-                    HistoryCompanion(
-                      category: Value(getHistoryCategory(link)!),
-                      type: Value(getHistoryType(link)!),
-                    ),
-                    where: (tbl) => tbl.id.equals(id),
-                  );
-                }
-              });
-            });
+          if (from < 4) {
+            await customStatement(
+              '''
+              DELETE FROM identities_table
+              WHERE type != 'e621';
+              ''',
+            );
+            await m.alterTable(
+              TableMigration(identitiesTable),
+            );
+            await m.alterTable(
+              TableMigration(
+                traitsTable,
+                newColumns: [
+                  traitsTable.userId,
+                  traitsTable.perPage,
+                ],
+              ),
+            );
           }
         },
         beforeOpen: (details) => customStatement('PRAGMA foreign_keys = ON'),

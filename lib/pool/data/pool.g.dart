@@ -15,9 +15,7 @@ _$PoolImpl _$$PoolImplFromJson(Map<String, dynamic> json) => _$PoolImpl(
       postIds:
           (json['post_ids'] as List<dynamic>).map((e) => e as int).toList(),
       postCount: json['post_count'] as int,
-      activity: json['activity'] == null
-          ? null
-          : PoolActivity.fromJson(json['activity']),
+      active: json['active'] as bool,
     );
 
 Map<String, dynamic> _$$PoolImplToJson(_$PoolImpl instance) =>
@@ -29,15 +27,5 @@ Map<String, dynamic> _$$PoolImplToJson(_$PoolImpl instance) =>
       'description': instance.description,
       'post_ids': instance.postIds,
       'post_count': instance.postCount,
-      'activity': instance.activity,
-    };
-
-_$PoolActivityImpl _$$PoolActivityImplFromJson(Map<String, dynamic> json) =>
-    _$PoolActivityImpl(
-      isActive: json['is_active'] as bool,
-    );
-
-Map<String, dynamic> _$$PoolActivityImplToJson(_$PoolActivityImpl instance) =>
-    <String, dynamic>{
-      'is_active': instance.isActive,
+      'active': instance.active,
     };
