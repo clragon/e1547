@@ -12,14 +12,12 @@ Future<void> main() async {
   Logs logs = await initializeLogger(path: await getTemporaryAppDirectory());
   await prepareForegroundIsolate();
   AppStorage storage = await initializeAppStorage();
-  WindowManager? windowManager = await initializeWindowManager();
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
   runApp(
     MultiProvider(
       providers: [
         Provider.value(value: logs),
         Provider.value(value: storage),
-        Provider.value(value: windowManager),
       ],
       child: const App(),
     ),
