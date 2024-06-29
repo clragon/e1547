@@ -483,7 +483,7 @@ class AdaptiveScaffoldScope
     extends SubChangeNotifierProvider0<AdaptiveScaffoldController> {
   AdaptiveScaffoldScope({
     bool isDrawerOpen = true,
-    bool isEndDrawerOpen = true,
+    bool isEndDrawerOpen = false,
   }) : super(
           create: (context) => AdaptiveScaffoldController(
             isDrawerOpen: isDrawerOpen,
