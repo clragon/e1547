@@ -16,6 +16,7 @@ class Comment with _$Comment {
     required String creatorName,
     required VoteInfo? vote,
     required WarningType? warning,
+    required bool hidden,
   }) = _Comment;
 
   factory Comment.fromJson(dynamic json) => _$CommentFromJson(json);

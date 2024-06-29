@@ -14,6 +14,7 @@ _$ReplyImpl _$$ReplyImplFromJson(Map<String, dynamic> json) => _$ReplyImpl(
       creatorId: json['creator_id'] as int,
       topicId: json['topic_id'] as int,
       warning: $enumDecodeNullable(_$WarningTypeEnumMap, json['warning']),
+      hidden: json['hidden'] as bool,
     );
 
 Map<String, dynamic> _$$ReplyImplToJson(_$ReplyImpl instance) =>
@@ -25,6 +26,7 @@ Map<String, dynamic> _$$ReplyImplToJson(_$ReplyImpl instance) =>
       'creator_id': instance.creatorId,
       'topic_id': instance.topicId,
       'warning': _$WarningTypeEnumMap[instance.warning],
+      'hidden': instance.hidden,
     };
 
 const _$WarningTypeEnumMap = {

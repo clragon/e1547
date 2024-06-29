@@ -27,6 +27,7 @@ mixin _$Reply {
   int get creatorId => throw _privateConstructorUsedError;
   int get topicId => throw _privateConstructorUsedError;
   WarningType? get warning => throw _privateConstructorUsedError;
+  bool get hidden => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -45,7 +46,8 @@ abstract class $ReplyCopyWith<$Res> {
       String body,
       int creatorId,
       int topicId,
-      WarningType? warning});
+      WarningType? warning,
+      bool hidden});
 }
 
 /// @nodoc
@@ -68,6 +70,7 @@ class _$ReplyCopyWithImpl<$Res, $Val extends Reply>
     Object? creatorId = null,
     Object? topicId = null,
     Object? warning = freezed,
+    Object? hidden = null,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -98,6 +101,10 @@ class _$ReplyCopyWithImpl<$Res, $Val extends Reply>
           ? _value.warning
           : warning // ignore: cast_nullable_to_non_nullable
               as WarningType?,
+      hidden: null == hidden
+          ? _value.hidden
+          : hidden // ignore: cast_nullable_to_non_nullable
+              as bool,
     ) as $Val);
   }
 }
@@ -116,7 +123,8 @@ abstract class _$$ReplyImplCopyWith<$Res> implements $ReplyCopyWith<$Res> {
       String body,
       int creatorId,
       int topicId,
-      WarningType? warning});
+      WarningType? warning,
+      bool hidden});
 }
 
 /// @nodoc
@@ -137,6 +145,7 @@ class __$$ReplyImplCopyWithImpl<$Res>
     Object? creatorId = null,
     Object? topicId = null,
     Object? warning = freezed,
+    Object? hidden = null,
   }) {
     return _then(_$ReplyImpl(
       id: null == id
@@ -167,6 +176,10 @@ class __$$ReplyImplCopyWithImpl<$Res>
           ? _value.warning
           : warning // ignore: cast_nullable_to_non_nullable
               as WarningType?,
+      hidden: null == hidden
+          ? _value.hidden
+          : hidden // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -181,7 +194,8 @@ class _$ReplyImpl implements _Reply {
       required this.body,
       required this.creatorId,
       required this.topicId,
-      required this.warning});
+      required this.warning,
+      required this.hidden});
 
   factory _$ReplyImpl.fromJson(Map<String, dynamic> json) =>
       _$$ReplyImplFromJson(json);
@@ -200,10 +214,12 @@ class _$ReplyImpl implements _Reply {
   final int topicId;
   @override
   final WarningType? warning;
+  @override
+  final bool hidden;
 
   @override
   String toString() {
-    return 'Reply(id: $id, createdAt: $createdAt, updatedAt: $updatedAt, body: $body, creatorId: $creatorId, topicId: $topicId, warning: $warning)';
+    return 'Reply(id: $id, createdAt: $createdAt, updatedAt: $updatedAt, body: $body, creatorId: $creatorId, topicId: $topicId, warning: $warning, hidden: $hidden)';
   }
 
   @override
@@ -220,13 +236,14 @@ class _$ReplyImpl implements _Reply {
             (identical(other.creatorId, creatorId) ||
                 other.creatorId == creatorId) &&
             (identical(other.topicId, topicId) || other.topicId == topicId) &&
-            (identical(other.warning, warning) || other.warning == warning));
+            (identical(other.warning, warning) || other.warning == warning) &&
+            (identical(other.hidden, hidden) || other.hidden == hidden));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(
-      runtimeType, id, createdAt, updatedAt, body, creatorId, topicId, warning);
+  int get hashCode => Object.hash(runtimeType, id, createdAt, updatedAt, body,
+      creatorId, topicId, warning, hidden);
 
   @JsonKey(ignore: true)
   @override
@@ -250,7 +267,8 @@ abstract class _Reply implements Reply {
       required final String body,
       required final int creatorId,
       required final int topicId,
-      required final WarningType? warning}) = _$ReplyImpl;
+      required final WarningType? warning,
+      required final bool hidden}) = _$ReplyImpl;
 
   factory _Reply.fromJson(Map<String, dynamic> json) = _$ReplyImpl.fromJson;
 
@@ -268,6 +286,8 @@ abstract class _Reply implements Reply {
   int get topicId;
   @override
   WarningType? get warning;
+  @override
+  bool get hidden;
   @override
   @JsonKey(ignore: true)
   _$$ReplyImplCopyWith<_$ReplyImpl> get copyWith =>

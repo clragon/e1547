@@ -14,6 +14,7 @@ class Reply with _$Reply {
     required int creatorId,
     required int topicId,
     required WarningType? warning,
+    required bool hidden,
   }) = _Reply;
 
   factory Reply.fromJson(Map<String, dynamic> json) => _$ReplyFromJson(json);
