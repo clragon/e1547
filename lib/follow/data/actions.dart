@@ -27,12 +27,10 @@ extension Updating on Follow {
   Follow withPool(Pool pool) {
     Follow updated = this;
     updated = updated.withTitle(tagToName(pool.name));
-    if (pool.activity?.isActive case final isActive?) {
-      if (!isActive) {
-        updated = updated.copyWith(
-          type: FollowType.bookmark,
-        );
-      }
+    if (!pool.active) {
+      updated = updated.copyWith(
+        type: FollowType.bookmark,
+      );
     }
     return updated;
   }

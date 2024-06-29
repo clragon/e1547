@@ -29,6 +29,12 @@ class $TraitsTableTable extends i6.TraitsTable
       requiredDuringInsert: false,
       defaultConstraints: i0.GeneratedColumn.constraintIsAlways(
           'REFERENCES identities_table (id) ON UPDATE CASCADE ON DELETE CASCADE'));
+  static const i0.VerificationMeta _userIdMeta =
+      const i0.VerificationMeta('userId');
+  @override
+  late final i0.GeneratedColumn<int> userId = i0.GeneratedColumn<int>(
+      'user_id', aliasedName, true,
+      type: i0.DriftSqlType.int, requiredDuringInsert: false);
   static const i0.VerificationMeta _denylistMeta =
       const i0.VerificationMeta('denylist');
   @override
@@ -48,15 +54,15 @@ class $TraitsTableTable extends i6.TraitsTable
   late final i0.GeneratedColumn<String> avatar = i0.GeneratedColumn<String>(
       'avatar', aliasedName, true,
       type: i0.DriftSqlType.string, requiredDuringInsert: false);
-  static const i0.VerificationMeta _faviconMeta =
-      const i0.VerificationMeta('favicon');
+  static const i0.VerificationMeta _perPageMeta =
+      const i0.VerificationMeta('perPage');
   @override
-  late final i0.GeneratedColumn<String> favicon = i0.GeneratedColumn<String>(
-      'favicon', aliasedName, true,
-      type: i0.DriftSqlType.string, requiredDuringInsert: false);
+  late final i0.GeneratedColumn<int> perPage = i0.GeneratedColumn<int>(
+      'per_page', aliasedName, true,
+      type: i0.DriftSqlType.int, requiredDuringInsert: false);
   @override
   List<i0.GeneratedColumn> get $columns =>
-      [id, denylist, homeTags, avatar, favicon];
+      [id, userId, denylist, homeTags, avatar, perPage];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -70,6 +76,10 @@ class $TraitsTableTable extends i6.TraitsTable
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     }
+    if (data.containsKey('user_id')) {
+      context.handle(_userIdMeta,
+          userId.isAcceptableOrUnknown(data['user_id']!, _userIdMeta));
+    }
     context.handle(_denylistMeta, const i0.VerificationResult.success());
     if (data.containsKey('home_tags')) {
       context.handle(_homeTagsMeta,
@@ -81,9 +91,9 @@ class $TraitsTableTable extends i6.TraitsTable
       context.handle(_avatarMeta,
           avatar.isAcceptableOrUnknown(data['avatar']!, _avatarMeta));
     }
-    if (data.containsKey('favicon')) {
-      context.handle(_faviconMeta,
-          favicon.isAcceptableOrUnknown(data['favicon']!, _faviconMeta));
+    if (data.containsKey('per_page')) {
+      context.handle(_perPageMeta,
+          perPage.isAcceptableOrUnknown(data['per_page']!, _perPageMeta));
     }
     return context;
   }
@@ -96,6 +106,8 @@ class $TraitsTableTable extends i6.TraitsTable
     return i5.Traits(
       id: attachedDatabase.typeMapping
           .read(i0.DriftSqlType.int, data['${effectivePrefix}id'])!,
+      userId: attachedDatabase.typeMapping
+          .read(i0.DriftSqlType.int, data['${effectivePrefix}user_id']),
       denylist: i4.$TraitsTableTable.$converterdenylist.fromSql(attachedDatabase
           .typeMapping
           .read(i0.DriftSqlType.string, data['${effectivePrefix}denylist'])!),
@@ -103,6 +115,8 @@ class $TraitsTableTable extends i6.TraitsTable
           .read(i0.DriftSqlType.string, data['${effectivePrefix}home_tags'])!,
       avatar: attachedDatabase.typeMapping
           .read(i0.DriftSqlType.string, data['${effectivePrefix}avatar']),
+      perPage: attachedDatabase.typeMapping
+          .read(i0.DriftSqlType.int, data['${effectivePrefix}per_page']),
     );
   }
 
@@ -117,53 +131,60 @@ class $TraitsTableTable extends i6.TraitsTable
 
 class TraitsCompanion extends i0.UpdateCompanion<i5.Traits> {
   final i0.Value<int> id;
+  final i0.Value<int?> userId;
   final i0.Value<List<String>> denylist;
   final i0.Value<String> homeTags;
   final i0.Value<String?> avatar;
-  final i0.Value<String?> favicon;
+  final i0.Value<int?> perPage;
   const TraitsCompanion({
     this.id = const i0.Value.absent(),
+    this.userId = const i0.Value.absent(),
     this.denylist = const i0.Value.absent(),
     this.homeTags = const i0.Value.absent(),
     this.avatar = const i0.Value.absent(),
-    this.favicon = const i0.Value.absent(),
+    this.perPage = const i0.Value.absent(),
   });
   TraitsCompanion.insert({
     this.id = const i0.Value.absent(),
+    this.userId = const i0.Value.absent(),
     required List<String> denylist,
     required String homeTags,
     this.avatar = const i0.Value.absent(),
-    this.favicon = const i0.Value.absent(),
+    this.perPage = const i0.Value.absent(),
   })  : denylist = i0.Value(denylist),
         homeTags = i0.Value(homeTags);
   static i0.Insertable<i5.Traits> custom({
     i0.Expression<int>? id,
+    i0.Expression<int>? userId,
     i0.Expression<String>? denylist,
     i0.Expression<String>? homeTags,
     i0.Expression<String>? avatar,
-    i0.Expression<String>? favicon,
+    i0.Expression<int>? perPage,
   }) {
     return i0.RawValuesInsertable({
       if (id != null) 'id': id,
+      if (userId != null) 'user_id': userId,
       if (denylist != null) 'denylist': denylist,
       if (homeTags != null) 'home_tags': homeTags,
       if (avatar != null) 'avatar': avatar,
-      if (favicon != null) 'favicon': favicon,
+      if (perPage != null) 'per_page': perPage,
     });
   }
 
   i4.TraitsCompanion copyWith(
       {i0.Value<int>? id,
+      i0.Value<int?>? userId,
       i0.Value<List<String>>? denylist,
       i0.Value<String>? homeTags,
       i0.Value<String?>? avatar,
-      i0.Value<String?>? favicon}) {
+      i0.Value<int?>? perPage}) {
     return i4.TraitsCompanion(
       id: id ?? this.id,
+      userId: userId ?? this.userId,
       denylist: denylist ?? this.denylist,
       homeTags: homeTags ?? this.homeTags,
       avatar: avatar ?? this.avatar,
-      favicon: favicon ?? this.favicon,
+      perPage: perPage ?? this.perPage,
     );
   }
 
@@ -172,6 +193,9 @@ class TraitsCompanion extends i0.UpdateCompanion<i5.Traits> {
     final map = <String, i0.Expression>{};
     if (id.present) {
       map['id'] = i0.Variable<int>(id.value);
+    }
+    if (userId.present) {
+      map['user_id'] = i0.Variable<int>(userId.value);
     }
     if (denylist.present) {
       map['denylist'] = i0.Variable<String>(
@@ -183,8 +207,8 @@ class TraitsCompanion extends i0.UpdateCompanion<i5.Traits> {
     if (avatar.present) {
       map['avatar'] = i0.Variable<String>(avatar.value);
     }
-    if (favicon.present) {
-      map['favicon'] = i0.Variable<String>(favicon.value);
+    if (perPage.present) {
+      map['per_page'] = i0.Variable<int>(perPage.value);
     }
     return map;
   }
@@ -193,10 +217,11 @@ class TraitsCompanion extends i0.UpdateCompanion<i5.Traits> {
   String toString() {
     return (StringBuffer('TraitsCompanion(')
           ..write('id: $id, ')
+          ..write('userId: $userId, ')
           ..write('denylist: $denylist, ')
           ..write('homeTags: $homeTags, ')
           ..write('avatar: $avatar, ')
-          ..write('favicon: $favicon')
+          ..write('perPage: $perPage')
           ..write(')'))
         .toString();
   }
@@ -209,9 +234,11 @@ class _$TraitsInsertable implements i0.Insertable<i5.Traits> {
   Map<String, i0.Expression> toColumns(bool nullToAbsent) {
     return i4.TraitsCompanion(
       id: i0.Value(_object.id),
+      userId: i0.Value(_object.userId),
       denylist: i0.Value(_object.denylist),
       homeTags: i0.Value(_object.homeTags),
       avatar: i0.Value(_object.avatar),
+      perPage: i0.Value(_object.perPage),
     ).toColumns(false);
   }
 }

@@ -10,10 +10,11 @@ import 'database.drift.dart';
 class TraitsTable extends Table {
   IntColumn get id => integer().references(IdentitiesTable, #id,
       onUpdate: KeyAction.cascade, onDelete: KeyAction.cascade)();
+  IntColumn get userId => integer().nullable()();
   TextColumn get denylist => text().map(JsonSqlConverter.list<String>())();
   TextColumn get homeTags => text()();
   TextColumn get avatar => text().nullable()();
-  TextColumn get favicon => text().nullable()();
+  IntColumn get perPage => integer().nullable()();
 
   @override
   Set<Column<Object>>? get primaryKey => {id};

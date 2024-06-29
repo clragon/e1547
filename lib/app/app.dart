@@ -15,7 +15,6 @@ export 'widgets/errors.dart';
 export 'widgets/link.dart';
 export 'widgets/loading.dart';
 export 'widgets/lock.dart';
-export 'widgets/migration.dart';
 export 'widgets/notifications.dart';
 export 'widgets/provider.dart';
 export 'widgets/window.dart';

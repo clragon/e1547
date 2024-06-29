@@ -64,7 +64,6 @@ class App extends StatelessWidget {
                           child: LoadingShell(
                             child: MultiProvider(
                               providers: [
-                                const DatabaseMigrationProvider(),
                                 IdentityServiceProvider(),
                                 TraitsServiceProvider(),
                                 ClientProvider(),
