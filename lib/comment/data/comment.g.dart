@@ -19,6 +19,7 @@ _$CommentImpl _$$CommentImplFromJson(Map<String, dynamic> json) =>
           ? null
           : VoteInfo.fromJson(json['vote'] as Map<String, dynamic>),
       warning: $enumDecodeNullable(_$WarningTypeEnumMap, json['warning']),
+      hidden: json['hidden'] as bool,
     );
 
 Map<String, dynamic> _$$CommentImplToJson(_$CommentImpl instance) =>
@@ -32,6 +33,7 @@ Map<String, dynamic> _$$CommentImplToJson(_$CommentImpl instance) =>
       'creator_name': instance.creatorName,
       'vote': instance.vote,
       'warning': _$WarningTypeEnumMap[instance.warning],
+      'hidden': instance.hidden,
     };
 
 const _$WarningTypeEnumMap = {

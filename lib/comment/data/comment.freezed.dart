@@ -29,6 +29,7 @@ mixin _$Comment {
   String get creatorName => throw _privateConstructorUsedError;
   VoteInfo? get vote => throw _privateConstructorUsedError;
   WarningType? get warning => throw _privateConstructorUsedError;
+  bool get hidden => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -49,7 +50,8 @@ abstract class $CommentCopyWith<$Res> {
       int creatorId,
       String creatorName,
       VoteInfo? vote,
-      WarningType? warning});
+      WarningType? warning,
+      bool hidden});
 }
 
 /// @nodoc
@@ -74,6 +76,7 @@ class _$CommentCopyWithImpl<$Res, $Val extends Comment>
     Object? creatorName = null,
     Object? vote = freezed,
     Object? warning = freezed,
+    Object? hidden = null,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -112,6 +115,10 @@ class _$CommentCopyWithImpl<$Res, $Val extends Comment>
           ? _value.warning
           : warning // ignore: cast_nullable_to_non_nullable
               as WarningType?,
+      hidden: null == hidden
+          ? _value.hidden
+          : hidden // ignore: cast_nullable_to_non_nullable
+              as bool,
     ) as $Val);
   }
 }
@@ -132,7 +139,8 @@ abstract class _$$CommentImplCopyWith<$Res> implements $CommentCopyWith<$Res> {
       int creatorId,
       String creatorName,
       VoteInfo? vote,
-      WarningType? warning});
+      WarningType? warning,
+      bool hidden});
 }
 
 /// @nodoc
@@ -155,6 +163,7 @@ class __$$CommentImplCopyWithImpl<$Res>
     Object? creatorName = null,
     Object? vote = freezed,
     Object? warning = freezed,
+    Object? hidden = null,
   }) {
     return _then(_$CommentImpl(
       id: null == id
@@ -193,6 +202,10 @@ class __$$CommentImplCopyWithImpl<$Res>
           ? _value.warning
           : warning // ignore: cast_nullable_to_non_nullable
               as WarningType?,
+      hidden: null == hidden
+          ? _value.hidden
+          : hidden // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -209,7 +222,8 @@ class _$CommentImpl implements _Comment {
       required this.creatorId,
       required this.creatorName,
       required this.vote,
-      required this.warning});
+      required this.warning,
+      required this.hidden});
 
   factory _$CommentImpl.fromJson(Map<String, dynamic> json) =>
       _$$CommentImplFromJson(json);
@@ -232,10 +246,12 @@ class _$CommentImpl implements _Comment {
   final VoteInfo? vote;
   @override
   final WarningType? warning;
+  @override
+  final bool hidden;
 
   @override
   String toString() {
-    return 'Comment(id: $id, postId: $postId, body: $body, createdAt: $createdAt, updatedAt: $updatedAt, creatorId: $creatorId, creatorName: $creatorName, vote: $vote, warning: $warning)';
+    return 'Comment(id: $id, postId: $postId, body: $body, createdAt: $createdAt, updatedAt: $updatedAt, creatorId: $creatorId, creatorName: $creatorName, vote: $vote, warning: $warning, hidden: $hidden)';
   }
 
   @override
@@ -255,13 +271,14 @@ class _$CommentImpl implements _Comment {
             (identical(other.creatorName, creatorName) ||
                 other.creatorName == creatorName) &&
             (identical(other.vote, vote) || other.vote == vote) &&
-            (identical(other.warning, warning) || other.warning == warning));
+            (identical(other.warning, warning) || other.warning == warning) &&
+            (identical(other.hidden, hidden) || other.hidden == hidden));
   }
 
   @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(runtimeType, id, postId, body, createdAt,
-      updatedAt, creatorId, creatorName, vote, warning);
+      updatedAt, creatorId, creatorName, vote, warning, hidden);
 
   @JsonKey(ignore: true)
   @override
@@ -287,7 +304,8 @@ abstract class _Comment implements Comment {
       required final int creatorId,
       required final String creatorName,
       required final VoteInfo? vote,
-      required final WarningType? warning}) = _$CommentImpl;
+      required final WarningType? warning,
+      required final bool hidden}) = _$CommentImpl;
 
   factory _Comment.fromJson(Map<String, dynamic> json) = _$CommentImpl.fromJson;
 
@@ -309,6 +327,8 @@ abstract class _Comment implements Comment {
   VoteInfo? get vote;
   @override
   WarningType? get warning;
+  @override
+  bool get hidden;
   @override
   @JsonKey(ignore: true)
   _$$CommentImplCopyWith<_$CommentImpl> get copyWith =>

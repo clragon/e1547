@@ -66,43 +66,71 @@ class ReplyHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Dimmed(
-      child: InkWell(
-        borderRadius: BorderRadius.circular(4),
-        child: TimedText(
-          created: reply.createdAt,
-          updated: reply.updatedAt,
-          child: Padding(
-            padding: const EdgeInsets.only(top: 4, bottom: 4),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Flexible(
-                  child: Text(
-                    context
-                        .watch<UsernameGenerator>()
-                        .generate(reply.creatorId),
-                    style: TextStyle(
-                      color: dimTextColor(context),
+    return Row(
+      children: [
+        Dimmed(
+          child: InkWell(
+            borderRadius: BorderRadius.circular(4),
+            child: TimedText(
+              created: reply.createdAt,
+              updated: reply.updatedAt,
+              child: Padding(
+                padding: const EdgeInsets.only(top: 4, bottom: 4),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Flexible(
+                      child: Text(
+                        context
+                            .watch<UsernameGenerator>()
+                            .generate(reply.creatorId),
+                        style: TextStyle(
+                          color: dimTextColor(context),
+                        ),
+                      ),
                     ),
-                  ),
+                    const SizedBox(width: 4),
+                    const Tooltip(
+                      message: 'Generated username',
+                      child: Icon(Icons.theater_comedy),
+                    ),
+                  ],
                 ),
-                const SizedBox(width: 4),
-                const Tooltip(
-                  message: 'Generated username',
-                  child: Icon(Icons.theater_comedy),
+              ),
+            ),
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => UserLoadingPage(
+                  reply.creatorId.toString(),
                 ),
-              ],
+              ),
             ),
           ),
         ),
-        onTap: () => Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => UserLoadingPage(
-              reply.creatorId.toString(),
-            ),
-          ),
-        ),
+        const SizedBox(width: 4),
+        ReplyVisibilityIndicator(reply: reply),
+      ],
+    );
+  }
+}
+
+class ReplyVisibilityIndicator extends StatelessWidget {
+  const ReplyVisibilityIndicator({
+    super.key,
+    required this.reply,
+  });
+
+  final Reply reply;
+
+  @override
+  Widget build(BuildContext context) {
+    if (!reply.hidden) return const SizedBox();
+    return Tooltip(
+      message: 'This reply is hidden',
+      child: Icon(
+        Icons.visibility_off,
+        size: smallIconSize(context),
+        color: Theme.of(context).colorScheme.error,
       ),
     );
   }
