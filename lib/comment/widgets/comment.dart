@@ -94,30 +94,36 @@ class CommentHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Dimmed(
-      child: InkWell(
-        borderRadius: BorderRadius.circular(4),
-        onTap: () => Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => UserLoadingPage(
-              comment.creatorId.toString(),
+    return Row(
+      children: [
+        Dimmed(
+          child: InkWell(
+            borderRadius: BorderRadius.circular(4),
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => UserLoadingPage(
+                  comment.creatorId.toString(),
+                ),
+              ),
+            ),
+            child: TimedText(
+              created: comment.createdAt,
+              updated: comment.updatedAt,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Flexible(child: Text(comment.creatorName)),
+                  ],
+                ),
+              ),
             ),
           ),
         ),
-        child: TimedText(
-          created: comment.createdAt,
-          updated: comment.updatedAt,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 4),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Flexible(child: Text(comment.creatorName)),
-              ],
-            ),
-          ),
-        ),
-      ),
+        const SizedBox(width: 4),
+        CommentVisibilityIndicator(comment: comment),
+      ],
     );
   }
 }
@@ -175,6 +181,28 @@ class CommentVotes extends StatelessWidget {
                 return !isLiked;
               }
             : null,
+      ),
+    );
+  }
+}
+
+class CommentVisibilityIndicator extends StatelessWidget {
+  const CommentVisibilityIndicator({
+    super.key,
+    required this.comment,
+  });
+
+  final Comment comment;
+
+  @override
+  Widget build(BuildContext context) {
+    if (!comment.hidden) return const SizedBox();
+    return Tooltip(
+      message: 'This comment is hidden',
+      child: Icon(
+        Icons.visibility_off,
+        size: smallIconSize(context),
+        color: Theme.of(context).colorScheme.error,
       ),
     );
   }

@@ -165,6 +165,7 @@ extension E621Comment on Comment {
           ),
           warning: pick('warning_type').letOrNull(
               (pick) => WarningType.values.asNameMap()[pick.asString()]!),
+          hidden: pick('is_hidden').asBoolOrThrow(),
         ),
       );
 }
