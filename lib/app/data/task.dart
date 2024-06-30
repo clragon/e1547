@@ -127,7 +127,7 @@ Future<void> teardownBackgroundIsolate(ControllerBundle bundle) async {
   await bundle.dispose();
 
   SendPort? sendPort =
-      IsolateNameServer.lookupPortByName(BackgroundCommunication.backgroundKey);
+      IsolateNameServer.lookupPortByName(BackgroundCommunication.foregroundKey);
 
   if (sendPort != null) {
     sendPort.send(BackgroundCommunication.terminateMessage);
