@@ -13,7 +13,7 @@ import 'package:workmanager/workmanager.dart';
 
 export 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
-final Logger _logger = Logger('BackgroundTask');
+final Logger _logger = Logger('IsolateSetup');
 
 /// Constants for inter-isolate communication.
 abstract final class BackgroundCommunication {
@@ -106,6 +106,7 @@ Future<CancelToken> setupBackgroundCommunication() async {
   receivePort.listen((message) {
     if (message is String &&
         message == BackgroundCommunication.terminateMessage) {
+      _logger.fine('Received termination notice from foreground isolate');
       cancelToken.cancel('Terminated by foreground isolate');
       receivePort.close();
       IsolateNameServer.removePortNameMapping(
@@ -118,6 +119,7 @@ Future<CancelToken> setupBackgroundCommunication() async {
 
   if (sendPort != null) {
     sendPort.send(BackgroundCommunication.startupMessage);
+    _logger.fine('Notified foreground isolate of startup');
   }
 
   return cancelToken;
@@ -130,7 +132,8 @@ Future<void> teardownBackgroundIsolate(ControllerBundle bundle) async {
       IsolateNameServer.lookupPortByName(BackgroundCommunication.foregroundKey);
 
   if (sendPort != null) {
-    sendPort.send(BackgroundCommunication.terminateMessage);
+    sendPort.send(BackgroundCommunication.confirmMessage);
+    _logger.fine('Confirmed shutdown to foreground isolate');
   }
 }
 
@@ -152,6 +155,8 @@ Future<void> setupForegroundCommunication() async {
       if (message is String &&
           message == BackgroundCommunication.confirmMessage) {
         completer.complete();
+        _logger
+            .fine('Received confirmation of shutdown from background isolate');
       }
     });
   } else {
@@ -164,7 +169,15 @@ Future<void> setupForegroundCommunication() async {
       sendPort = IsolateNameServer.lookupPortByName(
           BackgroundCommunication.backgroundKey);
       sendPort?.send(BackgroundCommunication.terminateMessage);
+      _logger.fine('Sent termination notice to background isolate');
     }
+  });
+
+  // Fail-safe to ensure the app doesn't hang.
+  Timer(const Duration(seconds: 3), () {
+    if (completer.isCompleted) return;
+    completer.complete();
+    _logger.warning('Failed to receive confirmation from background isolate');
   });
 
   await completer.future;
