@@ -104,8 +104,8 @@ Future<CancelToken> setupBackgroundCommunication() async {
   );
 
   receivePort.listen((message) {
-    if (message is String &&
-        message == BackgroundCommunication.terminateMessage) {
+    if (message is! String) return;
+    if (message == BackgroundCommunication.terminateMessage) {
       _logger.fine('Received termination notice from foreground isolate');
       cancelToken.cancel('Terminated by foreground isolate');
       receivePort.close();
@@ -151,25 +151,21 @@ Future<void> setupForegroundCommunication() async {
 
   if (sendPort != null) {
     sendPort.send(BackgroundCommunication.terminateMessage);
-    receivePort.listen((message) {
-      if (message is String &&
-          message == BackgroundCommunication.confirmMessage) {
-        completer.complete();
-        _logger
-            .fine('Received confirmation of shutdown from background isolate');
-      }
-    });
   } else {
     completer.complete();
   }
 
   receivePort.listen((message) {
-    if (message is String &&
-        message == BackgroundCommunication.startupMessage) {
+    if (message is! String) return;
+    if (message == BackgroundCommunication.startupMessage) {
       sendPort = IsolateNameServer.lookupPortByName(
           BackgroundCommunication.backgroundKey);
       sendPort?.send(BackgroundCommunication.terminateMessage);
       _logger.fine('Sent termination notice to background isolate');
+    }
+    if (message == BackgroundCommunication.confirmMessage) {
+      completer.complete();
+      _logger.fine('Received confirmation of shutdown from background isolate');
     }
   });
 
