@@ -12,26 +12,26 @@ void executeBackgroundTasks() => Workmanager().executeTask(
         final logger = Logger('BackgroundTasks');
         ControllerBundle bundle = await setupBackgroundIsolate();
 
-        bundle.cancelToken.whenCancel.then((e) {
-          logger.info('Task $task was cancelled: ${e.error}');
-        });
-        await Future.value(); // wait a tick in case already cancelled
-
-        if (bundle.cancelToken.isCancelled) return true;
-
-        Timer(
-          // Android forces a 10 minute timeout on background tasks.
-          // We generally don't want to run for that long, so we'll
-          // cancel any task that runs for more than 5 minutes.
-          // This gives us ample time to shut down gracefully.
-          const Duration(minutes: 5),
-          () => bundle.cancelToken.cancel('Took too long to complete'),
-        );
-
-        FlutterLocalNotificationsPlugin notifications =
-            await initializeNotifications();
-
         try {
+          bundle.cancelToken.whenCancel.then((e) {
+            logger.info('Task $task was cancelled: ${e.error}');
+          });
+          await Future.value(); // wait a tick in case already cancelled
+
+          if (bundle.cancelToken.isCancelled) return true;
+
+          Timer(
+            // Android forces a 10 minute timeout on background tasks.
+            // We generally don't want to run for that long, so we'll
+            // cancel any task that runs for more than 5 minutes.
+            // This gives us ample time to shut down gracefully.
+            const Duration(minutes: 5),
+            () => bundle.cancelToken.cancel('Took too long to complete'),
+          );
+
+          FlutterLocalNotificationsPlugin notifications =
+              await initializeNotifications();
+
           switch (task) {
             case followsBackgroundTaskKey:
               return runFollowUpdates(
