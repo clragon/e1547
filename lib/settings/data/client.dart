@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:deep_pick/deep_pick.dart';
 import 'package:dio/dio.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/logs/logs.dart';
@@ -11,11 +12,10 @@ import 'package:pub_semver/pub_semver.dart';
 
 class AppInfoClient {
   AppInfoClient() {
+    _dio.interceptors.add(LoggingDioInterceptor());
     _dio.interceptors.add(
       ClientCacheInterceptor(options: ClientCacheConfig(store: cache)),
     );
-    // logging _after_ cache interceptor to avoid logging cache hits
-    _dio.interceptors.add(LoggingDioInterceptor());
   }
 
   final AppInfo info = AppInfo.instance;
@@ -29,36 +29,40 @@ class AppInfoClient {
   );
 
   Future<List<AppVersion>> getVersions({bool force = false}) async {
-    if (kDebugMode) return [];
-
-    List<dynamic> releases = await _dio
+    if (kDebugMode) return []; // Do not check for updates in debug mode
+    return _dio
         .get(
-          'https://api.github.com/repos/${info.github}/releases',
-          options: ClientCacheConfig(
-            store: cache,
-            policy: force ? CachePolicy.refresh : CachePolicy.request,
-          ).toOptions(),
-        )
-        .then((e) => e.data);
-    List<AppVersion> versions = [];
-    for (Map<String, dynamic> release in releases) {
-      try {
-        versions.add(
-          AppVersion(
-            version: Version.parse(release['tag_name']),
-            name: release['name'],
-            description: release['body'],
-            date: DateTime.parse(release['published_at']),
-            binaries: List<String>.from(release['assets']?.map(
-              (e) => e['name'].split('.').last,
-            )),
-          ),
-        );
-      } on FormatException {
-        continue;
-      }
-    }
-    return versions;
+      'https://api.github.com/repos/${info.github}/releases',
+      options: ClientCacheConfig(
+        store: cache,
+        policy: force ? CachePolicy.refresh : CachePolicy.request,
+      ).toOptions(),
+    )
+        .then(
+      (response) {
+        try {
+          return pick(response.data).asListOrEmpty(
+            (e) => pick(e.asMapOrThrow()).letOrThrow(
+              (e) => AppVersion(
+                version: Version.parse(e('tag_name').asStringOrThrow()),
+                name: e('name').asStringOrThrow(),
+                description: e('body').asStringOrThrow(),
+                date: e('published_at').asDateTimeOrThrow(),
+                binaries: e('assets').asListOrEmpty(
+                  (e) => e('name').asStringOrThrow().split('.').last,
+                ),
+              ),
+            ),
+          );
+        } on PickException catch (e) {
+          throw AppUpdaterException(
+            requestOptions: response.requestOptions,
+            response: response,
+            error: e,
+          );
+        }
+      },
+    );
   }
 
   /// Retrieves versions which are newer than the currently installed one.
