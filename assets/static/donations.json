@@ -337,5 +337,19 @@
         "platform": "ko-fi"
       }
     ]
+  },
+  {
+    "name": "APad",
+    "handles": {
+      "ko-fi": "APad"
+    },
+    "donations": [
+      {
+        "amount": 3.0,
+        "currency": "USD",
+        "date": "2024-07-15T06:50:00",
+        "platform": "ko-fi"
+      }
+    ]
   }
 ]
