@@ -351,5 +351,20 @@
         "platform": "ko-fi"
       }
     ]
+  },
+  {
+    "name": "Waffelo",
+    "avatar": "https://github.com/Waffelo.png",
+    "handles": {
+      "github": "Waffelo"
+    },
+    "donations": [
+      {
+        "amount": 3.0,
+        "currency": "USD",
+        "date": "2024-07-23T00:00:00",
+        "platform": "github"
+      }
+    ]
   }
 ]
