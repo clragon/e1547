@@ -138,6 +138,13 @@ Future<void> teardownBackgroundIsolate(ControllerBundle bundle) async {
 }
 
 void setupForegroundCommunication() {
+  // Unfortunately, this doesn't work.
+  // I dont know why, but it can cause the App to inexplicably hang on startup.
+  // I am leaving this here for later investigation.
+  // TODO: fix background isolate communication
+  return;
+
+  // ignore: dead_code
   ReceivePort receivePort = ReceivePort();
 
   IsolateNameServer.registerPortWithName(
