@@ -54,7 +54,7 @@ Future<ControllerBundle> setupBackgroundIsolate() async {
 }
 
 Future<void> setupForegroundIsolate() async {
-  await setupForegroundCommunication();
+  setupForegroundCommunication();
   unawaited(initializeBackgroundTasks());
 }
 
@@ -108,9 +108,6 @@ Future<CancelToken> setupBackgroundCommunication() async {
     if (message == BackgroundCommunication.terminateMessage) {
       _logger.fine('Received termination notice from foreground isolate');
       cancelToken.cancel('Terminated by foreground isolate');
-      receivePort.close();
-      IsolateNameServer.removePortNameMapping(
-          BackgroundCommunication.backgroundKey);
     }
   });
 
@@ -135,11 +132,13 @@ Future<void> teardownBackgroundIsolate(ControllerBundle bundle) async {
     sendPort.send(BackgroundCommunication.confirmMessage);
     _logger.fine('Confirmed shutdown to foreground isolate');
   }
+
+  IsolateNameServer.removePortNameMapping(
+      BackgroundCommunication.backgroundKey);
 }
 
-Future<void> setupForegroundCommunication() async {
+void setupForegroundCommunication() {
   ReceivePort receivePort = ReceivePort();
-  Completer<void> completer = Completer<void>();
 
   IsolateNameServer.registerPortWithName(
     receivePort.sendPort,
@@ -151,8 +150,6 @@ Future<void> setupForegroundCommunication() async {
 
   if (sendPort != null) {
     sendPort.send(BackgroundCommunication.terminateMessage);
-  } else {
-    completer.complete();
   }
 
   receivePort.listen((message) {
@@ -164,19 +161,9 @@ Future<void> setupForegroundCommunication() async {
       _logger.fine('Sent termination notice to background isolate');
     }
     if (message == BackgroundCommunication.confirmMessage) {
-      completer.complete();
       _logger.fine('Received confirmation of shutdown from background isolate');
     }
   });
-
-  // Fail-safe to ensure the app doesn't hang.
-  Timer(const Duration(seconds: 3), () {
-    if (completer.isCompleted) return;
-    completer.complete();
-    _logger.warning('Failed to receive confirmation from background isolate');
-  });
-
-  await completer.future;
 }
 
 /// Registers background tasks for the app.
