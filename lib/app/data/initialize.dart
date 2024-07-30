@@ -1,10 +1,14 @@
 import 'dart:io';
+import 'dart:isolate';
+import 'dart:ui';
 
 import 'package:dio_cache_interceptor_db_store/dio_cache_interceptor_db_store.dart';
 import 'package:drift/drift.dart';
+import 'package:drift/isolate.dart';
 import 'package:drift/native.dart';
 import 'package:e1547/app/app.dart';
 import 'package:e1547/logs/logs.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:notified_preferences/notified_preferences.dart';
 import 'package:path/path.dart';
@@ -26,26 +30,6 @@ Future<void> initializeAppInfo() => AppInfo.initializePlatform(
 
 Future<String> getTemporaryAppDirectory() => getTemporaryDirectory()
     .then((dir) => join(dir.path, AppInfo.instance.appName));
-
-/// Initializes the storages used by the app with default production values.
-Future<AppStorage> initializeAppStorage() async {
-  final String temporaryFiles = await getTemporaryAppDirectory();
-  return AppStorage(
-    preferences: await SharedPreferences.getInstance(),
-    temporaryFiles: temporaryFiles,
-    httpCache: DbCacheStore(databasePath: temporaryFiles),
-    sqlite: AppDatabase(connectDatabase('app.db')),
-  );
-}
-
-DatabaseConnection connectDatabase(String name) =>
-    DatabaseConnection.delayed(Future(
-      () async => NativeDatabase.createBackgroundConnection(
-        File(
-          join((await getApplicationSupportDirectory()).path, name),
-        ),
-      ),
-    ));
 
 /// Initializes the logger used by the app with default production values.
 Future<Logs> initializeLogger({
@@ -118,6 +102,56 @@ void registerFlutterErrorHandler(
     return false;
   };
   FlutterError.onError = (details) => handler(details.exception, details.stack);
+}
+
+/// Initializes the storages used by the app with default production values.
+Future<AppStorage> initializeAppStorage({bool cache = true}) async {
+  final String temporaryFiles = await getTemporaryAppDirectory();
+  return AppStorage(
+    preferences: await SharedPreferences.getInstance(),
+    temporaryFiles: temporaryFiles,
+    httpCache: cache ? DbCacheStore(databasePath: temporaryFiles) : null,
+    sqlite: AppDatabase(connectDatabase('app.db')),
+  );
+}
+
+DatabaseConnection connectDatabase(String name) {
+  return DatabaseConnection.delayed(
+    Future(
+      () async {
+        final key = 'database-isolate-$name';
+        RootIsolateToken? token = RootIsolateToken.instance;
+        DriftIsolate isolate;
+
+        SendPort? sendPort = IsolateNameServer.lookupPortByName(key);
+        if (sendPort != null) {
+          isolate = DriftIsolate.fromConnectPort(sendPort);
+        } else {
+          isolate = await DriftIsolate.spawn(
+            () => LazyDatabase(
+              () async {
+                if (token == null) {
+                  throw StateError('RootIsolateToken is not initialized!');
+                }
+                BackgroundIsolateBinaryMessenger.ensureInitialized(token);
+
+                return NativeDatabase(
+                  File(
+                    join(
+                      (await getApplicationSupportDirectory()).path,
+                      name,
+                    ),
+                  ),
+                );
+              },
+            ),
+          );
+        }
+
+        return isolate.connect();
+      },
+    ),
+  );
 }
 
 /// Returns an initialized WindowManager or null the current Platform is unsupported.

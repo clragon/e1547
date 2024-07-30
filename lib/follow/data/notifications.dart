@@ -14,30 +14,32 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 const String followsBackgroundTaskKey = 'net.clynamic.e1547.follows';
 
 Future<bool> runFollowUpdates({
-  required ControllerBundle bundle,
+  required AppStorage storage,
   required FlutterLocalNotificationsPlugin notifications,
+  CancelToken? cancelToken,
 }) async {
   // this ensures continued scheduling on iOS.
-  FollowRepository allFollows =
-      FollowRepository(database: bundle.storage.sqlite);
+  FollowRepository allFollows = FollowRepository(database: storage.sqlite);
   registerFollowBackgroundTask(
     await allFollows.all(types: [FollowType.notify]),
   );
 
-  List<Identity> identities = await bundle.identities.all();
+  List<Identity> identities = await IdentityService(
+    database: storage.sqlite,
+  ).all();
   List<bool> result = [];
 
   final clientFactory = ClientFactory();
 
   for (final identity in identities) {
-    TraitsService traits = TraitsService(database: bundle.storage.sqlite);
+    TraitsService traits = TraitsService(database: storage.sqlite);
     await traits.activate(identity.id);
 
     Client client = clientFactory.create(
       ClientConfig(
         identity: identity,
         traits: traits.notifier,
-        storage: bundle.storage,
+        storage: storage,
       ),
     );
 
@@ -45,7 +47,7 @@ Future<bool> runFollowUpdates({
       await runClientFollowUpdate(
         client: client,
         notifications: notifications,
-        cancelToken: bundle.cancelToken,
+        cancelToken: cancelToken,
       ),
     );
   }

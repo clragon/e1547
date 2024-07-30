@@ -82,4 +82,9 @@ class AppStorage {
   final String temporaryFiles;
   final CacheStore? httpCache;
   final AppDatabase sqlite;
+
+  Future<void> close() async {
+    await httpCache?.close();
+    await sqlite.close();
+  }
 }
