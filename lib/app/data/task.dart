@@ -24,9 +24,9 @@ CancelToken createBackgroundCancelToken(String task) {
   Timer(
     // Android forces a 10 minute timeout on background tasks.
     // We generally don't want to run for that long, so we'll
-    // cancel any task that runs for more than 5 minutes.
-    // This gives us ample time to shut down gracefully.
-    const Duration(minutes: 5),
+    // cancel any task that runs for more than 9 minutes.
+    // This gives us enough time to shut down gracefully.
+    const Duration(minutes: 9),
     () => cancelToken.cancel('Took too long to complete'),
   );
 
