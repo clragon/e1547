@@ -13,7 +13,7 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
 const String followsBackgroundTaskKey = 'net.clynamic.e1547.follows';
 
-Future<bool> runFollowUpdates({
+Future<void> runFollowUpdates({
   required AppStorage storage,
   required FlutterLocalNotificationsPlugin notifications,
   CancelToken? cancelToken,
@@ -27,7 +27,6 @@ Future<bool> runFollowUpdates({
   List<Identity> identities = await IdentityService(
     database: storage.sqlite,
   ).all();
-  List<bool> result = [];
 
   final clientFactory = ClientFactory();
 
@@ -43,23 +42,19 @@ Future<bool> runFollowUpdates({
       ),
     );
 
-    result.add(
-      await runClientFollowUpdate(
-        client: client,
-        notifications: notifications,
-        cancelToken: cancelToken,
-      ),
+    await runClientFollowUpdate(
+      client: client,
+      notifications: notifications,
+      cancelToken: cancelToken,
     );
   }
 
   registerFollowBackgroundTask(
     await allFollows.all(types: [FollowType.notify]),
   );
-
-  return result.every((e) => e);
 }
 
-Future<bool> runClientFollowUpdate({
+Future<void> runClientFollowUpdate({
   required Client client,
   required FlutterLocalNotificationsPlugin notifications,
   CancelToken? cancelToken,
@@ -82,8 +77,6 @@ Future<bool> runClientFollowUpdate({
     updated: updated,
     notifications: notifications,
   );
-
-  return true;
 }
 
 Future<void> updateFollowNotifications({

@@ -29,7 +29,7 @@ void executeBackgroundTasks() => Workmanager().executeTask(
 
           switch (task) {
             case followsBackgroundTaskKey:
-              return runFollowUpdates(
+              await runFollowUpdates(
                 storage: storage,
                 notifications: notifications,
                 cancelToken: cancelToken,
@@ -37,6 +37,8 @@ void executeBackgroundTasks() => Workmanager().executeTask(
             default:
               throw StateError('Task $task is unknown!');
           }
+
+          return true;
         } on Object catch (e, stack) {
           logger.severe('Failed executing Task $task', e, stack);
           rethrow;
