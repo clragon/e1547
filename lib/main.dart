@@ -10,7 +10,7 @@ Future<void> main() async {
   VideoService.ensureInitialized();
   await initializeAppInfo();
   Logs logs = await initializeLogger(path: await getTemporaryAppDirectory());
-  await setupForegroundIsolate();
+  unawaited(initializeBackgroundTasks());
   AppStorage storage = await initializeAppStorage();
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
   runApp(

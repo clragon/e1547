@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:e1547/app/app.dart';
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/logs/logs.dart';
@@ -9,25 +7,22 @@ import 'package:workmanager/workmanager.dart';
 @pragma('vm:entry-point')
 void executeBackgroundTasks() => Workmanager().executeTask(
       (task, inputData) async {
+        await initializeAppInfo();
+        await initializeLogger(
+          path: await getTemporaryAppDirectory(),
+          postfix: 'background',
+        );
+
         final logger = Logger('BackgroundTasks');
-        ControllerBundle bundle = await setupBackgroundIsolate();
+        logger.info('Executing Task $task');
+
+        AppStorage storage = await initializeAppStorage(cache: false);
 
         try {
-          bundle.cancelToken.whenCancel.then((e) {
+          final cancelToken = createBackgroundCancelToken(task);
+          cancelToken.whenCancel.then((e) {
             logger.info('Task $task was cancelled: ${e.error}');
           });
-          await Future.value(); // wait a tick in case already cancelled
-
-          if (bundle.cancelToken.isCancelled) return true;
-
-          Timer(
-            // Android forces a 10 minute timeout on background tasks.
-            // We generally don't want to run for that long, so we'll
-            // cancel any task that runs for more than 5 minutes.
-            // This gives us ample time to shut down gracefully.
-            const Duration(minutes: 5),
-            () => bundle.cancelToken.cancel('Took too long to complete'),
-          );
 
           FlutterLocalNotificationsPlugin notifications =
               await initializeNotifications();
@@ -35,8 +30,9 @@ void executeBackgroundTasks() => Workmanager().executeTask(
           switch (task) {
             case followsBackgroundTaskKey:
               return runFollowUpdates(
-                bundle: bundle,
+                storage: storage,
                 notifications: notifications,
+                cancelToken: cancelToken,
               );
             default:
               throw StateError('Task $task is unknown!');
@@ -45,7 +41,8 @@ void executeBackgroundTasks() => Workmanager().executeTask(
           logger.severe('Failed executing Task $task', e, stack);
           rethrow;
         } finally {
-          await teardownBackgroundIsolate(bundle);
+          await storage.close();
+          logger.info('Task $task completed');
         }
       },
     );
