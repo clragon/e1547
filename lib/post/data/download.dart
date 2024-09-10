@@ -106,7 +106,7 @@ extension PostDownloading on Post {
 
   String _downloadName() {
     String filename = '';
-    List<String> artists = filterArtists(tags['artist'] ?? []);
+    List<String> artists = filterArtists(tags['artist'] ?? tags['director'] ?? []);
     if (artists.isNotEmpty) {
       filename = '${artists.join(', ')} - ';
     }
