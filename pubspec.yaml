@@ -4,8 +4,8 @@ version: 19.2.0-beta+93
 publish_to: none
 
 environment:
-  sdk: '>=3.4.0 <4.0.0'
-  flutter: '>=3.22.0 <4.0.0'
+  sdk: ">=3.4.0 <4.0.0"
+  flutter: ">=3.22.0 <4.0.0"
 
 dependencies:
   flutter:
@@ -95,8 +95,12 @@ dependency_overrides:
     git:
       url: https://github.com/EdsonBueno/infinite_scroll_pagination.git
       ref: b25e96d
-  collection: 1.18.0
+  collection: 1.19.0
   package_info_plus: 6.0.0
+  webview_cookie_manager:
+    git:
+      url: https://github.com/fryette/webview_cookie_manager.git
+      ref: master
 
 dev_dependencies:
   flutter_test:
@@ -126,8 +130,8 @@ flutter:
         - asset: assets/font/JetBrainsMono-Bold.ttf
           weight: 700
 
-# flutter pub run flutter_launcher_icons:main
-flutter_icons:
+# dart run flutter_launcher_icons
+flutter_launcher_icons:
   ios: true
   android: true
   remove_alpha_ios: true
@@ -139,7 +143,7 @@ flutter_icons:
     image_path: "assets/icon/app/round.png"
     icon_size: 256
 
-# flutter pub run flutter_native_splash:create
+# dart run flutter_native_splash:create
 flutter_native_splash:
   color: "000000"
   image: "assets/icon/app/round.png"
