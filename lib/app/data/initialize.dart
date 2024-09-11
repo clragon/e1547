@@ -1,14 +1,9 @@
 import 'dart:io';
-import 'dart:isolate';
-import 'dart:ui';
 
 import 'package:dio_cache_interceptor_db_store/dio_cache_interceptor_db_store.dart';
-import 'package:drift/drift.dart';
-import 'package:drift/isolate.dart';
-import 'package:drift/native.dart';
+import 'package:drift_flutter/drift_flutter.dart';
 import 'package:e1547/app/app.dart';
 import 'package:e1547/logs/logs.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:notified_preferences/notified_preferences.dart';
 import 'package:path/path.dart';
@@ -111,45 +106,16 @@ Future<AppStorage> initializeAppStorage({bool cache = true}) async {
     preferences: await SharedPreferences.getInstance(),
     temporaryFiles: temporaryFiles,
     httpCache: cache ? DbCacheStore(databasePath: temporaryFiles) : null,
-    sqlite: AppDatabase(connectDatabase('app.db')),
-  );
-}
-
-DatabaseConnection connectDatabase(String name) {
-  return DatabaseConnection.delayed(
-    Future(
-      () async {
-        final key = 'database-isolate-$name';
-        RootIsolateToken? token = RootIsolateToken.instance;
-        DriftIsolate isolate;
-
-        SendPort? sendPort = IsolateNameServer.lookupPortByName(key);
-        if (sendPort != null) {
-          isolate = DriftIsolate.fromConnectPort(sendPort);
-        } else {
-          isolate = await DriftIsolate.spawn(
-            () => LazyDatabase(
-              () async {
-                if (token == null) {
-                  throw StateError('RootIsolateToken is not initialized!');
-                }
-                BackgroundIsolateBinaryMessenger.ensureInitialized(token);
-
-                return NativeDatabase(
-                  File(
-                    join(
-                      (await getApplicationSupportDirectory()).path,
-                      name,
-                    ),
-                  ),
-                );
-              },
-            ),
-          );
-        }
-
-        return isolate.connect();
-      },
+    sqlite: AppDatabase(
+      driftDatabase(
+        name: 'app',
+        native: DriftNativeOptions(
+          shareAcrossIsolates: true,
+          databasePath: () => getApplicationSupportDirectory().then(
+            (dir) => join(dir.path, 'app.db'),
+          ),
+        ),
+      ),
     ),
   );
 }
