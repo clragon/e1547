@@ -55,7 +55,7 @@ class _AppLinkHandlerState extends State<AppLinkHandler> {
     super.initState();
     if (PlatformCapabilities.hasDeepLinks) {
       appLinks = AppLinks();
-      appLinks.getInitialAppLink().then(onInitialLink);
+      appLinks.getInitialLink().then(onInitialLink);
       linkListener = appLinks.uriLinkStream.listen(onLink);
     }
   }
