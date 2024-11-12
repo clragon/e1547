@@ -16,9 +16,11 @@ void executeBackgroundTasks() => Workmanager().executeTask(
         final logger = Logger('BackgroundTasks');
         logger.info('Executing Task $task');
 
-        AppStorage storage = await initializeAppStorage(cache: false);
+        AppStorage? storage;
 
         try {
+          storage = await initializeAppStorage(cache: false);
+
           final cancelToken = createBackgroundCancelToken(task);
           cancelToken.whenCancel.then((e) {
             logger.info('Task $task was cancelled: ${e.error}');
@@ -43,7 +45,7 @@ void executeBackgroundTasks() => Workmanager().executeTask(
           logger.severe('Failed executing Task $task', e, stack);
           rethrow;
         } finally {
-          await storage.close();
+          await storage?.close();
           logger.info('Task $task completed');
         }
       },
