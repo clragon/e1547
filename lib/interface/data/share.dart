@@ -10,9 +10,9 @@ import 'package:share_plus/share_plus.dart' as plus;
 abstract final class Share {
   static Future<void> text(BuildContext context, String text) async {
     if (Platform.isAndroid || Platform.isIOS) {
-      return plus.Share.share(text);
+      await plus.Share.share(text);
     } else {
-      return clipboard(context, text);
+      await clipboard(context, text);
     }
   }
 
