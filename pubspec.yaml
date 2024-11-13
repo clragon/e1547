@@ -55,7 +55,7 @@ dependencies:
   drift: ^2.16.0
   external_path: ^1.0.1
   filesize: ^2.0.1
-  flutter_local_notifications: ^17.0.0
+  flutter_local_notifications: ^17.2.4
   freezed_annotation: ^2.4.1
   html_character_entities: ^1.0.0+1
   image_gallery_saver: ^2.0.3
@@ -95,7 +95,7 @@ dependency_overrides:
     git:
       url: https://github.com/EdsonBueno/infinite_scroll_pagination.git
       ref: b25e96d
-  collection: 1.18.0
+  collection: ^1.19.0
   package_info_plus: 6.0.0
 
 dev_dependencies:
