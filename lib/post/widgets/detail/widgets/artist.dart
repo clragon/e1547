@@ -84,7 +84,7 @@ class ArtistName extends StatelessWidget {
         context.select<PostEditingController?, Map<String, List<String>>>(
             (value) => value?.value?.tags ?? post.tags);
 
-    List<String> artists = filterArtists((tags)['artist'] ?? []);
+    List<String> artists = filterArtists((tags)['artist'] ?? (tags)['director'] ?? []);
     if (artists.isNotEmpty) {
       return OverflowBar(
         children: [
