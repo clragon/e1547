@@ -28,15 +28,12 @@ enum AppTheme {
   ThemeData get data {
     switch (this) {
       case AppTheme.light:
-        return prepareTheme(
-          ThemeData.from(
-            colorScheme: ColorScheme.fromSwatch(
-              primarySwatch: primarySwatch,
-              accentColor: accentColor,
-              cardColor: Colors.white,
-              backgroundColor: Colors.grey[50],
-            ),
-            useMaterial3: false,
+        return M2ThemeData.from(
+          colorScheme: ColorScheme.fromSwatch(
+            primarySwatch: primarySwatch,
+            accentColor: accentColor,
+            cardColor: Colors.white,
+            backgroundColor: Colors.grey[50],
           ),
         ).copyWith(
           floatingActionButtonTheme: const FloatingActionButtonThemeData(
@@ -44,80 +41,102 @@ enum AppTheme {
           ),
         );
       case AppTheme.dark:
-        return prepareTheme(
-          ThemeData.from(
-            colorScheme: ColorScheme.fromSwatch(
-              primarySwatch: primarySwatch,
-              accentColor: accentColor,
-              cardColor: Colors.grey[900],
-              backgroundColor: const Color.fromARGB(255, 20, 20, 20),
-              brightness: Brightness.dark,
-            ),
-            useMaterial3: false,
+        return M2ThemeData.from(
+          colorScheme: ColorScheme.fromSwatch(
+            primarySwatch: primarySwatch,
+            accentColor: accentColor,
+            cardColor: Colors.grey[900],
+            backgroundColor: const Color.fromARGB(255, 20, 20, 20),
+            brightness: Brightness.dark,
           ),
         );
       case AppTheme.amoled:
-        return prepareTheme(
-          ThemeData.from(
-            colorScheme: ColorScheme.fromSwatch(
-              primarySwatch: primarySwatch,
-              accentColor: accentColor,
-              cardColor: const Color.fromARGB(255, 20, 20, 20),
-              backgroundColor: Colors.black,
-              brightness: Brightness.dark,
-            ),
-            useMaterial3: false,
+        return M2ThemeData.from(
+          colorScheme: ColorScheme.fromSwatch(
+            primarySwatch: primarySwatch,
+            accentColor: accentColor,
+            cardColor: const Color.fromARGB(255, 20, 20, 20),
+            backgroundColor: Colors.black,
+            brightness: Brightness.dark,
           ),
         );
       case AppTheme.blue:
-        return prepareTheme(
-          ThemeData.from(
-            colorScheme: ColorScheme.fromSwatch(
-              primarySwatch: primarySwatch,
-              accentColor: accentColor,
-              cardColor: const Color.fromARGB(255, 31, 60, 103),
-              backgroundColor: const Color.fromARGB(255, 15, 33, 60),
-              brightness: Brightness.dark,
-            ),
-            useMaterial3: false,
+        return M2ThemeData.from(
+          colorScheme: ColorScheme.fromSwatch(
+            primarySwatch: primarySwatch,
+            accentColor: accentColor,
+            cardColor: const Color.fromARGB(255, 31, 60, 103),
+            backgroundColor: const Color.fromARGB(255, 15, 33, 60),
+            brightness: Brightness.dark,
           ),
         );
     }
   }
 }
 
-ThemeData prepareTheme(ThemeData theme) => theme.copyWith(
-      applyElevationOverlayColor: false,
-      appBarTheme: theme.appBarTheme.copyWith(
-        surfaceTintColor:
-            theme.appBarTheme.backgroundColor ?? theme.colorScheme.surface,
-        systemOverlayStyle: SystemUiOverlayStyle(
-          statusBarColor: Colors.transparent,
-          statusBarBrightness: theme.brightness,
-          statusBarIconBrightness: theme.brightness == Brightness.light
-              ? Brightness.dark
-              : Brightness.light,
-          systemNavigationBarColor: Colors.transparent,
-          systemNavigationBarIconBrightness:
-              theme.brightness == Brightness.light
-                  ? Brightness.dark
-                  : Brightness.light,
-        ),
-        color: theme.canvasColor,
-        foregroundColor: theme.iconTheme.color,
+extension M2ThemeData on ThemeData {
+  static ThemeData from({required ColorScheme colorScheme}) {
+    final bool isDark = colorScheme.brightness == Brightness.dark;
+
+    final Color primarySurfaceColor =
+        isDark ? colorScheme.surface : colorScheme.primary;
+    final Color onPrimarySurfaceColor =
+        isDark ? colorScheme.onSurface : colorScheme.onPrimary;
+
+    return prepareTheme(
+      ThemeData(
+        colorScheme: colorScheme,
+        brightness: colorScheme.brightness,
+        primaryColor: primarySurfaceColor,
+        // ignore: deprecated_member_use
+        canvasColor: colorScheme.background,
+        // ignore: deprecated_member_use
+        scaffoldBackgroundColor: colorScheme.background,
+        cardColor: colorScheme.surface,
+        dividerColor: colorScheme.onSurface.withOpacity(0.12),
+        // ignore: deprecated_member_use
+        dialogBackgroundColor: colorScheme.background,
+        indicatorColor: onPrimarySurfaceColor,
+        applyElevationOverlayColor: isDark,
+        useMaterial3: false,
       ),
-      cardTheme: theme.cardTheme.copyWith(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
-      ),
-      bannerTheme: theme.bannerTheme.copyWith(
-        backgroundColor: theme.canvasColor,
-      ),
-      tooltipTheme: theme.tooltipTheme.copyWith(
-        waitDuration: const Duration(milliseconds: 400),
-      ),
-      pageTransitionsTheme:
-          SnapshotlessPageTransitionTheme(parent: theme.pageTransitionsTheme),
     );
+  }
+
+  static ThemeData prepareTheme(ThemeData theme) => theme.copyWith(
+        applyElevationOverlayColor: false,
+        appBarTheme: theme.appBarTheme.copyWith(
+          surfaceTintColor:
+              theme.appBarTheme.backgroundColor ?? theme.colorScheme.surface,
+          systemOverlayStyle: SystemUiOverlayStyle(
+            statusBarColor: Colors.transparent,
+            statusBarBrightness: theme.brightness,
+            statusBarIconBrightness: theme.brightness == Brightness.light
+                ? Brightness.dark
+                : Brightness.light,
+            systemNavigationBarColor: Colors.transparent,
+            systemNavigationBarIconBrightness:
+                theme.brightness == Brightness.light
+                    ? Brightness.dark
+                    : Brightness.light,
+          ),
+          color: theme.canvasColor,
+          foregroundColor: theme.iconTheme.color,
+        ),
+        cardTheme: theme.cardTheme.copyWith(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+          color: theme.cardTheme.color,
+        ),
+        bannerTheme: theme.bannerTheme.copyWith(
+          backgroundColor: theme.canvasColor,
+        ),
+        tooltipTheme: theme.tooltipTheme.copyWith(
+          waitDuration: const Duration(milliseconds: 400),
+        ),
+        pageTransitionsTheme:
+            SnapshotlessPageTransitionTheme(parent: theme.pageTransitionsTheme),
+      );
+}
 
 class AndroidStretchScrollBehaviour extends ScrollBehavior {
   @override
