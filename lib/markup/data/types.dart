@@ -204,8 +204,6 @@ enum LinkWord {
         return '/tickets/$id';
       case takedown:
         return '/takedowns/$id';
-      default:
-        return '';
     }
   }
 }

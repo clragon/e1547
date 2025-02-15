@@ -197,7 +197,7 @@ abstract class HistoryService {
       posts
           ?.whereNot((e) => e.isDeniedBy(traits.value.denylist))
           .map((e) => e.sample)
-          .whereNotNull()
+          .nonNulls
           .take(4)
           .toList() ??
       [];
@@ -218,16 +218,19 @@ abstract class HistoryService {
   Future<List<DateTime>> days();
 
   bool get enabled;
+
   set enabled(bool value);
 
   Stream<bool> get enabledStream;
 
   bool get trimming;
+
   set trimming(bool value);
 
   Stream<bool> get trimmingStream;
 
   int get trimAmount;
+
   Duration get trimAge;
 }
 

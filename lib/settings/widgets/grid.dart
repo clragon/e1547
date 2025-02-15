@@ -8,8 +8,6 @@ extension GridQuiltDescription on GridQuilt {
         return 'tiles are quadratic';
       case GridQuilt.vertical:
         return 'tiles expand vertically';
-      default:
-        return '???';
     }
   }
 
@@ -19,8 +17,6 @@ extension GridQuiltDescription on GridQuilt {
         return Icons.view_module;
       case GridQuilt.vertical:
         return Icons.view_column;
-      default:
-        return Icons.help_outline;
     }
   }
 }

@@ -190,7 +190,7 @@ class TitleBarButton extends StatelessWidget {
   Widget build(BuildContext context) => IconButton(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
         constraints: const BoxConstraints(),
-        hoverColor: color?.withOpacity(0.7),
+        hoverColor: color?.withAlpha(180),
         highlightColor: color,
         icon: icon,
         onPressed: onPressed,

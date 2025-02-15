@@ -2,7 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:relative_time/relative_time.dart';
 
 Color dimTextColor(BuildContext context, [double opacity = 0.35]) =>
-    Theme.of(context).textTheme.bodyMedium!.color!.withOpacity(opacity);
+    Theme.of(context)
+        .textTheme
+        .bodyMedium!
+        .color!
+        .withAlpha((opacity * 255).ceil());
 
 double smallIconSize(BuildContext context) => 18;
 

@@ -25,8 +25,6 @@ enum ReportType {
         return 2;
       case tagging:
         return 1;
-      default:
-        throw ArgumentError('Invalid ReportType when fetching id');
     }
   }
 
@@ -44,8 +42,6 @@ enum ReportType {
         return 'Note Abuse';
       case tagging:
         return 'Tagging Abuse';
-      default:
-        throw ArgumentError('Invalid ReportType when fetching title');
     }
   }
 }
@@ -75,8 +71,6 @@ enum FlagType {
         return 'corrupt';
       case inferior:
         return 'inferior';
-      default:
-        throw ArgumentError('Invalid FlagType when fetching id');
     }
   }
 
@@ -96,8 +90,6 @@ enum FlagType {
         return 'File is either corrupted, broken, or otherwise does not work';
       case inferior:
         return 'Duplicate or inferior version of another post';
-      default:
-        throw ArgumentError('Invalid FlagType when fetching title');
     }
   }
 
@@ -117,8 +109,6 @@ enum FlagType {
         return 'Something about this post does not work quite right. This may be a broken video, or a corrupted image.\nEither way, in order to avoid confusion, please explain the situation in the comments.';
       case inferior:
         return 'A superior version of this post already exists on the site.\nThis may include images with better visal quality (larger, less compressed), but may also feature "fixed" versions, with visual mistakes accounted for by the artist.\nNote that edits and alternate versions do not fall under this category.';
-      default:
-        throw ArgumentError('Invalid FlagType when fetching description');
     }
   }
 }

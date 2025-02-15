@@ -135,7 +135,7 @@ class _SelectionLayoutState<T> extends State<SelectionLayout<T>> {
 
     return PopScope(
       canPop: selections.isEmpty,
-      onPopInvoked: (didPop) {
+      onPopInvokedWithResult: (didPop, result) {
         if (!didPop) onSelectionChanged({});
       },
       child: SelectionLayoutData<T>(

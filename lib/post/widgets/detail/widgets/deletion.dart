@@ -49,7 +49,7 @@ class DeletionDisplay extends StatelessWidget {
                     color: Theme.of(context)
                         .colorScheme
                         .errorContainer
-                        .withOpacity(0.6),
+                        .withAlpha(150),
                     child: Padding(
                       padding: const EdgeInsets.all(16),
                       child: DText(

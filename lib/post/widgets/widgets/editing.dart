@@ -22,7 +22,7 @@ class PostEditor extends StatelessWidget {
             context.watch<PostEditingController>();
         return PopScope(
           canPop: controller.isShown || !controller.editing,
-          onPopInvoked: (didPop) {
+          onPopInvokedWithResult: (didPop, result) {
             if (!didPop) controller.stopEditing();
           },
           child: PromptActions(

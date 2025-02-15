@@ -176,8 +176,8 @@ class DTextBody extends StatelessWidget {
       style: TextStyle(
         color: hidden ? Colors.transparent : null,
         backgroundColor: hidden
-            ? Theme.of(context).textTheme.bodyMedium!.color!.withOpacity(1)
-            : Theme.of(context).textTheme.bodyMedium!.color!.withOpacity(0.1),
+            ? Theme.of(context).textTheme.bodyMedium!.color!.withAlpha(255)
+            : Theme.of(context).textTheme.bodyMedium!.color!.withAlpha(26),
       ),
     );
   }

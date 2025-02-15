@@ -19,7 +19,9 @@ class GalleryButtons extends StatelessWidget {
       Platform.isWindows,
       Platform.isMacOS,
       Platform.isLinux,
-    ].any((e) => e)) return child;
+    ].any((e) => e)) {
+      return child;
+    }
     return Material(
       child: Stack(
         fit: StackFit.passthrough,

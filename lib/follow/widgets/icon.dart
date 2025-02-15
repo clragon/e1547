@@ -10,8 +10,6 @@ extension FollowIcon on FollowType {
         return const Icon(Icons.person_add);
       case FollowType.bookmark:
         return const Icon(Icons.bookmark);
-      default:
-        return const Icon(Icons.warning);
     }
   }
 }

@@ -50,7 +50,6 @@ enum TagCategory {
       case artist:
         return Colors.deepPurple[300];
       case invalid:
-      default:
         return Colors.grey[300];
     }
   }
@@ -73,8 +72,6 @@ enum TagCategory {
         return 1;
       case invalid:
         return 6;
-      default:
-        return -1;
     }
   }
 

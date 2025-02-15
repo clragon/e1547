@@ -93,7 +93,7 @@ extension M2ThemeData on ThemeData {
         // ignore: deprecated_member_use
         scaffoldBackgroundColor: colorScheme.background,
         cardColor: colorScheme.surface,
-        dividerColor: colorScheme.onSurface.withOpacity(0.12),
+        dividerColor: colorScheme.onSurface.withAlpha(31),
         // ignore: deprecated_member_use
         dialogBackgroundColor: colorScheme.background,
         indicatorColor: onPrimarySurfaceColor,

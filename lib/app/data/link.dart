@@ -58,6 +58,7 @@ class Link {
 }
 
 @immutable
+// ignore: one_member_abstracts
 abstract class LinkParser {
   const LinkParser();
 
