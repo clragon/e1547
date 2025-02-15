@@ -31,6 +31,7 @@ enum TagCategory {
   meta,
   lore,
   artist,
+  contributor,
   invalid;
 
   Color? get color {
@@ -49,6 +50,8 @@ enum TagCategory {
         return Colors.pink[300];
       case artist:
         return Colors.deepPurple[300];
+      case contributor:
+        return Colors.blueGrey[300];
       case invalid:
         return Colors.grey[300];
     }
@@ -70,6 +73,8 @@ enum TagCategory {
         return 8;
       case artist:
         return 1;
+      case contributor:
+        return 2;
       case invalid:
         return 6;
     }
