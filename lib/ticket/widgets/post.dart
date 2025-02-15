@@ -156,6 +156,25 @@ class _PostReportScreenState extends State<PostReportScreen> {
                     onChanged: (value) => setState(() => type = value),
                     isLoading: isLoading,
                   ),
+                  CrossFade.builder(
+                    showChild: type != null,
+                    builder: (context) => Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 24, vertical: 6),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Card(
+                              child: Padding(
+                                padding: const EdgeInsets.all(16),
+                                child: DText(type!.body),
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
                   ReportFormReason(
                     controller: reasonController,
                     isLoading: isLoading,
@@ -312,7 +331,7 @@ class _PostFlagScreenState extends State<PostFlagScreen> {
                             child: Card(
                               child: Padding(
                                 padding: const EdgeInsets.all(16),
-                                child: DText(type!.description),
+                                child: DText(type!.body),
                               ),
                             ),
                           )
