@@ -131,23 +131,9 @@ class _IdentityPageState extends State<IdentityPage> {
           children: [
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Identity',
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                  CrossFade(
-                    showChild: apiKeysUrl != null,
-                    child: Dimmed(
-                      child: IconButton(
-                        icon: const Icon(Icons.launch),
-                        onPressed: () => launch(apiKeysUrl ?? ''),
-                      ),
-                    ),
-                  ),
-                ],
+              child: Text(
+                'Identity',
+                style: Theme.of(context).textTheme.titleLarge,
               ),
             ),
             HostFormField(
@@ -174,21 +160,33 @@ class _IdentityPageState extends State<IdentityPage> {
                       controller: apikeyController,
                       canOmit: widget.identity != null,
                     ),
-                    CrossFade(
-                      showChild: registrationUrl != null,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        child: Row(
-                          children: [
-                            TextButton(
-                              onPressed: () => launch(registrationUrl ?? ''),
-                              child: const Text(
-                                'Don\'t have an account? Sign up here',
+                    Row(
+                      children: [
+                        CrossFade(
+                          showChild: apiKeysUrl != null,
+                          secondChild: CrossFade(
+                            showChild: registrationUrl != null,
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              child: TextButton(
+                                onPressed: () => launch(registrationUrl ?? ''),
+                                child: const Text(
+                                  'Don\'t have an account? Sign up here',
+                                ),
                               ),
                             ),
-                          ],
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            child: TextButton(
+                              onPressed: () => launch(apiKeysUrl ?? ''),
+                              child: const Text(
+                                'Where do I find my API key?',
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
+                      ],
                     ),
                   ]
                 ],
