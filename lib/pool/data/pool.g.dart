@@ -7,14 +7,15 @@ part of 'pool.dart';
 // **************************************************************************
 
 _$PoolImpl _$$PoolImplFromJson(Map<String, dynamic> json) => _$PoolImpl(
-      id: json['id'] as int,
+      id: (json['id'] as num).toInt(),
       name: json['name'] as String,
       createdAt: DateTime.parse(json['created_at'] as String),
       updatedAt: DateTime.parse(json['updated_at'] as String),
       description: json['description'] as String,
-      postIds:
-          (json['post_ids'] as List<dynamic>).map((e) => e as int).toList(),
-      postCount: json['post_count'] as int,
+      postIds: (json['post_ids'] as List<dynamic>)
+          .map((e) => (e as num).toInt())
+          .toList(),
+      postCount: (json['post_count'] as num).toInt(),
       active: json['active'] as bool,
     );
 

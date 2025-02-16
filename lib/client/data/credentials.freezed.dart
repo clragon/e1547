@@ -24,8 +24,12 @@ mixin _$Credentials {
   @JsonKey(name: 'apikey')
   String get password => throw _privateConstructorUsedError;
 
+  /// Serializes this Credentials to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of Credentials
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $CredentialsCopyWith<Credentials> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -49,6 +53,8 @@ class _$CredentialsCopyWithImpl<$Res, $Val extends Credentials>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of Credentials
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -87,6 +93,8 @@ class __$$CredentialsImplCopyWithImpl<$Res>
       _$CredentialsImpl _value, $Res Function(_$CredentialsImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of Credentials
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -138,11 +146,13 @@ class _$CredentialsImpl extends _Credentials {
                 other.password == password));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(runtimeType, username, password);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of Credentials
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$CredentialsImplCopyWith<_$CredentialsImpl> get copyWith =>
@@ -171,8 +181,11 @@ abstract class _Credentials extends Credentials {
   @override
   @JsonKey(name: 'apikey')
   String get password;
+
+  /// Create a copy of Credentials
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$CredentialsImplCopyWith<_$CredentialsImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

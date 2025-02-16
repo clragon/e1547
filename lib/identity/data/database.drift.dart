@@ -1,3 +1,4 @@
+// dart format width=80
 // ignore_for_file: type=lint
 import 'package:drift/drift.dart' as i0;
 import 'package:drift/src/runtime/api/runtime_api.dart' as i1;
@@ -7,9 +8,171 @@ import 'package:e1547/identity/data/identity.dart' as i4;
 import 'package:e1547/identity/data/database.dart' as i5;
 import 'package:e1547/interface/data/sql.dart' as i6;
 
+typedef $$IdentitiesTableTableCreateCompanionBuilder = i2.IdentityCompanion
+    Function({
+  i0.Value<int> id,
+  required String host,
+  required String? username,
+  i0.Value<Map<String, String>?> headers,
+});
+typedef $$IdentitiesTableTableUpdateCompanionBuilder = i2.IdentityCompanion
+    Function({
+  i0.Value<int> id,
+  i0.Value<String> host,
+  i0.Value<String?> username,
+  i0.Value<Map<String, String>?> headers,
+});
+
+class $$IdentitiesTableTableFilterComposer
+    extends i0.Composer<i0.GeneratedDatabase, i2.$IdentitiesTableTable> {
+  $$IdentitiesTableTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  i0.ColumnFilters<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => i0.ColumnFilters(column));
+
+  i0.ColumnFilters<String> get host => $composableBuilder(
+      column: $table.host, builder: (column) => i0.ColumnFilters(column));
+
+  i0.ColumnWithTypeConverterFilters<String?, String, String> get username =>
+      $composableBuilder(
+          column: $table.username,
+          builder: (column) => i0.ColumnWithTypeConverterFilters(column));
+
+  i0.ColumnWithTypeConverterFilters<Map<String, String>?, Map<String, String>,
+          String>
+      get headers => $composableBuilder(
+          column: $table.headers,
+          builder: (column) => i0.ColumnWithTypeConverterFilters(column));
+}
+
+class $$IdentitiesTableTableOrderingComposer
+    extends i0.Composer<i0.GeneratedDatabase, i2.$IdentitiesTableTable> {
+  $$IdentitiesTableTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  i0.ColumnOrderings<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => i0.ColumnOrderings(column));
+
+  i0.ColumnOrderings<String> get host => $composableBuilder(
+      column: $table.host, builder: (column) => i0.ColumnOrderings(column));
+
+  i0.ColumnOrderings<String> get username => $composableBuilder(
+      column: $table.username, builder: (column) => i0.ColumnOrderings(column));
+
+  i0.ColumnOrderings<String> get headers => $composableBuilder(
+      column: $table.headers, builder: (column) => i0.ColumnOrderings(column));
+}
+
+class $$IdentitiesTableTableAnnotationComposer
+    extends i0.Composer<i0.GeneratedDatabase, i2.$IdentitiesTableTable> {
+  $$IdentitiesTableTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  i0.GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  i0.GeneratedColumn<String> get host =>
+      $composableBuilder(column: $table.host, builder: (column) => column);
+
+  i0.GeneratedColumnWithTypeConverter<String?, String> get username =>
+      $composableBuilder(column: $table.username, builder: (column) => column);
+
+  i0.GeneratedColumnWithTypeConverter<Map<String, String>?, String>
+      get headers => $composableBuilder(
+          column: $table.headers, builder: (column) => column);
+}
+
+class $$IdentitiesTableTableTableManager extends i0.RootTableManager<
+    i0.GeneratedDatabase,
+    i2.$IdentitiesTableTable,
+    i4.Identity,
+    i2.$$IdentitiesTableTableFilterComposer,
+    i2.$$IdentitiesTableTableOrderingComposer,
+    i2.$$IdentitiesTableTableAnnotationComposer,
+    $$IdentitiesTableTableCreateCompanionBuilder,
+    $$IdentitiesTableTableUpdateCompanionBuilder,
+    (
+      i4.Identity,
+      i0.BaseReferences<i0.GeneratedDatabase, i2.$IdentitiesTableTable,
+          i4.Identity>
+    ),
+    i4.Identity,
+    i0.PrefetchHooks Function()> {
+  $$IdentitiesTableTableTableManager(
+      i0.GeneratedDatabase db, i2.$IdentitiesTableTable table)
+      : super(i0.TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              i2.$$IdentitiesTableTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              i2.$$IdentitiesTableTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () => i2
+              .$$IdentitiesTableTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            i0.Value<int> id = const i0.Value.absent(),
+            i0.Value<String> host = const i0.Value.absent(),
+            i0.Value<String?> username = const i0.Value.absent(),
+            i0.Value<Map<String, String>?> headers = const i0.Value.absent(),
+          }) =>
+              i2.IdentityCompanion(
+            id: id,
+            host: host,
+            username: username,
+            headers: headers,
+          ),
+          createCompanionCallback: ({
+            i0.Value<int> id = const i0.Value.absent(),
+            required String host,
+            required String? username,
+            i0.Value<Map<String, String>?> headers = const i0.Value.absent(),
+          }) =>
+              i2.IdentityCompanion.insert(
+            id: id,
+            host: host,
+            username: username,
+            headers: headers,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), i0.BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$IdentitiesTableTableProcessedTableManager = i0.ProcessedTableManager<
+    i0.GeneratedDatabase,
+    i2.$IdentitiesTableTable,
+    i4.Identity,
+    i2.$$IdentitiesTableTableFilterComposer,
+    i2.$$IdentitiesTableTableOrderingComposer,
+    i2.$$IdentitiesTableTableAnnotationComposer,
+    $$IdentitiesTableTableCreateCompanionBuilder,
+    $$IdentitiesTableTableUpdateCompanionBuilder,
+    (
+      i4.Identity,
+      i0.BaseReferences<i0.GeneratedDatabase, i2.$IdentitiesTableTable,
+          i4.Identity>
+    ),
+    i4.Identity,
+    i0.PrefetchHooks Function()>;
 mixin $IdentityRepositoryMixin on i0.DatabaseAccessor<i1.GeneratedDatabase> {
   i2.$IdentitiesTableTable get identitiesTable =>
-      i3.ReadDatabaseContainer(attachedDatabase).resultSet('identities_table');
+      i3.ReadDatabaseContainer(attachedDatabase)
+          .resultSet<i2.$IdentitiesTableTable>('identities_table');
 }
 
 class $IdentitiesTableTable extends i5.IdentitiesTable

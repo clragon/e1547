@@ -7,7 +7,7 @@ part of 'wiki.dart';
 // **************************************************************************
 
 _$WikiImpl _$$WikiImplFromJson(Map<String, dynamic> json) => _$WikiImpl(
-      id: json['id'] as int,
+      id: (json['id'] as num).toInt(),
       title: json['title'] as String,
       body: json['body'] as String,
       createdAt: DateTime.parse(json['created_at'] as String),

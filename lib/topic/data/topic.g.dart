@@ -7,14 +7,14 @@ part of 'topic.dart';
 // **************************************************************************
 
 _$TopicImpl _$$TopicImplFromJson(Map<String, dynamic> json) => _$TopicImpl(
-      id: json['id'] as int,
-      creatorId: json['creator_id'] as int,
+      id: (json['id'] as num).toInt(),
+      creatorId: (json['creator_id'] as num).toInt(),
       title: json['title'] as String,
-      responseCount: json['response_count'] as int,
+      responseCount: (json['response_count'] as num).toInt(),
       createdAt: DateTime.parse(json['created_at'] as String),
       updatedAt: DateTime.parse(json['updated_at'] as String),
       isLocked: json['is_locked'] as bool,
-      categoryId: json['category_id'] as int,
+      categoryId: (json['category_id'] as num).toInt(),
     );
 
 Map<String, dynamic> _$$TopicImplToJson(_$TopicImpl instance) =>

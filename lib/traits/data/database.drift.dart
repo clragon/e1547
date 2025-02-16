@@ -1,3 +1,4 @@
+// dart format width=80
 // ignore_for_file: type=lint
 import 'package:drift/drift.dart' as i0;
 import 'package:drift/src/runtime/api/runtime_api.dart' as i1;
@@ -8,11 +9,316 @@ import 'package:e1547/traits/data/traits.dart' as i5;
 import 'package:e1547/traits/data/database.dart' as i6;
 import 'package:e1547/interface/data/sql.dart' as i7;
 
+typedef $$TraitsTableTableCreateCompanionBuilder = i4.TraitsCompanion Function({
+  i0.Value<int> id,
+  i0.Value<int?> userId,
+  required List<String> denylist,
+  required String homeTags,
+  i0.Value<String?> avatar,
+  i0.Value<int?> perPage,
+});
+typedef $$TraitsTableTableUpdateCompanionBuilder = i4.TraitsCompanion Function({
+  i0.Value<int> id,
+  i0.Value<int?> userId,
+  i0.Value<List<String>> denylist,
+  i0.Value<String> homeTags,
+  i0.Value<String?> avatar,
+  i0.Value<int?> perPage,
+});
+
+final class $$TraitsTableTableReferences extends i0
+    .BaseReferences<i0.GeneratedDatabase, i4.$TraitsTableTable, i5.Traits> {
+  $$TraitsTableTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static i2.$IdentitiesTableTable _idTable(i0.GeneratedDatabase db) =>
+      i3.ReadDatabaseContainer(db)
+          .resultSet<i2.$IdentitiesTableTable>('identities_table')
+          .createAlias(i0.$_aliasNameGenerator(
+              i3.ReadDatabaseContainer(db)
+                  .resultSet<i4.$TraitsTableTable>('traits_table')
+                  .id,
+              i3.ReadDatabaseContainer(db)
+                  .resultSet<i2.$IdentitiesTableTable>('identities_table')
+                  .id));
+
+  i2.$$IdentitiesTableTableProcessedTableManager get id {
+    final $_column = $_itemColumn<int>('id')!;
+
+    final manager = i2
+        .$$IdentitiesTableTableTableManager(
+            $_db,
+            i3.ReadDatabaseContainer($_db)
+                .resultSet<i2.$IdentitiesTableTable>('identities_table'))
+        .filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_idTable($_db));
+    if (item == null) return manager;
+    return i0.ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: [item]));
+  }
+}
+
+class $$TraitsTableTableFilterComposer
+    extends i0.Composer<i0.GeneratedDatabase, i4.$TraitsTableTable> {
+  $$TraitsTableTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  i0.ColumnFilters<int> get userId => $composableBuilder(
+      column: $table.userId, builder: (column) => i0.ColumnFilters(column));
+
+  i0.ColumnWithTypeConverterFilters<List<String>, List<String>, String>
+      get denylist => $composableBuilder(
+          column: $table.denylist,
+          builder: (column) => i0.ColumnWithTypeConverterFilters(column));
+
+  i0.ColumnFilters<String> get homeTags => $composableBuilder(
+      column: $table.homeTags, builder: (column) => i0.ColumnFilters(column));
+
+  i0.ColumnFilters<String> get avatar => $composableBuilder(
+      column: $table.avatar, builder: (column) => i0.ColumnFilters(column));
+
+  i0.ColumnFilters<int> get perPage => $composableBuilder(
+      column: $table.perPage, builder: (column) => i0.ColumnFilters(column));
+
+  i2.$$IdentitiesTableTableFilterComposer get id {
+    final i2.$$IdentitiesTableTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: i3.ReadDatabaseContainer($db)
+            .resultSet<i2.$IdentitiesTableTable>('identities_table'),
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            i2.$$IdentitiesTableTableFilterComposer(
+              $db: $db,
+              $table: i3.ReadDatabaseContainer($db)
+                  .resultSet<i2.$IdentitiesTableTable>('identities_table'),
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+}
+
+class $$TraitsTableTableOrderingComposer
+    extends i0.Composer<i0.GeneratedDatabase, i4.$TraitsTableTable> {
+  $$TraitsTableTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  i0.ColumnOrderings<int> get userId => $composableBuilder(
+      column: $table.userId, builder: (column) => i0.ColumnOrderings(column));
+
+  i0.ColumnOrderings<String> get denylist => $composableBuilder(
+      column: $table.denylist, builder: (column) => i0.ColumnOrderings(column));
+
+  i0.ColumnOrderings<String> get homeTags => $composableBuilder(
+      column: $table.homeTags, builder: (column) => i0.ColumnOrderings(column));
+
+  i0.ColumnOrderings<String> get avatar => $composableBuilder(
+      column: $table.avatar, builder: (column) => i0.ColumnOrderings(column));
+
+  i0.ColumnOrderings<int> get perPage => $composableBuilder(
+      column: $table.perPage, builder: (column) => i0.ColumnOrderings(column));
+
+  i2.$$IdentitiesTableTableOrderingComposer get id {
+    final i2.$$IdentitiesTableTableOrderingComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: i3.ReadDatabaseContainer($db)
+            .resultSet<i2.$IdentitiesTableTable>('identities_table'),
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            i2.$$IdentitiesTableTableOrderingComposer(
+              $db: $db,
+              $table: i3.ReadDatabaseContainer($db)
+                  .resultSet<i2.$IdentitiesTableTable>('identities_table'),
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+}
+
+class $$TraitsTableTableAnnotationComposer
+    extends i0.Composer<i0.GeneratedDatabase, i4.$TraitsTableTable> {
+  $$TraitsTableTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  i0.GeneratedColumn<int> get userId =>
+      $composableBuilder(column: $table.userId, builder: (column) => column);
+
+  i0.GeneratedColumnWithTypeConverter<List<String>, String> get denylist =>
+      $composableBuilder(column: $table.denylist, builder: (column) => column);
+
+  i0.GeneratedColumn<String> get homeTags =>
+      $composableBuilder(column: $table.homeTags, builder: (column) => column);
+
+  i0.GeneratedColumn<String> get avatar =>
+      $composableBuilder(column: $table.avatar, builder: (column) => column);
+
+  i0.GeneratedColumn<int> get perPage =>
+      $composableBuilder(column: $table.perPage, builder: (column) => column);
+
+  i2.$$IdentitiesTableTableAnnotationComposer get id {
+    final i2.$$IdentitiesTableTableAnnotationComposer composer =
+        $composerBuilder(
+            composer: this,
+            getCurrentColumn: (t) => t.id,
+            referencedTable: i3.ReadDatabaseContainer($db)
+                .resultSet<i2.$IdentitiesTableTable>('identities_table'),
+            getReferencedColumn: (t) => t.id,
+            builder: (joinBuilder,
+                    {$addJoinBuilderToRootComposer,
+                    $removeJoinBuilderFromRootComposer}) =>
+                i2.$$IdentitiesTableTableAnnotationComposer(
+                  $db: $db,
+                  $table: i3.ReadDatabaseContainer($db)
+                      .resultSet<i2.$IdentitiesTableTable>('identities_table'),
+                  $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                  joinBuilder: joinBuilder,
+                  $removeJoinBuilderFromRootComposer:
+                      $removeJoinBuilderFromRootComposer,
+                ));
+    return composer;
+  }
+}
+
+class $$TraitsTableTableTableManager extends i0.RootTableManager<
+    i0.GeneratedDatabase,
+    i4.$TraitsTableTable,
+    i5.Traits,
+    i4.$$TraitsTableTableFilterComposer,
+    i4.$$TraitsTableTableOrderingComposer,
+    i4.$$TraitsTableTableAnnotationComposer,
+    $$TraitsTableTableCreateCompanionBuilder,
+    $$TraitsTableTableUpdateCompanionBuilder,
+    (i5.Traits, i4.$$TraitsTableTableReferences),
+    i5.Traits,
+    i0.PrefetchHooks Function({bool id})> {
+  $$TraitsTableTableTableManager(
+      i0.GeneratedDatabase db, i4.$TraitsTableTable table)
+      : super(i0.TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              i4.$$TraitsTableTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              i4.$$TraitsTableTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              i4.$$TraitsTableTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            i0.Value<int> id = const i0.Value.absent(),
+            i0.Value<int?> userId = const i0.Value.absent(),
+            i0.Value<List<String>> denylist = const i0.Value.absent(),
+            i0.Value<String> homeTags = const i0.Value.absent(),
+            i0.Value<String?> avatar = const i0.Value.absent(),
+            i0.Value<int?> perPage = const i0.Value.absent(),
+          }) =>
+              i4.TraitsCompanion(
+            id: id,
+            userId: userId,
+            denylist: denylist,
+            homeTags: homeTags,
+            avatar: avatar,
+            perPage: perPage,
+          ),
+          createCompanionCallback: ({
+            i0.Value<int> id = const i0.Value.absent(),
+            i0.Value<int?> userId = const i0.Value.absent(),
+            required List<String> denylist,
+            required String homeTags,
+            i0.Value<String?> avatar = const i0.Value.absent(),
+            i0.Value<int?> perPage = const i0.Value.absent(),
+          }) =>
+              i4.TraitsCompanion.insert(
+            id: id,
+            userId: userId,
+            denylist: denylist,
+            homeTags: homeTags,
+            avatar: avatar,
+            perPage: perPage,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (
+                    e.readTable(table),
+                    i4.$$TraitsTableTableReferences(db, table, e)
+                  ))
+              .toList(),
+          prefetchHooksCallback: ({id = false}) {
+            return i0.PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins: <
+                  T extends i0.TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic>>(state) {
+                if (id) {
+                  state = state.withJoin(
+                    currentTable: table,
+                    currentColumn: table.id,
+                    referencedTable:
+                        i4.$$TraitsTableTableReferences._idTable(db),
+                    referencedColumn:
+                        i4.$$TraitsTableTableReferences._idTable(db).id,
+                  ) as T;
+                }
+
+                return state;
+              },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ));
+}
+
+typedef $$TraitsTableTableProcessedTableManager = i0.ProcessedTableManager<
+    i0.GeneratedDatabase,
+    i4.$TraitsTableTable,
+    i5.Traits,
+    i4.$$TraitsTableTableFilterComposer,
+    i4.$$TraitsTableTableOrderingComposer,
+    i4.$$TraitsTableTableAnnotationComposer,
+    $$TraitsTableTableCreateCompanionBuilder,
+    $$TraitsTableTableUpdateCompanionBuilder,
+    (i5.Traits, i4.$$TraitsTableTableReferences),
+    i5.Traits,
+    i0.PrefetchHooks Function({bool id})>;
 mixin $TraitsRepositoryMixin on i0.DatabaseAccessor<i1.GeneratedDatabase> {
   i2.$IdentitiesTableTable get identitiesTable =>
-      i3.ReadDatabaseContainer(attachedDatabase).resultSet('identities_table');
+      i3.ReadDatabaseContainer(attachedDatabase)
+          .resultSet<i2.$IdentitiesTableTable>('identities_table');
   i4.$TraitsTableTable get traitsTable =>
-      i3.ReadDatabaseContainer(attachedDatabase).resultSet('traits_table');
+      i3.ReadDatabaseContainer(attachedDatabase)
+          .resultSet<i4.$TraitsTableTable>('traits_table');
 }
 
 class $TraitsTableTable extends i6.TraitsTable

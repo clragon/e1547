@@ -1,3 +1,4 @@
+// dart format width=80
 // ignore_for_file: type=lint
 import 'package:drift/drift.dart' as i0;
 import 'package:drift/src/runtime/api/runtime_api.dart' as i1;
@@ -7,14 +8,715 @@ import 'package:e1547/identity/data/database.drift.dart' as i4;
 import 'package:e1547/follow/data/follow.dart' as i5;
 import 'package:e1547/follow/data/database.dart' as i6;
 
+typedef $$FollowsTableTableCreateCompanionBuilder = i2.FollowCompanion
+    Function({
+  i0.Value<int> id,
+  required String tags,
+  i0.Value<String?> title,
+  i0.Value<String?> alias,
+  required i5.FollowType type,
+  i0.Value<int?> latest,
+  i0.Value<int?> unseen,
+  i0.Value<String?> thumbnail,
+  i0.Value<DateTime?> updated,
+});
+typedef $$FollowsTableTableUpdateCompanionBuilder = i2.FollowCompanion
+    Function({
+  i0.Value<int> id,
+  i0.Value<String> tags,
+  i0.Value<String?> title,
+  i0.Value<String?> alias,
+  i0.Value<i5.FollowType> type,
+  i0.Value<int?> latest,
+  i0.Value<int?> unseen,
+  i0.Value<String?> thumbnail,
+  i0.Value<DateTime?> updated,
+});
+
+final class $$FollowsTableTableReferences extends i0
+    .BaseReferences<i0.GeneratedDatabase, i2.$FollowsTableTable, i5.Follow> {
+  $$FollowsTableTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static i0.MultiTypedResultKey<i2.$FollowsIdentitiesTableTable, List<i2.FollowIdentity>>
+      _followsIdentitiesTableRefsTable(i0.GeneratedDatabase db) =>
+          i0.MultiTypedResultKey.fromTable(
+              i3.ReadDatabaseContainer(db)
+                  .resultSet<i2.$FollowsIdentitiesTableTable>(
+                      'follows_identities_table'),
+              aliasName: i0.$_aliasNameGenerator(
+                  i3.ReadDatabaseContainer(db)
+                      .resultSet<i2.$FollowsTableTable>('follows_table')
+                      .id,
+                  i3.ReadDatabaseContainer(db)
+                      .resultSet<i2.$FollowsIdentitiesTableTable>('follows_identities_table')
+                      .follow));
+
+  i2.$$FollowsIdentitiesTableTableProcessedTableManager
+      get followsIdentitiesTableRefs {
+    final manager = i2
+        .$$FollowsIdentitiesTableTableTableManager(
+            $_db,
+            i3.ReadDatabaseContainer($_db)
+                .resultSet<i2.$FollowsIdentitiesTableTable>(
+                    'follows_identities_table'))
+        .filter((f) => f.follow.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache =
+        $_typedResult.readTableOrNull(_followsIdentitiesTableRefsTable($_db));
+    return i0.ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: cache));
+  }
+}
+
+class $$FollowsTableTableFilterComposer
+    extends i0.Composer<i0.GeneratedDatabase, i2.$FollowsTableTable> {
+  $$FollowsTableTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  i0.ColumnFilters<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => i0.ColumnFilters(column));
+
+  i0.ColumnFilters<String> get tags => $composableBuilder(
+      column: $table.tags, builder: (column) => i0.ColumnFilters(column));
+
+  i0.ColumnFilters<String> get title => $composableBuilder(
+      column: $table.title, builder: (column) => i0.ColumnFilters(column));
+
+  i0.ColumnFilters<String> get alias => $composableBuilder(
+      column: $table.alias, builder: (column) => i0.ColumnFilters(column));
+
+  i0.ColumnWithTypeConverterFilters<i5.FollowType, i5.FollowType, String>
+      get type => $composableBuilder(
+          column: $table.type,
+          builder: (column) => i0.ColumnWithTypeConverterFilters(column));
+
+  i0.ColumnFilters<int> get latest => $composableBuilder(
+      column: $table.latest, builder: (column) => i0.ColumnFilters(column));
+
+  i0.ColumnFilters<int> get unseen => $composableBuilder(
+      column: $table.unseen, builder: (column) => i0.ColumnFilters(column));
+
+  i0.ColumnFilters<String> get thumbnail => $composableBuilder(
+      column: $table.thumbnail, builder: (column) => i0.ColumnFilters(column));
+
+  i0.ColumnFilters<DateTime> get updated => $composableBuilder(
+      column: $table.updated, builder: (column) => i0.ColumnFilters(column));
+
+  i0.Expression<bool> followsIdentitiesTableRefs(
+      i0.Expression<bool> Function(
+              i2.$$FollowsIdentitiesTableTableFilterComposer f)
+          f) {
+    final i2.$$FollowsIdentitiesTableTableFilterComposer composer =
+        $composerBuilder(
+            composer: this,
+            getCurrentColumn: (t) => t.id,
+            referencedTable: i3.ReadDatabaseContainer($db)
+                .resultSet<i2.$FollowsIdentitiesTableTable>(
+                    'follows_identities_table'),
+            getReferencedColumn: (t) => t.follow,
+            builder: (joinBuilder,
+                    {$addJoinBuilderToRootComposer,
+                    $removeJoinBuilderFromRootComposer}) =>
+                i2.$$FollowsIdentitiesTableTableFilterComposer(
+                  $db: $db,
+                  $table: i3.ReadDatabaseContainer($db)
+                      .resultSet<i2.$FollowsIdentitiesTableTable>(
+                          'follows_identities_table'),
+                  $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                  joinBuilder: joinBuilder,
+                  $removeJoinBuilderFromRootComposer:
+                      $removeJoinBuilderFromRootComposer,
+                ));
+    return f(composer);
+  }
+}
+
+class $$FollowsTableTableOrderingComposer
+    extends i0.Composer<i0.GeneratedDatabase, i2.$FollowsTableTable> {
+  $$FollowsTableTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  i0.ColumnOrderings<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => i0.ColumnOrderings(column));
+
+  i0.ColumnOrderings<String> get tags => $composableBuilder(
+      column: $table.tags, builder: (column) => i0.ColumnOrderings(column));
+
+  i0.ColumnOrderings<String> get title => $composableBuilder(
+      column: $table.title, builder: (column) => i0.ColumnOrderings(column));
+
+  i0.ColumnOrderings<String> get alias => $composableBuilder(
+      column: $table.alias, builder: (column) => i0.ColumnOrderings(column));
+
+  i0.ColumnOrderings<String> get type => $composableBuilder(
+      column: $table.type, builder: (column) => i0.ColumnOrderings(column));
+
+  i0.ColumnOrderings<int> get latest => $composableBuilder(
+      column: $table.latest, builder: (column) => i0.ColumnOrderings(column));
+
+  i0.ColumnOrderings<int> get unseen => $composableBuilder(
+      column: $table.unseen, builder: (column) => i0.ColumnOrderings(column));
+
+  i0.ColumnOrderings<String> get thumbnail => $composableBuilder(
+      column: $table.thumbnail,
+      builder: (column) => i0.ColumnOrderings(column));
+
+  i0.ColumnOrderings<DateTime> get updated => $composableBuilder(
+      column: $table.updated, builder: (column) => i0.ColumnOrderings(column));
+}
+
+class $$FollowsTableTableAnnotationComposer
+    extends i0.Composer<i0.GeneratedDatabase, i2.$FollowsTableTable> {
+  $$FollowsTableTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  i0.GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  i0.GeneratedColumn<String> get tags =>
+      $composableBuilder(column: $table.tags, builder: (column) => column);
+
+  i0.GeneratedColumn<String> get title =>
+      $composableBuilder(column: $table.title, builder: (column) => column);
+
+  i0.GeneratedColumn<String> get alias =>
+      $composableBuilder(column: $table.alias, builder: (column) => column);
+
+  i0.GeneratedColumnWithTypeConverter<i5.FollowType, String> get type =>
+      $composableBuilder(column: $table.type, builder: (column) => column);
+
+  i0.GeneratedColumn<int> get latest =>
+      $composableBuilder(column: $table.latest, builder: (column) => column);
+
+  i0.GeneratedColumn<int> get unseen =>
+      $composableBuilder(column: $table.unseen, builder: (column) => column);
+
+  i0.GeneratedColumn<String> get thumbnail =>
+      $composableBuilder(column: $table.thumbnail, builder: (column) => column);
+
+  i0.GeneratedColumn<DateTime> get updated =>
+      $composableBuilder(column: $table.updated, builder: (column) => column);
+
+  i0.Expression<T> followsIdentitiesTableRefs<T extends Object>(
+      i0.Expression<T> Function(
+              i2.$$FollowsIdentitiesTableTableAnnotationComposer a)
+          f) {
+    final i2.$$FollowsIdentitiesTableTableAnnotationComposer composer =
+        $composerBuilder(
+            composer: this,
+            getCurrentColumn: (t) => t.id,
+            referencedTable: i3.ReadDatabaseContainer($db)
+                .resultSet<i2.$FollowsIdentitiesTableTable>(
+                    'follows_identities_table'),
+            getReferencedColumn: (t) => t.follow,
+            builder: (joinBuilder,
+                    {$addJoinBuilderToRootComposer,
+                    $removeJoinBuilderFromRootComposer}) =>
+                i2.$$FollowsIdentitiesTableTableAnnotationComposer(
+                  $db: $db,
+                  $table: i3.ReadDatabaseContainer($db)
+                      .resultSet<i2.$FollowsIdentitiesTableTable>(
+                          'follows_identities_table'),
+                  $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                  joinBuilder: joinBuilder,
+                  $removeJoinBuilderFromRootComposer:
+                      $removeJoinBuilderFromRootComposer,
+                ));
+    return f(composer);
+  }
+}
+
+class $$FollowsTableTableTableManager extends i0.RootTableManager<
+    i0.GeneratedDatabase,
+    i2.$FollowsTableTable,
+    i5.Follow,
+    i2.$$FollowsTableTableFilterComposer,
+    i2.$$FollowsTableTableOrderingComposer,
+    i2.$$FollowsTableTableAnnotationComposer,
+    $$FollowsTableTableCreateCompanionBuilder,
+    $$FollowsTableTableUpdateCompanionBuilder,
+    (i5.Follow, i2.$$FollowsTableTableReferences),
+    i5.Follow,
+    i0.PrefetchHooks Function({bool followsIdentitiesTableRefs})> {
+  $$FollowsTableTableTableManager(
+      i0.GeneratedDatabase db, i2.$FollowsTableTable table)
+      : super(i0.TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              i2.$$FollowsTableTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              i2.$$FollowsTableTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              i2.$$FollowsTableTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            i0.Value<int> id = const i0.Value.absent(),
+            i0.Value<String> tags = const i0.Value.absent(),
+            i0.Value<String?> title = const i0.Value.absent(),
+            i0.Value<String?> alias = const i0.Value.absent(),
+            i0.Value<i5.FollowType> type = const i0.Value.absent(),
+            i0.Value<int?> latest = const i0.Value.absent(),
+            i0.Value<int?> unseen = const i0.Value.absent(),
+            i0.Value<String?> thumbnail = const i0.Value.absent(),
+            i0.Value<DateTime?> updated = const i0.Value.absent(),
+          }) =>
+              i2.FollowCompanion(
+            id: id,
+            tags: tags,
+            title: title,
+            alias: alias,
+            type: type,
+            latest: latest,
+            unseen: unseen,
+            thumbnail: thumbnail,
+            updated: updated,
+          ),
+          createCompanionCallback: ({
+            i0.Value<int> id = const i0.Value.absent(),
+            required String tags,
+            i0.Value<String?> title = const i0.Value.absent(),
+            i0.Value<String?> alias = const i0.Value.absent(),
+            required i5.FollowType type,
+            i0.Value<int?> latest = const i0.Value.absent(),
+            i0.Value<int?> unseen = const i0.Value.absent(),
+            i0.Value<String?> thumbnail = const i0.Value.absent(),
+            i0.Value<DateTime?> updated = const i0.Value.absent(),
+          }) =>
+              i2.FollowCompanion.insert(
+            id: id,
+            tags: tags,
+            title: title,
+            alias: alias,
+            type: type,
+            latest: latest,
+            unseen: unseen,
+            thumbnail: thumbnail,
+            updated: updated,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (
+                    e.readTable(table),
+                    i2.$$FollowsTableTableReferences(db, table, e)
+                  ))
+              .toList(),
+          prefetchHooksCallback: ({followsIdentitiesTableRefs = false}) {
+            return i0.PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [
+                if (followsIdentitiesTableRefs)
+                  i3.ReadDatabaseContainer(db)
+                      .resultSet<i2.$FollowsIdentitiesTableTable>(
+                          'follows_identities_table')
+              ],
+              addJoins: null,
+              getPrefetchedDataCallback: (items) async {
+                return [
+                  if (followsIdentitiesTableRefs)
+                    await i0.$_getPrefetchedData<i5.Follow,
+                            i2.$FollowsTableTable, i2.FollowIdentity>(
+                        currentTable: table,
+                        referencedTable: i2.$$FollowsTableTableReferences
+                            ._followsIdentitiesTableRefsTable(db),
+                        managerFromTypedResult: (p0) => i2
+                            .$$FollowsTableTableReferences(db, table, p0)
+                            .followsIdentitiesTableRefs,
+                        referencedItemsForCurrentItem: (item,
+                                referencedItems) =>
+                            referencedItems.where((e) => e.follow == item.id),
+                        typedResults: items)
+                ];
+              },
+            );
+          },
+        ));
+}
+
+typedef $$FollowsTableTableProcessedTableManager = i0.ProcessedTableManager<
+    i0.GeneratedDatabase,
+    i2.$FollowsTableTable,
+    i5.Follow,
+    i2.$$FollowsTableTableFilterComposer,
+    i2.$$FollowsTableTableOrderingComposer,
+    i2.$$FollowsTableTableAnnotationComposer,
+    $$FollowsTableTableCreateCompanionBuilder,
+    $$FollowsTableTableUpdateCompanionBuilder,
+    (i5.Follow, i2.$$FollowsTableTableReferences),
+    i5.Follow,
+    i0.PrefetchHooks Function({bool followsIdentitiesTableRefs})>;
+typedef $$FollowsIdentitiesTableTableCreateCompanionBuilder
+    = i2.FollowIdentityCompanion Function({
+  required int identity,
+  required int follow,
+  i0.Value<int> rowid,
+});
+typedef $$FollowsIdentitiesTableTableUpdateCompanionBuilder
+    = i2.FollowIdentityCompanion Function({
+  i0.Value<int> identity,
+  i0.Value<int> follow,
+  i0.Value<int> rowid,
+});
+
+final class $$FollowsIdentitiesTableTableReferences extends i0.BaseReferences<
+    i0.GeneratedDatabase, i2.$FollowsIdentitiesTableTable, i2.FollowIdentity> {
+  $$FollowsIdentitiesTableTableReferences(
+      super.$_db, super.$_table, super.$_typedResult);
+
+  static i4.$IdentitiesTableTable _identityTable(i0.GeneratedDatabase db) =>
+      i3.ReadDatabaseContainer(db)
+          .resultSet<i4.$IdentitiesTableTable>('identities_table')
+          .createAlias(i0.$_aliasNameGenerator(
+              i3.ReadDatabaseContainer(db)
+                  .resultSet<i2.$FollowsIdentitiesTableTable>(
+                      'follows_identities_table')
+                  .identity,
+              i3.ReadDatabaseContainer(db)
+                  .resultSet<i4.$IdentitiesTableTable>('identities_table')
+                  .id));
+
+  i4.$$IdentitiesTableTableProcessedTableManager get identity {
+    final $_column = $_itemColumn<int>('identity')!;
+
+    final manager = i4
+        .$$IdentitiesTableTableTableManager(
+            $_db,
+            i3.ReadDatabaseContainer($_db)
+                .resultSet<i4.$IdentitiesTableTable>('identities_table'))
+        .filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_identityTable($_db));
+    if (item == null) return manager;
+    return i0.ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: [item]));
+  }
+
+  static i2.$FollowsTableTable _followTable(i0.GeneratedDatabase db) =>
+      i3.ReadDatabaseContainer(db)
+          .resultSet<i2.$FollowsTableTable>('follows_table')
+          .createAlias(i0.$_aliasNameGenerator(
+              i3.ReadDatabaseContainer(db)
+                  .resultSet<i2.$FollowsIdentitiesTableTable>(
+                      'follows_identities_table')
+                  .follow,
+              i3.ReadDatabaseContainer(db)
+                  .resultSet<i2.$FollowsTableTable>('follows_table')
+                  .id));
+
+  i2.$$FollowsTableTableProcessedTableManager get follow {
+    final $_column = $_itemColumn<int>('follow')!;
+
+    final manager = i2
+        .$$FollowsTableTableTableManager(
+            $_db,
+            i3.ReadDatabaseContainer($_db)
+                .resultSet<i2.$FollowsTableTable>('follows_table'))
+        .filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_followTable($_db));
+    if (item == null) return manager;
+    return i0.ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: [item]));
+  }
+}
+
+class $$FollowsIdentitiesTableTableFilterComposer
+    extends i0.Composer<i0.GeneratedDatabase, i2.$FollowsIdentitiesTableTable> {
+  $$FollowsIdentitiesTableTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  i4.$$IdentitiesTableTableFilterComposer get identity {
+    final i4.$$IdentitiesTableTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.identity,
+        referencedTable: i3.ReadDatabaseContainer($db)
+            .resultSet<i4.$IdentitiesTableTable>('identities_table'),
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            i4.$$IdentitiesTableTableFilterComposer(
+              $db: $db,
+              $table: i3.ReadDatabaseContainer($db)
+                  .resultSet<i4.$IdentitiesTableTable>('identities_table'),
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+
+  i2.$$FollowsTableTableFilterComposer get follow {
+    final i2.$$FollowsTableTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.follow,
+        referencedTable: i3.ReadDatabaseContainer($db)
+            .resultSet<i2.$FollowsTableTable>('follows_table'),
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            i2.$$FollowsTableTableFilterComposer(
+              $db: $db,
+              $table: i3.ReadDatabaseContainer($db)
+                  .resultSet<i2.$FollowsTableTable>('follows_table'),
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+}
+
+class $$FollowsIdentitiesTableTableOrderingComposer
+    extends i0.Composer<i0.GeneratedDatabase, i2.$FollowsIdentitiesTableTable> {
+  $$FollowsIdentitiesTableTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  i4.$$IdentitiesTableTableOrderingComposer get identity {
+    final i4.$$IdentitiesTableTableOrderingComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.identity,
+        referencedTable: i3.ReadDatabaseContainer($db)
+            .resultSet<i4.$IdentitiesTableTable>('identities_table'),
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            i4.$$IdentitiesTableTableOrderingComposer(
+              $db: $db,
+              $table: i3.ReadDatabaseContainer($db)
+                  .resultSet<i4.$IdentitiesTableTable>('identities_table'),
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+
+  i2.$$FollowsTableTableOrderingComposer get follow {
+    final i2.$$FollowsTableTableOrderingComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.follow,
+        referencedTable: i3.ReadDatabaseContainer($db)
+            .resultSet<i2.$FollowsTableTable>('follows_table'),
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            i2.$$FollowsTableTableOrderingComposer(
+              $db: $db,
+              $table: i3.ReadDatabaseContainer($db)
+                  .resultSet<i2.$FollowsTableTable>('follows_table'),
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+}
+
+class $$FollowsIdentitiesTableTableAnnotationComposer
+    extends i0.Composer<i0.GeneratedDatabase, i2.$FollowsIdentitiesTableTable> {
+  $$FollowsIdentitiesTableTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  i4.$$IdentitiesTableTableAnnotationComposer get identity {
+    final i4.$$IdentitiesTableTableAnnotationComposer composer =
+        $composerBuilder(
+            composer: this,
+            getCurrentColumn: (t) => t.identity,
+            referencedTable: i3.ReadDatabaseContainer($db)
+                .resultSet<i4.$IdentitiesTableTable>('identities_table'),
+            getReferencedColumn: (t) => t.id,
+            builder: (joinBuilder,
+                    {$addJoinBuilderToRootComposer,
+                    $removeJoinBuilderFromRootComposer}) =>
+                i4.$$IdentitiesTableTableAnnotationComposer(
+                  $db: $db,
+                  $table: i3.ReadDatabaseContainer($db)
+                      .resultSet<i4.$IdentitiesTableTable>('identities_table'),
+                  $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                  joinBuilder: joinBuilder,
+                  $removeJoinBuilderFromRootComposer:
+                      $removeJoinBuilderFromRootComposer,
+                ));
+    return composer;
+  }
+
+  i2.$$FollowsTableTableAnnotationComposer get follow {
+    final i2.$$FollowsTableTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.follow,
+        referencedTable: i3.ReadDatabaseContainer($db)
+            .resultSet<i2.$FollowsTableTable>('follows_table'),
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            i2.$$FollowsTableTableAnnotationComposer(
+              $db: $db,
+              $table: i3.ReadDatabaseContainer($db)
+                  .resultSet<i2.$FollowsTableTable>('follows_table'),
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+}
+
+class $$FollowsIdentitiesTableTableTableManager extends i0.RootTableManager<
+    i0.GeneratedDatabase,
+    i2.$FollowsIdentitiesTableTable,
+    i2.FollowIdentity,
+    i2.$$FollowsIdentitiesTableTableFilterComposer,
+    i2.$$FollowsIdentitiesTableTableOrderingComposer,
+    i2.$$FollowsIdentitiesTableTableAnnotationComposer,
+    $$FollowsIdentitiesTableTableCreateCompanionBuilder,
+    $$FollowsIdentitiesTableTableUpdateCompanionBuilder,
+    (i2.FollowIdentity, i2.$$FollowsIdentitiesTableTableReferences),
+    i2.FollowIdentity,
+    i0.PrefetchHooks Function({bool identity, bool follow})> {
+  $$FollowsIdentitiesTableTableTableManager(
+      i0.GeneratedDatabase db, i2.$FollowsIdentitiesTableTable table)
+      : super(i0.TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              i2.$$FollowsIdentitiesTableTableFilterComposer(
+                  $db: db, $table: table),
+          createOrderingComposer: () =>
+              i2.$$FollowsIdentitiesTableTableOrderingComposer(
+                  $db: db, $table: table),
+          createComputedFieldComposer: () =>
+              i2.$$FollowsIdentitiesTableTableAnnotationComposer(
+                  $db: db, $table: table),
+          updateCompanionCallback: ({
+            i0.Value<int> identity = const i0.Value.absent(),
+            i0.Value<int> follow = const i0.Value.absent(),
+            i0.Value<int> rowid = const i0.Value.absent(),
+          }) =>
+              i2.FollowIdentityCompanion(
+            identity: identity,
+            follow: follow,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required int identity,
+            required int follow,
+            i0.Value<int> rowid = const i0.Value.absent(),
+          }) =>
+              i2.FollowIdentityCompanion.insert(
+            identity: identity,
+            follow: follow,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (
+                    e.readTable(table),
+                    i2.$$FollowsIdentitiesTableTableReferences(db, table, e)
+                  ))
+              .toList(),
+          prefetchHooksCallback: ({identity = false, follow = false}) {
+            return i0.PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins: <
+                  T extends i0.TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic>>(state) {
+                if (identity) {
+                  state = state.withJoin(
+                    currentTable: table,
+                    currentColumn: table.identity,
+                    referencedTable: i2.$$FollowsIdentitiesTableTableReferences
+                        ._identityTable(db),
+                    referencedColumn: i2.$$FollowsIdentitiesTableTableReferences
+                        ._identityTable(db)
+                        .id,
+                  ) as T;
+                }
+                if (follow) {
+                  state = state.withJoin(
+                    currentTable: table,
+                    currentColumn: table.follow,
+                    referencedTable: i2.$$FollowsIdentitiesTableTableReferences
+                        ._followTable(db),
+                    referencedColumn: i2.$$FollowsIdentitiesTableTableReferences
+                        ._followTable(db)
+                        .id,
+                  ) as T;
+                }
+
+                return state;
+              },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ));
+}
+
+typedef $$FollowsIdentitiesTableTableProcessedTableManager
+    = i0.ProcessedTableManager<
+        i0.GeneratedDatabase,
+        i2.$FollowsIdentitiesTableTable,
+        i2.FollowIdentity,
+        i2.$$FollowsIdentitiesTableTableFilterComposer,
+        i2.$$FollowsIdentitiesTableTableOrderingComposer,
+        i2.$$FollowsIdentitiesTableTableAnnotationComposer,
+        $$FollowsIdentitiesTableTableCreateCompanionBuilder,
+        $$FollowsIdentitiesTableTableUpdateCompanionBuilder,
+        (i2.FollowIdentity, i2.$$FollowsIdentitiesTableTableReferences),
+        i2.FollowIdentity,
+        i0.PrefetchHooks Function({bool identity, bool follow})>;
 mixin $FollowRepositoryMixin on i0.DatabaseAccessor<i1.GeneratedDatabase> {
   i2.$FollowsTableTable get followsTable =>
-      i3.ReadDatabaseContainer(attachedDatabase).resultSet('follows_table');
+      i3.ReadDatabaseContainer(attachedDatabase)
+          .resultSet<i2.$FollowsTableTable>('follows_table');
   i4.$IdentitiesTableTable get identitiesTable =>
-      i3.ReadDatabaseContainer(attachedDatabase).resultSet('identities_table');
+      i3.ReadDatabaseContainer(attachedDatabase)
+          .resultSet<i4.$IdentitiesTableTable>('identities_table');
   i2.$FollowsIdentitiesTableTable get followsIdentitiesTable =>
       i3.ReadDatabaseContainer(attachedDatabase)
-          .resultSet('follows_identities_table');
+          .resultSet<i2.$FollowsIdentitiesTableTable>(
+              'follows_identities_table');
 }
 
 class $FollowsTableTable extends i6.FollowsTable
@@ -436,6 +1138,13 @@ class FollowIdentity extends i0.DataClass
         identity: identity ?? this.identity,
         follow: follow ?? this.follow,
       );
+  FollowIdentity copyWithCompanion(i2.FollowIdentityCompanion data) {
+    return FollowIdentity(
+      identity: data.identity.present ? data.identity.value : this.identity,
+      follow: data.follow.present ? data.follow.value : this.follow,
+    );
+  }
+
   @override
   String toString() {
     return (StringBuffer('FollowIdentity(')

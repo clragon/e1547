@@ -9,12 +9,12 @@ part of 'notification.dart';
 _$NotificationPayloadImpl _$$NotificationPayloadImplFromJson(
         Map<String, dynamic> json) =>
     _$NotificationPayloadImpl(
-      identity: json['identity'] as int,
+      identity: (json['identity'] as num).toInt(),
       type: json['type'] as String,
       query: (json['query'] as Map<String, dynamic>?)?.map(
         (k, e) => MapEntry(k, e as String),
       ),
-      id: json['id'] as int?,
+      id: (json['id'] as num?)?.toInt(),
     );
 
 Map<String, dynamic> _$$NotificationPayloadImplToJson(

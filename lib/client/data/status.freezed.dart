@@ -22,8 +22,12 @@ ClientSyncStatus _$ClientSyncStatusFromJson(Map<String, dynamic> json) {
 mixin _$ClientSyncStatus {
   DenyListSyncStatus? get denyList => throw _privateConstructorUsedError;
 
+  /// Serializes this ClientSyncStatus to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of ClientSyncStatus
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $ClientSyncStatusCopyWith<ClientSyncStatus> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -47,6 +51,8 @@ class _$ClientSyncStatusCopyWithImpl<$Res, $Val extends ClientSyncStatus>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of ClientSyncStatus
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -80,6 +86,8 @@ class __$$ClientSyncStatusImplCopyWithImpl<$Res>
       $Res Function(_$ClientSyncStatusImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of ClientSyncStatus
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -119,11 +127,13 @@ class _$ClientSyncStatusImpl implements _ClientSyncStatus {
                 other.denyList == denyList));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(runtimeType, denyList);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of ClientSyncStatus
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$ClientSyncStatusImplCopyWith<_$ClientSyncStatusImpl> get copyWith =>
@@ -147,8 +157,11 @@ abstract class _ClientSyncStatus implements ClientSyncStatus {
 
   @override
   DenyListSyncStatus? get denyList;
+
+  /// Create a copy of ClientSyncStatus
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$ClientSyncStatusImplCopyWith<_$ClientSyncStatusImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

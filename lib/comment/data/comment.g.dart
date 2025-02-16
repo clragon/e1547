@@ -8,12 +8,12 @@ part of 'comment.dart';
 
 _$CommentImpl _$$CommentImplFromJson(Map<String, dynamic> json) =>
     _$CommentImpl(
-      id: json['id'] as int,
-      postId: json['post_id'] as int,
+      id: (json['id'] as num).toInt(),
+      postId: (json['post_id'] as num).toInt(),
       body: json['body'] as String,
       createdAt: DateTime.parse(json['created_at'] as String),
       updatedAt: DateTime.parse(json['updated_at'] as String),
-      creatorId: json['creator_id'] as int,
+      creatorId: (json['creator_id'] as num).toInt(),
       creatorName: json['creator_name'] as String,
       vote: json['vote'] == null
           ? null

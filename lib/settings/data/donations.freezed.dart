@@ -25,8 +25,12 @@ mixin _$Donor {
   Map<String, String> get handles => throw _privateConstructorUsedError;
   List<Donation> get donations => throw _privateConstructorUsedError;
 
+  /// Serializes this Donor to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of Donor
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $DonorCopyWith<Donor> get copyWith => throw _privateConstructorUsedError;
 }
 
@@ -52,6 +56,8 @@ class _$DonorCopyWithImpl<$Res, $Val extends Donor>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of Donor
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -103,6 +109,8 @@ class __$$DonorImplCopyWithImpl<$Res>
       _$DonorImpl _value, $Res Function(_$DonorImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of Donor
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -183,7 +191,7 @@ class _$DonorImpl implements _Donor {
                 .equals(other._donations, _donations));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(
       runtimeType,
@@ -192,7 +200,9 @@ class _$DonorImpl implements _Donor {
       const DeepCollectionEquality().hash(_handles),
       const DeepCollectionEquality().hash(_donations));
 
-  @JsonKey(ignore: true)
+  /// Create a copy of Donor
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$DonorImplCopyWith<_$DonorImpl> get copyWith =>
@@ -223,8 +233,11 @@ abstract class _Donor implements Donor {
   Map<String, String> get handles;
   @override
   List<Donation> get donations;
+
+  /// Create a copy of Donor
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$DonorImplCopyWith<_$DonorImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -240,8 +253,12 @@ mixin _$Donation {
   DateTime get date => throw _privateConstructorUsedError;
   String get platform => throw _privateConstructorUsedError;
 
+  /// Serializes this Donation to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of Donation
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $DonationCopyWith<Donation> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -264,6 +281,8 @@ class _$DonationCopyWithImpl<$Res, $Val extends Donation>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of Donation
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -312,6 +331,8 @@ class __$$DonationImplCopyWithImpl<$Res>
       _$DonationImpl _value, $Res Function(_$DonationImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of Donation
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -380,12 +401,14 @@ class _$DonationImpl implements _Donation {
                 other.platform == platform));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode =>
       Object.hash(runtimeType, amount, currency, date, platform);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of Donation
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$DonationImplCopyWith<_$DonationImpl> get copyWith =>
@@ -417,8 +440,11 @@ abstract class _Donation implements Donation {
   DateTime get date;
   @override
   String get platform;
+
+  /// Create a copy of Donation
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$DonationImplCopyWith<_$DonationImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

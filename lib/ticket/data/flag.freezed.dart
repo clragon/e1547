@@ -30,8 +30,12 @@ mixin _$PostFlag {
   bool get isDeletion => throw _privateConstructorUsedError;
   PostFlagType get type => throw _privateConstructorUsedError;
 
+  /// Serializes this PostFlag to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of PostFlag
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $PostFlagCopyWith<PostFlag> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -63,6 +67,8 @@ class _$PostFlagCopyWithImpl<$Res, $Val extends PostFlag>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of PostFlag
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -145,6 +151,8 @@ class __$$PostFlagImplCopyWithImpl<$Res>
       _$PostFlagImpl _value, $Res Function(_$PostFlagImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of PostFlag
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -261,12 +269,14 @@ class _$PostFlagImpl implements _PostFlag {
             (identical(other.type, type) || other.type == type));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(runtimeType, id, createdAt, postId, reason,
       creatorId, isResolved, updatedAt, isDeletion, type);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of PostFlag
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$PostFlagImplCopyWith<_$PostFlagImpl> get copyWith =>
@@ -313,8 +323,11 @@ abstract class _PostFlag implements PostFlag {
   bool get isDeletion;
   @override
   PostFlagType get type;
+
+  /// Create a copy of PostFlag
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$PostFlagImplCopyWith<_$PostFlagImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

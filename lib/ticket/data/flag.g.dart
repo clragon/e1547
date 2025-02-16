@@ -8,11 +8,11 @@ part of 'flag.dart';
 
 _$PostFlagImpl _$$PostFlagImplFromJson(Map<String, dynamic> json) =>
     _$PostFlagImpl(
-      id: json['id'] as int,
+      id: (json['id'] as num).toInt(),
       createdAt: DateTime.parse(json['created_at'] as String),
-      postId: json['post_id'] as int,
+      postId: (json['post_id'] as num).toInt(),
       reason: json['reason'] as String,
-      creatorId: json['creator_id'] as int,
+      creatorId: (json['creator_id'] as num).toInt(),
       isResolved: json['is_resolved'] as bool,
       updatedAt: DateTime.parse(json['updated_at'] as String),
       isDeletion: json['is_deletion'] as bool,

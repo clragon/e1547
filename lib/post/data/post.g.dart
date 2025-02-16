@@ -7,14 +7,14 @@ part of 'post.dart';
 // **************************************************************************
 
 _$PostImpl _$$PostImplFromJson(Map<String, dynamic> json) => _$PostImpl(
-      id: json['id'] as int,
+      id: (json['id'] as num).toInt(),
       file: json['file'] as String?,
       sample: json['sample'] as String?,
       preview: json['preview'] as String?,
-      width: json['width'] as int,
-      height: json['height'] as int,
+      width: (json['width'] as num).toInt(),
+      height: (json['height'] as num).toInt(),
       ext: json['ext'] as String,
-      size: json['size'] as int,
+      size: (json['size'] as num).toInt(),
       variants: (json['variants'] as Map<String, dynamic>?)?.map(
         (k, e) => MapEntry(k, e as String?),
       ),
@@ -22,7 +22,7 @@ _$PostImpl _$$PostImplFromJson(Map<String, dynamic> json) => _$PostImpl(
         (k, e) =>
             MapEntry(k, (e as List<dynamic>).map((e) => e as String).toList()),
       ),
-      uploaderId: json['uploader_id'] as int,
+      uploaderId: (json['uploader_id'] as num).toInt(),
       createdAt: DateTime.parse(json['created_at'] as String),
       updatedAt: json['updated_at'] == null
           ? null
@@ -30,13 +30,15 @@ _$PostImpl _$$PostImplFromJson(Map<String, dynamic> json) => _$PostImpl(
       vote: VoteInfo.fromJson(json['vote'] as Map<String, dynamic>),
       isDeleted: json['is_deleted'] as bool,
       rating: $enumDecode(_$RatingEnumMap, json['rating']),
-      favCount: json['fav_count'] as int,
+      favCount: (json['fav_count'] as num).toInt(),
       isFavorited: json['is_favorited'] as bool,
-      commentCount: json['comment_count'] as int,
+      commentCount: (json['comment_count'] as num).toInt(),
       description: json['description'] as String,
       sources:
           (json['sources'] as List<dynamic>).map((e) => e as String).toList(),
-      pools: (json['pools'] as List<dynamic>?)?.map((e) => e as int).toList(),
+      pools: (json['pools'] as List<dynamic>?)
+          ?.map((e) => (e as num).toInt())
+          .toList(),
       relationships: Relationships.fromJson(json['relationships']),
     );
 
@@ -75,11 +77,12 @@ const _$RatingEnumMap = {
 
 _$RelationshipsImpl _$$RelationshipsImplFromJson(Map<String, dynamic> json) =>
     _$RelationshipsImpl(
-      parentId: json['parent_id'] as int?,
+      parentId: (json['parent_id'] as num?)?.toInt(),
       hasChildren: json['has_children'] as bool,
       hasActiveChildren: json['has_active_children'] as bool?,
-      children:
-          (json['children'] as List<dynamic>).map((e) => e as int).toList(),
+      children: (json['children'] as List<dynamic>)
+          .map((e) => (e as num).toInt())
+          .toList(),
     );
 
 Map<String, dynamic> _$$RelationshipsImplToJson(_$RelationshipsImpl instance) =>

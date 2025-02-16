@@ -26,8 +26,12 @@ mixin _$User {
   UserAbout? get about => throw _privateConstructorUsedError;
   UserStats? get stats => throw _privateConstructorUsedError;
 
+  /// Serializes this User to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of User
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $UserCopyWith<User> get copyWith => throw _privateConstructorUsedError;
 }
 
@@ -53,6 +57,8 @@ class _$UserCopyWithImpl<$Res, $Val extends User>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of User
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -86,6 +92,8 @@ class _$UserCopyWithImpl<$Res, $Val extends User>
     ) as $Val);
   }
 
+  /// Create a copy of User
+  /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
   $UserAboutCopyWith<$Res>? get about {
@@ -98,6 +106,8 @@ class _$UserCopyWithImpl<$Res, $Val extends User>
     });
   }
 
+  /// Create a copy of User
+  /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
   $UserStatsCopyWith<$Res>? get stats {
@@ -134,6 +144,8 @@ class __$$UserImplCopyWithImpl<$Res>
   __$$UserImplCopyWithImpl(_$UserImpl _value, $Res Function(_$UserImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of User
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -210,12 +222,14 @@ class _$UserImpl implements _User {
             (identical(other.stats, stats) || other.stats == stats));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode =>
       Object.hash(runtimeType, id, name, avatarId, about, stats);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of User
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$UserImplCopyWith<_$UserImpl> get copyWith =>
@@ -249,8 +263,11 @@ abstract class _User implements User {
   UserAbout? get about;
   @override
   UserStats? get stats;
+
+  /// Create a copy of User
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$UserImplCopyWith<_$UserImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -264,8 +281,12 @@ mixin _$UserAbout {
   String? get bio => throw _privateConstructorUsedError;
   String? get comission => throw _privateConstructorUsedError;
 
+  /// Serializes this UserAbout to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of UserAbout
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $UserAboutCopyWith<UserAbout> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -288,6 +309,8 @@ class _$UserAboutCopyWithImpl<$Res, $Val extends UserAbout>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of UserAbout
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -326,6 +349,8 @@ class __$$UserAboutImplCopyWithImpl<$Res>
       _$UserAboutImpl _value, $Res Function(_$UserAboutImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of UserAbout
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -373,11 +398,13 @@ class _$UserAboutImpl implements _UserAbout {
                 other.comission == comission));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(runtimeType, bio, comission);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of UserAbout
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$UserAboutImplCopyWith<_$UserAboutImpl> get copyWith =>
@@ -403,8 +430,11 @@ abstract class _UserAbout implements UserAbout {
   String? get bio;
   @override
   String? get comission;
+
+  /// Create a copy of UserAbout
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$UserAboutImplCopyWith<_$UserAboutImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -423,8 +453,12 @@ mixin _$UserStats {
   int? get forumPostCount => throw _privateConstructorUsedError;
   int? get commentCount => throw _privateConstructorUsedError;
 
+  /// Serializes this UserStats to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of UserStats
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $UserStatsCopyWith<UserStats> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -454,6 +488,8 @@ class _$UserStatsCopyWithImpl<$Res, $Val extends UserStats>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of UserStats
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -524,6 +560,8 @@ class __$$UserStatsImplCopyWithImpl<$Res>
       _$UserStatsImpl _value, $Res Function(_$UserStatsImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of UserStats
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -624,7 +662,7 @@ class _$UserStatsImpl implements _UserStats {
                 other.commentCount == commentCount));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(
       runtimeType,
@@ -636,7 +674,9 @@ class _$UserStatsImpl implements _UserStats {
       forumPostCount,
       commentCount);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of UserStats
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$UserStatsImplCopyWith<_$UserStatsImpl> get copyWith =>
@@ -677,8 +717,11 @@ abstract class _UserStats implements UserStats {
   int? get forumPostCount;
   @override
   int? get commentCount;
+
+  /// Create a copy of UserStats
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$UserStatsImplCopyWith<_$UserStatsImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

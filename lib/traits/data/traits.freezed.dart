@@ -27,8 +27,12 @@ mixin _$Traits {
   String? get avatar => throw _privateConstructorUsedError;
   int? get perPage => throw _privateConstructorUsedError;
 
+  /// Serializes this Traits to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of Traits
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $TraitsCopyWith<Traits> get copyWith => throw _privateConstructorUsedError;
 }
 
@@ -56,6 +60,8 @@ class _$TraitsCopyWithImpl<$Res, $Val extends Traits>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of Traits
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -119,6 +125,8 @@ class __$$TraitsImplCopyWithImpl<$Res>
       _$TraitsImpl _value, $Res Function(_$TraitsImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of Traits
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -211,7 +219,7 @@ class _$TraitsImpl implements _Traits {
             (identical(other.perPage, perPage) || other.perPage == perPage));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(
       runtimeType,
@@ -222,7 +230,9 @@ class _$TraitsImpl implements _Traits {
       avatar,
       perPage);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of Traits
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$TraitsImplCopyWith<_$TraitsImpl> get copyWith =>
@@ -259,8 +269,11 @@ abstract class _Traits implements Traits {
   String? get avatar;
   @override
   int? get perPage;
+
+  /// Create a copy of Traits
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$TraitsImplCopyWith<_$TraitsImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -278,8 +291,12 @@ mixin _$TraitsRequest {
   String? get avatar => throw _privateConstructorUsedError;
   int? get perPage => throw _privateConstructorUsedError;
 
+  /// Serializes this TraitsRequest to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of TraitsRequest
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $TraitsRequestCopyWith<TraitsRequest> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -309,6 +326,8 @@ class _$TraitsRequestCopyWithImpl<$Res, $Val extends TraitsRequest>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of TraitsRequest
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -373,6 +392,8 @@ class __$$TraitsRequestImplCopyWithImpl<$Res>
       _$TraitsRequestImpl _value, $Res Function(_$TraitsRequestImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of TraitsRequest
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -468,7 +489,7 @@ class _$TraitsRequestImpl implements _TraitsRequest {
             (identical(other.perPage, perPage) || other.perPage == perPage));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(
       runtimeType,
@@ -479,7 +500,9 @@ class _$TraitsRequestImpl implements _TraitsRequest {
       avatar,
       perPage);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of TraitsRequest
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$TraitsRequestImplCopyWith<_$TraitsRequestImpl> get copyWith =>
@@ -517,8 +540,11 @@ abstract class _TraitsRequest implements TraitsRequest {
   String? get avatar;
   @override
   int? get perPage;
+
+  /// Create a copy of TraitsRequest
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$TraitsRequestImplCopyWith<_$TraitsRequestImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

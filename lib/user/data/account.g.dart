@@ -8,11 +8,11 @@ part of 'account.dart';
 
 _$AccountImpl _$$AccountImplFromJson(Map<String, dynamic> json) =>
     _$AccountImpl(
-      id: json['id'] as int,
+      id: (json['id'] as num).toInt(),
       name: json['name'] as String,
-      avatarId: json['avatar_id'] as int?,
+      avatarId: (json['avatar_id'] as num?)?.toInt(),
       blacklistedTags: json['blacklisted_tags'] as String?,
-      perPage: json['per_page'] as int?,
+      perPage: (json['per_page'] as num?)?.toInt(),
     );
 
 Map<String, dynamic> _$$AccountImplToJson(_$AccountImpl instance) =>

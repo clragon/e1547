@@ -7,12 +7,12 @@ part of 'reply.dart';
 // **************************************************************************
 
 _$ReplyImpl _$$ReplyImplFromJson(Map<String, dynamic> json) => _$ReplyImpl(
-      id: json['id'] as int,
+      id: (json['id'] as num).toInt(),
       createdAt: DateTime.parse(json['created_at'] as String),
       updatedAt: DateTime.parse(json['updated_at'] as String),
       body: json['body'] as String,
-      creatorId: json['creator_id'] as int,
-      topicId: json['topic_id'] as int,
+      creatorId: (json['creator_id'] as num).toInt(),
+      topicId: (json['topic_id'] as num).toInt(),
       warning: $enumDecodeNullable(_$WarningTypeEnumMap, json['warning']),
       hidden: json['hidden'] as bool,
     );

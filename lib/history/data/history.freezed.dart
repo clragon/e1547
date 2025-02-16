@@ -29,8 +29,12 @@ mixin _$History {
   String? get subtitle => throw _privateConstructorUsedError;
   List<String> get thumbnails => throw _privateConstructorUsedError;
 
+  /// Serializes this History to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of History
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $HistoryCopyWith<History> get copyWith => throw _privateConstructorUsedError;
 }
 
@@ -60,6 +64,8 @@ class _$HistoryCopyWithImpl<$Res, $Val extends History>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of History
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -135,6 +141,8 @@ class __$$HistoryImplCopyWithImpl<$Res>
       _$HistoryImpl _value, $Res Function(_$HistoryImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of History
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -247,12 +255,14 @@ class _$HistoryImpl implements _History {
                 .equals(other._thumbnails, _thumbnails));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(runtimeType, id, visitedAt, link, category,
       type, title, subtitle, const DeepCollectionEquality().hash(_thumbnails));
 
-  @JsonKey(ignore: true)
+  /// Create a copy of History
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$HistoryImplCopyWith<_$HistoryImpl> get copyWith =>
@@ -295,8 +305,11 @@ abstract class _History implements History {
   String? get subtitle;
   @override
   List<String> get thumbnails;
+
+  /// Create a copy of History
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$HistoryImplCopyWith<_$HistoryImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -315,8 +328,12 @@ mixin _$HistoryRequest {
   String? get subtitle => throw _privateConstructorUsedError;
   List<String> get thumbnails => throw _privateConstructorUsedError;
 
+  /// Serializes this HistoryRequest to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of HistoryRequest
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $HistoryRequestCopyWith<HistoryRequest> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -347,6 +364,8 @@ class _$HistoryRequestCopyWithImpl<$Res, $Val extends HistoryRequest>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of HistoryRequest
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -417,6 +436,8 @@ class __$$HistoryRequestImplCopyWithImpl<$Res>
       _$HistoryRequestImpl _value, $Res Function(_$HistoryRequestImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of HistoryRequest
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -521,12 +542,14 @@ class _$HistoryRequestImpl implements _HistoryRequest {
                 .equals(other._thumbnails, _thumbnails));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(runtimeType, visitedAt, link, category, type,
       title, subtitle, const DeepCollectionEquality().hash(_thumbnails));
 
-  @JsonKey(ignore: true)
+  /// Create a copy of HistoryRequest
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$HistoryRequestImplCopyWith<_$HistoryRequestImpl> get copyWith =>
@@ -568,8 +591,11 @@ abstract class _HistoryRequest implements HistoryRequest {
   String? get subtitle;
   @override
   List<String> get thumbnails;
+
+  /// Create a copy of HistoryRequest
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$HistoryRequestImplCopyWith<_$HistoryRequestImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

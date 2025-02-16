@@ -8,7 +8,7 @@ part of 'history.dart';
 
 _$HistoryImpl _$$HistoryImplFromJson(Map<String, dynamic> json) =>
     _$HistoryImpl(
-      id: json['id'] as int,
+      id: (json['id'] as num).toInt(),
       visitedAt: DateTime.parse(json['visited_at'] as String),
       link: json['link'] as String,
       category: $enumDecode(_$HistoryCategoryEnumMap, json['category']),

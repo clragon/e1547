@@ -29,8 +29,12 @@ mixin _$Pool {
   int get postCount => throw _privateConstructorUsedError;
   bool get active => throw _privateConstructorUsedError;
 
+  /// Serializes this Pool to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of Pool
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $PoolCopyWith<Pool> get copyWith => throw _privateConstructorUsedError;
 }
 
@@ -60,6 +64,8 @@ class _$PoolCopyWithImpl<$Res, $Val extends Pool>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of Pool
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -134,6 +140,8 @@ class __$$PoolImplCopyWithImpl<$Res>
   __$$PoolImplCopyWithImpl(_$PoolImpl _value, $Res Function(_$PoolImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of Pool
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -247,7 +255,7 @@ class _$PoolImpl implements _Pool {
             (identical(other.active, active) || other.active == active));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(
       runtimeType,
@@ -260,7 +268,9 @@ class _$PoolImpl implements _Pool {
       postCount,
       active);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of Pool
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$PoolImplCopyWith<_$PoolImpl> get copyWith =>
@@ -303,8 +313,11 @@ abstract class _Pool implements Pool {
   int get postCount;
   @override
   bool get active;
+
+  /// Create a copy of Pool
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$PoolImplCopyWith<_$PoolImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

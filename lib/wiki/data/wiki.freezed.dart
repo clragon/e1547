@@ -28,8 +28,12 @@ mixin _$Wiki {
   List<String>? get otherNames => throw _privateConstructorUsedError;
   bool? get isLocked => throw _privateConstructorUsedError;
 
+  /// Serializes this Wiki to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of Wiki
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $WikiCopyWith<Wiki> get copyWith => throw _privateConstructorUsedError;
 }
 
@@ -58,6 +62,8 @@ class _$WikiCopyWithImpl<$Res, $Val extends Wiki>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of Wiki
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -126,6 +132,8 @@ class __$$WikiImplCopyWithImpl<$Res>
   __$$WikiImplCopyWithImpl(_$WikiImpl _value, $Res Function(_$WikiImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of Wiki
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -232,12 +240,14 @@ class _$WikiImpl implements _Wiki {
                 other.isLocked == isLocked));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(runtimeType, id, title, body, createdAt,
       updatedAt, const DeepCollectionEquality().hash(_otherNames), isLocked);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of Wiki
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$WikiImplCopyWith<_$WikiImpl> get copyWith =>
@@ -277,8 +287,11 @@ abstract class _Wiki implements Wiki {
   List<String>? get otherNames;
   @override
   bool? get isLocked;
+
+  /// Create a copy of Wiki
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$WikiImplCopyWith<_$WikiImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

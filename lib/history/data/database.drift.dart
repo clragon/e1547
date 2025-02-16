@@ -1,3 +1,4 @@
+// dart format width=80
 // ignore_for_file: type=lint
 import 'package:drift/drift.dart' as i0;
 import 'package:drift/src/runtime/api/runtime_api.dart' as i1;
@@ -8,14 +9,716 @@ import 'package:e1547/history/data/history.dart' as i5;
 import 'package:e1547/history/data/database.dart' as i6;
 import 'package:e1547/interface/data/sql.dart' as i7;
 
+typedef $$HistoriesTableTableCreateCompanionBuilder = i2.HistoryCompanion
+    Function({
+  i0.Value<int> id,
+  required DateTime visitedAt,
+  required String link,
+  required i5.HistoryCategory category,
+  required i5.HistoryType type,
+  i0.Value<String?> title,
+  i0.Value<String?> subtitle,
+  required List<String> thumbnails,
+});
+typedef $$HistoriesTableTableUpdateCompanionBuilder = i2.HistoryCompanion
+    Function({
+  i0.Value<int> id,
+  i0.Value<DateTime> visitedAt,
+  i0.Value<String> link,
+  i0.Value<i5.HistoryCategory> category,
+  i0.Value<i5.HistoryType> type,
+  i0.Value<String?> title,
+  i0.Value<String?> subtitle,
+  i0.Value<List<String>> thumbnails,
+});
+
+final class $$HistoriesTableTableReferences extends i0
+    .BaseReferences<i0.GeneratedDatabase, i2.$HistoriesTableTable, i5.History> {
+  $$HistoriesTableTableReferences(
+      super.$_db, super.$_table, super.$_typedResult);
+
+  static i0.MultiTypedResultKey<i2.$HistoriesIdentitiesTableTable, List<i2.HistoryIdentity>>
+      _historiesIdentitiesTableRefsTable(i0.GeneratedDatabase db) =>
+          i0.MultiTypedResultKey.fromTable(
+              i3.ReadDatabaseContainer(db)
+                  .resultSet<i2.$HistoriesIdentitiesTableTable>(
+                      'histories_identities_table'),
+              aliasName: i0.$_aliasNameGenerator(
+                  i3.ReadDatabaseContainer(db)
+                      .resultSet<i2.$HistoriesTableTable>('histories_table')
+                      .id,
+                  i3.ReadDatabaseContainer(db)
+                      .resultSet<i2.$HistoriesIdentitiesTableTable>('histories_identities_table')
+                      .history));
+
+  i2.$$HistoriesIdentitiesTableTableProcessedTableManager
+      get historiesIdentitiesTableRefs {
+    final manager = i2
+        .$$HistoriesIdentitiesTableTableTableManager(
+            $_db,
+            i3.ReadDatabaseContainer($_db)
+                .resultSet<i2.$HistoriesIdentitiesTableTable>(
+                    'histories_identities_table'))
+        .filter((f) => f.history.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache =
+        $_typedResult.readTableOrNull(_historiesIdentitiesTableRefsTable($_db));
+    return i0.ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: cache));
+  }
+}
+
+class $$HistoriesTableTableFilterComposer
+    extends i0.Composer<i0.GeneratedDatabase, i2.$HistoriesTableTable> {
+  $$HistoriesTableTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  i0.ColumnFilters<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => i0.ColumnFilters(column));
+
+  i0.ColumnFilters<DateTime> get visitedAt => $composableBuilder(
+      column: $table.visitedAt, builder: (column) => i0.ColumnFilters(column));
+
+  i0.ColumnFilters<String> get link => $composableBuilder(
+      column: $table.link, builder: (column) => i0.ColumnFilters(column));
+
+  i0.ColumnWithTypeConverterFilters<i5.HistoryCategory, i5.HistoryCategory,
+          String>
+      get category => $composableBuilder(
+          column: $table.category,
+          builder: (column) => i0.ColumnWithTypeConverterFilters(column));
+
+  i0.ColumnWithTypeConverterFilters<i5.HistoryType, i5.HistoryType, String>
+      get type => $composableBuilder(
+          column: $table.type,
+          builder: (column) => i0.ColumnWithTypeConverterFilters(column));
+
+  i0.ColumnFilters<String> get title => $composableBuilder(
+      column: $table.title, builder: (column) => i0.ColumnFilters(column));
+
+  i0.ColumnFilters<String> get subtitle => $composableBuilder(
+      column: $table.subtitle, builder: (column) => i0.ColumnFilters(column));
+
+  i0.ColumnWithTypeConverterFilters<List<String>, List<String>, String>
+      get thumbnails => $composableBuilder(
+          column: $table.thumbnails,
+          builder: (column) => i0.ColumnWithTypeConverterFilters(column));
+
+  i0.Expression<bool> historiesIdentitiesTableRefs(
+      i0.Expression<bool> Function(
+              i2.$$HistoriesIdentitiesTableTableFilterComposer f)
+          f) {
+    final i2.$$HistoriesIdentitiesTableTableFilterComposer composer =
+        $composerBuilder(
+            composer: this,
+            getCurrentColumn: (t) => t.id,
+            referencedTable: i3.ReadDatabaseContainer($db)
+                .resultSet<i2.$HistoriesIdentitiesTableTable>(
+                    'histories_identities_table'),
+            getReferencedColumn: (t) => t.history,
+            builder: (joinBuilder,
+                    {$addJoinBuilderToRootComposer,
+                    $removeJoinBuilderFromRootComposer}) =>
+                i2.$$HistoriesIdentitiesTableTableFilterComposer(
+                  $db: $db,
+                  $table: i3.ReadDatabaseContainer($db)
+                      .resultSet<i2.$HistoriesIdentitiesTableTable>(
+                          'histories_identities_table'),
+                  $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                  joinBuilder: joinBuilder,
+                  $removeJoinBuilderFromRootComposer:
+                      $removeJoinBuilderFromRootComposer,
+                ));
+    return f(composer);
+  }
+}
+
+class $$HistoriesTableTableOrderingComposer
+    extends i0.Composer<i0.GeneratedDatabase, i2.$HistoriesTableTable> {
+  $$HistoriesTableTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  i0.ColumnOrderings<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => i0.ColumnOrderings(column));
+
+  i0.ColumnOrderings<DateTime> get visitedAt => $composableBuilder(
+      column: $table.visitedAt,
+      builder: (column) => i0.ColumnOrderings(column));
+
+  i0.ColumnOrderings<String> get link => $composableBuilder(
+      column: $table.link, builder: (column) => i0.ColumnOrderings(column));
+
+  i0.ColumnOrderings<String> get category => $composableBuilder(
+      column: $table.category, builder: (column) => i0.ColumnOrderings(column));
+
+  i0.ColumnOrderings<String> get type => $composableBuilder(
+      column: $table.type, builder: (column) => i0.ColumnOrderings(column));
+
+  i0.ColumnOrderings<String> get title => $composableBuilder(
+      column: $table.title, builder: (column) => i0.ColumnOrderings(column));
+
+  i0.ColumnOrderings<String> get subtitle => $composableBuilder(
+      column: $table.subtitle, builder: (column) => i0.ColumnOrderings(column));
+
+  i0.ColumnOrderings<String> get thumbnails => $composableBuilder(
+      column: $table.thumbnails,
+      builder: (column) => i0.ColumnOrderings(column));
+}
+
+class $$HistoriesTableTableAnnotationComposer
+    extends i0.Composer<i0.GeneratedDatabase, i2.$HistoriesTableTable> {
+  $$HistoriesTableTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  i0.GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  i0.GeneratedColumn<DateTime> get visitedAt =>
+      $composableBuilder(column: $table.visitedAt, builder: (column) => column);
+
+  i0.GeneratedColumn<String> get link =>
+      $composableBuilder(column: $table.link, builder: (column) => column);
+
+  i0.GeneratedColumnWithTypeConverter<i5.HistoryCategory, String>
+      get category => $composableBuilder(
+          column: $table.category, builder: (column) => column);
+
+  i0.GeneratedColumnWithTypeConverter<i5.HistoryType, String> get type =>
+      $composableBuilder(column: $table.type, builder: (column) => column);
+
+  i0.GeneratedColumn<String> get title =>
+      $composableBuilder(column: $table.title, builder: (column) => column);
+
+  i0.GeneratedColumn<String> get subtitle =>
+      $composableBuilder(column: $table.subtitle, builder: (column) => column);
+
+  i0.GeneratedColumnWithTypeConverter<List<String>, String> get thumbnails =>
+      $composableBuilder(
+          column: $table.thumbnails, builder: (column) => column);
+
+  i0.Expression<T> historiesIdentitiesTableRefs<T extends Object>(
+      i0.Expression<T> Function(
+              i2.$$HistoriesIdentitiesTableTableAnnotationComposer a)
+          f) {
+    final i2.$$HistoriesIdentitiesTableTableAnnotationComposer composer =
+        $composerBuilder(
+            composer: this,
+            getCurrentColumn: (t) => t.id,
+            referencedTable: i3.ReadDatabaseContainer($db)
+                .resultSet<i2.$HistoriesIdentitiesTableTable>(
+                    'histories_identities_table'),
+            getReferencedColumn: (t) => t.history,
+            builder: (joinBuilder,
+                    {$addJoinBuilderToRootComposer,
+                    $removeJoinBuilderFromRootComposer}) =>
+                i2.$$HistoriesIdentitiesTableTableAnnotationComposer(
+                  $db: $db,
+                  $table: i3.ReadDatabaseContainer($db)
+                      .resultSet<i2.$HistoriesIdentitiesTableTable>(
+                          'histories_identities_table'),
+                  $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                  joinBuilder: joinBuilder,
+                  $removeJoinBuilderFromRootComposer:
+                      $removeJoinBuilderFromRootComposer,
+                ));
+    return f(composer);
+  }
+}
+
+class $$HistoriesTableTableTableManager extends i0.RootTableManager<
+    i0.GeneratedDatabase,
+    i2.$HistoriesTableTable,
+    i5.History,
+    i2.$$HistoriesTableTableFilterComposer,
+    i2.$$HistoriesTableTableOrderingComposer,
+    i2.$$HistoriesTableTableAnnotationComposer,
+    $$HistoriesTableTableCreateCompanionBuilder,
+    $$HistoriesTableTableUpdateCompanionBuilder,
+    (i5.History, i2.$$HistoriesTableTableReferences),
+    i5.History,
+    i0.PrefetchHooks Function({bool historiesIdentitiesTableRefs})> {
+  $$HistoriesTableTableTableManager(
+      i0.GeneratedDatabase db, i2.$HistoriesTableTable table)
+      : super(i0.TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              i2.$$HistoriesTableTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              i2.$$HistoriesTableTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () => i2
+              .$$HistoriesTableTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            i0.Value<int> id = const i0.Value.absent(),
+            i0.Value<DateTime> visitedAt = const i0.Value.absent(),
+            i0.Value<String> link = const i0.Value.absent(),
+            i0.Value<i5.HistoryCategory> category = const i0.Value.absent(),
+            i0.Value<i5.HistoryType> type = const i0.Value.absent(),
+            i0.Value<String?> title = const i0.Value.absent(),
+            i0.Value<String?> subtitle = const i0.Value.absent(),
+            i0.Value<List<String>> thumbnails = const i0.Value.absent(),
+          }) =>
+              i2.HistoryCompanion(
+            id: id,
+            visitedAt: visitedAt,
+            link: link,
+            category: category,
+            type: type,
+            title: title,
+            subtitle: subtitle,
+            thumbnails: thumbnails,
+          ),
+          createCompanionCallback: ({
+            i0.Value<int> id = const i0.Value.absent(),
+            required DateTime visitedAt,
+            required String link,
+            required i5.HistoryCategory category,
+            required i5.HistoryType type,
+            i0.Value<String?> title = const i0.Value.absent(),
+            i0.Value<String?> subtitle = const i0.Value.absent(),
+            required List<String> thumbnails,
+          }) =>
+              i2.HistoryCompanion.insert(
+            id: id,
+            visitedAt: visitedAt,
+            link: link,
+            category: category,
+            type: type,
+            title: title,
+            subtitle: subtitle,
+            thumbnails: thumbnails,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (
+                    e.readTable(table),
+                    i2.$$HistoriesTableTableReferences(db, table, e)
+                  ))
+              .toList(),
+          prefetchHooksCallback: ({historiesIdentitiesTableRefs = false}) {
+            return i0.PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [
+                if (historiesIdentitiesTableRefs)
+                  i3.ReadDatabaseContainer(db)
+                      .resultSet<i2.$HistoriesIdentitiesTableTable>(
+                          'histories_identities_table')
+              ],
+              addJoins: null,
+              getPrefetchedDataCallback: (items) async {
+                return [
+                  if (historiesIdentitiesTableRefs)
+                    await i0.$_getPrefetchedData<i5.History,
+                            i2.$HistoriesTableTable, i2.HistoryIdentity>(
+                        currentTable: table,
+                        referencedTable: i2.$$HistoriesTableTableReferences
+                            ._historiesIdentitiesTableRefsTable(db),
+                        managerFromTypedResult: (p0) => i2
+                            .$$HistoriesTableTableReferences(db, table, p0)
+                            .historiesIdentitiesTableRefs,
+                        referencedItemsForCurrentItem: (item,
+                                referencedItems) =>
+                            referencedItems.where((e) => e.history == item.id),
+                        typedResults: items)
+                ];
+              },
+            );
+          },
+        ));
+}
+
+typedef $$HistoriesTableTableProcessedTableManager = i0.ProcessedTableManager<
+    i0.GeneratedDatabase,
+    i2.$HistoriesTableTable,
+    i5.History,
+    i2.$$HistoriesTableTableFilterComposer,
+    i2.$$HistoriesTableTableOrderingComposer,
+    i2.$$HistoriesTableTableAnnotationComposer,
+    $$HistoriesTableTableCreateCompanionBuilder,
+    $$HistoriesTableTableUpdateCompanionBuilder,
+    (i5.History, i2.$$HistoriesTableTableReferences),
+    i5.History,
+    i0.PrefetchHooks Function({bool historiesIdentitiesTableRefs})>;
+typedef $$HistoriesIdentitiesTableTableCreateCompanionBuilder
+    = i2.HistoryIdentityCompanion Function({
+  required int identity,
+  required int history,
+  i0.Value<int> rowid,
+});
+typedef $$HistoriesIdentitiesTableTableUpdateCompanionBuilder
+    = i2.HistoryIdentityCompanion Function({
+  i0.Value<int> identity,
+  i0.Value<int> history,
+  i0.Value<int> rowid,
+});
+
+final class $$HistoriesIdentitiesTableTableReferences extends i0.BaseReferences<
+    i0.GeneratedDatabase,
+    i2.$HistoriesIdentitiesTableTable,
+    i2.HistoryIdentity> {
+  $$HistoriesIdentitiesTableTableReferences(
+      super.$_db, super.$_table, super.$_typedResult);
+
+  static i4.$IdentitiesTableTable _identityTable(i0.GeneratedDatabase db) =>
+      i3.ReadDatabaseContainer(db)
+          .resultSet<i4.$IdentitiesTableTable>('identities_table')
+          .createAlias(i0.$_aliasNameGenerator(
+              i3.ReadDatabaseContainer(db)
+                  .resultSet<i2.$HistoriesIdentitiesTableTable>(
+                      'histories_identities_table')
+                  .identity,
+              i3.ReadDatabaseContainer(db)
+                  .resultSet<i4.$IdentitiesTableTable>('identities_table')
+                  .id));
+
+  i4.$$IdentitiesTableTableProcessedTableManager get identity {
+    final $_column = $_itemColumn<int>('identity')!;
+
+    final manager = i4
+        .$$IdentitiesTableTableTableManager(
+            $_db,
+            i3.ReadDatabaseContainer($_db)
+                .resultSet<i4.$IdentitiesTableTable>('identities_table'))
+        .filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_identityTable($_db));
+    if (item == null) return manager;
+    return i0.ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: [item]));
+  }
+
+  static i2.$HistoriesTableTable _historyTable(i0.GeneratedDatabase db) =>
+      i3.ReadDatabaseContainer(db)
+          .resultSet<i2.$HistoriesTableTable>('histories_table')
+          .createAlias(i0.$_aliasNameGenerator(
+              i3.ReadDatabaseContainer(db)
+                  .resultSet<i2.$HistoriesIdentitiesTableTable>(
+                      'histories_identities_table')
+                  .history,
+              i3.ReadDatabaseContainer(db)
+                  .resultSet<i2.$HistoriesTableTable>('histories_table')
+                  .id));
+
+  i2.$$HistoriesTableTableProcessedTableManager get history {
+    final $_column = $_itemColumn<int>('history')!;
+
+    final manager = i2
+        .$$HistoriesTableTableTableManager(
+            $_db,
+            i3.ReadDatabaseContainer($_db)
+                .resultSet<i2.$HistoriesTableTable>('histories_table'))
+        .filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_historyTable($_db));
+    if (item == null) return manager;
+    return i0.ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: [item]));
+  }
+}
+
+class $$HistoriesIdentitiesTableTableFilterComposer extends i0
+    .Composer<i0.GeneratedDatabase, i2.$HistoriesIdentitiesTableTable> {
+  $$HistoriesIdentitiesTableTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  i4.$$IdentitiesTableTableFilterComposer get identity {
+    final i4.$$IdentitiesTableTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.identity,
+        referencedTable: i3.ReadDatabaseContainer($db)
+            .resultSet<i4.$IdentitiesTableTable>('identities_table'),
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            i4.$$IdentitiesTableTableFilterComposer(
+              $db: $db,
+              $table: i3.ReadDatabaseContainer($db)
+                  .resultSet<i4.$IdentitiesTableTable>('identities_table'),
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+
+  i2.$$HistoriesTableTableFilterComposer get history {
+    final i2.$$HistoriesTableTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.history,
+        referencedTable: i3.ReadDatabaseContainer($db)
+            .resultSet<i2.$HistoriesTableTable>('histories_table'),
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            i2.$$HistoriesTableTableFilterComposer(
+              $db: $db,
+              $table: i3.ReadDatabaseContainer($db)
+                  .resultSet<i2.$HistoriesTableTable>('histories_table'),
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+}
+
+class $$HistoriesIdentitiesTableTableOrderingComposer extends i0
+    .Composer<i0.GeneratedDatabase, i2.$HistoriesIdentitiesTableTable> {
+  $$HistoriesIdentitiesTableTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  i4.$$IdentitiesTableTableOrderingComposer get identity {
+    final i4.$$IdentitiesTableTableOrderingComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.identity,
+        referencedTable: i3.ReadDatabaseContainer($db)
+            .resultSet<i4.$IdentitiesTableTable>('identities_table'),
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            i4.$$IdentitiesTableTableOrderingComposer(
+              $db: $db,
+              $table: i3.ReadDatabaseContainer($db)
+                  .resultSet<i4.$IdentitiesTableTable>('identities_table'),
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+
+  i2.$$HistoriesTableTableOrderingComposer get history {
+    final i2.$$HistoriesTableTableOrderingComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.history,
+        referencedTable: i3.ReadDatabaseContainer($db)
+            .resultSet<i2.$HistoriesTableTable>('histories_table'),
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            i2.$$HistoriesTableTableOrderingComposer(
+              $db: $db,
+              $table: i3.ReadDatabaseContainer($db)
+                  .resultSet<i2.$HistoriesTableTable>('histories_table'),
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+}
+
+class $$HistoriesIdentitiesTableTableAnnotationComposer extends i0
+    .Composer<i0.GeneratedDatabase, i2.$HistoriesIdentitiesTableTable> {
+  $$HistoriesIdentitiesTableTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  i4.$$IdentitiesTableTableAnnotationComposer get identity {
+    final i4.$$IdentitiesTableTableAnnotationComposer composer =
+        $composerBuilder(
+            composer: this,
+            getCurrentColumn: (t) => t.identity,
+            referencedTable: i3.ReadDatabaseContainer($db)
+                .resultSet<i4.$IdentitiesTableTable>('identities_table'),
+            getReferencedColumn: (t) => t.id,
+            builder: (joinBuilder,
+                    {$addJoinBuilderToRootComposer,
+                    $removeJoinBuilderFromRootComposer}) =>
+                i4.$$IdentitiesTableTableAnnotationComposer(
+                  $db: $db,
+                  $table: i3.ReadDatabaseContainer($db)
+                      .resultSet<i4.$IdentitiesTableTable>('identities_table'),
+                  $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                  joinBuilder: joinBuilder,
+                  $removeJoinBuilderFromRootComposer:
+                      $removeJoinBuilderFromRootComposer,
+                ));
+    return composer;
+  }
+
+  i2.$$HistoriesTableTableAnnotationComposer get history {
+    final i2.$$HistoriesTableTableAnnotationComposer composer =
+        $composerBuilder(
+            composer: this,
+            getCurrentColumn: (t) => t.history,
+            referencedTable: i3.ReadDatabaseContainer($db)
+                .resultSet<i2.$HistoriesTableTable>('histories_table'),
+            getReferencedColumn: (t) => t.id,
+            builder: (joinBuilder,
+                    {$addJoinBuilderToRootComposer,
+                    $removeJoinBuilderFromRootComposer}) =>
+                i2.$$HistoriesTableTableAnnotationComposer(
+                  $db: $db,
+                  $table: i3.ReadDatabaseContainer($db)
+                      .resultSet<i2.$HistoriesTableTable>('histories_table'),
+                  $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                  joinBuilder: joinBuilder,
+                  $removeJoinBuilderFromRootComposer:
+                      $removeJoinBuilderFromRootComposer,
+                ));
+    return composer;
+  }
+}
+
+class $$HistoriesIdentitiesTableTableTableManager extends i0.RootTableManager<
+    i0.GeneratedDatabase,
+    i2.$HistoriesIdentitiesTableTable,
+    i2.HistoryIdentity,
+    i2.$$HistoriesIdentitiesTableTableFilterComposer,
+    i2.$$HistoriesIdentitiesTableTableOrderingComposer,
+    i2.$$HistoriesIdentitiesTableTableAnnotationComposer,
+    $$HistoriesIdentitiesTableTableCreateCompanionBuilder,
+    $$HistoriesIdentitiesTableTableUpdateCompanionBuilder,
+    (i2.HistoryIdentity, i2.$$HistoriesIdentitiesTableTableReferences),
+    i2.HistoryIdentity,
+    i0.PrefetchHooks Function({bool identity, bool history})> {
+  $$HistoriesIdentitiesTableTableTableManager(
+      i0.GeneratedDatabase db, i2.$HistoriesIdentitiesTableTable table)
+      : super(i0.TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              i2.$$HistoriesIdentitiesTableTableFilterComposer(
+                  $db: db, $table: table),
+          createOrderingComposer: () =>
+              i2.$$HistoriesIdentitiesTableTableOrderingComposer(
+                  $db: db, $table: table),
+          createComputedFieldComposer: () =>
+              i2.$$HistoriesIdentitiesTableTableAnnotationComposer(
+                  $db: db, $table: table),
+          updateCompanionCallback: ({
+            i0.Value<int> identity = const i0.Value.absent(),
+            i0.Value<int> history = const i0.Value.absent(),
+            i0.Value<int> rowid = const i0.Value.absent(),
+          }) =>
+              i2.HistoryIdentityCompanion(
+            identity: identity,
+            history: history,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required int identity,
+            required int history,
+            i0.Value<int> rowid = const i0.Value.absent(),
+          }) =>
+              i2.HistoryIdentityCompanion.insert(
+            identity: identity,
+            history: history,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (
+                    e.readTable(table),
+                    i2.$$HistoriesIdentitiesTableTableReferences(db, table, e)
+                  ))
+              .toList(),
+          prefetchHooksCallback: ({identity = false, history = false}) {
+            return i0.PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins: <
+                  T extends i0.TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic>>(state) {
+                if (identity) {
+                  state = state.withJoin(
+                    currentTable: table,
+                    currentColumn: table.identity,
+                    referencedTable: i2
+                        .$$HistoriesIdentitiesTableTableReferences
+                        ._identityTable(db),
+                    referencedColumn: i2
+                        .$$HistoriesIdentitiesTableTableReferences
+                        ._identityTable(db)
+                        .id,
+                  ) as T;
+                }
+                if (history) {
+                  state = state.withJoin(
+                    currentTable: table,
+                    currentColumn: table.history,
+                    referencedTable: i2
+                        .$$HistoriesIdentitiesTableTableReferences
+                        ._historyTable(db),
+                    referencedColumn: i2
+                        .$$HistoriesIdentitiesTableTableReferences
+                        ._historyTable(db)
+                        .id,
+                  ) as T;
+                }
+
+                return state;
+              },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ));
+}
+
+typedef $$HistoriesIdentitiesTableTableProcessedTableManager
+    = i0.ProcessedTableManager<
+        i0.GeneratedDatabase,
+        i2.$HistoriesIdentitiesTableTable,
+        i2.HistoryIdentity,
+        i2.$$HistoriesIdentitiesTableTableFilterComposer,
+        i2.$$HistoriesIdentitiesTableTableOrderingComposer,
+        i2.$$HistoriesIdentitiesTableTableAnnotationComposer,
+        $$HistoriesIdentitiesTableTableCreateCompanionBuilder,
+        $$HistoriesIdentitiesTableTableUpdateCompanionBuilder,
+        (i2.HistoryIdentity, i2.$$HistoriesIdentitiesTableTableReferences),
+        i2.HistoryIdentity,
+        i0.PrefetchHooks Function({bool identity, bool history})>;
 mixin $HistoryRepositoryMixin on i0.DatabaseAccessor<i1.GeneratedDatabase> {
   i2.$HistoriesTableTable get historiesTable =>
-      i3.ReadDatabaseContainer(attachedDatabase).resultSet('histories_table');
+      i3.ReadDatabaseContainer(attachedDatabase)
+          .resultSet<i2.$HistoriesTableTable>('histories_table');
   i4.$IdentitiesTableTable get identitiesTable =>
-      i3.ReadDatabaseContainer(attachedDatabase).resultSet('identities_table');
+      i3.ReadDatabaseContainer(attachedDatabase)
+          .resultSet<i4.$IdentitiesTableTable>('identities_table');
   i2.$HistoriesIdentitiesTableTable get historiesIdentitiesTable =>
       i3.ReadDatabaseContainer(attachedDatabase)
-          .resultSet('histories_identities_table');
+          .resultSet<i2.$HistoriesIdentitiesTableTable>(
+              'histories_identities_table');
 }
 
 class $HistoriesTableTable extends i6.HistoriesTable
@@ -427,6 +1130,13 @@ class HistoryIdentity extends i0.DataClass
         identity: identity ?? this.identity,
         history: history ?? this.history,
       );
+  HistoryIdentity copyWithCompanion(i2.HistoryIdentityCompanion data) {
+    return HistoryIdentity(
+      identity: data.identity.present ? data.identity.value : this.identity,
+      history: data.history.present ? data.history.value : this.history,
+    );
+  }
+
   @override
   String toString() {
     return (StringBuffer('HistoryIdentity(')

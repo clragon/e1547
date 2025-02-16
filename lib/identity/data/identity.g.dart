@@ -8,7 +8,7 @@ part of 'identity.dart';
 
 _$IdentityImpl _$$IdentityImplFromJson(Map<String, dynamic> json) =>
     _$IdentityImpl(
-      id: json['id'] as int,
+      id: (json['id'] as num).toInt(),
       host: json['host'] as String,
       username: json['username'] as String?,
       headers: (json['headers'] as Map<String, dynamic>?)?.map(

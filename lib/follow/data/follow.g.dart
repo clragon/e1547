@@ -7,13 +7,13 @@ part of 'follow.dart';
 // **************************************************************************
 
 _$FollowImpl _$$FollowImplFromJson(Map<String, dynamic> json) => _$FollowImpl(
-      id: json['id'] as int,
+      id: (json['id'] as num).toInt(),
       tags: json['tags'] as String,
       title: json['title'] as String?,
       alias: json['alias'] as String?,
       type: $enumDecode(_$FollowTypeEnumMap, json['type']),
-      latest: json['latest'] as int?,
-      unseen: json['unseen'] as int?,
+      latest: (json['latest'] as num?)?.toInt(),
+      unseen: (json['unseen'] as num?)?.toInt(),
       thumbnail: json['thumbnail'] as String?,
       updated: json['updated'] == null
           ? null
@@ -58,7 +58,7 @@ Map<String, dynamic> _$$FollowRequestImplToJson(_$FollowRequestImpl instance) =>
 
 _$FollowUpdateImpl _$$FollowUpdateImplFromJson(Map<String, dynamic> json) =>
     _$FollowUpdateImpl(
-      id: json['id'] as int,
+      id: (json['id'] as num).toInt(),
       tags: json['tags'] as String?,
       title: json['title'] as String?,
       type: $enumDecodeNullable(_$FollowTypeEnumMap, json['type']),

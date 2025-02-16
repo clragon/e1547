@@ -44,8 +44,12 @@ mixin _$Post {
   List<int>? get pools => throw _privateConstructorUsedError;
   Relationships get relationships => throw _privateConstructorUsedError;
 
+  /// Serializes this Post to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of Post
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $PostCopyWith<Post> get copyWith => throw _privateConstructorUsedError;
 }
 
@@ -92,6 +96,8 @@ class _$PostCopyWithImpl<$Res, $Val extends Post>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of Post
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -215,6 +221,8 @@ class _$PostCopyWithImpl<$Res, $Val extends Post>
     ) as $Val);
   }
 
+  /// Create a copy of Post
+  /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
   $RelationshipsCopyWith<$Res> get relationships {
@@ -267,6 +275,8 @@ class __$$PostImplCopyWithImpl<$Res>
   __$$PostImplCopyWithImpl(_$PostImpl _value, $Res Function(_$PostImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of Post
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -545,7 +555,7 @@ class _$PostImpl implements _Post {
                 other.relationships == relationships));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hashAll([
         runtimeType,
@@ -574,7 +584,9 @@ class _$PostImpl implements _Post {
         relationships
       ]);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of Post
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$PostImplCopyWith<_$PostImpl> get copyWith =>
@@ -662,8 +674,11 @@ abstract class _Post implements Post {
   List<int>? get pools;
   @override
   Relationships get relationships;
+
+  /// Create a copy of Post
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$PostImplCopyWith<_$PostImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -679,8 +694,12 @@ mixin _$Relationships {
   bool? get hasActiveChildren => throw _privateConstructorUsedError;
   List<int> get children => throw _privateConstructorUsedError;
 
+  /// Serializes this Relationships to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of Relationships
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $RelationshipsCopyWith<Relationships> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -708,6 +727,8 @@ class _$RelationshipsCopyWithImpl<$Res, $Val extends Relationships>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of Relationships
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -760,6 +781,8 @@ class __$$RelationshipsImplCopyWithImpl<$Res>
       _$RelationshipsImpl _value, $Res Function(_$RelationshipsImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of Relationships
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -835,12 +858,14 @@ class _$RelationshipsImpl implements _Relationships {
             const DeepCollectionEquality().equals(other._children, _children));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(runtimeType, parentId, hasChildren,
       hasActiveChildren, const DeepCollectionEquality().hash(_children));
 
-  @JsonKey(ignore: true)
+  /// Create a copy of Relationships
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$RelationshipsImplCopyWith<_$RelationshipsImpl> get copyWith =>
@@ -872,8 +897,11 @@ abstract class _Relationships implements Relationships {
   bool? get hasActiveChildren;
   @override
   List<int> get children;
+
+  /// Create a copy of Relationships
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$RelationshipsImplCopyWith<_$RelationshipsImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

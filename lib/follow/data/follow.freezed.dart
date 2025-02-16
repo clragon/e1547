@@ -30,8 +30,12 @@ mixin _$Follow {
   String? get thumbnail => throw _privateConstructorUsedError;
   DateTime? get updated => throw _privateConstructorUsedError;
 
+  /// Serializes this Follow to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of Follow
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $FollowCopyWith<Follow> get copyWith => throw _privateConstructorUsedError;
 }
 
@@ -62,6 +66,8 @@ class _$FollowCopyWithImpl<$Res, $Val extends Follow>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of Follow
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -143,6 +149,8 @@ class __$$FollowImplCopyWithImpl<$Res>
       _$FollowImpl _value, $Res Function(_$FollowImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of Follow
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -255,12 +263,14 @@ class _$FollowImpl implements _Follow {
             (identical(other.updated, updated) || other.updated == updated));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(runtimeType, id, tags, title, alias, type,
       latest, unseen, thumbnail, updated);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of Follow
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$FollowImplCopyWith<_$FollowImpl> get copyWith =>
@@ -306,8 +316,11 @@ abstract class _Follow implements Follow {
   String? get thumbnail;
   @override
   DateTime? get updated;
+
+  /// Create a copy of Follow
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$FollowImplCopyWith<_$FollowImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -323,8 +336,12 @@ mixin _$FollowRequest {
   String? get alias => throw _privateConstructorUsedError;
   FollowType get type => throw _privateConstructorUsedError;
 
+  /// Serializes this FollowRequest to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of FollowRequest
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $FollowRequestCopyWith<FollowRequest> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -348,6 +365,8 @@ class _$FollowRequestCopyWithImpl<$Res, $Val extends FollowRequest>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of FollowRequest
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -396,6 +415,8 @@ class __$$FollowRequestImplCopyWithImpl<$Res>
       _$FollowRequestImpl _value, $Res Function(_$FollowRequestImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of FollowRequest
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -463,11 +484,13 @@ class _$FollowRequestImpl implements _FollowRequest {
             (identical(other.type, type) || other.type == type));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(runtimeType, tags, title, alias, type);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of FollowRequest
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$FollowRequestImplCopyWith<_$FollowRequestImpl> get copyWith =>
@@ -499,8 +522,11 @@ abstract class _FollowRequest implements FollowRequest {
   String? get alias;
   @override
   FollowType get type;
+
+  /// Create a copy of FollowRequest
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$FollowRequestImplCopyWith<_$FollowRequestImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -516,8 +542,12 @@ mixin _$FollowUpdate {
   String? get title => throw _privateConstructorUsedError;
   FollowType? get type => throw _privateConstructorUsedError;
 
+  /// Serializes this FollowUpdate to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of FollowUpdate
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $FollowUpdateCopyWith<FollowUpdate> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -541,6 +571,8 @@ class _$FollowUpdateCopyWithImpl<$Res, $Val extends FollowUpdate>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of FollowUpdate
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -589,6 +621,8 @@ class __$$FollowUpdateImplCopyWithImpl<$Res>
       _$FollowUpdateImpl _value, $Res Function(_$FollowUpdateImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of FollowUpdate
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -652,11 +686,13 @@ class _$FollowUpdateImpl implements _FollowUpdate {
             (identical(other.type, type) || other.type == type));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(runtimeType, id, tags, title, type);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of FollowUpdate
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$FollowUpdateImplCopyWith<_$FollowUpdateImpl> get copyWith =>
@@ -688,8 +724,11 @@ abstract class _FollowUpdate implements FollowUpdate {
   String? get title;
   @override
   FollowType? get type;
+
+  /// Create a copy of FollowUpdate
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$FollowUpdateImplCopyWith<_$FollowUpdateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
