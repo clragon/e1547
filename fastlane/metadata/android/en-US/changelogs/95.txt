@@ -1,0 +1,11 @@
+### Added
+- bluesky source icon
+- report reason explanations
+- contributor tag category
+- api key quick link on login screen
+
+### Fixed
+- database connection issues
+
+### Removed
+- non-e621 clients
