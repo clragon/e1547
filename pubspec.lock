@@ -745,11 +745,11 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: b25e96d
-      resolved-ref: b25e96db6f4e12a0a714b87adb207fd212aa66e6
+      ref: "3b06fd4"
+      resolved-ref: "3b06fd404f7f9de9cd1cf548330e6443e96284da"
       url: "https://github.com/EdsonBueno/infinite_scroll_pagination.git"
     source: git
-    version: "4.0.0"
+    version: "4.1.0"
   intl:
     dependency: "direct main"
     description:

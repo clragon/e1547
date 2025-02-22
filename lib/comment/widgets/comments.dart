@@ -57,15 +57,20 @@ class PostCommentsPage extends StatelessWidget {
               ),
             ],
           ),
-          child: PagedListView<int, Comment>(
-            primary: true,
-            padding: defaultActionListPadding,
-            pagingController: controller.paging,
-            builderDelegate: defaultPagedChildBuilderDelegate(
-              pagingController: controller.paging,
-              itemBuilder: (context, item, index) => CommentTile(comment: item),
-              onEmpty: const Text('No comments'),
-              onError: const Text('Failed to load comments'),
+          child: ListenableBuilder(
+            listenable: controller,
+            builder: (context, _) => PagedListView<int, Comment>(
+              primary: true,
+              padding: defaultActionListPadding,
+              state: controller.state,
+              fetchNextPage: controller.getNextPage,
+              builderDelegate: defaultPagedChildBuilderDelegate(
+                onRetry: controller.getNextPage,
+                itemBuilder: (context, item, index) =>
+                    CommentTile(comment: item),
+                onEmpty: const Text('No comments'),
+                onError: const Text('Failed to load comments'),
+              ),
             ),
           ),
         ),
