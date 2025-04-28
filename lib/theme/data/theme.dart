@@ -1,3 +1,4 @@
+import 'package:e1547/theme/data/animation.dart';
 import 'package:flutter/material.dart';
 
 enum AppTheme {
@@ -97,5 +98,8 @@ extension on ThemeData {
         appBarTheme: appBarTheme.copyWith(
           surfaceTintColor: Colors.transparent,
         ),
+        extensions: [
+          const AnimationTheme(),
+        ],
       );
 }

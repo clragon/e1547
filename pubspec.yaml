@@ -50,6 +50,7 @@ dependencies:
   app_links: ^6.3.3
   async: ^2.11.0
   collection: ^1.19.0
+  context_plus: ^4.1.4
   deep_pick: ^1.0.0
   dio: ^5.8.0+1
   dio_cache_interceptor: ^4.0.3
@@ -97,9 +98,6 @@ dependency_overrides:
       url: https://github.com/EdsonBueno/infinite_scroll_pagination.git
       ref: 4f65157
 
-# dart run build_runner build
-# dart run flutter_launcher_icons
-# dart run flutter_native_splash:create
 dev_dependencies:
   flutter_test:
     sdk: flutter

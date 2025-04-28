@@ -30,7 +30,7 @@ class PostsPage extends StatelessWidget {
               itemBuilder: (context, post, index) => InkWell(
                 onTap: () => Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (context) => PostPage(id: post.id),
+                    builder: (context) => PostDetailPage(id: post.id),
                   ),
                 ),
                 child: Hero(

@@ -5,8 +5,8 @@ import 'package:e1547/post/post.dart';
 import 'package:e1547/query/query.dart';
 import 'package:flutter/material.dart';
 
-class PostPage extends StatelessWidget {
-  const PostPage({
+class PostDetailPage extends StatelessWidget {
+  const PostDetailPage({
     super.key,
     required this.id,
   });

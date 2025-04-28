@@ -16,6 +16,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Settings {
   AppTheme get theme;
+  bool get showPostInfoBar;
 
   /// Create a copy of Settings
   /// with the given fields replaced by the non-null parameter values.
@@ -32,16 +33,18 @@ mixin _$Settings {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is Settings &&
-            (identical(other.theme, theme) || other.theme == theme));
+            (identical(other.theme, theme) || other.theme == theme) &&
+            (identical(other.showPostInfoBar, showPostInfoBar) ||
+                other.showPostInfoBar == showPostInfoBar));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, theme);
+  int get hashCode => Object.hash(runtimeType, theme, showPostInfoBar);
 
   @override
   String toString() {
-    return 'Settings(theme: $theme)';
+    return 'Settings(theme: $theme, showPostInfoBar: $showPostInfoBar)';
   }
 }
 
@@ -50,7 +53,7 @@ abstract mixin class $SettingsCopyWith<$Res> {
   factory $SettingsCopyWith(Settings value, $Res Function(Settings) _then) =
       _$SettingsCopyWithImpl;
   @useResult
-  $Res call({AppTheme theme});
+  $Res call({AppTheme theme, bool showPostInfoBar});
 }
 
 /// @nodoc
@@ -66,12 +69,17 @@ class _$SettingsCopyWithImpl<$Res> implements $SettingsCopyWith<$Res> {
   @override
   $Res call({
     Object? theme = null,
+    Object? showPostInfoBar = null,
   }) {
     return _then(_self.copyWith(
       theme: null == theme
           ? _self.theme
           : theme // ignore: cast_nullable_to_non_nullable
               as AppTheme,
+      showPostInfoBar: null == showPostInfoBar
+          ? _self.showPostInfoBar
+          : showPostInfoBar // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -79,12 +87,14 @@ class _$SettingsCopyWithImpl<$Res> implements $SettingsCopyWith<$Res> {
 /// @nodoc
 @JsonSerializable()
 class _Settings implements Settings {
-  const _Settings({required this.theme});
+  const _Settings({required this.theme, required this.showPostInfoBar});
   factory _Settings.fromJson(Map<String, dynamic> json) =>
       _$SettingsFromJson(json);
 
   @override
   final AppTheme theme;
+  @override
+  final bool showPostInfoBar;
 
   /// Create a copy of Settings
   /// with the given fields replaced by the non-null parameter values.
@@ -106,16 +116,18 @@ class _Settings implements Settings {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _Settings &&
-            (identical(other.theme, theme) || other.theme == theme));
+            (identical(other.theme, theme) || other.theme == theme) &&
+            (identical(other.showPostInfoBar, showPostInfoBar) ||
+                other.showPostInfoBar == showPostInfoBar));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, theme);
+  int get hashCode => Object.hash(runtimeType, theme, showPostInfoBar);
 
   @override
   String toString() {
-    return 'Settings(theme: $theme)';
+    return 'Settings(theme: $theme, showPostInfoBar: $showPostInfoBar)';
   }
 }
 
@@ -126,7 +138,7 @@ abstract mixin class _$SettingsCopyWith<$Res>
       __$SettingsCopyWithImpl;
   @override
   @useResult
-  $Res call({AppTheme theme});
+  $Res call({AppTheme theme, bool showPostInfoBar});
 }
 
 /// @nodoc
@@ -142,12 +154,17 @@ class __$SettingsCopyWithImpl<$Res> implements _$SettingsCopyWith<$Res> {
   @pragma('vm:prefer-inline')
   $Res call({
     Object? theme = null,
+    Object? showPostInfoBar = null,
   }) {
     return _then(_Settings(
       theme: null == theme
           ? _self.theme
           : theme // ignore: cast_nullable_to_non_nullable
               as AppTheme,
+      showPostInfoBar: null == showPostInfoBar
+          ? _self.showPostInfoBar
+          : showPostInfoBar // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }

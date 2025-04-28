@@ -10,6 +10,7 @@ part 'settings.g.dart';
 abstract class Settings with _$Settings {
   const factory Settings({
     required AppTheme theme,
+    required bool showPostInfoBar,
   }) = _Settings;
 
   factory Settings.fromJson(Map<String, dynamic> json) =>
@@ -18,6 +19,7 @@ abstract class Settings with _$Settings {
 
 extension SharedPrefsSettings on Settings {
   static const String _themeKey = 'theme';
+  static const String _showPostInfoBarKey = 'show_post_info_bar';
 
   static Settings read(SharedPreferences prefs) => Settings(
         theme: PreferenceAdapter.readSetting<AppTheme>(
@@ -26,9 +28,19 @@ extension SharedPrefsSettings on Settings {
           initialValue: AppTheme.dark,
           read: PreferenceAdapter.enumReader(AppTheme.values),
         ),
+        showPostInfoBar: PreferenceAdapter.readSetting<bool>(
+          prefs: prefs,
+          key: _showPostInfoBarKey,
+          initialValue: false,
+        ),
       );
 
   void write(SharedPreferences prefs) {
     PreferenceAdapter.enumWriter(prefs, _themeKey, theme);
+    PreferenceAdapter.writeSetting(
+      prefs: prefs,
+      key: _showPostInfoBarKey,
+      value: showPostInfoBar,
+    );
   }
 }
