@@ -1,15 +1,2 @@
-// data
-export 'data/actions.dart';
-export 'data/controller.dart';
-export 'data/download.dart';
-export 'data/editing.dart';
-export 'data/filter.dart';
-export 'data/image.dart';
-export 'data/post.dart';
-export 'data/searches.dart';
-export 'data/service.dart';
-// widgets
-export 'widgets/detail.dart';
-export 'widgets/fullscreen.dart';
-export 'widgets/search.dart';
-export 'widgets/widgets.dart';
+export 'data/data.dart';
+export 'widget/widget.dart';

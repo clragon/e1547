@@ -1,9 +1,2 @@
-// data
-export 'data/actions.dart';
-export 'data/database.dart';
-export 'data/identity.dart';
-export 'data/service.dart';
-// widgets
-export 'widgets/identities.dart';
-export 'widgets/identity.dart';
-export 'widgets/tile.dart';
+export 'data/data.dart';
+export 'widget/widget.dart';

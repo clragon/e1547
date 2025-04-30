@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:e1547/integrations/http.dart';
+import 'package:e1547/integrations/http/bridge.dart';
 import 'package:e1547/traits/traits.dart';
 import 'package:e1547/user/user.dart';
 import 'package:flutter/foundation.dart';

@@ -1,13 +1,2 @@
-// data
-export 'data/actions.dart';
-export 'data/bridge.dart';
-export 'data/client.dart';
-export 'data/controller.dart';
-export 'data/credentials.dart';
-export 'data/dio.dart';
-export 'data/factory.dart';
-export 'data/newline.dart';
-export 'data/status.dart';
-// widgets
-export 'widgets/availability.dart';
-export 'widgets/bridge.dart';
+export 'data/data.dart';
+export 'widget/widget.dart';

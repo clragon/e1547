@@ -1,12 +1,2 @@
-// data
-export 'data/client.dart';
-export 'data/donations.dart';
-export 'data/info.dart';
-export 'data/settings.dart';
-// widgets
-export 'widgets/about.dart';
-export 'widgets/donations.dart';
-export 'widgets/icon.dart';
-export 'widgets/settings.dart';
-export 'widgets/text.dart';
-export 'widgets/tile.dart';
+export 'data/data.dart';
+export 'widget/widget.dart';

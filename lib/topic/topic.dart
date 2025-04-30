@@ -1,12 +1,2 @@
-// data
-export 'data/actions.dart';
-export 'data/controller.dart';
-export 'data/service.dart';
-export 'data/topic.dart';
-// widgets
-export 'widgets/drawer.dart';
-export 'widgets/input.dart';
-export 'widgets/loading.dart';
-export 'widgets/prompt.dart';
-export 'widgets/tile.dart';
-export 'widgets/topics.dart';
+export 'data/data.dart';
+export 'widget/widget.dart';

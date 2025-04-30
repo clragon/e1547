@@ -1,11 +1,2 @@
-// data
-export 'data/color.dart';
-export 'data/grammar.dart';
-export 'data/types.dart';
-// widgets
-export 'widgets/code.dart';
-export 'widgets/editor.dart';
-export 'widgets/quote.dart';
-export 'widgets/section.dart';
-export 'widgets/spoiler.dart';
-export 'widgets/text.dart';
+export 'data/data.dart';
+export 'widget/widget.dart';
