@@ -2,8 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:context_plus/context_plus.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/post/post.dart';
-import 'package:e1547/query/data/data.dart';
-import 'package:e1547/query/widget/prime.dart';
+import 'package:e1547/stream/stream.dart';
 import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
@@ -13,8 +12,8 @@ class PostsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final client = ClientRef.of(context);
-    return InfiniteQueryBuilder<List<Post>, dynamic, int>(
-      client.posts.pageKey(),
+    return SubStreamFuture(
+      create: () => client.posts.page(),
       (page) => ClientRef.of(context).posts.page(page: page),
       initialPageParam: 1,
       getNextPageParam: getNextIntPageParam,

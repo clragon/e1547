@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:e1547/post/data/post.dart';
+import 'package:e1547/stream/stream.dart';
 
 class PostClient {
   PostClient({
@@ -13,57 +14,60 @@ class PostClient {
   }
 
   final Dio dio;
-
-  String get host => dio.options.baseUrl;
-  String get key => 'posts';
+  final PagedValueCache<QueryKey, int, Post> cache = PagedValueCache(
+    toId: (post) => post.id,
+    size: null,
+    maxAge: const Duration(minutes: 5),
+  );
 
   Future<Post> get({
     required int id,
     bool? force,
     CancelToken? cancelToken,
   }) =>
-      dio
-          .get(
-            '/posts/$id.json',
-            cancelToken: cancelToken,
+      cache.items
+          .stream(
+            id,
+            fetch: () => dio
+                .get(
+                  '/posts/$id.json',
+                  cancelToken: cancelToken,
+                )
+                .then(
+                  (response) => E621Post.fromJson(response.data),
+                ),
           )
-          .then(
-            (response) => E621Post.fromJson(response.data),
-          );
-
-  List<Object> getKey(int id) => [host, key, id];
+          .future;
 
   Future<List<Post>> page({
     int? page,
     int? limit,
     CancelToken? cancelToken,
-  }) async {
-    return dio
-        .get(
-          '/posts.json',
-          queryParameters: {
-            'page': page,
-            'limit': limit,
-          },
-          cancelToken: cancelToken,
-        )
-        .then(
-          (response) => response.data.map<Post>(E621Post.fromJson).toList(),
-        );
-  }
+  }) async =>
+      cache
+          .stream(
+            QueryKey([
+              {'page': page, 'limit': limit}
+            ]),
+            fetch: () => dio
+                .get(
+                  '/posts.json',
+                  queryParameters: {
+                    'page': page,
+                    'limit': limit,
+                  },
+                  cancelToken: cancelToken,
+                )
+                .then(
+                  (response) =>
+                      response.data.map<Post>(E621Post.fromJson).toList(),
+                ),
+          )
+          .future;
 
-  List<Object> pageKey({
-    int? page,
-    int? limit,
-  }) =>
-      [
-        host,
-        key,
-        {
-          'page': page,
-          'limit': limit,
-        }
-      ];
+  void dispose() {
+    cache.dispose();
+  }
 }
 
 /// Unfucks the e621 API JSON response for Posts.

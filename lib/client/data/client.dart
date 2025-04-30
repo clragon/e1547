@@ -9,4 +9,16 @@ class Client {
   final Dio dio;
 
   final PostClient posts;
+
+  void dispose() {
+    dio.close();
+    for (final client in [posts]) {
+      try {
+        (client as dynamic).dispose();
+        // ignore: avoid_catching_errors
+      } on NoSuchMethodError {
+        // skip
+      }
+    }
+  }
 }
