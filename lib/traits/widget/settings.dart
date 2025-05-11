@@ -47,7 +47,10 @@ class DenyListPage extends StatelessWidget {
                   icon: Icon(Icons.check),
                   title: Text('Your blacklist is empty'),
                 ),
-                onError: const Text('Failed to load blacklist'),
+                onError: const IconMessage(
+                  icon: Icon(Icons.warning_amber),
+                  title: Text('Failed to load blacklist'),
+                ),
                 isError: false,
                 isLoading: false,
                 isBuilt: true,

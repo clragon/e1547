@@ -88,9 +88,9 @@ mixin PostFilterableController<KeyType> on DataController<KeyType, Post> {
       if (previousDeniedPosts?.containsKey(item) ?? false) {
         deniers = previousDeniedPosts![item]!;
       } else {
-        deniers = item.getDeniers(denylist);
+        deniers = item.getDeniers(denylist).toList();
       }
-      if (deniers != null) {
+      if (deniers.isNotEmpty) {
         _deniedPosts![item] = deniers;
         if (filterMode != PostFilterMode.plain) return true;
       }

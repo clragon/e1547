@@ -7,7 +7,6 @@ import 'package:e1547/settings/settings.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
 
-// TODO: this is e621 specific
 extension PostTagging on Post {
   bool hasTag(String tag) {
     if (tag.trim().isEmpty) return false;
@@ -47,8 +46,6 @@ extension PostTagging on Post {
           return isFavorited;
         case 'uploader':
         case 'user':
-          // This cannot be implemented, as it requires a user lookup
-          return false;
         case 'userid':
           NumberRange? range = NumberRange.tryParse(value);
           if (range == null) return false;
@@ -73,12 +70,20 @@ extension PostTagging on Post {
 }
 
 extension PostDenying on Post {
-  bool isDeniedBy(List<String> denylist) => getDeniers(denylist) != null;
+  bool isDeniedBy(List<String> denylist) =>
+      getDeniers(denylist).iterator.moveNext();
 
-  List<String>? getDeniers(List<String> denylist) {
-    List<String> deniers = [];
-
+  Iterable<String> getDeniers(List<String> denylist) sync* {
     for (String line in denylist) {
+      line = line.trim();
+      if (line.isEmpty) continue;
+
+      int hash = line.indexOf('#');
+      if (hash != -1) {
+        line = line.substring(0, hash).trim();
+        if (line.isEmpty) continue;
+      }
+
       bool pass = true;
       bool isOptional = false;
       bool hasOptional = false;
@@ -124,10 +129,8 @@ extension PostDenying on Post {
 
       if (!pass) continue;
 
-      deniers.add(line);
+      yield line;
     }
-
-    return deniers.isEmpty ? null : deniers;
   }
 }
 
