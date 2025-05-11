@@ -1,15 +1,17 @@
 import 'dart:io';
+
 import 'package:e1547/app/app.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/identity/identity.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/logs/logs.dart';
+import 'package:e1547/post/post.dart';
 import 'package:e1547/settings/settings.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sub/flutter_sub.dart';
 import 'package:local_auth/local_auth.dart';
-import 'package:shared_storage/shared_storage.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
@@ -202,18 +204,23 @@ class SettingsPage extends StatelessWidget {
               ),
               const Divider(),
               const ListTileHeader(title: 'Interactions'),
-              if (Platform.isAndroid)
-                ValueListenableBuilder<String>(
+              if (!Platform.isIOS)
+                ValueListenableBuilder<String?>(
                   valueListenable: settings.downloadPath,
                   builder: (context, value, child) => ListTile(
                     title: const Text('Download location'),
-                    subtitle: Text(Uri.decodeComponent(Uri.parse(value).path)),
+                    subtitle: value != null
+                        ? Text(Uri.decodeComponent(Uri.parse(value).path))
+                        : null,
                     leading: const Icon(Icons.folder),
                     onTap: () async {
-                      Uri? result =
-                          await openDocumentTree(initialUri: Uri.parse(value));
+                      String? result =
+                          await FilePicker.platform.getDirectoryPath(
+                        dialogTitle: 'Choose a download folder',
+                        initialDirectory: await getDefaultDownloadPath(),
+                      );
                       if (result != null) {
-                        settings.downloadPath.value = result.toString();
+                        settings.downloadPath.value = result;
                       }
                     },
                   ),
