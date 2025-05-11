@@ -123,6 +123,12 @@ extension M2ThemeData on ThemeData {
           color: theme.canvasColor,
           foregroundColor: theme.iconTheme.color,
         ),
+        dialogTheme: theme.dialogTheme.copyWith(
+          backgroundColor: theme.canvasColor,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(4),
+          ),
+        ),
         cardTheme: theme.cardTheme.copyWith(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
           color: theme.cardTheme.color,
