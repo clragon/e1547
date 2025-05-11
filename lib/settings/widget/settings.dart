@@ -350,17 +350,6 @@ class SettingsPage extends StatelessWidget {
                   );
                 },
               ),
-              ValueListenableBuilder<bool>(
-                valueListenable: settings.showBeta,
-                builder: (context, value, child) => SwitchListTile(
-                  title: const Text('Experimental features'),
-                  subtitle:
-                      Text(value ? 'preview enabled' : 'preview disabled'),
-                  secondary: const Icon(Icons.auto_awesome),
-                  value: value,
-                  onChanged: (value) => settings.showBeta.value = value,
-                ),
-              ),
               if (context.watch<Logs?>() != null) ...[
                 Consumer<Logs>(
                   builder: (context, logs, child) => SubStream<List<LogRecord>>(

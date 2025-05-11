@@ -8,7 +8,6 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:petitparser/core.dart';
-import 'package:username_generator/username_generator.dart';
 
 class DText extends StatefulWidget {
   const DText(
@@ -205,15 +204,6 @@ class DTextBody extends StatelessWidget {
 
     LinkPreviewProviderState preview = LinkPreviewProvider.of(context);
     String previewLink = local ? context.read<Client>().withHost(link) : link;
-
-    UsernameGenerator? usernameGenerator = context.watch<UsernameGenerator?>();
-    RegExp userRegex = RegExp(r'/user(s|/show)/(?<id>\d+)');
-    RegExpMatch? match = userRegex.firstMatch(link);
-    if (usernameGenerator != null && match != null) {
-      name = DTextContent(
-        usernameGenerator.generate(int.parse(match.namedGroup('id')!)),
-      );
-    }
 
     return TextSpan(
       children: wrapWithGesture(

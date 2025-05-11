@@ -341,8 +341,6 @@ class $TraitsTableTable extends i6.TraitsTable
   late final i0.GeneratedColumn<int> userId = i0.GeneratedColumn<int>(
       'user_id', aliasedName, true,
       type: i0.DriftSqlType.int, requiredDuringInsert: false);
-  static const i0.VerificationMeta _denylistMeta =
-      const i0.VerificationMeta('denylist');
   @override
   late final i0.GeneratedColumnWithTypeConverter<List<String>, String>
       denylist = i0.GeneratedColumn<String>('denylist', aliasedName, false,
@@ -386,7 +384,6 @@ class $TraitsTableTable extends i6.TraitsTable
       context.handle(_userIdMeta,
           userId.isAcceptableOrUnknown(data['user_id']!, _userIdMeta));
     }
-    context.handle(_denylistMeta, const i0.VerificationResult.success());
     if (data.containsKey('home_tags')) {
       context.handle(_homeTagsMeta,
           homeTags.isAcceptableOrUnknown(data['home_tags']!, _homeTagsMeta));

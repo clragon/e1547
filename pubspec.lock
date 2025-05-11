@@ -1764,15 +1764,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.1.4"
-  username_generator:
-    dependency: "direct main"
-    description:
-      path: "."
-      ref: "1.0.4"
-      resolved-ref: "16badbb93a94e36400a4c676e41e6deeda828b1e"
-      url: "https://github.com/clragon/username_generator.git"
-    source: git
-    version: "1.0.4"
   uuid:
     dependency: transitive
     description:

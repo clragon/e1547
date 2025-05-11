@@ -130,7 +130,7 @@ class TopicInfo extends StatelessWidget {
           ),
           textInfoRow(
             'locked',
-            topic.isLocked ? 'yes' : 'no',
+            topic.locked ? 'yes' : 'no',
           ),
           textInfoRow(
             'created',

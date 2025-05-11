@@ -38,11 +38,33 @@ class TopicTile extends StatelessWidget {
                           style: Theme.of(context).textTheme.titleMedium,
                         ),
                         Dimmed(
-                          child: Text(
-                            topic.createdAt.relativeTime(context),
-                            style: const TextStyle(
-                              fontSize: 12,
-                            ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text.rich(
+                                TextSpan(
+                                  style: Theme.of(context).textTheme.bodySmall,
+                                  children: [
+                                    TextSpan(
+                                      text: topic.creator,
+                                    ),
+                                    TextSpan(
+                                      text: ' • ',
+                                      style: TextStyle(
+                                        color: dimTextColor(context),
+                                      ),
+                                    ),
+                                    TextSpan(
+                                      text:
+                                          topic.createdAt.relativeTime(context),
+                                      style: TextStyle(
+                                        color: dimTextColor(context),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ],
@@ -53,7 +75,11 @@ class TopicTile extends StatelessWidget {
                   onTap: onCountPressed,
                   child: Padding(
                     padding: const EdgeInsets.only(
-                        left: 8, right: 16, top: 6, bottom: 6),
+                      left: 8,
+                      right: 16,
+                      top: 6,
+                      bottom: 6,
+                    ),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.end,

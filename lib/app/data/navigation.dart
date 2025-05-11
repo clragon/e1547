@@ -84,7 +84,6 @@ final List<RouterDrawerDestination> rootDestintations = [
     builder: (context) => const TopicsPage(),
     unique: true,
     group: _drawerCollectionsGroup,
-    visible: (context) => context.watch<Settings>().showBeta.value,
   ),
   NamedRouterDrawerDestination(
     path: '/history',

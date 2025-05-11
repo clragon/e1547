@@ -4,7 +4,6 @@ import 'package:e1547/markup/markup.dart';
 import 'package:e1547/reply/reply.dart';
 import 'package:e1547/user/user.dart';
 import 'package:flutter/material.dart';
-import 'package:username_generator/username_generator.dart';
 
 class ReplyTile extends StatelessWidget {
   const ReplyTile({
@@ -81,18 +80,11 @@ class ReplyHeader extends StatelessWidget {
                   children: [
                     Flexible(
                       child: Text(
-                        context
-                            .watch<UsernameGenerator>()
-                            .generate(reply.creatorId),
+                        reply.creator,
                         style: TextStyle(
                           color: dimTextColor(context),
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 4),
-                    const Tooltip(
-                      message: 'Generated username',
-                      child: Icon(Icons.theater_comedy),
                     ),
                   ],
                 ),

@@ -21,10 +21,13 @@ Reply _$ReplyFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$Reply {
   int get id => throw _privateConstructorUsedError;
+  int get creatorId => throw _privateConstructorUsedError;
+  String get creator => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
+  int? get updaterId => throw _privateConstructorUsedError;
+  String? get updater => throw _privateConstructorUsedError;
   DateTime get updatedAt => throw _privateConstructorUsedError;
   String get body => throw _privateConstructorUsedError;
-  int get creatorId => throw _privateConstructorUsedError;
   int get topicId => throw _privateConstructorUsedError;
   WarningType? get warning => throw _privateConstructorUsedError;
   bool get hidden => throw _privateConstructorUsedError;
@@ -45,10 +48,13 @@ abstract class $ReplyCopyWith<$Res> {
   @useResult
   $Res call(
       {int id,
+      int creatorId,
+      String creator,
       DateTime createdAt,
+      int? updaterId,
+      String? updater,
       DateTime updatedAt,
       String body,
-      int creatorId,
       int topicId,
       WarningType? warning,
       bool hidden});
@@ -70,10 +76,13 @@ class _$ReplyCopyWithImpl<$Res, $Val extends Reply>
   @override
   $Res call({
     Object? id = null,
+    Object? creatorId = null,
+    Object? creator = null,
     Object? createdAt = null,
+    Object? updaterId = freezed,
+    Object? updater = freezed,
     Object? updatedAt = null,
     Object? body = null,
-    Object? creatorId = null,
     Object? topicId = null,
     Object? warning = freezed,
     Object? hidden = null,
@@ -83,10 +92,26 @@ class _$ReplyCopyWithImpl<$Res, $Val extends Reply>
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
               as int,
+      creatorId: null == creatorId
+          ? _value.creatorId
+          : creatorId // ignore: cast_nullable_to_non_nullable
+              as int,
+      creator: null == creator
+          ? _value.creator
+          : creator // ignore: cast_nullable_to_non_nullable
+              as String,
       createdAt: null == createdAt
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
               as DateTime,
+      updaterId: freezed == updaterId
+          ? _value.updaterId
+          : updaterId // ignore: cast_nullable_to_non_nullable
+              as int?,
+      updater: freezed == updater
+          ? _value.updater
+          : updater // ignore: cast_nullable_to_non_nullable
+              as String?,
       updatedAt: null == updatedAt
           ? _value.updatedAt
           : updatedAt // ignore: cast_nullable_to_non_nullable
@@ -95,10 +120,6 @@ class _$ReplyCopyWithImpl<$Res, $Val extends Reply>
           ? _value.body
           : body // ignore: cast_nullable_to_non_nullable
               as String,
-      creatorId: null == creatorId
-          ? _value.creatorId
-          : creatorId // ignore: cast_nullable_to_non_nullable
-              as int,
       topicId: null == topicId
           ? _value.topicId
           : topicId // ignore: cast_nullable_to_non_nullable
@@ -124,10 +145,13 @@ abstract class _$$ReplyImplCopyWith<$Res> implements $ReplyCopyWith<$Res> {
   @useResult
   $Res call(
       {int id,
+      int creatorId,
+      String creator,
       DateTime createdAt,
+      int? updaterId,
+      String? updater,
       DateTime updatedAt,
       String body,
-      int creatorId,
       int topicId,
       WarningType? warning,
       bool hidden});
@@ -147,10 +171,13 @@ class __$$ReplyImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? id = null,
+    Object? creatorId = null,
+    Object? creator = null,
     Object? createdAt = null,
+    Object? updaterId = freezed,
+    Object? updater = freezed,
     Object? updatedAt = null,
     Object? body = null,
-    Object? creatorId = null,
     Object? topicId = null,
     Object? warning = freezed,
     Object? hidden = null,
@@ -160,10 +187,26 @@ class __$$ReplyImplCopyWithImpl<$Res>
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
               as int,
+      creatorId: null == creatorId
+          ? _value.creatorId
+          : creatorId // ignore: cast_nullable_to_non_nullable
+              as int,
+      creator: null == creator
+          ? _value.creator
+          : creator // ignore: cast_nullable_to_non_nullable
+              as String,
       createdAt: null == createdAt
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
               as DateTime,
+      updaterId: freezed == updaterId
+          ? _value.updaterId
+          : updaterId // ignore: cast_nullable_to_non_nullable
+              as int?,
+      updater: freezed == updater
+          ? _value.updater
+          : updater // ignore: cast_nullable_to_non_nullable
+              as String?,
       updatedAt: null == updatedAt
           ? _value.updatedAt
           : updatedAt // ignore: cast_nullable_to_non_nullable
@@ -172,10 +215,6 @@ class __$$ReplyImplCopyWithImpl<$Res>
           ? _value.body
           : body // ignore: cast_nullable_to_non_nullable
               as String,
-      creatorId: null == creatorId
-          ? _value.creatorId
-          : creatorId // ignore: cast_nullable_to_non_nullable
-              as int,
       topicId: null == topicId
           ? _value.topicId
           : topicId // ignore: cast_nullable_to_non_nullable
@@ -197,10 +236,13 @@ class __$$ReplyImplCopyWithImpl<$Res>
 class _$ReplyImpl implements _Reply {
   const _$ReplyImpl(
       {required this.id,
+      required this.creatorId,
+      required this.creator,
       required this.createdAt,
+      required this.updaterId,
+      required this.updater,
       required this.updatedAt,
       required this.body,
-      required this.creatorId,
       required this.topicId,
       required this.warning,
       required this.hidden});
@@ -211,13 +253,19 @@ class _$ReplyImpl implements _Reply {
   @override
   final int id;
   @override
+  final int creatorId;
+  @override
+  final String creator;
+  @override
   final DateTime createdAt;
+  @override
+  final int? updaterId;
+  @override
+  final String? updater;
   @override
   final DateTime updatedAt;
   @override
   final String body;
-  @override
-  final int creatorId;
   @override
   final int topicId;
   @override
@@ -227,7 +275,7 @@ class _$ReplyImpl implements _Reply {
 
   @override
   String toString() {
-    return 'Reply(id: $id, createdAt: $createdAt, updatedAt: $updatedAt, body: $body, creatorId: $creatorId, topicId: $topicId, warning: $warning, hidden: $hidden)';
+    return 'Reply(id: $id, creatorId: $creatorId, creator: $creator, createdAt: $createdAt, updaterId: $updaterId, updater: $updater, updatedAt: $updatedAt, body: $body, topicId: $topicId, warning: $warning, hidden: $hidden)';
   }
 
   @override
@@ -236,13 +284,17 @@ class _$ReplyImpl implements _Reply {
         (other.runtimeType == runtimeType &&
             other is _$ReplyImpl &&
             (identical(other.id, id) || other.id == id) &&
+            (identical(other.creatorId, creatorId) ||
+                other.creatorId == creatorId) &&
+            (identical(other.creator, creator) || other.creator == creator) &&
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt) &&
+            (identical(other.updaterId, updaterId) ||
+                other.updaterId == updaterId) &&
+            (identical(other.updater, updater) || other.updater == updater) &&
             (identical(other.updatedAt, updatedAt) ||
                 other.updatedAt == updatedAt) &&
             (identical(other.body, body) || other.body == body) &&
-            (identical(other.creatorId, creatorId) ||
-                other.creatorId == creatorId) &&
             (identical(other.topicId, topicId) || other.topicId == topicId) &&
             (identical(other.warning, warning) || other.warning == warning) &&
             (identical(other.hidden, hidden) || other.hidden == hidden));
@@ -250,8 +302,8 @@ class _$ReplyImpl implements _Reply {
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, id, createdAt, updatedAt, body,
-      creatorId, topicId, warning, hidden);
+  int get hashCode => Object.hash(runtimeType, id, creatorId, creator,
+      createdAt, updaterId, updater, updatedAt, body, topicId, warning, hidden);
 
   /// Create a copy of Reply
   /// with the given fields replaced by the non-null parameter values.
@@ -272,10 +324,13 @@ class _$ReplyImpl implements _Reply {
 abstract class _Reply implements Reply {
   const factory _Reply(
       {required final int id,
+      required final int creatorId,
+      required final String creator,
       required final DateTime createdAt,
+      required final int? updaterId,
+      required final String? updater,
       required final DateTime updatedAt,
       required final String body,
-      required final int creatorId,
       required final int topicId,
       required final WarningType? warning,
       required final bool hidden}) = _$ReplyImpl;
@@ -285,13 +340,19 @@ abstract class _Reply implements Reply {
   @override
   int get id;
   @override
+  int get creatorId;
+  @override
+  String get creator;
+  @override
   DateTime get createdAt;
+  @override
+  int? get updaterId;
+  @override
+  String? get updater;
   @override
   DateTime get updatedAt;
   @override
   String get body;
-  @override
-  int get creatorId;
   @override
   int get topicId;
   @override

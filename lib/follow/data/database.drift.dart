@@ -752,8 +752,6 @@ class $FollowsTableTable extends i6.FollowsTable
   late final i0.GeneratedColumn<String> alias = i0.GeneratedColumn<String>(
       'alias', aliasedName, true,
       type: i0.DriftSqlType.string, requiredDuringInsert: false);
-  static const i0.VerificationMeta _typeMeta =
-      const i0.VerificationMeta('type');
   @override
   late final i0.GeneratedColumnWithTypeConverter<i5.FollowType, String> type =
       i0.GeneratedColumn<String>('type', aliasedName, false,
@@ -813,7 +811,6 @@ class $FollowsTableTable extends i6.FollowsTable
       context.handle(
           _aliasMeta, alias.isAcceptableOrUnknown(data['alias']!, _aliasMeta));
     }
-    context.handle(_typeMeta, const i0.VerificationResult.success());
     if (data.containsKey('latest')) {
       context.handle(_latestMeta,
           latest.isAcceptableOrUnknown(data['latest']!, _latestMeta));

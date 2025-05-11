@@ -196,15 +196,11 @@ class $IdentitiesTableTable extends i5.IdentitiesTable
   late final i0.GeneratedColumn<String> host = i0.GeneratedColumn<String>(
       'host', aliasedName, false,
       type: i0.DriftSqlType.string, requiredDuringInsert: true);
-  static const i0.VerificationMeta _usernameMeta =
-      const i0.VerificationMeta('username');
   @override
   late final i0.GeneratedColumnWithTypeConverter<String?, String> username =
       i0.GeneratedColumn<String>('username', aliasedName, false,
               type: i0.DriftSqlType.string, requiredDuringInsert: true)
           .withConverter<String?>(i2.$IdentitiesTableTable.$converterusername);
-  static const i0.VerificationMeta _headersMeta =
-      const i0.VerificationMeta('headers');
   @override
   late final i0.GeneratedColumnWithTypeConverter<Map<String, String>?, String>
       headers = i0.GeneratedColumn<String>('headers', aliasedName, true,
@@ -232,8 +228,6 @@ class $IdentitiesTableTable extends i5.IdentitiesTable
     } else if (isInserting) {
       context.missing(_hostMeta);
     }
-    context.handle(_usernameMeta, const i0.VerificationResult.success());
-    context.handle(_headersMeta, const i0.VerificationResult.success());
     return context;
   }
 

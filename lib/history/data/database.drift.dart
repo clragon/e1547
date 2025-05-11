@@ -748,16 +748,12 @@ class $HistoriesTableTable extends i6.HistoriesTable
   late final i0.GeneratedColumn<String> link = i0.GeneratedColumn<String>(
       'link', aliasedName, false,
       type: i0.DriftSqlType.string, requiredDuringInsert: true);
-  static const i0.VerificationMeta _categoryMeta =
-      const i0.VerificationMeta('category');
   @override
   late final i0.GeneratedColumnWithTypeConverter<i5.HistoryCategory, String>
       category = i0.GeneratedColumn<String>('category', aliasedName, false,
               type: i0.DriftSqlType.string, requiredDuringInsert: true)
           .withConverter<i5.HistoryCategory>(
               i2.$HistoriesTableTable.$convertercategory);
-  static const i0.VerificationMeta _typeMeta =
-      const i0.VerificationMeta('type');
   @override
   late final i0.GeneratedColumnWithTypeConverter<i5.HistoryType, String> type =
       i0.GeneratedColumn<String>('type', aliasedName, false,
@@ -776,8 +772,6 @@ class $HistoriesTableTable extends i6.HistoriesTable
   late final i0.GeneratedColumn<String> subtitle = i0.GeneratedColumn<String>(
       'subtitle', aliasedName, true,
       type: i0.DriftSqlType.string, requiredDuringInsert: false);
-  static const i0.VerificationMeta _thumbnailsMeta =
-      const i0.VerificationMeta('thumbnails');
   @override
   late final i0.GeneratedColumnWithTypeConverter<List<String>, String>
       thumbnails = i0.GeneratedColumn<String>('thumbnails', aliasedName, false,
@@ -812,8 +806,6 @@ class $HistoriesTableTable extends i6.HistoriesTable
     } else if (isInserting) {
       context.missing(_linkMeta);
     }
-    context.handle(_categoryMeta, const i0.VerificationResult.success());
-    context.handle(_typeMeta, const i0.VerificationResult.success());
     if (data.containsKey('title')) {
       context.handle(
           _titleMeta, title.isAcceptableOrUnknown(data['title']!, _titleMeta));
@@ -822,7 +814,6 @@ class $HistoriesTableTable extends i6.HistoriesTable
       context.handle(_subtitleMeta,
           subtitle.isAcceptableOrUnknown(data['subtitle']!, _subtitleMeta));
     }
-    context.handle(_thumbnailsMeta, const i0.VerificationResult.success());
     return context;
   }
 

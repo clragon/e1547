@@ -22,11 +22,16 @@ Topic _$TopicFromJson(Map<String, dynamic> json) {
 mixin _$Topic {
   int get id => throw _privateConstructorUsedError;
   int get creatorId => throw _privateConstructorUsedError;
+  String get creator => throw _privateConstructorUsedError;
+  DateTime get createdAt => throw _privateConstructorUsedError;
+  int get updaterId => throw _privateConstructorUsedError;
+  String get updater => throw _privateConstructorUsedError;
+  DateTime get updatedAt => throw _privateConstructorUsedError;
   String get title => throw _privateConstructorUsedError;
   int get responseCount => throw _privateConstructorUsedError;
-  DateTime get createdAt => throw _privateConstructorUsedError;
-  DateTime get updatedAt => throw _privateConstructorUsedError;
-  bool get isLocked => throw _privateConstructorUsedError;
+  bool get sticky => throw _privateConstructorUsedError;
+  bool get locked => throw _privateConstructorUsedError;
+  bool get hidden => throw _privateConstructorUsedError;
   int get categoryId => throw _privateConstructorUsedError;
 
   /// Serializes this Topic to a JSON map.
@@ -46,11 +51,16 @@ abstract class $TopicCopyWith<$Res> {
   $Res call(
       {int id,
       int creatorId,
+      String creator,
+      DateTime createdAt,
+      int updaterId,
+      String updater,
+      DateTime updatedAt,
       String title,
       int responseCount,
-      DateTime createdAt,
-      DateTime updatedAt,
-      bool isLocked,
+      bool sticky,
+      bool locked,
+      bool hidden,
       int categoryId});
 }
 
@@ -71,11 +81,16 @@ class _$TopicCopyWithImpl<$Res, $Val extends Topic>
   $Res call({
     Object? id = null,
     Object? creatorId = null,
+    Object? creator = null,
+    Object? createdAt = null,
+    Object? updaterId = null,
+    Object? updater = null,
+    Object? updatedAt = null,
     Object? title = null,
     Object? responseCount = null,
-    Object? createdAt = null,
-    Object? updatedAt = null,
-    Object? isLocked = null,
+    Object? sticky = null,
+    Object? locked = null,
+    Object? hidden = null,
     Object? categoryId = null,
   }) {
     return _then(_value.copyWith(
@@ -87,6 +102,26 @@ class _$TopicCopyWithImpl<$Res, $Val extends Topic>
           ? _value.creatorId
           : creatorId // ignore: cast_nullable_to_non_nullable
               as int,
+      creator: null == creator
+          ? _value.creator
+          : creator // ignore: cast_nullable_to_non_nullable
+              as String,
+      createdAt: null == createdAt
+          ? _value.createdAt
+          : createdAt // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      updaterId: null == updaterId
+          ? _value.updaterId
+          : updaterId // ignore: cast_nullable_to_non_nullable
+              as int,
+      updater: null == updater
+          ? _value.updater
+          : updater // ignore: cast_nullable_to_non_nullable
+              as String,
+      updatedAt: null == updatedAt
+          ? _value.updatedAt
+          : updatedAt // ignore: cast_nullable_to_non_nullable
+              as DateTime,
       title: null == title
           ? _value.title
           : title // ignore: cast_nullable_to_non_nullable
@@ -95,17 +130,17 @@ class _$TopicCopyWithImpl<$Res, $Val extends Topic>
           ? _value.responseCount
           : responseCount // ignore: cast_nullable_to_non_nullable
               as int,
-      createdAt: null == createdAt
-          ? _value.createdAt
-          : createdAt // ignore: cast_nullable_to_non_nullable
-              as DateTime,
-      updatedAt: null == updatedAt
-          ? _value.updatedAt
-          : updatedAt // ignore: cast_nullable_to_non_nullable
-              as DateTime,
-      isLocked: null == isLocked
-          ? _value.isLocked
-          : isLocked // ignore: cast_nullable_to_non_nullable
+      sticky: null == sticky
+          ? _value.sticky
+          : sticky // ignore: cast_nullable_to_non_nullable
+              as bool,
+      locked: null == locked
+          ? _value.locked
+          : locked // ignore: cast_nullable_to_non_nullable
+              as bool,
+      hidden: null == hidden
+          ? _value.hidden
+          : hidden // ignore: cast_nullable_to_non_nullable
               as bool,
       categoryId: null == categoryId
           ? _value.categoryId
@@ -125,11 +160,16 @@ abstract class _$$TopicImplCopyWith<$Res> implements $TopicCopyWith<$Res> {
   $Res call(
       {int id,
       int creatorId,
+      String creator,
+      DateTime createdAt,
+      int updaterId,
+      String updater,
+      DateTime updatedAt,
       String title,
       int responseCount,
-      DateTime createdAt,
-      DateTime updatedAt,
-      bool isLocked,
+      bool sticky,
+      bool locked,
+      bool hidden,
       int categoryId});
 }
 
@@ -148,11 +188,16 @@ class __$$TopicImplCopyWithImpl<$Res>
   $Res call({
     Object? id = null,
     Object? creatorId = null,
+    Object? creator = null,
+    Object? createdAt = null,
+    Object? updaterId = null,
+    Object? updater = null,
+    Object? updatedAt = null,
     Object? title = null,
     Object? responseCount = null,
-    Object? createdAt = null,
-    Object? updatedAt = null,
-    Object? isLocked = null,
+    Object? sticky = null,
+    Object? locked = null,
+    Object? hidden = null,
     Object? categoryId = null,
   }) {
     return _then(_$TopicImpl(
@@ -164,6 +209,26 @@ class __$$TopicImplCopyWithImpl<$Res>
           ? _value.creatorId
           : creatorId // ignore: cast_nullable_to_non_nullable
               as int,
+      creator: null == creator
+          ? _value.creator
+          : creator // ignore: cast_nullable_to_non_nullable
+              as String,
+      createdAt: null == createdAt
+          ? _value.createdAt
+          : createdAt // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      updaterId: null == updaterId
+          ? _value.updaterId
+          : updaterId // ignore: cast_nullable_to_non_nullable
+              as int,
+      updater: null == updater
+          ? _value.updater
+          : updater // ignore: cast_nullable_to_non_nullable
+              as String,
+      updatedAt: null == updatedAt
+          ? _value.updatedAt
+          : updatedAt // ignore: cast_nullable_to_non_nullable
+              as DateTime,
       title: null == title
           ? _value.title
           : title // ignore: cast_nullable_to_non_nullable
@@ -172,17 +237,17 @@ class __$$TopicImplCopyWithImpl<$Res>
           ? _value.responseCount
           : responseCount // ignore: cast_nullable_to_non_nullable
               as int,
-      createdAt: null == createdAt
-          ? _value.createdAt
-          : createdAt // ignore: cast_nullable_to_non_nullable
-              as DateTime,
-      updatedAt: null == updatedAt
-          ? _value.updatedAt
-          : updatedAt // ignore: cast_nullable_to_non_nullable
-              as DateTime,
-      isLocked: null == isLocked
-          ? _value.isLocked
-          : isLocked // ignore: cast_nullable_to_non_nullable
+      sticky: null == sticky
+          ? _value.sticky
+          : sticky // ignore: cast_nullable_to_non_nullable
+              as bool,
+      locked: null == locked
+          ? _value.locked
+          : locked // ignore: cast_nullable_to_non_nullable
+              as bool,
+      hidden: null == hidden
+          ? _value.hidden
+          : hidden // ignore: cast_nullable_to_non_nullable
               as bool,
       categoryId: null == categoryId
           ? _value.categoryId
@@ -198,11 +263,16 @@ class _$TopicImpl implements _Topic {
   const _$TopicImpl(
       {required this.id,
       required this.creatorId,
+      required this.creator,
+      required this.createdAt,
+      required this.updaterId,
+      required this.updater,
+      required this.updatedAt,
       required this.title,
       required this.responseCount,
-      required this.createdAt,
-      required this.updatedAt,
-      required this.isLocked,
+      required this.sticky,
+      required this.locked,
+      required this.hidden,
       required this.categoryId});
 
   factory _$TopicImpl.fromJson(Map<String, dynamic> json) =>
@@ -213,21 +283,31 @@ class _$TopicImpl implements _Topic {
   @override
   final int creatorId;
   @override
+  final String creator;
+  @override
+  final DateTime createdAt;
+  @override
+  final int updaterId;
+  @override
+  final String updater;
+  @override
+  final DateTime updatedAt;
+  @override
   final String title;
   @override
   final int responseCount;
   @override
-  final DateTime createdAt;
+  final bool sticky;
   @override
-  final DateTime updatedAt;
+  final bool locked;
   @override
-  final bool isLocked;
+  final bool hidden;
   @override
   final int categoryId;
 
   @override
   String toString() {
-    return 'Topic(id: $id, creatorId: $creatorId, title: $title, responseCount: $responseCount, createdAt: $createdAt, updatedAt: $updatedAt, isLocked: $isLocked, categoryId: $categoryId)';
+    return 'Topic(id: $id, creatorId: $creatorId, creator: $creator, createdAt: $createdAt, updaterId: $updaterId, updater: $updater, updatedAt: $updatedAt, title: $title, responseCount: $responseCount, sticky: $sticky, locked: $locked, hidden: $hidden, categoryId: $categoryId)';
   }
 
   @override
@@ -238,23 +318,41 @@ class _$TopicImpl implements _Topic {
             (identical(other.id, id) || other.id == id) &&
             (identical(other.creatorId, creatorId) ||
                 other.creatorId == creatorId) &&
+            (identical(other.creator, creator) || other.creator == creator) &&
+            (identical(other.createdAt, createdAt) ||
+                other.createdAt == createdAt) &&
+            (identical(other.updaterId, updaterId) ||
+                other.updaterId == updaterId) &&
+            (identical(other.updater, updater) || other.updater == updater) &&
+            (identical(other.updatedAt, updatedAt) ||
+                other.updatedAt == updatedAt) &&
             (identical(other.title, title) || other.title == title) &&
             (identical(other.responseCount, responseCount) ||
                 other.responseCount == responseCount) &&
-            (identical(other.createdAt, createdAt) ||
-                other.createdAt == createdAt) &&
-            (identical(other.updatedAt, updatedAt) ||
-                other.updatedAt == updatedAt) &&
-            (identical(other.isLocked, isLocked) ||
-                other.isLocked == isLocked) &&
+            (identical(other.sticky, sticky) || other.sticky == sticky) &&
+            (identical(other.locked, locked) || other.locked == locked) &&
+            (identical(other.hidden, hidden) || other.hidden == hidden) &&
             (identical(other.categoryId, categoryId) ||
                 other.categoryId == categoryId));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, id, creatorId, title,
-      responseCount, createdAt, updatedAt, isLocked, categoryId);
+  int get hashCode => Object.hash(
+      runtimeType,
+      id,
+      creatorId,
+      creator,
+      createdAt,
+      updaterId,
+      updater,
+      updatedAt,
+      title,
+      responseCount,
+      sticky,
+      locked,
+      hidden,
+      categoryId);
 
   /// Create a copy of Topic
   /// with the given fields replaced by the non-null parameter values.
@@ -276,11 +374,16 @@ abstract class _Topic implements Topic {
   const factory _Topic(
       {required final int id,
       required final int creatorId,
+      required final String creator,
+      required final DateTime createdAt,
+      required final int updaterId,
+      required final String updater,
+      required final DateTime updatedAt,
       required final String title,
       required final int responseCount,
-      required final DateTime createdAt,
-      required final DateTime updatedAt,
-      required final bool isLocked,
+      required final bool sticky,
+      required final bool locked,
+      required final bool hidden,
       required final int categoryId}) = _$TopicImpl;
 
   factory _Topic.fromJson(Map<String, dynamic> json) = _$TopicImpl.fromJson;
@@ -290,15 +393,25 @@ abstract class _Topic implements Topic {
   @override
   int get creatorId;
   @override
+  String get creator;
+  @override
+  DateTime get createdAt;
+  @override
+  int get updaterId;
+  @override
+  String get updater;
+  @override
+  DateTime get updatedAt;
+  @override
   String get title;
   @override
   int get responseCount;
   @override
-  DateTime get createdAt;
+  bool get sticky;
   @override
-  DateTime get updatedAt;
+  bool get locked;
   @override
-  bool get isLocked;
+  bool get hidden;
   @override
   int get categoryId;
 
