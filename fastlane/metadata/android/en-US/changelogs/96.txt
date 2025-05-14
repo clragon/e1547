@@ -1,0 +1,6 @@
+### Added
+- Forum post reading
+- better blacklist performance
+
+### Fixed
+- Loading posts
