@@ -1,30 +1,67 @@
 import 'package:deep_pick/deep_pick.dart';
 import 'package:dio/dio.dart';
+import 'package:e1547/account/account.dart';
 import 'package:e1547/identity/identity.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/traits/traits.dart';
-import 'package:e1547/user/user.dart';
 import 'package:flutter/foundation.dart';
 
-class E621AccountService extends AccountService {
-  E621AccountService({
-    required Dio dio,
+class AccountService {
+  AccountService({
+    required this.dio,
     required this.identity,
     required this.traits,
-    required this.postsClient,
-  }) : _dio = dio;
+    required this.postsService,
+  });
 
-  final Dio _dio;
+  final Dio dio;
   final Identity identity;
   final ValueNotifier<Traits> traits;
-  final PostService postsClient;
+  final PostService postsService;
 
-  @override
-  Future<Account?> get({bool? force, CancelToken? cancelToken}) async {
+  Future<void> available() => dio.get('');
+
+  Future<void> push({
+    required Traits traits,
+    CancelToken? cancelToken,
+  }) async {
+    Traits previous = this.traits.value;
+    this.traits.value = traits;
+    if (identity.username == null) return;
+    try {
+      if (!listEquals(previous.denylist, traits.denylist)) {
+        Map<String, dynamic> body = {
+          'user[blacklisted_tags]': traits.denylist.join('\n'),
+        };
+
+        await dio.put(
+          '/users/${identity.username}.json',
+          data: FormData.fromMap(body),
+          cancelToken: cancelToken,
+        );
+      }
+    } on DioException {
+      this.traits.value = this.traits.value.copyWith(
+            denylist: previous.denylist,
+          );
+      rethrow;
+    }
+  }
+
+  Future<void> pull({
+    bool? force,
+    CancelToken? cancelToken,
+  }) =>
+      get(force: force, cancelToken: cancelToken);
+
+  Future<Account?> get({
+    bool? force,
+    CancelToken? cancelToken,
+  }) async {
     if (identity.username == null) return null;
 
-    Account result = await _dio
+    Account result = await dio
         .get(
           '/users/${identity.username}.json',
           options: ClientCacheConfig(
@@ -40,7 +77,7 @@ class E621AccountService extends AccountService {
 
     if (result.avatarId != null) {
       // TODO: this shouldnt be here
-      avatar = await postsClient.get(
+      avatar = await postsService.get(
         id: result.avatarId!,
         force: force,
         cancelToken: cancelToken,
@@ -51,6 +88,7 @@ class E621AccountService extends AccountService {
       // TODO: also store "id"
       denylist: result.blacklistedTags?.split('\n').trim() ?? [],
       // TODO: also store "perPage"
+      // TODO: this shouldn't be file but sample
       avatar: avatar?.file,
     );
 

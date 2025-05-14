@@ -24,7 +24,7 @@ class DenyListEditor extends StatelessWidget {
         tags = tags.trim();
         tags.removeWhere((tag) => tag.isEmpty);
         try {
-          await client.bridge.push(
+          await client.accounts.push(
             traits: client.traits.value.copyWith(denylist: tags),
           );
         } on ClientException {

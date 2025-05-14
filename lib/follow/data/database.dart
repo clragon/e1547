@@ -5,9 +5,6 @@ import 'package:e1547/follow/follow.dart';
 import 'package:e1547/identity/data/database.dart';
 import 'package:e1547/interface/interface.dart';
 
-// ignore: always_use_package_imports
-import 'database.drift.dart';
-
 @UseRowClass(Follow, generateInsertable: true)
 class FollowsTable extends Table {
   IntColumn get id => integer().autoIncrement()();

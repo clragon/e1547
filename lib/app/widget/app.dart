@@ -1,5 +1,5 @@
+import 'package:e1547/account/account.dart';
 import 'package:e1547/app/app.dart';
-import 'package:e1547/client/client.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/logs/logs.dart';
 import 'package:e1547/settings/settings.dart';
@@ -70,7 +70,7 @@ class App extends StatelessWidget {
                             child: LoadingCore(
                               child: ErrorNotifier(
                                 navigatorKey: navigatorKey,
-                                child: BridgeConnector(
+                                child: AccountConnector(
                                   navigatorKey: navigatorKey,
                                   child: AppLinkHandler(
                                     navigatorKey: navigatorKey,

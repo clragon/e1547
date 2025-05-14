@@ -1,6 +1,5 @@
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
-import 'package:e1547/post/widget/fullscreen/frame.dart';
 import 'package:flutter/material.dart';
 import 'package:photo_view/photo_view.dart';
 

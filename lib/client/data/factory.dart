@@ -1,16 +1,8 @@
 import 'package:e1547/app/app.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/identity/identity.dart';
-import 'package:e1547/integrations/integrations.dart';
 import 'package:e1547/traits/traits.dart';
 import 'package:flutter/foundation.dart';
-
-enum ClientType {
-  e621,
-  danbooru,
-  gelbooru,
-  moebooru,
-}
 
 class ClientConfig {
   ClientConfig({
@@ -28,7 +20,7 @@ const String _e621Host = 'https://e621.net';
 const String _e926Host = 'https://e926.net';
 
 class ClientFactory {
-  Client create(ClientConfig config) => E621Client(
+  Client create(ClientConfig config) => Client(
         identity: config.identity,
         traits: config.traits,
         storage: config.storage,
@@ -71,13 +63,6 @@ class ClientFactory {
   String? unsafeHostUrl(String host) {
     return switch (normalizeHostUrl(host)) {
       _e926Host => _e621Host,
-      _ => null,
-    };
-  }
-
-  ClientType? typeFromUrl(String url) {
-    return switch (normalizeHostUrl(url)) {
-      _e621Host || _e926Host => ClientType.e621,
       _ => null,
     };
   }

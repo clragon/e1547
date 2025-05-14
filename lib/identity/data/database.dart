@@ -4,9 +4,6 @@ import 'package:drift/drift.dart';
 import 'package:e1547/identity/identity.dart';
 import 'package:e1547/interface/interface.dart';
 
-// ignore: always_use_package_imports
-import 'database.drift.dart';
-
 class NullToEmptyStringSqlConverter extends TypeConverter<String?, String> {
   const NullToEmptyStringSqlConverter();
 

@@ -136,7 +136,7 @@ class TagListActions extends StatelessWidget {
                           denied ? const Text('Unblock') : const Text('Block'),
                       onTap: () {
                         if (denied) {
-                          client.bridge.push(
+                          client.accounts.push(
                             traits: traits.copyWith(
                               denylist: traits.denylist
                                   .whereNot((element) => element == tag)
@@ -147,7 +147,7 @@ class TagListActions extends StatelessWidget {
                           if (hasFollow) {
                             client.follows.delete(follow.id);
                           }
-                          client.bridge.push(
+                          client.accounts.push(
                             traits: traits.copyWith(
                               denylist: [...traits.denylist, tag],
                             ),

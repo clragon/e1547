@@ -33,3 +33,7 @@ extension QueryMapHandling on QueryMap {
     }
   }
 }
+
+extension MappableListExtension<K, V> on Iterable<MapEntry<K, V>> {
+  Map<K, V> toMap() => Map.fromEntries(this);
+}

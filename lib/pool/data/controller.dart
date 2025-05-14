@@ -104,7 +104,7 @@ class PoolPostController extends PostController {
 
   @override
   @protected
-  Future<List<Post>> fetch(int page, bool force) async => client.pools.byPool(
+  Future<List<Post>> fetch(int page, bool force) async => client.posts.byPool(
         id: id,
         page: page,
         orderByOldest: orderPools,

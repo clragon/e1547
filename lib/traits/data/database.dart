@@ -3,9 +3,6 @@ import 'package:e1547/identity/identity.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/traits/traits.dart';
 
-// ignore: always_use_package_imports
-import 'database.drift.dart';
-
 @UseRowClass(Traits, generateInsertable: true)
 class TraitsTable extends Table {
   IntColumn get id => integer().references(IdentitiesTable, #id,

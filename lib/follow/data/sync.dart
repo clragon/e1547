@@ -5,7 +5,6 @@ import 'package:async/async.dart';
 import 'package:collection/collection.dart';
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/identity/identity.dart';
-import 'package:e1547/integrations/disk/follow.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/logs/logs.dart';
 import 'package:e1547/pool/data/service.dart';
@@ -15,35 +14,8 @@ import 'package:e1547/traits/traits.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:rxdart/rxdart.dart';
 
-class E621FollowService extends DiskFollowService {
-  E621FollowService({
-    required super.database,
-    required super.identity,
-    required this.traits,
-    required this.postsClient,
-    this.poolsClient,
-    this.tagsClient,
-  });
-
-  final ValueNotifier<Traits> traits;
-  final PostService postsClient;
-  final PoolService? poolsClient;
-  final TagService? tagsClient;
-
-  @override
-  FollowSync createSync({bool? force}) => E621FollowSync(
-        repository: repository,
-        identity: identity,
-        traits: traits,
-        postsClient: postsClient,
-        poolsClient: poolsClient,
-        tagsClient: tagsClient,
-        force: force,
-      );
-}
-
-class E621FollowSync implements FollowSync {
-  E621FollowSync({
+class FollowSync {
+  FollowSync({
     required this.repository,
     required this.identity,
     required this.traits,
@@ -68,26 +40,20 @@ class E621FollowSync implements FollowSync {
 
   CancelableOperation<void>? _operation;
 
-  @override
   bool get running => _operation != null;
 
-  @override
   bool get completed => _operation?.isCompleted ?? false;
 
-  @override
   bool get cancelled => _operation?.isCanceled ?? false;
 
-  @override
   void cancel() {
     logger.fine('Sync cancelled!');
     _operation?.cancel();
   }
 
-  @override
   Object? get error => _error;
   Object? _error;
 
-  @override
   Stream<double> get progress =>
       _remaining.stream.map((e) => _total == null ? 0 : e / _total!);
 
@@ -119,7 +85,6 @@ class E621FollowSync implements FollowSync {
     _previousTags = tags;
   }
 
-  @override
   Future<void> run() async {
     _operation ??= CancelableOperation.fromFuture(_run());
     return _operation!.value;

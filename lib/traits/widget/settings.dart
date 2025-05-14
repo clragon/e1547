@@ -9,8 +9,6 @@ class DenyListPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: this shouldnt be using the bridge
-
     Widget buildEditTextField(
       BuildContext context, {
       required String title,
@@ -78,13 +76,13 @@ class DenyListPage extends StatelessWidget {
                             value = value.trim();
                             try {
                               if (value.isEmpty) {
-                                await client.bridge.push(
+                                await client.accounts.push(
                                   traits: traits.copyWith(
                                     denylist: List.of(denylist)..remove(tag),
                                   ),
                                 );
                               } else {
-                                await client.bridge.push(
+                                await client.accounts.push(
                                   traits: traits.copyWith(
                                     denylist: List.of(denylist)
                                       ..[denylist.indexOf(tag)] = value,
@@ -100,7 +98,7 @@ class DenyListPage extends StatelessWidget {
                         ),
                       );
                     },
-                    onDelete: () => client.bridge.push(
+                    onDelete: () => client.accounts.push(
                       traits: traits.copyWith(
                         denylist: denylist..remove(denylist[index]),
                       ),
@@ -128,7 +126,7 @@ class DenyListPage extends StatelessWidget {
                       value = value.trim();
                       if (value.isEmpty) return;
                       try {
-                        await client.bridge.push(
+                        await client.accounts.push(
                           traits: traits.copyWith(
                             denylist: denylist..add(value),
                           ),
@@ -144,7 +142,7 @@ class DenyListPage extends StatelessWidget {
                 ),
                 refresh: (refreshController) async {
                   try {
-                    await client.bridge.pull(force: true);
+                    await client.accounts.pull(force: true);
                     refreshController.refreshCompleted();
                   } on ClientException {
                     refreshController.refreshFailed();
