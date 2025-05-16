@@ -541,20 +541,39 @@ class UserInfoTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return IconTheme(
-      data: const IconThemeData(color: Colors.grey),
-      child: ListTile(
-        leading: Icon(icon),
-        title: compact ? Text(value) : Text(title),
-        subtitle: compact ? Text(title) : null,
-        trailing:
-            compact
-                ? null
-                : DefaultTextStyle(
-                  style: Theme.of(context).textTheme.titleMedium!,
-                  child: InkWell(onLongPress: onLongPress, child: Text(value)),
-                ),
-        onLongPress: onLongPress,
+    final titleStyle = Theme.of(context).textTheme.bodyMedium!.copyWith(
+      color: Theme.of(context).textTheme.bodySmall!.color,
+    );
+    final valueStyle = Theme.of(context).textTheme.titleMedium;
+
+    return InkWell(
+      onLongPress: onLongPress,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: Row(
+          children: [
+            Icon(icon),
+            const SizedBox(width: 16),
+            Expanded(
+              child:
+                  compact
+                      ? Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(title, style: titleStyle),
+                          Text(value, style: valueStyle),
+                        ],
+                      )
+                      : Row(
+                        children: [
+                          Expanded(child: Text(title, style: valueStyle)),
+                          const SizedBox(height: 4),
+                          Text(value, style: valueStyle),
+                        ],
+                      ),
+            ),
+          ],
+        ),
       ),
     );
   }
