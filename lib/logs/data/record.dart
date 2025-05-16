@@ -53,22 +53,21 @@ class LogString {
     List<RegExpMatch> matches = fullRegex.allMatches(value).toList();
     for (int i = 0; i < matches.length; i++) {
       RegExpMatch match = matches[i];
-      DateTime time =
-          logStringDateFormat.parse(match.namedGroup('time')!.trim());
+      DateTime time = logStringDateFormat.parse(
+        match.namedGroup('time')!.trim(),
+      );
       Level level = Level.LEVELS.singleWhere(
-          (e) => e.name == match.namedGroup('level')!.trim().toUpperCase());
+        (e) => e.name == match.namedGroup('level')!.trim().toUpperCase(),
+      );
       String loggerName = match.namedGroup('loggerName')!.trim();
       RegExpMatch? next;
       if (i + 1 < matches.length) {
         next = matches[i + 1];
       }
       String body = value.substring(match.end, next?.start).trim();
-      logs.add(LogString(
-        time: time,
-        level: level,
-        logger: loggerName,
-        body: body,
-      ));
+      logs.add(
+        LogString(time: time, level: level, logger: loggerName, body: body),
+      );
     }
     return logs;
   }

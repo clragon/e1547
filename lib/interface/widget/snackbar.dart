@@ -1,12 +1,7 @@
 import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
 
-enum LoadingNotificationStatus {
-  loading,
-  cancelled,
-  failed,
-  done,
-}
+enum LoadingNotificationStatus { loading, cancelled, failed, done }
 
 Future<void> loadingNotification<T>({
   required BuildContext context,
@@ -21,8 +16,9 @@ Future<void> loadingNotification<T>({
 }) async {
   String getStatus(LoadingNotificationStatus status, int progress) {
     return switch (status) {
-      LoadingNotificationStatus.loading => onProgress?.call(items, progress) ??
-          'Item ${progress + 1}/${items.length}',
+      LoadingNotificationStatus.loading =>
+        onProgress?.call(items, progress) ??
+            'Item ${progress + 1}/${items.length}',
       LoadingNotificationStatus.cancelled =>
         onCancel?.call(items, progress) ?? 'Cancelled task',
       LoadingNotificationStatus.failed =>
@@ -36,7 +32,7 @@ Future<void> loadingNotification<T>({
       LoadingNotificationStatus.loading => Icons.download,
       LoadingNotificationStatus.cancelled => Icons.cancel,
       LoadingNotificationStatus.failed => Icons.warning_amber_outlined,
-      LoadingNotificationStatus.done => Icons.check
+      LoadingNotificationStatus.done => Icons.check,
     };
   }
 
@@ -44,13 +40,15 @@ Future<void> loadingNotification<T>({
   final ValueNotifier<int> progress = ValueNotifier<int>(0);
 
   ScaffoldMessengerState messenger = ScaffoldMessenger.of(context);
-  Color? iconColor = (Theme.of(context).snackBarTheme.contentTextStyle ??
-          ThemeData(
-            brightness: Theme.of(context).brightness == Brightness.dark
-                ? Brightness.light
-                : Brightness.dark,
-          ).textTheme.titleMedium)
-      ?.color;
+  Color? iconColor =
+      (Theme.of(context).snackBarTheme.contentTextStyle ??
+              ThemeData(
+                brightness:
+                    Theme.of(context).brightness == Brightness.dark
+                        ? Brightness.light
+                        : Brightness.dark,
+              ).textTheme.titleMedium)
+          ?.color;
 
   messenger.showSnackBar(
     SnackBar(
@@ -97,10 +95,7 @@ Future<void> loadingNotification<T>({
         children: [
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8),
-            child: Icon(
-              getStatusIcon(status),
-              color: iconColor,
-            ),
+            child: Icon(getStatusIcon(status), color: iconColor),
           ),
           Flexible(child: Text(getStatus(status, progress.value))),
         ],
@@ -129,37 +124,35 @@ class LoadingNotification extends StatelessWidget {
   Widget build(BuildContext context) {
     return ValueListenableBuilder<int>(
       valueListenable: progress,
-      builder: (context, value, child) => Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(bottom: 8),
-            child: messageBuilder(context, value),
+      builder:
+          (context, value, child) => Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: messageBuilder(context, value),
+              ),
+              TweenAnimationBuilder<double>(
+                tween: Tween<double>(begin: 0, end: value.toDouble()),
+                duration: animationDuration ?? defaultAnimationDuration,
+                builder: (context, value, child) {
+                  double? indicator = 1 / max;
+                  if (indicator < 0) {
+                    indicator = 1;
+                  }
+                  indicator = indicator * value;
+                  if (indicator == 0) {
+                    indicator = null;
+                  }
+                  return LinearProgressIndicator(
+                    value: indicator,
+                    color: Theme.of(context).colorScheme.secondary,
+                  );
+                },
+              ),
+            ],
           ),
-          TweenAnimationBuilder<double>(
-            tween: Tween<double>(
-              begin: 0,
-              end: value.toDouble(),
-            ),
-            duration: animationDuration ?? defaultAnimationDuration,
-            builder: (context, value, child) {
-              double? indicator = 1 / max;
-              if (indicator < 0) {
-                indicator = 1;
-              }
-              indicator = indicator * value;
-              if (indicator == 0) {
-                indicator = null;
-              }
-              return LinearProgressIndicator(
-                value: indicator,
-                color: Theme.of(context).colorScheme.secondary,
-              );
-            },
-          ),
-        ],
-      ),
     );
   }
 }

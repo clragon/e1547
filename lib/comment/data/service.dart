@@ -34,11 +34,7 @@ class CommentService {
     Object body = await dio
         .get(
           '/comments.json',
-          queryParameters: {
-            'page': page,
-            'limit': limit,
-            ...?query,
-          },
+          queryParameters: {'page': page, 'limit': limit, ...?query},
           options: forceOptions(force),
           cancelToken: cancelToken,
         )
@@ -61,23 +57,20 @@ class CommentService {
     bool? ascending,
     bool? force,
     CancelToken? cancelToken,
-  }) =>
-      this.page(
-        page: page,
-        limit: limit,
-        query: {
+  }) => this.page(
+    page: page,
+    limit: limit,
+    query:
+        {
           'group_by': 'comment',
           'search[post_id]': id,
           'search[order]': ascending ?? false ? 'id_asc' : 'id_desc',
         }.toQuery(),
-        force: force,
-        cancelToken: cancelToken,
-      );
+    force: force,
+    cancelToken: cancelToken,
+  );
 
-  Future<void> create({
-    required int postId,
-    required String content,
-  }) async {
+  Future<void> create({required int postId, required String content}) async {
     await dio.cache?.deleteFromPath(
       RegExp(RegExp.escape('/comments.json')),
       queryParams: {'search[post_id]': postId.toString()},
@@ -103,10 +96,7 @@ class CommentService {
     await dio.cache?.deleteFromPath(
       RegExp(RegExp.escape('/comments/$id.json')),
     );
-    Map<String, dynamic> body = {
-      'comment[body]': content,
-      'commit': 'Submit',
-    };
+    Map<String, dynamic> body = {'comment[body]': content, 'commit': 'Submit'};
 
     await dio.patch('/comments/$id.json', data: FormData.fromMap(body));
   }
@@ -118,17 +108,11 @@ class CommentService {
   }) async {
     await dio.post(
       '/comments/$id/votes.json',
-      queryParameters: {
-        'score': upvote ? 1 : -1,
-        'no_unvote': replace,
-      },
+      queryParameters: {'score': upvote ? 1 : -1, 'no_unvote': replace},
     );
   }
 
-  Future<void> report({
-    required int id,
-    required String reason,
-  }) async {
+  Future<void> report({required int id, required String reason}) async {
     await dio.post(
       '/tickets',
       queryParameters: {
@@ -136,29 +120,26 @@ class CommentService {
         'ticket[disp_id]': id,
         'ticket[qtype]': 'comment',
       },
-      options: Options(
-        validateStatus: (status) => status == 302,
-      ),
+      options: Options(validateStatus: (status) => status == 302),
     );
   }
 }
 
 extension E621Comment on Comment {
   static Comment fromJson(dynamic json) => pick(json).letOrThrow(
-        (pick) => Comment(
-          id: pick('id').asIntOrThrow(),
-          postId: pick('post_id').asIntOrThrow(),
-          body: pick('body').asStringOrThrow(),
-          createdAt: pick('created_at').asDateTimeOrThrow(),
-          updatedAt: pick('updated_at').asDateTimeOrThrow(),
-          creatorId: pick('creator_id').asIntOrThrow(),
-          creatorName: pick('creator_name').asStringOrThrow(),
-          vote: VoteInfo(
-            score: pick('score').asIntOrThrow(),
-          ),
-          warning: pick('warning_type').letOrNull(
-              (pick) => WarningType.values.asNameMap()[pick.asString()]!),
-          hidden: pick('is_hidden').asBoolOrThrow(),
-        ),
-      );
+    (pick) => Comment(
+      id: pick('id').asIntOrThrow(),
+      postId: pick('post_id').asIntOrThrow(),
+      body: pick('body').asStringOrThrow(),
+      createdAt: pick('created_at').asDateTimeOrThrow(),
+      updatedAt: pick('updated_at').asDateTimeOrThrow(),
+      creatorId: pick('creator_id').asIntOrThrow(),
+      creatorName: pick('creator_name').asStringOrThrow(),
+      vote: VoteInfo(score: pick('score').asIntOrThrow()),
+      warning: pick(
+        'warning_type',
+      ).letOrNull((pick) => WarningType.values.asNameMap()[pick.asString()]!),
+      hidden: pick('is_hidden').asBoolOrThrow(),
+    ),
+  );
 }

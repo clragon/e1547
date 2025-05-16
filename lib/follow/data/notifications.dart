@@ -24,9 +24,8 @@ Future<void> runFollowUpdates({
     await allFollows.all(types: [FollowType.notify]),
   );
 
-  List<Identity> identities = await IdentityService(
-    database: storage.sqlite,
-  ).all();
+  List<Identity> identities =
+      await IdentityService(database: storage.sqlite).all();
 
   final clientFactory = ClientFactory();
 
@@ -111,8 +110,9 @@ Future<void> updateFollowNotifications({
 
     logger.fine('${follow.tags} has $unseen new posts!');
 
-    NotificationDetails notificationDetails =
-        _createNotificationDetails(thumbnailPath: picture);
+    NotificationDetails notificationDetails = _createNotificationDetails(
+      thumbnailPath: picture,
+    );
 
     String title = follow.name;
     String description = 'has $unseen new posts!';
@@ -125,12 +125,14 @@ Future<void> updateFollowNotifications({
       title,
       description,
       notificationDetails,
-      payload: json.encode(NotificationPayload(
-        identity: identity,
-        type: 'follow',
-        query: {'tags': follow.tags},
-        id: unseen == 1 ? follow.latest : null,
-      )),
+      payload: json.encode(
+        NotificationPayload(
+          identity: identity,
+          type: 'follow',
+          query: {'tags': follow.tags},
+          id: unseen == 1 ? follow.latest : null,
+        ),
+      ),
     );
 
     if (Platform.isAndroid) {
@@ -141,17 +143,17 @@ Future<void> updateFollowNotifications({
           active.where((e) => e.groupKey == followsBackgroundTaskKey).toList();
 
       if (grouped.length > 3) {
-        NotificationDetails notificationDetails =
-            _createNotificationDetails(summary: true);
+        NotificationDetails notificationDetails = _createNotificationDetails(
+          summary: true,
+        );
         await notifications.show(
           followsBackgroundTaskKey.hashCode,
           'New posts!',
           null,
           notificationDetails,
-          payload: json.encode(NotificationPayload(
-            identity: identity,
-            type: 'follow',
-          )),
+          payload: json.encode(
+            NotificationPayload(identity: identity, type: 'follow'),
+          ),
         );
       } else {
         notifications.cancel(followsBackgroundTaskKey.hashCode);
@@ -177,12 +179,13 @@ NotificationDetails _createNotificationDetails({
       channelDescription: 'Notifications for tags you are following',
       largeIcon:
           thumbnailPath != null ? FilePathAndroidBitmap(thumbnailPath) : null,
-      styleInformation: thumbnailPath != null
-          ? BigPictureStyleInformation(
-              FilePathAndroidBitmap(thumbnailPath),
-              hideExpandedLargeIcon: true,
-            )
-          : null,
+      styleInformation:
+          thumbnailPath != null
+              ? BigPictureStyleInformation(
+                FilePathAndroidBitmap(thumbnailPath),
+                hideExpandedLargeIcon: true,
+              )
+              : null,
       groupKey: followsBackgroundTaskKey,
       setAsGroupSummary: summary ?? false,
     ),

@@ -37,24 +37,25 @@ class DenylistTile extends StatelessWidget {
                       color: Theme.of(context).iconTheme.color,
                     ),
                     onSelected: (value) => value?.call(),
-                    itemBuilder: (context) => [
-                      PopupMenuTile(
-                        value: onEdit,
-                        title: 'Edit',
-                        icon: Icons.edit,
-                      ),
-                      PopupMenuTile(
-                        value: onDelete,
-                        title: 'Delete',
-                        icon: Icons.delete,
-                      ),
-                    ],
+                    itemBuilder:
+                        (context) => [
+                          PopupMenuTile(
+                            value: onEdit,
+                            title: 'Edit',
+                            icon: Icons.edit,
+                          ),
+                          PopupMenuTile(
+                            value: onDelete,
+                            title: 'Delete',
+                            icon: Icons.delete,
+                          ),
+                        ],
                   ),
                 ],
               ),
             ],
           ),
-          const Divider()
+          const Divider(),
         ],
       ),
     );

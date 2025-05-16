@@ -28,8 +28,10 @@ class TopicTile extends StatelessWidget {
               children: [
                 Expanded(
                   child: Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -45,9 +47,7 @@ class TopicTile extends StatelessWidget {
                                 TextSpan(
                                   style: Theme.of(context).textTheme.bodySmall,
                                   children: [
-                                    TextSpan(
-                                      text: topic.creator,
-                                    ),
+                                    TextSpan(text: topic.creator),
                                     TextSpan(
                                       text: ' • ',
                                       style: TextStyle(
@@ -55,8 +55,9 @@ class TopicTile extends StatelessWidget {
                                       ),
                                     ),
                                     TextSpan(
-                                      text:
-                                          topic.createdAt.relativeTime(context),
+                                      text: topic.createdAt.relativeTime(
+                                        context,
+                                      ),
                                       style: TextStyle(
                                         color: dimTextColor(context),
                                       ),
@@ -94,9 +95,7 @@ class TopicTile extends StatelessWidget {
                           Dimmed(
                             child: Text(
                               topic.updatedAt.relativeTime(context),
-                              style: const TextStyle(
-                                fontSize: 12,
-                              ),
+                              style: const TextStyle(fontSize: 12),
                             ),
                           ),
                       ],

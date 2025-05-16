@@ -64,7 +64,7 @@ Future<void> registerFollowBackgroundTask(List<Follow> follows) async {
 Future<FlutterLocalNotificationsPlugin> initializeNotifications({
   DidReceiveNotificationResponseCallback? onDidReceiveNotificationResponse,
   DidReceiveBackgroundNotificationResponseCallback?
-      onDidReceiveBackgroundNotificationResponse,
+  onDidReceiveBackgroundNotificationResponse,
 }) async {
   FlutterLocalNotificationsPlugin notifications =
       FlutterLocalNotificationsPlugin();

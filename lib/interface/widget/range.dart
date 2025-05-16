@@ -8,7 +8,7 @@ enum NumberComparison {
   lessThan,
   lessThanOrEqual,
   greaterThan,
-  greaterThanOrEqual
+  greaterThanOrEqual,
 }
 
 /// Specifies a range of numbers.
@@ -21,25 +21,23 @@ enum NumberComparison {
 ///  - `>=value` - A number greater than or equal to the given value.
 ///  - `value..endValue` - A range of numbers between the given values.
 class NumberRange {
-  const NumberRange(
-    this.value, {
-    this.endValue,
-    this.comparison,
-  })  : assert(
-          endValue == null || endValue >= value,
-          'End value cannot be less than start value.',
-        ),
-        assert(
-          comparison == null || endValue == null,
-          'Cannot specify both comparison and end value.',
-        );
+  const NumberRange(this.value, {this.endValue, this.comparison})
+    : assert(
+        endValue == null || endValue >= value,
+        'End value cannot be less than start value.',
+      ),
+      assert(
+        comparison == null || endValue == null,
+        'Cannot specify both comparison and end value.',
+      );
 
   final int value;
   final NumberComparison? comparison;
   final int? endValue;
 
   static RegExp pattern = RegExp(
-      r'^(?<operator>[><]=?)?\s*(?<value>\d+)(?:\.\.(?<endValue>\d+))?$');
+    r'^(?<operator>[><]=?)?\s*(?<value>\d+)(?:\.\.(?<endValue>\d+))?$',
+  );
 
   @override
   String toString() {
@@ -111,23 +109,24 @@ class NumberRange {
 
       switch (operator) {
         case '<=':
-          return NumberRange(value,
-              comparison: NumberComparison.lessThanOrEqual);
+          return NumberRange(
+            value,
+            comparison: NumberComparison.lessThanOrEqual,
+          );
         case '<':
           return NumberRange(value, comparison: NumberComparison.lessThan);
         case '>=':
-          return NumberRange(value,
-              comparison: NumberComparison.greaterThanOrEqual);
+          return NumberRange(
+            value,
+            comparison: NumberComparison.greaterThanOrEqual,
+          );
         case '>':
           return NumberRange(value, comparison: NumberComparison.greaterThan);
         default:
           return NumberRange(value);
       }
     } else {
-      throw FormatException(
-        'Invalid NumberRange format',
-        input,
-      );
+      throw FormatException('Invalid NumberRange format', input);
     }
   }
 
@@ -142,12 +141,8 @@ class NumberRange {
 }
 
 class NumberRangeInputFormatter extends FilteringTextInputFormatter {
-  NumberRangeInputFormatter({
-    this.min,
-    this.max,
-  }) : super.allow(
-          RegExp(r'^([><]=?(\d+)?)|((\d+)\.?\.?(\d+)?)$'),
-        );
+  NumberRangeInputFormatter({this.min, this.max})
+    : super.allow(RegExp(r'^([><]=?(\d+)?)|((\d+)\.?\.?(\d+)?)$'));
 
   final double? min;
   final double? max;
@@ -241,9 +236,11 @@ class RangeDialog extends StatefulWidget {
 }
 
 class _RangeDialogState extends State<RangeDialog> {
-  late final TextEditingController controller =
-      TextEditingController(text: widget.value?.toString() ?? '0');
-  late RangeDialogMode mode = widget.initialMode ??
+  late final TextEditingController controller = TextEditingController(
+    text: widget.value?.toString() ?? '0',
+  );
+  late RangeDialogMode mode =
+      widget.initialMode ??
       RangeDialogMode.fromComparison(widget.value?.comparison);
   String? errorMessage;
 
@@ -310,20 +307,23 @@ class _RangeDialogState extends State<RangeDialog> {
   }
 
   String getTextValue() {
-    NumberRange currentRange = NumberRange.tryParse(controller.text) ??
+    NumberRange currentRange =
+        NumberRange.tryParse(controller.text) ??
         NumberRange(widget.min.toInt());
 
     switch (mode) {
       case RangeDialogMode.exact:
         return NumberRange(currentRange.value).toString();
       case RangeDialogMode.smallerOrEqual:
-        return NumberRange(currentRange.value,
-                comparison: NumberComparison.lessThanOrEqual)
-            .toString();
+        return NumberRange(
+          currentRange.value,
+          comparison: NumberComparison.lessThanOrEqual,
+        ).toString();
       case RangeDialogMode.greaterOrEqual:
-        return NumberRange(currentRange.value,
-                comparison: NumberComparison.greaterThanOrEqual)
-            .toString();
+        return NumberRange(
+          currentRange.value,
+          comparison: NumberComparison.greaterThanOrEqual,
+        ).toString();
       case RangeDialogMode.fixedRange:
         int endValue = currentRange.endValue ?? widget.max.toInt();
         return NumberRange(currentRange.value, endValue: endValue).toString();
@@ -338,12 +338,16 @@ class _RangeDialogState extends State<RangeDialog> {
         updatedRange = NumberRange(value.toInt());
         break;
       case RangeDialogMode.smallerOrEqual:
-        updatedRange = NumberRange(value.toInt(),
-            comparison: NumberComparison.lessThanOrEqual);
+        updatedRange = NumberRange(
+          value.toInt(),
+          comparison: NumberComparison.lessThanOrEqual,
+        );
         break;
       case RangeDialogMode.greaterOrEqual:
-        updatedRange = NumberRange(value.toInt(),
-            comparison: NumberComparison.greaterThanOrEqual);
+        updatedRange = NumberRange(
+          value.toInt(),
+          comparison: NumberComparison.greaterThanOrEqual,
+        );
         break;
       case RangeDialogMode.fixedRange:
         updatedRange = NumberRange(value.toInt(), endValue: endValue?.toInt());
@@ -355,13 +359,8 @@ class _RangeDialogState extends State<RangeDialog> {
 
   Widget _buildComparisonIcon(IconData icon) {
     return ConstrainedBox(
-      constraints: const BoxConstraints(
-        minWidth: 40,
-        minHeight: 40,
-      ),
-      child: Center(
-        child: FaIcon(icon),
-      ),
+      constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
+      child: Center(child: FaIcon(icon)),
     );
   }
 
@@ -371,101 +370,113 @@ class _RangeDialogState extends State<RangeDialog> {
       title: widget.title,
       content: AnimatedBuilder(
         animation: controller,
-        builder: (context, child) => Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(bottom: 20),
-              child: Column(
-                children: [
-                  TextField(
-                    keyboardType:
-                        const TextInputType.numberWithOptions(decimal: true),
-                    style: Theme.of(context).textTheme.displaySmall,
-                    textAlign: TextAlign.center,
-                    decoration: InputDecoration(
-                      border: InputBorder.none,
-                      errorText: errorMessage,
-                    ),
-                    controller: controller,
-                    onChanged: (value) => setState(() {
-                      errorMessage = null;
-                      mode = getCurrentMode();
-                    }),
-                    onSubmitted: submit,
-                    inputFormatters: [
-                      NumberRangeInputFormatter(
-                        min: widget.min,
-                        max: (widget.enforceMax ?? true) ? widget.max : null,
-                      )
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            Row(
+        builder:
+            (context, child) => Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                if (widget.canChangeMode ?? true)
-                  DropdownButton<RangeDialogMode>(
-                    value: mode,
-                    underline: const SizedBox(),
-                    icon: const SizedBox(),
-                    items: [
-                      DropdownMenuItem(
-                        value: RangeDialogMode.exact,
-                        child: _buildComparisonIcon(FontAwesomeIcons.equals),
-                      ),
-                      DropdownMenuItem(
-                        value: RangeDialogMode.smallerOrEqual,
-                        child: _buildComparisonIcon(
-                            FontAwesomeIcons.lessThanEqual),
-                      ),
-                      DropdownMenuItem(
-                        value: RangeDialogMode.greaterOrEqual,
-                        child: _buildComparisonIcon(
-                            FontAwesomeIcons.greaterThanEqual),
-                      ),
-                      DropdownMenuItem(
-                        value: RangeDialogMode.fixedRange,
-                        child: _buildComparisonIcon(FontAwesomeIcons.leftRight),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 20),
+                  child: Column(
+                    children: [
+                      TextField(
+                        keyboardType: const TextInputType.numberWithOptions(
+                          decimal: true,
+                        ),
+                        style: Theme.of(context).textTheme.displaySmall,
+                        textAlign: TextAlign.center,
+                        decoration: InputDecoration(
+                          border: InputBorder.none,
+                          errorText: errorMessage,
+                        ),
+                        controller: controller,
+                        onChanged:
+                            (value) => setState(() {
+                              errorMessage = null;
+                              mode = getCurrentMode();
+                            }),
+                        onSubmitted: submit,
+                        inputFormatters: [
+                          NumberRangeInputFormatter(
+                            min: widget.min,
+                            max:
+                                (widget.enforceMax ?? true) ? widget.max : null,
+                          ),
+                        ],
                       ),
                     ],
-                    onChanged: (newMode) {
-                      if (newMode != null) {
-                        setState(() {
-                          mode = newMode;
-                          controller.text = getTextValue();
-                        });
-                      }
-                    },
                   ),
-                Expanded(
-                  child: mode == RangeDialogMode.fixedRange
-                      ? RangeSlider(
-                          values: RangeValues(
-                            getSliderValue(),
-                            getSliderEndValue(),
+                ),
+                Row(
+                  children: [
+                    if (widget.canChangeMode ?? true)
+                      DropdownButton<RangeDialogMode>(
+                        value: mode,
+                        underline: const SizedBox(),
+                        icon: const SizedBox(),
+                        items: [
+                          DropdownMenuItem(
+                            value: RangeDialogMode.exact,
+                            child: _buildComparisonIcon(
+                              FontAwesomeIcons.equals,
+                            ),
                           ),
-                          min: widget.min,
-                          max: widget.max,
-                          divisions: widget.division,
-                          onChanged: (values) => setTextByValue(
-                            values.start,
-                            values.end,
+                          DropdownMenuItem(
+                            value: RangeDialogMode.smallerOrEqual,
+                            child: _buildComparisonIcon(
+                              FontAwesomeIcons.lessThanEqual,
+                            ),
                           ),
-                        )
-                      : Slider(
-                          value: getSliderValue(),
-                          min: widget.min,
-                          max: widget.max,
-                          divisions: widget.division,
-                          onChanged: (value) => setTextByValue(value),
-                        ),
-                )
+                          DropdownMenuItem(
+                            value: RangeDialogMode.greaterOrEqual,
+                            child: _buildComparisonIcon(
+                              FontAwesomeIcons.greaterThanEqual,
+                            ),
+                          ),
+                          DropdownMenuItem(
+                            value: RangeDialogMode.fixedRange,
+                            child: _buildComparisonIcon(
+                              FontAwesomeIcons.leftRight,
+                            ),
+                          ),
+                        ],
+                        onChanged: (newMode) {
+                          if (newMode != null) {
+                            setState(() {
+                              mode = newMode;
+                              controller.text = getTextValue();
+                            });
+                          }
+                        },
+                      ),
+                    Expanded(
+                      child:
+                          mode == RangeDialogMode.fixedRange
+                              ? RangeSlider(
+                                values: RangeValues(
+                                  getSliderValue(),
+                                  getSliderEndValue(),
+                                ),
+                                min: widget.min,
+                                max: widget.max,
+                                divisions: widget.division,
+                                onChanged:
+                                    (values) => setTextByValue(
+                                      values.start,
+                                      values.end,
+                                    ),
+                              )
+                              : Slider(
+                                value: getSliderValue(),
+                                min: widget.min,
+                                max: widget.max,
+                                divisions: widget.division,
+                                onChanged: (value) => setTextByValue(value),
+                              ),
+                    ),
+                  ],
+                ),
               ],
             ),
-          ],
-        ),
       ),
       actions: [
         TextButton(

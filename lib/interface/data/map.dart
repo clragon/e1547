@@ -6,19 +6,16 @@ extension QueryMapping on Map<String, dynamic> {
   /// Null values are omitted.
   /// All other values are converted to strings.
   QueryMap toQuery() => Map.fromEntries(
-        entries.where((entry) => entry.value != null).map(
-              (entry) => MapEntry(
-                entry.key,
-                _stringify(entry.value),
-              ),
-            ),
-      );
+    entries
+        .where((entry) => entry.value != null)
+        .map((entry) => MapEntry(entry.key, _stringify(entry.value))),
+  );
 
   String _stringify(Object? value) => switch (value) {
-        List e => e.map(_stringify).join(','),
-        Enum e => e.name,
-        _ => value.toString(),
-      };
+    List e => e.map(_stringify).join(','),
+    Enum e => e.name,
+    _ => value.toString(),
+  };
 }
 
 extension QueryMapHandling on QueryMap {

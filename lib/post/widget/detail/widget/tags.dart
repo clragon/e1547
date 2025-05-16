@@ -11,13 +11,16 @@ class TagDisplay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Map<String, List<String>> tags =
-        context.select<PostEditingController?, Map<String, List<String>>>(
-            (value) => value?.value?.tags ?? post.tags);
+    Map<String, List<String>> tags = context
+        .select<PostEditingController?, Map<String, List<String>>>(
+          (value) => value?.value?.tags ?? post.tags,
+        );
     bool editing = context.select<PostEditingController?, bool>(
-        (value) => value?.editing ?? false);
+      (value) => value?.editing ?? false,
+    );
     bool canEdit = context.select<PostEditingController?, bool>(
-        (value) => value?.canEdit ?? false);
+      (value) => value?.canEdit ?? false,
+    );
     PostEditingController? editingController =
         context.watch<PostEditingController?>();
 
@@ -28,33 +31,35 @@ class TagDisplay extends StatelessWidget {
             (tag) => TagCard(
               tag: tag,
               category: category,
-              onRemove: editing && canEdit
-                  ? () {
-                      Map<String, List<String>> edited =
-                          Map.from(editingController!.value!.tags);
-                      edited[category]!.remove(tag);
-                      editingController.value =
-                          editingController.value!.copyWith(
-                        tags: edited,
-                      );
-                    }
-                  : null,
+              onRemove:
+                  editing && canEdit
+                      ? () {
+                        Map<String, List<String>> edited = Map.from(
+                          editingController!.value!.tags,
+                        );
+                        edited[category]!.remove(tag);
+                        editingController.value = editingController.value!
+                            .copyWith(tags: edited);
+                      }
+                      : null,
             ),
           ),
           if (category != 'invalid')
             CrossFade.builder(
               showChild: editing,
-              builder: (context) => TagAddCard(
-                category: category,
-                submit: canEdit
-                    ? (value) => onPostTagsEdit(
-                          context,
-                          editingController!,
-                          value,
-                          category,
-                        )
-                    : null,
-              ),
+              builder:
+                  (context) => TagAddCard(
+                    category: category,
+                    submit:
+                        canEdit
+                            ? (value) => onPostTagsEdit(
+                              context,
+                              editingController!,
+                              value,
+                              category,
+                            )
+                            : null,
+                  ),
             ),
         ],
       );
@@ -68,9 +73,7 @@ class TagDisplay extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
             child: Text(
               '${category[0].toUpperCase()}${category.substring(1)}',
-              style: const TextStyle(
-                fontSize: 16,
-              ),
+              style: const TextStyle(fontSize: 16),
             ),
           ),
           Row(children: [Expanded(child: tagCategory(category))]),
@@ -81,12 +84,15 @@ class TagDisplay extends StatelessWidget {
 
     return Column(
       mainAxisSize: MainAxisSize.min,
-      children: post.tags.keys
-          .where((category) =>
-              (tags[category]?.isNotEmpty ?? false) ||
-              (editing && category != 'invalid'))
-          .map((category) => categoryTile(category))
-          .toList(),
+      children:
+          post.tags.keys
+              .where(
+                (category) =>
+                    (tags[category]?.isNotEmpty ?? false) ||
+                    (editing && category != 'invalid'),
+              )
+              .map((category) => categoryTile(category))
+              .toList(),
     );
   }
 }

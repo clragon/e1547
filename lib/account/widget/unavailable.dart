@@ -13,9 +13,7 @@ class HostUnvailablePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: TransparentAppBar(
-        child: AppBar(leading: const CloseButton()),
-      ),
+      appBar: TransparentAppBar(child: AppBar(leading: const CloseButton())),
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(32),
@@ -40,11 +38,12 @@ class HostUnvailablePage extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
                 TextButton(
-                  onPressed: () => Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(
-                      builder: (context) => const CookieCapturePage(),
-                    ),
-                  ),
+                  onPressed:
+                      () => Navigator.of(context).pushReplacement(
+                        MaterialPageRoute(
+                          builder: (context) => const CookieCapturePage(),
+                        ),
+                      ),
                   child: const Text('Resolve'),
                 ),
               ] else

@@ -57,19 +57,20 @@ class FollowSync {
   Stream<double> get progress =>
       _remaining.stream.map((e) => _total == null ? 0 : e / _total!);
 
-  late final StreamController<int> _remaining = BehaviorSubject()
-    ..stream.listen(
-      (value) => logger.fine('Syncing ${(_total ?? 0) - value} follows...'),
-      onError: (exception, stacktrace) {
-        _error = exception;
-        if (exception is Error) {
-          logger.shout('Sync failed!', exception, stacktrace);
-        } else {
-          logger.warning('Sync failed!', exception, stacktrace);
-        }
-      },
-      onDone: () => logger.info('Sync finished!'),
-    );
+  late final StreamController<int> _remaining =
+      BehaviorSubject()
+        ..stream.listen(
+          (value) => logger.fine('Syncing ${(_total ?? 0) - value} follows...'),
+          onError: (exception, stacktrace) {
+            _error = exception;
+            if (exception is Error) {
+              logger.shout('Sync failed!', exception, stacktrace);
+            } else {
+              logger.warning('Sync failed!', exception, stacktrace);
+            }
+          },
+          onDone: () => logger.info('Sync finished!'),
+        );
 
   int? _total;
 
@@ -78,10 +79,7 @@ class FollowSync {
   void _assertNoDuplicates(List<String> tags) {
     bool tagsAreDifferent =
         !const DeepCollectionEquality().equals(_previousTags, tags);
-    assert(
-      tagsAreDifferent,
-      'Sync tried refreshing same follows twice!',
-    );
+    assert(tagsAreDifferent, 'Sync tried refreshing same follows twice!');
     _previousTags = tags;
   }
 
@@ -103,9 +101,7 @@ class FollowSync {
             types: [FollowType.notify, FollowType.update],
           );
           for (final follow in follows) {
-            await repository.replace(follow.copyWith(
-              updated: null,
-            ));
+            await repository.replace(follow.copyWith(updated: null));
           }
         });
       }
@@ -113,16 +109,20 @@ class FollowSync {
       while (!cancelled) {
         List<Follow> follows = [];
 
-        follows.addAll(await repository.outdated(
-          minAge: refreshRate,
-          types: [FollowType.notify, FollowType.update],
-          identity: identity.id,
-        ));
+        follows.addAll(
+          await repository.outdated(
+            minAge: refreshRate,
+            types: [FollowType.notify, FollowType.update],
+            identity: identity.id,
+          ),
+        );
 
-        follows.addAll(await repository.fresh(
-          types: [FollowType.bookmark],
-          identity: identity.id,
-        ));
+        follows.addAll(
+          await repository.fresh(
+            types: [FollowType.bookmark],
+            identity: identity.id,
+          ),
+        );
 
         _total ??= follows.length;
         _remaining.add(_total! - follows.length);
@@ -160,12 +160,9 @@ class FollowSync {
     _assertNoDuplicates(tags);
 
     int limit = follows.length * refreshAmount;
-    List<Post> allPosts = await rateLimit(postsClient.byTags(
-      tags: tags,
-      page: 1,
-      limit: limit,
-      force: force,
-    ));
+    List<Post> allPosts = await rateLimit(
+      postsClient.byTags(tags: tags, page: 1, limit: limit, force: force),
+    );
 
     Map<Follow, List<Post>> assign(List<Follow> follows, List<Post> posts) {
       Map<Follow, List<Post>> result = {};
@@ -173,10 +170,7 @@ class FollowSync {
         result.putIfAbsent(follow, () => []);
         for (final post in posts) {
           if (post.hasTag(follow.alias ?? follow.tags)) {
-            result.update(
-              follow,
-              (value) => value..add(post),
-            );
+            result.update(follow, (value) => value..add(post));
           }
         }
       }
@@ -202,9 +196,9 @@ class FollowSync {
         Follow follow = update.key;
         List<Post> posts = update.value;
         if (posts.isNotEmpty) continue;
-        String? alias = await rateLimit(tagsClient!.aliases(
-          query: {'search[antecedent_name]': follow.tags},
-        ));
+        String? alias = await rateLimit(
+          tagsClient!.aliases(query: {'search[antecedent_name]': follow.tags}),
+        );
         if (alias != follow.alias) {
           Follow updated = follow.copyWith(alias: alias);
           updates[updated] = updates.remove(follow)!;
@@ -234,12 +228,14 @@ class FollowSync {
     Follow follow = multiples.first;
     _assertNoDuplicates([follow.tags]);
 
-    List<Post> posts = await rateLimit(postsClient.page(
-      query: {'tags': follow.tags},
-      limit: refreshAmount,
-      ordered: false,
-      force: force,
-    ));
+    List<Post> posts = await rateLimit(
+      postsClient.page(
+        query: {'tags': follow.tags},
+        limit: refreshAmount,
+        ordered: false,
+        force: force,
+      ),
+    );
     posts.removeWhere((e) => e.isDeniedBy(traits.value.denylist));
     follow = follow.withUnseen(posts);
     if (poolsClient != null) {
@@ -254,9 +250,7 @@ class FollowSync {
           );
         } on ClientException catch (e) {
           if (e.response?.statusCode == HttpStatus.notFound) {
-            follow = follow.copyWith(
-              type: FollowType.bookmark,
-            );
+            follow = follow.copyWith(type: FollowType.bookmark);
             logger.info(
               'Sync found no pool for ${follow.tags}. Set to bookmarked!',
             );

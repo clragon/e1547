@@ -2,10 +2,7 @@ import 'package:flutter/material.dart';
 
 const Duration defaultAnimationDuration = Duration(milliseconds: 200);
 
-enum FadeAnimationStyle {
-  adjacent,
-  stacked,
-}
+enum FadeAnimationStyle { adjacent, stacked }
 
 class CrossFade extends StatelessWidget {
   factory CrossFade({
@@ -68,9 +65,10 @@ class CrossFade extends StatelessWidget {
           duration: duration,
           child: AnimatedSwitcher(
             duration: duration,
-            child: showChild
-                ? builder(context)
-                : secondChild ?? const SizedBox.shrink(),
+            child:
+                showChild
+                    ? builder(context)
+                    : secondChild ?? const SizedBox.shrink(),
           ),
         );
     }
@@ -102,9 +100,7 @@ class HiddenWidget extends StatelessWidget {
         },
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          if (show) child else const SizedBox(),
-        ],
+        children: [if (show) child else const SizedBox()],
       ),
     );
   }

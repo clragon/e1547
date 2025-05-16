@@ -49,13 +49,15 @@ class PostFullscreenFrame extends StatelessWidget {
                 body: GestureDetector(
                   behavior: HitTestBehavior.translucent,
                   onTap: () {
-                    ScaffoldFrameController controller =
-                        ScaffoldFrame.of(context);
+                    ScaffoldFrameController controller = ScaffoldFrame.of(
+                      context,
+                    );
                     controller.toggleFrame();
                     if ((player?.state.playing ?? false) &&
                         controller.visible) {
                       controller.hideFrame(
-                          duration: const Duration(seconds: 2));
+                        duration: const Duration(seconds: 2),
+                      );
                     }
                   },
                   child: Stack(

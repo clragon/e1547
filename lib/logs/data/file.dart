@@ -5,11 +5,7 @@ import 'package:path/path.dart';
 final DateFormat logFileDateFormat = DateFormat('yyyy-MM-dd-HH-mm-ss-SSS');
 
 class LogFileInfo {
-  LogFileInfo({
-    required this.path,
-    required this.date,
-    required this.type,
-  });
+  LogFileInfo({required this.path, required this.date, required this.type});
 
   factory LogFileInfo.parse(String path) {
     String raw = basenameWithoutExtension(path);

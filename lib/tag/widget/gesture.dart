@@ -30,11 +30,12 @@ class TagGesture extends StatelessWidget {
         if (wiki || (safe && traits.denylist.contains(tag))) {
           sheet();
         } else {
-          Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) => PostsSearchPage(
-              query: TagMap({'tags': tag}),
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder:
+                  (context) => PostsSearchPage(query: TagMap({'tags': tag})),
             ),
-          ));
+          );
         }
       },
       onLongPress: sheet,

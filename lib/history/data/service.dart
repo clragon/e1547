@@ -36,8 +36,7 @@ class HistoryService with Disposable {
     required int id,
     bool? force,
     CancelToken? cancelToken,
-  }) =>
-      repository.get(id);
+  }) => repository.get(id);
 
   Future<List<History>> page({
     int? page,
@@ -84,87 +83,73 @@ class HistoryService with Disposable {
   // We need to figure out a way to make them dynamic.
 
   Future<void> addPost({required Post post}) => addMaybe(
-        HistoryRequest(
-          visitedAt: DateTime.now(),
-          link: post.link,
-          category: HistoryCategory.items,
-          type: HistoryType.posts,
-          subtitle: post.description.nullWhenEmpty,
-          thumbnails: _getThumbnails([post]),
-        ),
-      );
+    HistoryRequest(
+      visitedAt: DateTime.now(),
+      link: post.link,
+      category: HistoryCategory.items,
+      type: HistoryType.posts,
+      subtitle: post.description.nullWhenEmpty,
+      thumbnails: _getThumbnails([post]),
+    ),
+  );
 
-  Future<void> addPostSearch({
-    required QueryMap query,
-    List<Post>? posts,
-  }) =>
+  Future<void> addPostSearch({required QueryMap query, List<Post>? posts}) =>
       addMaybe(
         HistoryRequest(
           visitedAt: DateTime.now(),
-          link: Uri(
-            path: '/posts',
-            queryParameters: query,
-          ).toString(),
+          link: Uri(path: '/posts', queryParameters: query).toString(),
           category: HistoryCategory.searches,
           type: HistoryType.posts,
           thumbnails: _getThumbnails(posts),
         ),
       );
 
-  Future<void> addPool({
-    required Pool pool,
-    List<Post>? posts,
-  }) =>
-      addMaybe(
-        HistoryRequest(
-          visitedAt: DateTime.now(),
-          link: pool.link,
-          category: HistoryCategory.items,
-          type: HistoryType.pools,
-          title: pool.name,
-          subtitle: pool.description.nullWhenEmpty,
-          thumbnails: _getThumbnails(posts),
-        ),
-      );
+  Future<void> addPool({required Pool pool, List<Post>? posts}) => addMaybe(
+    HistoryRequest(
+      visitedAt: DateTime.now(),
+      link: pool.link,
+      category: HistoryCategory.items,
+      type: HistoryType.pools,
+      title: pool.name,
+      subtitle: pool.description.nullWhenEmpty,
+      thumbnails: _getThumbnails(posts),
+    ),
+  );
 
   Future<void> addPoolSearch({
     required QueryMap query,
     List<Pool>? pools,
     List<Post>? posts,
-  }) =>
-      addMaybe(
-        HistoryRequest(
-          visitedAt: DateTime.now(),
-          link: Uri(
-            path: '/pools',
-            queryParameters: query,
-          ).toString(),
-          category: HistoryCategory.searches,
-          type: HistoryType.pools,
-          subtitle: pools?.isNotEmpty ?? false
+  }) => addMaybe(
+    HistoryRequest(
+      visitedAt: DateTime.now(),
+      link: Uri(path: '/pools', queryParameters: query).toString(),
+      category: HistoryCategory.searches,
+      type: HistoryType.pools,
+      subtitle:
+          pools?.isNotEmpty ?? false
               ? _composeSearchSubtitle({
-                  for (final value in pools!)
-                    // TODO: this should be part of the client parser
-                    value.link: value.name.replaceAll('_', ' ')
-                })
+                for (final value in pools!)
+                  // TODO: this should be part of the client parser
+                  value.link: value.name.replaceAll('_', ' '),
+              })
               : null,
-          thumbnails: [
-            if (pools != null)
-              ..._getThumbnails(
-                posts
-                    ?.where((a) => pools
-                        .whereNot((e) => e.postIds.isEmpty)
-                        .any((b) => b.postIds.first == a.id))
-                    .toList(),
-              )
-          ],
-        ),
-      );
+      thumbnails: [
+        if (pools != null)
+          ..._getThumbnails(
+            posts
+                ?.where(
+                  (a) => pools
+                      .whereNot((e) => e.postIds.isEmpty)
+                      .any((b) => b.postIds.first == a.id),
+                )
+                .toList(),
+          ),
+      ],
+    ),
+  );
 
-  Future<void> addTopic({
-    required Topic topic,
-    List<Reply>? replies,
-  }) =>
+  Future<void> addTopic({required Topic topic, List<Reply>? replies}) =>
       addMaybe(
         HistoryRequest(
           visitedAt: DateTime.now(),
@@ -176,64 +161,55 @@ class HistoryService with Disposable {
         ),
       );
 
-  Future<void> addTopicSearch({
-    required QueryMap query,
-    List<Topic>? topics,
-  }) =>
+  Future<void> addTopicSearch({required QueryMap query, List<Topic>? topics}) =>
       addMaybe(
         HistoryRequest(
           visitedAt: DateTime.now(),
-          link: Uri(
-            path: '/forum_topics',
-            queryParameters: query,
-          ).toString(),
+          link: Uri(path: '/forum_topics', queryParameters: query).toString(),
           category: HistoryCategory.searches,
           type: HistoryType.topics,
-          subtitle: topics?.isNotEmpty ?? false
-              ? _composeSearchSubtitle(
-                  {for (final value in topics!) value.link: value.title},
-                )
-              : null,
+          subtitle:
+              topics?.isNotEmpty ?? false
+                  ? _composeSearchSubtitle({
+                    for (final value in topics!) value.link: value.title,
+                  })
+                  : null,
         ),
       );
 
   Future<void> addUser({required User user, Post? avatar}) => addMaybe(
-        HistoryRequest(
-          visitedAt: DateTime.now(),
-          link: '/users/${user.name}',
-          category: HistoryCategory.items,
-          type: HistoryType.users,
-          thumbnails: [if (avatar?.sample != null) avatar!.sample!],
-        ),
-      );
+    HistoryRequest(
+      visitedAt: DateTime.now(),
+      link: '/users/${user.name}',
+      category: HistoryCategory.items,
+      type: HistoryType.users,
+      thumbnails: [if (avatar?.sample != null) avatar!.sample!],
+    ),
+  );
 
   Future<void> addWiki({required Wiki wiki}) => addMaybe(
-        HistoryRequest(
-          visitedAt: DateTime.now(),
-          link: '/wiki_pages/${wiki.title}',
-          category: HistoryCategory.items,
-          type: HistoryType.wikis,
-          subtitle: wiki.body.nullWhenEmpty,
-        ),
-      );
+    HistoryRequest(
+      visitedAt: DateTime.now(),
+      link: '/wiki_pages/${wiki.title}',
+      category: HistoryCategory.items,
+      type: HistoryType.wikis,
+      subtitle: wiki.body.nullWhenEmpty,
+    ),
+  );
 
-  Future<void> addWikiSearch({
-    required QueryMap query,
-    List<Wiki>? wikis,
-  }) =>
+  Future<void> addWikiSearch({required QueryMap query, List<Wiki>? wikis}) =>
       addMaybe(
         HistoryRequest(
           visitedAt: DateTime.now(),
-          link: Uri(
-            path: '/wiki_pages',
-            queryParameters: query,
-          ).toString(),
+          link: Uri(path: '/wiki_pages', queryParameters: query).toString(),
           category: HistoryCategory.searches,
           type: HistoryType.wikis,
-          subtitle: wikis?.isNotEmpty ?? false
-              ? _composeSearchSubtitle(
-                  {for (final value in wikis!) value.link: value.title})
-              : null,
+          subtitle:
+              wikis?.isNotEmpty ?? false
+                  ? _composeSearchSubtitle({
+                    for (final value in wikis!) value.link: value.title,
+                  })
+                  : null,
         ),
       );
 

@@ -26,31 +26,17 @@ Future<void> launch(String url) async {
       ),
     );
   } else {
-    await urls.launchUrl(
-      uri,
-      mode: urls.LaunchMode.externalApplication,
-    );
+    await urls.launchUrl(uri, mode: urls.LaunchMode.externalApplication);
   }
 }
 
 const String queryDivider = r'[^\s/?&#]';
 const String _showEnding = r':_(s|/show)';
 
-enum LinkType {
-  post,
-  pool,
-  user,
-  wiki,
-  topic,
-  reply,
-}
+enum LinkType { post, pool, user, wiki, topic, reply }
 
 class Link {
-  const Link({
-    required this.type,
-    this.id,
-    this.query,
-  });
+  const Link({required this.type, this.id, this.query});
 
   final LinkType type;
   final Object? id;
@@ -66,14 +52,11 @@ abstract class LinkParser {
 }
 
 class LeafLinkParser extends LinkParser {
-  const LeafLinkParser({
-    required this.path,
-    required this.transformer,
-  });
+  const LeafLinkParser({required this.path, required this.transformer});
 
   final String path;
   final Link? Function(Map<String, String> args, Map<String, String>? query)
-      transformer;
+  transformer;
 
   @override
   Link? parse(String link) {
@@ -81,8 +64,11 @@ class LeafLinkParser extends LinkParser {
     if (uri == null) return null;
 
     List<String> names = [];
-    Match? match = pathToRegExp(path, parameters: names, caseSensitive: false)
-        .firstMatch(uri.path);
+    Match? match = pathToRegExp(
+      path,
+      parameters: names,
+      caseSensitive: false,
+    ).firstMatch(uri.path);
 
     if (match != null) {
       Map<String, String> arguments = extract(names, match);
@@ -117,91 +103,88 @@ class E621LinkParser extends BranchLinkParser {
 
   @override
   List<LinkParser> get parsers => [
-        LeafLinkParser(
-          path: r'/post' '$_showEnding' r'/:id(\d+)',
-          transformer: (args, query) => Link(
+    LeafLinkParser(
+      path:
+          r'/post'
+          '$_showEnding'
+          r'/:id(\d+)',
+      transformer:
+          (args, query) => Link(
             type: LinkType.post,
             id: int.parse(args['id']!),
             query: query,
           ),
-        ),
-        LeafLinkParser(
-          path: r'/posts',
-          transformer: (args, query) => Link(
-            type: LinkType.post,
-            query: query,
-          ),
-        ),
-        LeafLinkParser(
-          path: r'/pool' '$_showEnding' r'/:id(\d+)',
-          transformer: (args, query) => Link(
+    ),
+    LeafLinkParser(
+      path: r'/posts',
+      transformer: (args, query) => Link(type: LinkType.post, query: query),
+    ),
+    LeafLinkParser(
+      path:
+          r'/pool'
+          '$_showEnding'
+          r'/:id(\d+)',
+      transformer:
+          (args, query) => Link(
             type: LinkType.pool,
             id: int.parse(args['id']!),
             query: query,
           ),
-        ),
-        LeafLinkParser(
-          path: r'/pools',
-          transformer: (args, query) => Link(
-            type: LinkType.pool,
-            query: query,
-          ),
-        ),
-        LeafLinkParser(
-          path: r'/user'
-              '$_showEnding'
-              r'/:name',
-          transformer: (args, query) => Link(
+    ),
+    LeafLinkParser(
+      path: r'/pools',
+      transformer: (args, query) => Link(type: LinkType.pool, query: query),
+    ),
+    LeafLinkParser(
+      path:
+          r'/user'
+          '$_showEnding'
+          r'/:name',
+      transformer:
+          (args, query) => Link(
             type: LinkType.user,
             id: int.tryParse(args['name']!) ?? args['name']!,
             query: query,
           ),
-        ),
-        LeafLinkParser(
-          path: r'/wiki_pages'
-              r'/:name',
-          transformer: (args, query) => Link(
+    ),
+    LeafLinkParser(
+      path:
+          r'/wiki_pages'
+          r'/:name',
+      transformer:
+          (args, query) => Link(
             type: LinkType.wiki,
             id: int.tryParse(args['name']!) ?? args['name']!,
           ),
-        ),
-        LeafLinkParser(
-          path: r'/wiki_pages',
-          transformer: (args, query) => Link(
-            type: LinkType.wiki,
-            query: query,
-          ),
-        ),
-        LeafLinkParser(
-          path: r'/forum_topics/:id(\d+)',
-          transformer: (args, query) => Link(
+    ),
+    LeafLinkParser(
+      path: r'/wiki_pages',
+      transformer: (args, query) => Link(type: LinkType.wiki, query: query),
+    ),
+    LeafLinkParser(
+      path: r'/forum_topics/:id(\d+)',
+      transformer:
+          (args, query) => Link(
             type: LinkType.topic,
             id: int.parse(args['id']!),
             query: query,
           ),
-        ),
-        LeafLinkParser(
-          path: r'/forum_topics',
-          transformer: (args, query) => Link(
-            type: LinkType.topic,
-            query: query,
-          ),
-        ),
-        LeafLinkParser(
-          path: r'/forum_posts/:id(\d+)',
-          transformer: (args, query) => Link(
-            type: LinkType.reply,
-            id: int.parse(args['id']!),
-          ),
-        ),
-        LeafLinkParser(
-          path: r'/forum_posts',
-          transformer: (args, query) => Link(
-            type: LinkType.reply,
-            query: query,
-          ),
-        ),
-      ];
+    ),
+    LeafLinkParser(
+      path: r'/forum_topics',
+      transformer: (args, query) => Link(type: LinkType.topic, query: query),
+    ),
+    LeafLinkParser(
+      path: r'/forum_posts/:id(\d+)',
+      transformer:
+          (args, query) =>
+              Link(type: LinkType.reply, id: int.parse(args['id']!)),
+    ),
+    LeafLinkParser(
+      path: r'/forum_posts',
+      transformer: (args, query) => Link(type: LinkType.reply, query: query),
+    ),
+  ];
 }
 
 extension LinkOnTapExtension on LinkParser {
@@ -218,9 +201,7 @@ extension LinkOnTapExtension on LinkParser {
           if (root) {
             Navigator.of(context).popUntil((route) => false);
           }
-          Navigator.of(context).push(
-            MaterialPageRoute(builder: builder),
-          );
+          Navigator.of(context).push(MaterialPageRoute(builder: builder));
         };
       }
 

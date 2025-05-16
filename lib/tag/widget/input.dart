@@ -50,81 +50,93 @@ class TagInput extends StatelessWidget {
     return SubDefault<TextEditingController>(
       value: controller,
       create: TextEditingController.new,
-      builder: (context, controller) => SubValue(
-        create: () {
-          controller.text = sortTags(controller.text);
-          if (controller.text.isNotEmpty) {
-            controller.text += ' ';
-          }
-          return controller;
-        },
-        keys: [controller],
-        builder: (context, controller) => AutocompleteTextField<Tag>(
-          controller: controller,
-          submit: (result) => submit(sortTags(result)),
-          direction: direction,
-          readOnly: readOnly,
-          labelText: labelText,
-          decoration: decoration,
-          inputFormatters: [
-            LowercaseTextInputFormatter(),
-            if (!multiInput) FilteringTextInputFormatter.deny(' '),
-          ],
-          private: PrivateTextFields.of(context),
-          textInputAction: textInputAction,
-          focusNode: focusNode,
-          onSelected: (suggestion) {
-            List<String> tags = controller.text.split(' ');
-            int selection = findTag(tags, controller.selection.extent.offset);
-            String tag = tags[selection];
-            String operator = tag[0];
-            if (!['-', '~'].contains(operator)) operator = '';
-            tags[selection] = operator + suggestion.name;
-            controller.text = '${TagMap.parse(tags.join(' '))} ';
-            controller.setFocusToEnd();
-          },
-          itemBuilder: (context, value) => Row(
-            children: [
-              Container(
-                color: TagCategory.values
-                    .firstWhereOrNull((e) => e.id == value.category)
-                    ?.color,
-                height: 54,
-                width: 5,
-              ),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Text(
-                    value.name,
-                    style: const TextStyle(fontSize: 16),
-                    overflow: TextOverflow.ellipsis,
-                  ),
+      builder:
+          (context, controller) => SubValue(
+            create: () {
+              controller.text = sortTags(controller.text);
+              if (controller.text.isNotEmpty) {
+                controller.text += ' ';
+              }
+              return controller;
+            },
+            keys: [controller],
+            builder:
+                (context, controller) => AutocompleteTextField<Tag>(
+                  controller: controller,
+                  submit: (result) => submit(sortTags(result)),
+                  direction: direction,
+                  readOnly: readOnly,
+                  labelText: labelText,
+                  decoration: decoration,
+                  inputFormatters: [
+                    LowercaseTextInputFormatter(),
+                    if (!multiInput) FilteringTextInputFormatter.deny(' '),
+                  ],
+                  private: PrivateTextFields.of(context),
+                  textInputAction: textInputAction,
+                  focusNode: focusNode,
+                  onSelected: (suggestion) {
+                    List<String> tags = controller.text.split(' ');
+                    int selection = findTag(
+                      tags,
+                      controller.selection.extent.offset,
+                    );
+                    String tag = tags[selection];
+                    String operator = tag[0];
+                    if (!['-', '~'].contains(operator)) operator = '';
+                    tags[selection] = operator + suggestion.name;
+                    controller.text = '${TagMap.parse(tags.join(' '))} ';
+                    controller.setFocusToEnd();
+                  },
+                  itemBuilder:
+                      (context, value) => Row(
+                        children: [
+                          Container(
+                            color:
+                                TagCategory.values
+                                    .firstWhereOrNull(
+                                      (e) => e.id == value.category,
+                                    )
+                                    ?.color,
+                            height: 54,
+                            width: 5,
+                          ),
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.all(16),
+                              child: Text(
+                                value.name,
+                                style: const TextStyle(fontSize: 16),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: Text(
+                              NumberFormat.compact().format(value.count),
+                              style: const TextStyle(fontSize: 16),
+                            ),
+                          ),
+                        ],
+                      ),
+                  suggestionsCallback: (pattern) async {
+                    Client client = context.read<Client>();
+                    List<String> tags = controller.text.split(' ');
+                    int selection = findTag(
+                      tags,
+                      controller.selection.extent.offset,
+                    );
+                    String tag = tags[selection];
+                    if (tag.isEmpty) return [];
+                    return client.tags.autocomplete(
+                      search: tagToRaw(tags[selection]),
+                      category: category,
+                      limit: 3,
+                    );
+                  },
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(16),
-                child: Text(
-                  NumberFormat.compact().format(value.count),
-                  style: const TextStyle(fontSize: 16),
-                ),
-              ),
-            ],
           ),
-          suggestionsCallback: (pattern) async {
-            Client client = context.read<Client>();
-            List<String> tags = controller.text.split(' ');
-            int selection = findTag(tags, controller.selection.extent.offset);
-            String tag = tags[selection];
-            if (tag.isEmpty) return [];
-            return client.tags.autocomplete(
-              search: tagToRaw(tags[selection]),
-              category: category,
-              limit: 3,
-            );
-          },
-        ),
-      ),
     );
   }
 }

@@ -34,38 +34,35 @@ class RatingDisplay extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Rating rating = context.select<PostEditingController?, Rating>(
-        (value) => value?.value?.rating ?? post.rating);
+      (value) => value?.value?.rating ?? post.rating,
+    );
     bool canEdit = context.select<PostEditingController?, bool>(
-        (value) => value?.canEdit ?? false);
+      (value) => value?.canEdit ?? false,
+    );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Padding(
-          padding: EdgeInsets.symmetric(
-            horizontal: 4,
-            vertical: 2,
-          ),
-          child: Text(
-            'Rating',
-            style: TextStyle(
-              fontSize: 16,
-            ),
-          ),
+          padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+          child: Text('Rating', style: TextStyle(fontSize: 16)),
         ),
         ListTile(
           title: Text(rating.title),
           leading: rating.icon,
-          onTap: canEdit
-              ? () => showRatingDialog(
-                  context: context,
-                  onSelected: (value) {
-                    PostEditingController controller =
-                        context.read<PostEditingController>();
-                    controller.value =
-                        controller.value!.copyWith(rating: value);
-                  })
-              : null,
+          onTap:
+              canEdit
+                  ? () => showRatingDialog(
+                    context: context,
+                    onSelected: (value) {
+                      PostEditingController controller =
+                          context.read<PostEditingController>();
+                      controller.value = controller.value!.copyWith(
+                        rating: value,
+                      );
+                    },
+                  )
+                  : null,
         ),
         const Divider(),
       ],
@@ -79,20 +76,22 @@ Future<Rating?> showRatingDialog({
 }) async {
   return showDialog<Rating>(
     context: context,
-    builder: (context) => SimpleDialog(
-      title: const Text('Rating'),
-      children: Rating.values
-          .map(
-            (rating) => ListTile(
-              title: Text(rating.title),
-              leading: rating.icon,
-              onTap: () {
-                onSelected?.call(rating);
-                Navigator.of(context).pop(rating);
-              },
-            ),
-          )
-          .toList(),
-    ),
+    builder:
+        (context) => SimpleDialog(
+          title: const Text('Rating'),
+          children:
+              Rating.values
+                  .map(
+                    (rating) => ListTile(
+                      title: Text(rating.title),
+                      leading: rating.icon,
+                      onTap: () {
+                        onSelected?.call(rating);
+                        Navigator.of(context).pop(rating);
+                      },
+                    ),
+                  )
+                  .toList(),
+        ),
   );
 }

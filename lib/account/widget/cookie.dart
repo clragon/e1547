@@ -18,17 +18,19 @@ class CookieCapturePage extends StatefulWidget {
 }
 
 class _CookieCapturePageState extends State<CookieCapturePage> {
-  late final WebViewController controller = WebViewController()
-    ..setUserAgent(AppInfo.instance.userAgent)
-    ..setJavaScriptMode(JavaScriptMode.unrestricted)
-    ..setBackgroundColor(Theme.of(context).colorScheme.surface)
-    ..loadRequest(Uri.https(context.read<Client>().host));
+  late final WebViewController controller =
+      WebViewController()
+        ..setUserAgent(AppInfo.instance.userAgent)
+        ..setJavaScriptMode(JavaScriptMode.unrestricted)
+        ..setBackgroundColor(Theme.of(context).colorScheme.surface)
+        ..loadRequest(Uri.https(context.read<Client>().host));
 
   Future<void> setCookies(BuildContext context) async {
     IdentityService service = context.read<IdentityService>();
     WebviewCookieManager cookieManager = WebviewCookieManager();
-    List<Cookie> cookies =
-        await cookieManager.getCookies(service.identity.host);
+    List<Cookie> cookies = await cookieManager.getCookies(
+      service.identity.host,
+    );
     Map<String, String> headers = service.identity.headers ?? {};
     String? cookieHeader = headers['Cookie'];
     if (cookieHeader != null) {
@@ -48,20 +50,13 @@ class _CookieCapturePageState extends State<CookieCapturePage> {
     }
     String newCookieHeader = cookieList.join('; ');
     headers[HttpHeaders.cookieHeader] = newCookieHeader;
-    service.replace(
-      service.identity.copyWith(
-        headers: headers,
-      ),
-    );
+    service.replace(service.identity.copyWith(headers: headers));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        leading: const CloseButton(),
-        title: widget.title,
-      ),
+      appBar: AppBar(leading: const CloseButton(), title: widget.title),
       body: WebViewWidget(controller: controller),
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.check),

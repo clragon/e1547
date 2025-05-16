@@ -71,10 +71,7 @@ class PromptActionController extends ActionController {
     });
   }
 
-  FutureOr<void> showOrAction(
-    BuildContext context,
-    Widget child,
-  ) async {
+  FutureOr<void> showOrAction(BuildContext context, Widget child) async {
     if (action != null) {
       action!();
     } else {
@@ -92,12 +89,9 @@ class PromptActionController extends ActionController {
   }
 
   Widget build(BuildContext context, Widget? child) => PromptActions(
-        controller: this,
-        child: ActionIndicators(
-          controller: this,
-          child: child,
-        ),
-      );
+    controller: this,
+    child: ActionIndicators(controller: this, child: child),
+  );
 
   FutureOr<void> show(BuildContext context, Widget? child) {
     if (Theme.of(context).isDesktop) {
@@ -106,17 +100,14 @@ class PromptActionController extends ActionController {
         builder: (context) {
           _route = _PromptActionDialog(ModalRoute.of(context)!);
           return AlertDialog(
-            content: SizedBox(
-              width: 600,
-              child: build(context, child),
-            ),
+            content: SizedBox(width: 600, child: build(context, child)),
           );
         },
       ).then((_) => close());
     } else {
-      final sheetController = Scaffold.of(context).showBottomSheet(
-        (context) => build(context, child),
-      );
+      final sheetController = Scaffold.of(
+        context,
+      ).showBottomSheet((context) => build(context, child));
       _route = _PromptActionSheet(sheetController);
       return sheetController.closed.then((_) => close());
     }
@@ -133,10 +124,11 @@ class PromptActionController extends ActionController {
 class LoadingDialogActionController extends PromptActionController {
   @override
   FutureOr<void> show(BuildContext context, [Widget? child]) => super.show(
-        context,
-        ListenableBuilder(
-          listenable: this,
-          builder: (context, child) => PopScope(
+    context,
+    ListenableBuilder(
+      listenable: this,
+      builder:
+          (context, child) => PopScope(
             canPop: !isLoading,
             child: Builder(
               builder: (context) {
@@ -150,13 +142,13 @@ class LoadingDialogActionController extends PromptActionController {
               },
             ),
           ),
-        ),
-      );
+    ),
+  );
 }
 
 class _PromptActions extends InheritedNotifier<PromptActionController> {
   const _PromptActions({required super.child, required this.controller})
-      : super(notifier: controller);
+    : super(notifier: controller);
 
   final PromptActionController controller;
 }
@@ -179,10 +171,11 @@ class PromptActions extends StatelessWidget {
       create: () => PromptActionController(),
       dispose: (value) => value?.dispose(),
       keys: [controller, Theme.of(context).isDesktop],
-      builder: (context, controller) => _PromptActions(
-        controller: this.controller ?? controller!,
-        child: child,
-      ),
+      builder:
+          (context, controller) => _PromptActions(
+            controller: this.controller ?? controller!,
+            child: child,
+          ),
     );
   }
 }
@@ -202,43 +195,43 @@ class ActionIndicators extends StatelessWidget {
     return AnimatedBuilder(
       animation: controller,
       child: child,
-      builder: (context, child) => Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          AnimatedSize(
-            duration: defaultAnimationDuration,
-            child: AnimatedSwitcher(
-              duration: defaultAnimationDuration,
-              transitionBuilder: (child, animation) => SlideTransition(
-                position: Tween<Offset>(
-                  begin: const Offset(0, 1),
-                  end: Offset.zero,
-                ).animate(animation),
-                child: FadeTransition(
-                  opacity: animation,
-                  child: child,
+      builder:
+          (context, child) => Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              AnimatedSize(
+                duration: defaultAnimationDuration,
+                child: AnimatedSwitcher(
+                  duration: defaultAnimationDuration,
+                  transitionBuilder:
+                      (child, animation) => SlideTransition(
+                        position: Tween<Offset>(
+                          begin: const Offset(0, 1),
+                          end: Offset.zero,
+                        ).animate(animation),
+                        child: FadeTransition(opacity: animation, child: child),
+                      ),
+                  child:
+                      controller.isError && !controller.isForgiven
+                          ? Padding(
+                            key: ValueKey(controller.error),
+                            padding: const EdgeInsets.only(right: 10),
+                            child: Icon(
+                              Icons.warning_amber,
+                              color: Theme.of(context).colorScheme.error,
+                            ),
+                          )
+                          : controller.isLoading
+                          ? const Padding(
+                            padding: EdgeInsets.only(right: 10),
+                            child: SizedCircularProgressIndicator(size: 24),
+                          )
+                          : const SizedBox(),
                 ),
               ),
-              child: controller.isError && !controller.isForgiven
-                  ? Padding(
-                      key: ValueKey(controller.error),
-                      padding: const EdgeInsets.only(right: 10),
-                      child: Icon(
-                        Icons.warning_amber,
-                        color: Theme.of(context).colorScheme.error,
-                      ),
-                    )
-                  : controller.isLoading
-                      ? const Padding(
-                          padding: EdgeInsets.only(right: 10),
-                          child: SizedCircularProgressIndicator(size: 24),
-                        )
-                      : const SizedBox(),
-            ),
+              if (child != null) Expanded(child: child),
+            ],
           ),
-          if (child != null) Expanded(child: child),
-        ],
-      ),
     );
   }
 }
@@ -266,15 +259,14 @@ class PromptFloatingActionButton extends StatelessWidget {
       animation: controller,
       builder: (context, _) {
         return FloatingActionButton(
-          onPressed: controller.isLoading
-              ? null
-              : () => controller.showOrAction(
-                    context,
-                    builder(context),
-                  ),
-          child: controller.isShown
-              ? (confirmIcon ?? const Icon(Icons.check))
-              : icon,
+          onPressed:
+              controller.isLoading
+                  ? null
+                  : () => controller.showOrAction(context, builder(context)),
+          child:
+              controller.isShown
+                  ? (confirmIcon ?? const Icon(Icons.check))
+                  : icon,
         );
       },
     );
@@ -282,11 +274,7 @@ class PromptFloatingActionButton extends StatelessWidget {
 }
 
 class PromptTextFieldSuffix extends StatelessWidget {
-  const PromptTextFieldSuffix({
-    super.key,
-    this.icon,
-    this.controller,
-  });
+  const PromptTextFieldSuffix({super.key, this.icon, this.controller});
 
   final Widget? icon;
   final PromptActionController? controller;
@@ -315,12 +303,13 @@ Future<T?> showDefaultSlidingBottomSheet<T>(
 }) async {
   return showSlidingBottomSheet<T>(
     context,
-    builder: (context) => defaultSlidingSheetDialog(
-      context,
-      builder,
-      snapSpec: snapSpec,
-      footerBuilder: footerBuilder,
-    ),
+    builder:
+        (context) => defaultSlidingSheetDialog(
+          context,
+          builder,
+          snapSpec: snapSpec,
+          footerBuilder: footerBuilder,
+        ),
   );
 }
 
@@ -346,11 +335,7 @@ SlidingSheetDialog defaultSlidingSheetDialog(
 }
 
 class DefaultSheetBody extends StatelessWidget {
-  const DefaultSheetBody({
-    super.key,
-    this.title,
-    required this.body,
-  });
+  const DefaultSheetBody({super.key, this.title, required this.body});
 
   final Widget? title;
   final Widget body;

@@ -14,7 +14,7 @@ class AppBarBuilder extends StatelessWidget with AppBarBuilderWidget {
   @override
   final PreferredSizeWidget child;
   final Widget Function(BuildContext context, PreferredSizeWidget child)
-      builder;
+  builder;
 
   @override
   Widget build(BuildContext context) {
@@ -41,10 +41,10 @@ AppBarLeadingConfiguration getLeadingConfiguration({
     bool canPop = parentRoute?.canPop ?? false;
 
     Widget drawerButton() => IconButton(
-          icon: const Icon(Icons.menu),
-          onPressed: Scaffold.of(context).openDrawer,
-          tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
-        );
+      icon: const Icon(Icons.menu),
+      onPressed: Scaffold.of(context).openDrawer,
+      tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
+    );
 
     Widget backButton =
         parentRoute is PageRoute<dynamic> && parentRoute.fullscreenDialog
@@ -145,10 +145,7 @@ class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
           leading: leadingConfig.leading,
           leadingWidth: leadingConfig.leadingWidth,
           actions: effectiveActions,
-          title: IgnorePointer(
-            ignoring: ignoreTitlePointer,
-            child: title,
-          ),
+          title: IgnorePointer(ignoring: ignoreTitlePointer, child: title),
           elevation: elevation,
           automaticallyImplyLeading: false,
           flexibleSpace: const ScrollToTop(),
@@ -163,10 +160,7 @@ class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
 
 class AppBarLeadingConfiguration {
   /// Holds the configuration for a leading widget in an AppBar.
-  const AppBarLeadingConfiguration({
-    this.leading,
-    this.leadingWidth,
-  });
+  const AppBarLeadingConfiguration({this.leading, this.leadingWidth});
 
   /// The leading widget.
   final Widget? leading;
@@ -194,33 +188,30 @@ class ScrollToTop extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Widget tapWrapper(Widget? child) {
-      ScrollController? controller = this.controller ??
+      ScrollController? controller =
+          this.controller ??
           (primary ? PrimaryScrollController.of(context) : null);
       return GestureDetector(
-        onDoubleTap: controller != null
-            ? () => controller.animateTo(
+        onDoubleTap:
+            controller != null
+                ? () => controller.animateTo(
                   0,
                   duration: defaultAnimationDuration,
                   curve: Curves.easeOut,
                 )
-            : null,
+                : null,
         child: Container(
           height: height,
           color: Colors.transparent,
-          child: child != null
-              ? Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Expanded(
-                      child: Row(
-                        children: [
-                          Expanded(child: child),
-                        ],
-                      ),
-                    )
-                  ],
-                )
-              : null,
+          child:
+              child != null
+                  ? Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Expanded(child: Row(children: [Expanded(child: child)])),
+                    ],
+                  )
+                  : null,
         ),
       );
     }
@@ -228,10 +219,7 @@ class ScrollToTop extends StatelessWidget {
     Widget Function(BuildContext context, Widget child) builder =
         this.builder ?? (context, child) => child;
 
-    return builder(
-      context,
-      tapWrapper(child),
-    );
+    return builder(context, tapWrapper(child));
   }
 }
 
@@ -252,17 +240,14 @@ class TransparentAppBar extends StatelessWidget with AppBarBuilderWidget {
     return AnimatedTheme(
       data: Theme.of(context).copyWith(
         appBarTheme: Theme.of(context).appBarTheme.copyWith(
-              iconTheme: Theme.of(context).iconTheme.copyWith(
-                shadows: [
-                  Shadow(
-                    color: Theme.of(context).canvasColor,
-                    blurRadius: 9,
-                  )
-                ],
-              ),
-              elevation: transparent ? 0 : null,
-              backgroundColor: transparent ? Colors.transparent : null,
-            ),
+          iconTheme: Theme.of(context).iconTheme.copyWith(
+            shadows: [
+              Shadow(color: Theme.of(context).canvasColor, blurRadius: 9),
+            ],
+          ),
+          elevation: transparent ? 0 : null,
+          backgroundColor: transparent ? Colors.transparent : null,
+        ),
       ),
       child: child,
     );

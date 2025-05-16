@@ -1,10 +1,7 @@
 import 'package:e1547/post/post.dart';
 
 class UserFavoritesController extends PostController {
-  UserFavoritesController({
-    required this.user,
-    required super.client,
-  });
+  UserFavoritesController({required this.user, required super.client});
 
   final String user;
 
@@ -20,10 +17,7 @@ class UserFavoritesController extends PostController {
 }
 
 class UserUploadsController extends PostController {
-  UserUploadsController({
-    required this.user,
-    required super.client,
-  });
+  UserUploadsController({required this.user, required super.client});
 
   final String user;
 

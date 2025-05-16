@@ -20,10 +20,9 @@ class _PoolLoadingPageState extends State<PoolLoadingPage> {
   Widget build(BuildContext context) {
     return FutureLoadingPage<Pool>(
       future: pool,
-      builder: (context, value) => PoolPage(
-        pool: value,
-        orderByOldest: widget.orderByOldest,
-      ),
+      builder:
+          (context, value) =>
+              PoolPage(pool: value, orderByOldest: widget.orderByOldest),
       title: Text('Pool #${widget.id}'),
       onError: const Text('Failed to load pool'),
       onEmpty: const Text('Pool not found'),

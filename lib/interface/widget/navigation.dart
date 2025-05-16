@@ -70,18 +70,20 @@ class NavigationProvider
     super.child,
     super.builder,
   }) : super(
-          create: (context) => RouterDrawerController(
-            destinations: destinations,
-            drawerHeader: drawerHeader,
-          ),
-        );
+         create:
+             (context) => RouterDrawerController(
+               destinations: destinations,
+               drawerHeader: drawerHeader,
+             ),
+       );
 }
 
 class RouterDrawer extends StatelessWidget {
   const RouterDrawer({super.key});
 
   List<NamedRouterDrawerDestination> getDrawerDestinations(
-      List<RouterDrawerDestination> destinations) {
+    List<RouterDrawerDestination> destinations,
+  ) {
     return destinations
         .whereType<NamedRouterDrawerDestination>()
         .toList()
@@ -98,8 +100,9 @@ class RouterDrawer extends StatelessWidget {
       children.add(controller.drawerHeader!(context));
     }
 
-    List<NamedRouterDrawerDestination> destinations =
-        getDrawerDestinations(controller.destinations);
+    List<NamedRouterDrawerDestination> destinations = getDrawerDestinations(
+      controller.destinations,
+    );
 
     String? currentGroup = destinations.first.group;
 
@@ -114,17 +117,20 @@ class RouterDrawer extends StatelessWidget {
       children.add(
         ListTile(
           enabled: destination.enabled?.call(context) ?? true,
-          selected: destination.unique &&
+          selected:
+              destination.unique &&
               destination.path == controller.drawerSelection,
           title: Text(destination.name),
           leading: destination.icon,
-          onTap: destination.unique
-              ? () => Navigator.of(context)
-                  .pushNamedAndRemoveUntil(destination.path, (_) => false)
-              : () {
-                  Scaffold.maybeOf(context)?.closeDrawer();
-                  Navigator.of(context).pushNamed(destination.path);
-                },
+          onTap:
+              destination.unique
+                  ? () => Navigator.of(
+                    context,
+                  ).pushNamedAndRemoveUntil(destination.path, (_) => false)
+                  : () {
+                    Scaffold.maybeOf(context)?.closeDrawer();
+                    Navigator.of(context).pushNamed(destination.path);
+                  },
         ),
       );
     }
@@ -132,9 +138,7 @@ class RouterDrawer extends StatelessWidget {
     return Drawer(
       child: PrimaryScrollController(
         controller: ScrollController(),
-        child: ListView(
-          children: children,
-        ),
+        child: ListView(children: children),
       ),
     );
   }
@@ -176,10 +180,8 @@ class _RouterDrawerEntryState<T extends Widget>
 class AnyRouteObserver extends RouteObserver<Route<Object?>> {}
 
 class DefaultRouteObserver extends Provider<AnyRouteObserver> {
-  DefaultRouteObserver({
-    super.key,
-    super.child,
-  }) : super(create: (context) => AnyRouteObserver());
+  DefaultRouteObserver({super.key, super.child})
+    : super(create: (context) => AnyRouteObserver());
 }
 
 mixin DefaultRouteAware<T extends StatefulWidget> on State<T>

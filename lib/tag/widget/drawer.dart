@@ -12,10 +12,11 @@ class DrawerTagCounter extends StatelessWidget {
   Widget build(BuildContext context) {
     return AnimatedBuilder(
       animation: controller,
-      builder: (context, child) => DrawerTagCounterBody(
-        posts: controller.items,
-        controller: controller,
-      ),
+      builder:
+          (context, child) => DrawerTagCounterBody(
+            posts: controller.items,
+            controller: controller,
+          ),
     );
   }
 }
@@ -94,29 +95,28 @@ class DrawerTagCounterBody extends StatelessWidget {
                   const Divider(),
                   CrossFade.builder(
                     showChild: children != null,
-                    builder: (context) => CrossFade(
-                      showChild: children!.isNotEmpty,
-                      secondChild: Text(
-                        'no tags',
-                        style: TextStyle(
-                          fontStyle: FontStyle.italic,
-                          color: dimTextColor(context),
+                    builder:
+                        (context) => CrossFade(
+                          showChild: children!.isNotEmpty,
+                          secondChild: Text(
+                            'no tags',
+                            style: TextStyle(
+                              fontStyle: FontStyle.italic,
+                              color: dimTextColor(context),
+                            ),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 8,
+                            ),
+                            child: Row(
+                              children: [
+                                Expanded(child: Wrap(children: children)),
+                              ],
+                            ),
+                          ),
                         ),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 8),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Wrap(
-                                children: children,
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
-                    ),
                     secondChild: CrossFade(
                       showChild: controller?.error != null,
                       secondChild: const Row(

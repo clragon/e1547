@@ -3,10 +3,7 @@ import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
 
 class PrivateTextFields extends StatelessWidget {
-  const PrivateTextFields({
-    super.key,
-    required this.child,
-  });
+  const PrivateTextFields({super.key, required this.child});
 
   final Widget child;
 
@@ -20,9 +17,9 @@ class PrivateTextFields extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => _PrivateTextFieldProvider(
-        notifier: context.watch<Settings>().incognitoKeyboard,
-        child: child,
-      );
+    notifier: context.watch<Settings>().incognitoKeyboard,
+    child: child,
+  );
 }
 
 class _PrivateTextFieldProvider extends InheritedNotifier<ValueNotifier<bool>> {

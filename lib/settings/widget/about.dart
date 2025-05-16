@@ -33,9 +33,7 @@ class _AboutPageState extends State<AboutPage> {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: const TransparentAppBar(
-        child: DefaultAppBar(
-          leading: CloseButton(),
-        ),
+        child: DefaultAppBar(leading: CloseButton()),
       ),
       body: RefreshablePage(
         refresh: (refreshController) async {
@@ -54,47 +52,43 @@ class _AboutPageState extends State<AboutPage> {
           }
         },
         builder: (context, child) => LimitedWidthLayout(child: child),
-        child: (context) => ListView(
-          padding: LimitedWidthLayout.of(context).padding,
-          children: [
-            const SizedBox(height: 100),
-            const DevOptionEnabler(
-              child: AboutLogo(),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 32),
-              child: Card(
-                child: Column(
-                  children: [
-                    AboutVersion(newVersions: versions),
-                    const AboutLinks(),
-                  ],
+        child:
+            (context) => ListView(
+              padding: LimitedWidthLayout.of(context).padding,
+              children: [
+                const SizedBox(height: 100),
+                const DevOptionEnabler(child: AboutLogo()),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 32),
+                  child: Card(
+                    child: Column(
+                      children: [
+                        AboutVersion(newVersions: versions),
+                        const AboutLinks(),
+                      ],
+                    ),
+                  ),
                 ),
-              ),
-            ),
-            const SizedBox(height: 30),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 32),
-              child: Card(
-                child: AboutDonations(
-                  bundledDonors: bundledDonors,
-                  donors: donors,
+                const SizedBox(height: 30),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 32),
+                  child: Card(
+                    child: AboutDonations(
+                      bundledDonors: bundledDonors,
+                      donors: donors,
+                    ),
+                  ),
                 ),
-              ),
+                const SizedBox(height: 16),
+              ],
             ),
-            const SizedBox(height: 16),
-          ],
-        ),
       ),
     );
   }
 }
 
 class DevOptionEnabler extends StatefulWidget {
-  const DevOptionEnabler({
-    super.key,
-    required this.child,
-  });
+  const DevOptionEnabler({super.key, required this.child});
 
   final Widget child;
 
@@ -151,17 +145,10 @@ class AboutLogo extends StatelessWidget {
               padding: const EdgeInsets.only(top: 24, bottom: 12),
               child: Text(
                 appInfo.appName,
-                style: const TextStyle(
-                  fontSize: 22,
-                ),
+                style: const TextStyle(fontSize: 22),
               ),
             ),
-            Text(
-              appInfo.version,
-              style: const TextStyle(
-                fontSize: 16,
-              ),
-            ),
+            Text(appInfo.version, style: const TextStyle(fontSize: 16)),
           ],
         ),
       ),
@@ -220,10 +207,7 @@ class AboutVersion extends StatelessWidget {
             onPressed: Navigator.of(context).maybePop,
             child: const Text('CANCEL'),
           ),
-          TextButton(
-            onPressed: openGithub,
-            child: const Text('DOWNLOAD'),
-          )
+          TextButton(onPressed: openGithub, child: const Text('DOWNLOAD')),
         ],
       );
     }
@@ -247,7 +231,8 @@ class AboutVersion extends StatelessWidget {
         } else {
           message =
               'A newer version is available: ${snapshot.data!.first.version}';
-          onTap = () => showDialog(
+          onTap =
+              () => showDialog(
                 context: context,
                 builder: (context) => changesDialog(snapshot.data!),
               );
@@ -352,9 +337,10 @@ class AboutLinks extends StatelessWidget {
         linkListTile(
           leading: const FaIcon(FontAwesomeIcons.googlePlay),
           title: const Text('Playstore'),
-          link: Platform.isAndroid
-              ? 'https://play.google.com/store/apps/details?id='
-              : 'https://play.google.com/store/search?q=',
+          link:
+              Platform.isAndroid
+                  ? 'https://play.google.com/store/apps/details?id='
+                  : 'https://play.google.com/store/search?q=',
           extra: AppInfo.instance.packageName,
         ),
       ],
@@ -363,11 +349,7 @@ class AboutLinks extends StatelessWidget {
 }
 
 class AboutDonations extends StatelessWidget {
-  const AboutDonations({
-    super.key,
-    this.bundledDonors,
-    this.donors,
-  });
+  const AboutDonations({super.key, this.bundledDonors, this.donors});
 
   final Future<List<Donor>>? bundledDonors;
   final Future<List<Donor>>? donors;
@@ -376,57 +358,60 @@ class AboutDonations extends StatelessWidget {
   Widget build(BuildContext context) {
     return FutureBuilder(
       future: bundledDonors,
-      builder: (context, assetDonations) => FutureBuilder(
-        future: donors,
-        builder: (context, githubDonations) {
-          List<Donor>? donors;
+      builder:
+          (context, assetDonations) => FutureBuilder(
+            future: donors,
+            builder: (context, githubDonations) {
+              List<Donor>? donors;
 
-          if (githubDonations.hasData) {
-            donors = githubDonations.data;
-          } else if (assetDonations.hasData) {
-            donors = assetDonations.data;
-          }
+              if (githubDonations.hasData) {
+                donors = githubDonations.data;
+              } else if (assetDonations.hasData) {
+                donors = assetDonations.data;
+              }
 
-          if (githubDonations.hasError && assetDonations.hasError) {
-            return const IconMessage(
-              icon: Icon(Icons.warning_amber),
-              title: Text('Failed to fetch donors'),
-            );
-          }
+              if (githubDonations.hasError && assetDonations.hasError) {
+                return const IconMessage(
+                  icon: Icon(Icons.warning_amber),
+                  title: Text('Failed to fetch donors'),
+                );
+              }
 
-          if (donors?.isEmpty ?? false) {
-            return const SizedBox();
-          }
+              if (donors?.isEmpty ?? false) {
+                return const SizedBox();
+              }
 
-          return Column(
-            children: [
-              const ListTile(
-                title: Text('Donors'),
-                leading: FaIcon(FontAwesomeIcons.handHoldingHeart),
-                subtitle: Text('Thanks for helping me keep up development!'),
-              ),
-              const Divider(),
-              const SizedBox(height: 8),
-              if (donors == null ||
-                  (bundledDonors == null && this.donors == null))
-                const Center(
-                  child: Padding(
-                    padding: EdgeInsets.all(8),
-                    child: CircularProgressIndicator(),
+              return Column(
+                children: [
+                  const ListTile(
+                    title: Text('Donors'),
+                    leading: FaIcon(FontAwesomeIcons.handHoldingHeart),
+                    subtitle: Text(
+                      'Thanks for helping me keep up development!',
+                    ),
                   ),
-                )
-              else if (donors.isEmpty)
-                // I dont like whining about no donors
-                const ListTile(
-                  title: Text('No donors yet'),
-                  leading: FaIcon(FontAwesomeIcons.heartCrack),
-                )
-              else
-                Donors(donors: donors)
-            ],
-          );
-        },
-      ),
+                  const Divider(),
+                  const SizedBox(height: 8),
+                  if (donors == null ||
+                      (bundledDonors == null && this.donors == null))
+                    const Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(8),
+                        child: CircularProgressIndicator(),
+                      ),
+                    )
+                  else if (donors.isEmpty)
+                    // I dont like whining about no donors
+                    const ListTile(
+                      title: Text('No donors yet'),
+                      leading: FaIcon(FontAwesomeIcons.heartCrack),
+                    )
+                  else
+                    Donors(donors: donors),
+                ],
+              );
+            },
+          ),
     );
   }
 }
@@ -437,8 +422,10 @@ class DrawerUpdateIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SubFuture<List<AppVersion>>(
-      create: () =>
-          context.read<AppInfoClient?>()?.getNewVersions() ?? Future.value([]),
+      create:
+          () =>
+              context.read<AppInfoClient?>()?.getNewVersions() ??
+              Future.value([]),
       builder: (context, snapshot) {
         if (snapshot.hasData && snapshot.data!.isNotEmpty) {
           return Stack(

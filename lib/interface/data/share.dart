@@ -48,9 +48,7 @@ abstract final class Share {
 
   static Future<void> clipboard(BuildContext context, String text) async {
     ScaffoldMessengerState messenger = ScaffoldMessenger.of(context);
-    await Clipboard.setData(
-      ClipboardData(text: text),
-    );
+    await Clipboard.setData(ClipboardData(text: text));
     messenger.showSnackBar(
       const SnackBar(
         duration: Duration(seconds: 1),

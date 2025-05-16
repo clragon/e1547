@@ -19,11 +19,7 @@ class TagService {
     Object body = await dio
         .get(
           '/tags.json',
-          queryParameters: {
-            'page': page,
-            'limit': limit,
-            ...?query,
-          },
+          queryParameters: {'page': page, 'limit': limit, ...?query},
           options: forceOptions(force),
           cancelToken: cancelToken,
         )
@@ -53,9 +49,7 @@ class TagService {
       Object body = await dio
           .get(
             '/tags/autocomplete.json',
-            queryParameters: {
-              'search[name_matches]': search,
-            },
+            queryParameters: {'search[name_matches]': search},
             options: forceOptions(force),
             cancelToken: cancelToken,
           )
@@ -71,11 +65,12 @@ class TagService {
     } else {
       return page(
         limit: limit,
-        query: {
-          'search[name_matches]': '$search*',
-          'search[category]': category,
-          'search[order]': 'count',
-        }.toQuery(),
+        query:
+            {
+              'search[name_matches]': '$search*',
+              'search[category]': category,
+              'search[order]': 'count',
+            }.toQuery(),
         force: force,
       );
     }
@@ -87,36 +82,29 @@ class TagService {
     QueryMap? query,
     bool? force,
     CancelToken? cancelToken,
-  }) =>
-      dio
-          .get(
+  }) => dio
+      .get(
         '/tag_aliases.json',
-        queryParameters: {
-          'page': page,
-          'limit': limit,
-          ...?query,
-        },
+        queryParameters: {'page': page, 'limit': limit, ...?query},
         options: forceOptions(force),
         cancelToken: cancelToken,
       )
-          .then(
-        (response) {
-          return pick(response.data)
-              .asListOrEmpty((p0) => p0.asMapOrThrow())
-              .where((e) => e['status'] != 'deleted')
-              .map((e) => e['consequent_name'])
-              .firstOrNull;
-        },
-      );
+      .then((response) {
+        return pick(response.data)
+            .asListOrEmpty((p0) => p0.asMapOrThrow())
+            .where((e) => e['status'] != 'deleted')
+            .map((e) => e['consequent_name'])
+            .firstOrNull;
+      });
 }
 
 extension E621Tag on Tag {
   static Tag fromJson(dynamic json) => pick(json).letOrThrow(
-        (pick) => Tag(
-          id: pick('id').asIntOrThrow(),
-          name: pick('name').asStringOrThrow(),
-          count: pick('post_count').asIntOrThrow(),
-          category: pick('category').asIntOrThrow(),
-        ),
-      );
+    (pick) => Tag(
+      id: pick('id').asIntOrThrow(),
+      name: pick('name').asStringOrThrow(),
+      count: pick('post_count').asIntOrThrow(),
+      category: pick('category').asIntOrThrow(),
+    ),
+  );
 }

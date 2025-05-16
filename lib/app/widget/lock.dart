@@ -37,25 +37,19 @@ class _LockScreenState extends State<LockScreen> {
         correctString: pin!,
         customizedButtonChild:
             biometrics ? const Icon(Icons.fingerprint) : null,
-        customizedButtonTap: biometrics
-            ? () => tryLocalAuth(
-                  context: context,
-                  onSuccess: unlock,
-                )
-            : null,
-        onOpened: biometrics
-            ? () => tryLocalAuth(
-                  context: context,
-                  onSuccess: unlock,
-                )
-            : null,
+        customizedButtonTap:
+            biometrics
+                ? () => tryLocalAuth(context: context, onSuccess: unlock)
+                : null,
+        onOpened:
+            biometrics
+                ? () => tryLocalAuth(context: context, onSuccess: unlock)
+                : null,
         onUnlocked: unlock,
         config: ScreenLockConfig(themeData: Theme.of(context)),
       );
     } else if (biometrics) {
-      lock = BiometricsLockScreen(
-        onSuccess: unlock,
-      );
+      lock = BiometricsLockScreen(onSuccess: unlock);
     }
 
     bool showLock = lock != null && enabled && locked;
@@ -64,27 +58,29 @@ class _LockScreenState extends State<LockScreen> {
       listener: this.lock,
       listenable: Listenable.merge([
         context.read<Settings>().appPin,
-        context.read<Settings>().biometricAuth
+        context.read<Settings>().biometricAuth,
       ]),
-      builder: (context) => Stack(
-        fit: StackFit.passthrough,
-        children: [
-          Visibility(
-            visible: !showLock,
-            maintainState: true,
-            child: widget.child,
+      builder:
+          (context) => Stack(
+            fit: StackFit.passthrough,
+            children: [
+              Visibility(
+                visible: !showLock,
+                maintainState: true,
+                child: widget.child,
+              ),
+              PageTransitionSwitcher(
+                transitionBuilder:
+                    (child, primaryAnimation, secondaryAnimation) =>
+                        FadeThroughTransition(
+                          animation: primaryAnimation,
+                          secondaryAnimation: secondaryAnimation,
+                          child: child,
+                        ),
+                child: showLock ? lock! : null,
+              ),
+            ],
           ),
-          PageTransitionSwitcher(
-            transitionBuilder: (child, primaryAnimation, secondaryAnimation) =>
-                FadeThroughTransition(
-              animation: primaryAnimation,
-              secondaryAnimation: secondaryAnimation,
-              child: child,
-            ),
-            child: showLock ? lock! : null,
-          ),
-        ],
-      ),
     );
   }
 }
@@ -123,10 +119,7 @@ class _BiometricsLockScreenState extends State<BiometricsLockScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(
-              Icons.fingerprint,
-              size: 60,
-            ),
+            const Icon(Icons.fingerprint, size: 60),
             const SizedBox(height: 20),
             Text(
               failed ? 'Failed to authenticate' : 'Please authenticate',
@@ -134,10 +127,7 @@ class _BiometricsLockScreenState extends State<BiometricsLockScreen> {
             ),
             const SizedBox(height: 8),
             if (failed)
-              TextButton(
-                onPressed: tryAuth,
-                child: const Text('Retry'),
-              ),
+              TextButton(onPressed: tryAuth, child: const Text('Retry')),
           ],
         ),
       ),

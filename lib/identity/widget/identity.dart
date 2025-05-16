@@ -13,10 +13,7 @@ import 'package:flutter/services.dart';
 import 'package:keyboard_dismisser/keyboard_dismisser.dart';
 
 class IdentityPage extends StatefulWidget {
-  const IdentityPage({
-    super.key,
-    this.identity,
-  });
+  const IdentityPage({super.key, this.identity});
 
   final Identity? identity;
 
@@ -25,14 +22,17 @@ class IdentityPage extends StatefulWidget {
 }
 
 class _IdentityPageState extends State<IdentityPage> {
-  late final TextEditingController hostController =
-      TextEditingController(text: widget.identity?.host);
-  late final TextEditingController usernameController =
-      TextEditingController(text: widget.identity?.username);
+  late final TextEditingController hostController = TextEditingController(
+    text: widget.identity?.host,
+  );
+  late final TextEditingController usernameController = TextEditingController(
+    text: widget.identity?.username,
+  );
   late final TextEditingController apikeyController = TextEditingController(
-    text: widget.identity?.headers?[HttpHeaders.authorizationHeader] != null
-        ? OmittedPasswordTextInputFormatter.passwordOmitted
-        : null,
+    text:
+        widget.identity?.headers?[HttpHeaders.authorizationHeader] != null
+            ? OmittedPasswordTextInputFormatter.passwordOmitted
+            : null,
   );
 
   late bool withAuth =
@@ -51,8 +51,9 @@ class _IdentityPageState extends State<IdentityPage> {
     allFields.addListener(resetErrors);
   }
 
-  void resetErrors() => WidgetsBinding.instance
-      .addPostFrameCallback((_) => setState(() => error = null));
+  void resetErrors() => WidgetsBinding.instance.addPostFrameCallback(
+    (_) => setState(() => error = null),
+  );
 
   @override
   void dispose() {
@@ -71,20 +72,21 @@ class _IdentityPageState extends State<IdentityPage> {
       showDialog(
         context: context,
         barrierDismissible: false,
-        builder: (context) => LoginLoadingDialog(
-          identity: widget.identity,
-          host: hostController.text,
-          username: withAuth ? usernameController.text : null,
-          apikey: withAuth ? apikeyController.text : null,
-          onError: (value) {
-            setState(() {
-              value ??= 'Check your network connection and login details';
-              error = 'Failed to login. \n$value';
-            });
-            form.validate();
-          },
-          onDone: navigator.maybePop,
-        ),
+        builder:
+            (context) => LoginLoadingDialog(
+              identity: widget.identity,
+              host: hostController.text,
+              username: withAuth ? usernameController.text : null,
+              apikey: withAuth ? apikeyController.text : null,
+              onError: (value) {
+                setState(() {
+                  value ??= 'Check your network connection and login details';
+                  error = 'Failed to login. \n$value';
+                });
+                form.validate();
+              },
+              onDone: navigator.maybePop,
+            ),
       );
     }
   }
@@ -93,24 +95,25 @@ class _IdentityPageState extends State<IdentityPage> {
     return showDialog<bool>(
       context: context,
       barrierDismissible: false,
-      builder: (context) => AlertDialog(
-        title: const Text('Unknown host'),
-        content: Text(
-          'The host ${linkToDisplay(hostController.text)} is not recognized.\n'
-          '${AppInfo.instance.appName} only supports hosts with the official e621 API.\n'
-          'If you don\'t know what this means, please do not proceed.\n',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('CANCEL'),
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Unknown host'),
+            content: Text(
+              'The host ${linkToDisplay(hostController.text)} is not recognized.\n'
+              '${AppInfo.instance.appName} only supports hosts with the official e621 API.\n'
+              'If you don\'t know what this means, please do not proceed.\n',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text('CANCEL'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: const Text('CONFIRM'),
+              ),
+            ],
           ),
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('CONFIRM'),
-          ),
-        ],
-      ),
     ).then((value) => value ?? false);
   }
 
@@ -118,12 +121,12 @@ class _IdentityPageState extends State<IdentityPage> {
   Widget build(BuildContext context) {
     Widget form() {
       String? apiKeysUrl = context.watch<ClientFactory>().apiKeysUrl(
-            hostController.text,
-            usernameController.text,
-          );
+        hostController.text,
+        usernameController.text,
+      );
       String? registrationUrl = context.watch<ClientFactory>().registrationUrl(
-            hostController.text,
-          );
+        hostController.text,
+      );
       return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24),
         child: Column(
@@ -180,15 +183,13 @@ class _IdentityPageState extends State<IdentityPage> {
                             padding: const EdgeInsets.symmetric(vertical: 12),
                             child: TextButton(
                               onPressed: () => launch(apiKeysUrl ?? ''),
-                              child: const Text(
-                                'Where do I find my API key?',
-                              ),
+                              child: const Text('Where do I find my API key?'),
                             ),
                           ),
                         ),
                       ],
                     ),
-                  ]
+                  ],
                 ],
               ),
             ),
@@ -206,7 +207,8 @@ class _IdentityPageState extends State<IdentityPage> {
                       child: Text(
                         error!,
                         style: TextStyle(
-                            color: Theme.of(context).colorScheme.error),
+                          color: Theme.of(context).colorScheme.error,
+                        ),
                       ),
                     ),
                   ],
@@ -220,10 +222,7 @@ class _IdentityPageState extends State<IdentityPage> {
     return KeyboardDismisser(
       child: Form(
         child: Scaffold(
-          appBar: const DefaultAppBar(
-            leading: CloseButton(),
-            elevation: 0,
-          ),
+          appBar: const DefaultAppBar(leading: CloseButton(), elevation: 0),
           body: LayoutBuilder(
             builder: (context, constraints) {
               bool isWide = constraints.maxWidth > 1100;
@@ -232,9 +231,10 @@ class _IdentityPageState extends State<IdentityPage> {
                   Expanded(
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: isWide
-                          ? CrossAxisAlignment.center
-                          : CrossAxisAlignment.start,
+                      crossAxisAlignment:
+                          isWide
+                              ? CrossAxisAlignment.center
+                              : CrossAxisAlignment.start,
                       children: [
                         if (isWide)
                           Expanded(
@@ -254,26 +254,25 @@ class _IdentityPageState extends State<IdentityPage> {
                           width: isWide ? 700 : constraints.maxWidth,
                           child: LimitedWidthLayout.builder(
                             maxWidth: 520,
-                            builder: (context) => Center(
-                              child: ListView(
-                                padding: LimitedWidthLayout.of(context)
-                                    .padding
-                                    .add(defaultActionListPadding),
-                                shrinkWrap: true,
-                                children: [
-                                  if (!isWide)
-                                    const SizedBox(
-                                      height: 300,
-                                      child: Center(
-                                        child: AppIcon(
-                                          radius: 64,
+                            builder:
+                                (context) => Center(
+                                  child: ListView(
+                                    padding: LimitedWidthLayout.of(
+                                      context,
+                                    ).padding.add(defaultActionListPadding),
+                                    shrinkWrap: true,
+                                    children: [
+                                      if (!isWide)
+                                        const SizedBox(
+                                          height: 300,
+                                          child: Center(
+                                            child: AppIcon(radius: 64),
+                                          ),
                                         ),
-                                      ),
-                                    ),
-                                  form(),
-                                ],
-                              ),
-                            ),
+                                      form(),
+                                    ],
+                                  ),
+                                ),
                           ),
                         ),
                       ],
@@ -284,10 +283,11 @@ class _IdentityPageState extends State<IdentityPage> {
             },
           ),
           floatingActionButton: Builder(
-            builder: (context) => FloatingActionButton(
-              child: const Icon(Icons.check),
-              onPressed: () => saveAndTest(context),
-            ),
+            builder:
+                (context) => FloatingActionButton(
+                  child: const Icon(Icons.check),
+                  onPressed: () => saveAndTest(context),
+                ),
           ),
         ),
       ),
@@ -341,27 +341,21 @@ class _LoginLoadingDialogState extends State<LoginLoadingDialog> {
           );
         }
       }
-      headers[HttpHeaders.authorizationHeader] =
-          encodeBasicAuth(username, apikey);
+      headers[HttpHeaders.authorizationHeader] = encodeBasicAuth(
+        username,
+        apikey,
+      );
     } else {
       headers.remove(HttpHeaders.authorizationHeader);
     }
     try {
       if (identity != null) {
         await service.replace(
-          identity.copyWith(
-            host: host,
-            username: username,
-            headers: headers,
-          ),
+          identity.copyWith(host: host, username: username, headers: headers),
         );
       } else {
         await service.add(
-          IdentityRequest(
-            host: host,
-            username: username,
-            headers: headers,
-          ),
+          IdentityRequest(host: host, username: username, headers: headers),
         );
       }
     } on DriftRemoteException catch (e) {
@@ -400,7 +394,7 @@ class _LoginLoadingDialogState extends State<LoginLoadingDialog> {
               child: Text(
                 'Connecting to ${linkToDisplay(widget.host)} as ${widget.username ?? 'anonymous'}...',
               ),
-            )
+            ),
           ],
         ),
       ),
@@ -423,8 +417,9 @@ class HostFormField extends StatefulWidget {
 }
 
 class _HostFormFieldState extends State<HostFormField> {
-  late final TextEditingController controller =
-      TextEditingController(text: widget.controller.text);
+  late final TextEditingController controller = TextEditingController(
+    text: widget.controller.text,
+  );
   bool isHttps = true;
 
   final String http = 'http://';
@@ -493,10 +488,7 @@ class _HostFormFieldState extends State<HostFormField> {
 }
 
 class UsernameFormField extends StatelessWidget {
-  const UsernameFormField({
-    super.key,
-    required this.controller,
-  });
+  const UsernameFormField({super.key, required this.controller});
 
   final TextEditingController controller;
 
@@ -561,11 +553,11 @@ class _ApikeyFormFieldState extends State<ApikeyFormField> {
               children: [
                 IconButton(
                   tooltip: obscurePassword ? 'Show' : 'Hide',
-                  icon: Icon(obscurePassword
-                      ? Icons.visibility_off
-                      : Icons.visibility),
-                  onPressed: () =>
-                      setState(() => obscurePassword = !obscurePassword),
+                  icon: Icon(
+                    obscurePassword ? Icons.visibility_off : Icons.visibility,
+                  ),
+                  onPressed:
+                      () => setState(() => obscurePassword = !obscurePassword),
                 ),
               ],
             ),
@@ -615,9 +607,7 @@ class OmittedPasswordTextInputFormatter extends TextInputFormatter {
           text: newValue.text.replaceAll(passwordOmitted, ''),
         );
       } else {
-        newValue = newValue.copyWith(
-          text: '',
-        );
+        newValue = newValue.copyWith(text: '');
       }
       newValue = newValue.copyWith(
         selection: TextSelection.collapsed(offset: newValue.text.length),

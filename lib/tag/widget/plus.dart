@@ -5,11 +5,7 @@ import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
 
 class TagAddCard extends StatefulWidget {
-  const TagAddCard({
-    super.key,
-    required this.submit,
-    this.category,
-  });
+  const TagAddCard({super.key, required this.submit, this.category});
 
   final String? category;
   final FutureOr<bool> Function(String value)? submit;
@@ -26,8 +22,9 @@ class _TagAddCardState extends State<TagAddCard> {
         constraints: const BoxConstraints(),
         padding: const EdgeInsets.all(2),
         icon: const Icon(Icons.add, size: 16),
-        onPressed: widget.submit != null
-            ? () => PromptActions.of(context).show(
+        onPressed:
+            widget.submit != null
+                ? () => PromptActions.of(context).show(
                   context,
                   TagEditor(
                     category: widget.category,
@@ -35,7 +32,7 @@ class _TagAddCardState extends State<TagAddCard> {
                     controller: PromptActions.of(context),
                   ),
                 )
-            : null,
+                : null,
       ),
     );
   }

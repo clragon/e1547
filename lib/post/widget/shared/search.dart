@@ -3,19 +3,12 @@ import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
 
 class TagSearchFilterTag extends BuilderFilterTag {
-  TagSearchFilterTag({
-    required super.tag,
-    super.name,
-  }) : super(
-          builder: (context, state) => TagSearchFilter(state: state),
-        );
+  TagSearchFilterTag({required super.tag, super.name})
+    : super(builder: (context, state) => TagSearchFilter(state: state));
 }
 
 class TagSearchFilter extends StatelessWidget {
-  const TagSearchFilter({
-    super.key,
-    required this.state,
-  });
+  const TagSearchFilter({super.key, required this.state});
 
   final FilterTagState state;
 
@@ -25,17 +18,18 @@ class TagSearchFilter extends StatelessWidget {
     return SubTextValue(
       value: state.value,
       onChanged: (value) => state.onChanged(TagMap.parse(value).toString()),
-      shouldUpdate: (oldValue, newValue) =>
-          TagMap.parse(oldValue).toString() != newValue,
-      builder: (context, controller) => TagInput(
-        textInputAction: TextInputAction.search,
-        direction: VerticalDirection.up,
-        labelText: state.filter.name,
-        decoration: theme.decoration,
-        focusNode: theme.focusNode,
-        controller: controller,
-        submit: (value) => state.onSubmit?.call(value),
-      ),
+      shouldUpdate:
+          (oldValue, newValue) => TagMap.parse(oldValue).toString() != newValue,
+      builder:
+          (context, controller) => TagInput(
+            textInputAction: TextInputAction.search,
+            direction: VerticalDirection.up,
+            labelText: state.filter.name,
+            decoration: theme.decoration,
+            focusNode: theme.focusNode,
+            controller: controller,
+            submit: (value) => state.onSubmit?.call(value),
+          ),
     );
   }
 }
@@ -58,9 +52,7 @@ class EditTagPrompt extends StatelessWidget {
   Widget build(BuildContext context) {
     bool isDesktop = Theme.of(context).isDesktop;
     return ConstrainedBox(
-      constraints: BoxConstraints(
-        minWidth: isDesktop ? 600 : 0,
-      ),
+      constraints: BoxConstraints(minWidth: isDesktop ? 600 : 0),
       child: Material(
         child: PromptFilterList(
           tags: TagMap({'tags': tag}),
@@ -68,10 +60,7 @@ class EditTagPrompt extends StatelessWidget {
           submitIcon: isDesktop ? const Icon(Icons.add) : null,
           filters: [
             PrimaryFilterConfig(
-              filter: TagSearchFilterTag(
-                tag: 'tags',
-                name: title ?? 'Tags',
-              ),
+              filter: TagSearchFilterTag(tag: 'tags', name: title ?? 'Tags'),
             ),
           ],
           controller: actionController,
@@ -102,12 +91,13 @@ class AddTagFloatingActionButton extends StatelessWidget {
 
     return PromptFloatingActionButton(
       controller: controller,
-      builder: (context) => EditTagPrompt(
-        tag: tag,
-        onSubmit: onSubmit,
-        actionController: controller,
-        title: title,
-      ),
+      builder:
+          (context) => EditTagPrompt(
+            tag: tag,
+            onSubmit: onSubmit,
+            actionController: controller,
+            title: title,
+          ),
       icon: const Icon(Icons.add),
     );
   }

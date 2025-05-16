@@ -65,9 +65,7 @@ class PostImageTile extends StatelessWidget {
             if (onTap != null)
               Material(
                 type: MaterialType.transparency,
-                child: InkWell(
-                  onTap: onTap,
-                ),
+                child: InkWell(onTap: onTap),
               ),
           ],
         ),
@@ -86,19 +84,13 @@ class PostImageTag extends StatelessWidget {
     if (post.ext == 'gif') {
       return const ColoredBox(
         color: Colors.black12,
-        child: Icon(
-          Icons.gif,
-          color: Colors.white,
-        ),
+        child: Icon(Icons.gif, color: Colors.white),
       );
     }
     if (post.type == PostType.video) {
       return const ColoredBox(
         color: Colors.black12,
-        child: Icon(
-          Icons.play_arrow,
-          color: Colors.white,
-        ),
+        child: Icon(Icons.play_arrow, color: Colors.white),
       );
     }
     return const SizedBox.shrink();
@@ -164,11 +156,12 @@ class PostInfoBar extends StatelessWidget {
                             post.vote.score >= 0
                                 ? Icons.arrow_upward
                                 : Icons.arrow_downward,
-                            color: {
-                              VoteStatus.upvoted: Colors.deepOrange,
-                              VoteStatus.downvoted: Colors.blue,
-                              VoteStatus.unknown: null,
-                            }[post.vote.status],
+                            color:
+                                {
+                                  VoteStatus.upvoted: Colors.deepOrange,
+                                  VoteStatus.downvoted: Colors.blue,
+                                  VoteStatus.unknown: null,
+                                }[post.vote.status],
                           ),
                         ),
                       ],
@@ -222,28 +215,26 @@ void defaultPushPostDetail(BuildContext context, Post post) {
   int? cacheSize = context.read<ImageCacheSize>().size;
   Navigator.of(context).push(
     MaterialPageRoute(
-      builder: (context) => ImageCacheSizeProvider(
-        size: cacheSize,
-        child: controller != null
-            ? PostsRouteConnector(
-                controller: controller,
-                child: PostDetailGallery(
-                  controller: controller,
-                  initialPage: controller.items!.indexOf(post),
-                ),
-              )
-            : PostDetail(post: post),
-      ),
+      builder:
+          (context) => ImageCacheSizeProvider(
+            size: cacheSize,
+            child:
+                controller != null
+                    ? PostsRouteConnector(
+                      controller: controller,
+                      child: PostDetailGallery(
+                        controller: controller,
+                        initialPage: controller.items!.indexOf(post),
+                      ),
+                    )
+                    : PostDetail(post: post),
+          ),
     ),
   );
 }
 
 class PostTile extends StatelessWidget {
-  const PostTile({
-    super.key,
-    required this.post,
-    this.onTap,
-  });
+  const PostTile({super.key, required this.post, this.onTap});
 
   final Post post;
   final VoidCallback? onTap;
@@ -255,18 +246,16 @@ class PostTile extends StatelessWidget {
       onTap: onTap ?? () => defaultPushPostDetail(context, post),
       bottomBar: ValueListenableBuilder<bool>(
         valueListenable: context.watch<Settings>().showPostInfo,
-        builder: (context, value, child) =>
-            value ? PostInfoBar(post: post) : const SizedBox(),
+        builder:
+            (context, value, child) =>
+                value ? PostInfoBar(post: post) : const SizedBox(),
       ),
     );
   }
 }
 
 class PostComicTile extends StatelessWidget {
-  const PostComicTile({
-    super.key,
-    required this.post,
-  });
+  const PostComicTile({super.key, required this.post});
 
   final Post post;
 
@@ -276,9 +265,10 @@ class PostComicTile extends StatelessWidget {
       aspectRatio: post.width / post.height,
       child: PostImageTile(
         post: post,
-        size: post.type == PostType.video
-            ? PostImageSize.sample
-            : PostImageSize.file,
+        size:
+            post.type == PostType.video
+                ? PostImageSize.sample
+                : PostImageSize.file,
         withLowRes: true,
         showProgress: false,
         onTap: () => defaultPushPostDetail(context, post),
@@ -288,10 +278,7 @@ class PostComicTile extends StatelessWidget {
 }
 
 class PostFeedTile extends StatelessWidget {
-  const PostFeedTile({
-    super.key,
-    required this.post,
-  });
+  const PostFeedTile({super.key, required this.post});
 
   final Post post;
 
@@ -308,11 +295,13 @@ class PostFeedTile extends StatelessWidget {
               children: [
                 IconButton(
                   icon: const Icon(Icons.comment),
-                  onPressed: () => Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => PostCommentsPage(postId: post.id),
-                    ),
-                  ),
+                  onPressed:
+                      () => Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder:
+                              (context) => PostCommentsPage(postId: post.id),
+                        ),
+                      ),
                 ),
                 const SizedBox(width: 12),
                 Text(post.commentCount.toString()),
@@ -323,19 +312,24 @@ class PostFeedTile extends StatelessWidget {
               score: post.vote.score,
               onUpvote: (isLiked) async {
                 PostController controller = context.read<PostController>();
-                ScaffoldMessengerState messenger =
-                    ScaffoldMessenger.of(context);
+                ScaffoldMessengerState messenger = ScaffoldMessenger.of(
+                  context,
+                );
                 if (context.read<Client>().hasLogin) {
                   controller
                       .vote(post: post, upvote: true, replace: !isLiked)
                       .then((value) {
-                    if (!value) {
-                      messenger.showSnackBar(SnackBar(
-                        duration: const Duration(seconds: 1),
-                        content: Text('Failed to upvote Post #${post.id}'),
-                      ));
-                    }
-                  });
+                        if (!value) {
+                          messenger.showSnackBar(
+                            SnackBar(
+                              duration: const Duration(seconds: 1),
+                              content: Text(
+                                'Failed to upvote Post #${post.id}',
+                              ),
+                            ),
+                          );
+                        }
+                      });
                   return !isLiked;
                 } else {
                   return false;
@@ -343,19 +337,24 @@ class PostFeedTile extends StatelessWidget {
               },
               onDownvote: (isLiked) async {
                 PostController controller = context.read<PostController>();
-                ScaffoldMessengerState messenger =
-                    ScaffoldMessenger.of(context);
+                ScaffoldMessengerState messenger = ScaffoldMessenger.of(
+                  context,
+                );
                 if (context.read<Client>().hasLogin) {
                   controller
                       .vote(post: post, upvote: false, replace: !isLiked)
                       .then((value) {
-                    if (!value) {
-                      messenger.showSnackBar(SnackBar(
-                        duration: const Duration(seconds: 1),
-                        content: Text('Failed to downvote Post #${post.id}'),
-                      ));
-                    }
-                  });
+                        if (!value) {
+                          messenger.showSnackBar(
+                            SnackBar(
+                              duration: const Duration(seconds: 1),
+                              content: Text(
+                                'Failed to downvote Post #${post.id}',
+                              ),
+                            ),
+                          );
+                        }
+                      });
                   return !isLiked;
                 } else {
                   return false;
@@ -371,10 +370,11 @@ class PostFeedTile extends StatelessWidget {
             ),
             IconButton(
               icon: const Icon(Icons.share),
-              onPressed: () => Share.text(
-                context,
-                context.read<Client>().withHost(post.link),
-              ),
+              onPressed:
+                  () => Share.text(
+                    context,
+                    context.read<Client>().withHost(post.link),
+                  ),
             ),
           ],
         ),
@@ -383,25 +383,23 @@ class PostFeedTile extends StatelessWidget {
 
     Widget menu() {
       return PopupMenuButton<VoidCallback>(
-        icon: Icon(
-          Icons.more_vert,
-          color: dimTextColor(context),
-        ),
+        icon: Icon(Icons.more_vert, color: dimTextColor(context)),
         iconSize: 18,
         onSelected: (value) => value(),
-        itemBuilder: (context) => [
-          if (post.file != null)
-            PopupMenuTile(
-              value: () => postDownloadingNotification(context, {post}),
-              title: 'Download',
-              icon: Icons.file_download,
-            ),
-          PopupMenuTile(
-            value: () => launch(context.read<Client>().withHost(post.link)),
-            title: 'Browse',
-            icon: Icons.open_in_browser,
-          ),
-        ],
+        itemBuilder:
+            (context) => [
+              if (post.file != null)
+                PopupMenuTile(
+                  value: () => postDownloadingNotification(context, {post}),
+                  title: 'Download',
+                  icon: Icons.file_download,
+                ),
+              PopupMenuTile(
+                value: () => launch(context.read<Client>().withHost(post.link)),
+                title: 'Browse',
+                icon: Icons.open_in_browser,
+              ),
+            ],
       );
     }
 
@@ -416,21 +414,23 @@ class PostFeedTile extends StatelessWidget {
               PostController? controller = context.read<PostController?>();
               Navigator.of(context).push(
                 MaterialPageRoute(
-                  builder: (context) => PostVideoRoute(
-                    post: post,
-                    child: ImageCacheSizeProvider(
-                      size: cacheSize,
-                      child: controller != null
-                          ? ChangeNotifierProvider.value(
-                              value: controller,
-                              child: PostsRouteConnector(
-                                controller: controller,
-                                child: PostFullscreen(post: post),
-                              ),
-                            )
-                          : PostFullscreen(post: post),
-                    ),
-                  ),
+                  builder:
+                      (context) => PostVideoRoute(
+                        post: post,
+                        child: ImageCacheSizeProvider(
+                          size: cacheSize,
+                          child:
+                              controller != null
+                                  ? ChangeNotifierProvider.value(
+                                    value: controller,
+                                    child: PostsRouteConnector(
+                                      controller: controller,
+                                      child: PostFullscreen(post: post),
+                                    ),
+                                  )
+                                  : PostFullscreen(post: post),
+                        ),
+                      ),
                 ),
               );
             },
@@ -457,13 +457,12 @@ class PostFeedTile extends StatelessWidget {
                         child: TimedText(
                           created: post.createdAt,
                           child: DefaultTextStyle(
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyMedium!
-                                .copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
-                                ),
+                            style: Theme.of(
+                              context,
+                            ).textTheme.bodyMedium!.copyWith(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
                             child: ArtistName(post: post),
                           ),
                         ),

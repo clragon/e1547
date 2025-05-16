@@ -29,43 +29,50 @@ class IdentitiesPage extends StatelessWidget {
             trailing: PopupMenuButton<VoidCallback>(
               icon: const Dimmed(child: Icon(Icons.more_vert)),
               onSelected: (value) => value(),
-              itemBuilder: (context) => [
-                PopupMenuTile(
-                  title: 'Edit',
-                  icon: Icons.edit,
-                  value: () => Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => IdentityPage(identity: identity),
+              itemBuilder:
+                  (context) => [
+                    PopupMenuTile(
+                      title: 'Edit',
+                      icon: Icons.edit,
+                      value:
+                          () => Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder:
+                                  (context) => IdentityPage(identity: identity),
+                            ),
+                          ),
                     ),
-                  ),
-                ),
-                PopupMenuTile(
-                  title: 'Delete',
-                  icon: Icons.delete,
-                  value: () => showDialog(
-                    context: context,
-                    builder: (context) => AlertDialog(
-                      title: const Text('Delete identity?'),
-                      content: const Text(
-                        'All your data will be permanently removed, including history and follows.',
-                      ),
-                      actions: [
-                        TextButton(
-                          onPressed: Navigator.of(context).maybePop,
-                          child: const Text('CANCEL'),
-                        ),
-                        ElevatedButton(
-                          child: const Text('DELETE'),
-                          onPressed: () {
-                            Navigator.of(context).maybePop();
-                            context.read<IdentityService>().remove(identity);
-                          },
-                        ),
-                      ],
+                    PopupMenuTile(
+                      title: 'Delete',
+                      icon: Icons.delete,
+                      value:
+                          () => showDialog(
+                            context: context,
+                            builder:
+                                (context) => AlertDialog(
+                                  title: const Text('Delete identity?'),
+                                  content: const Text(
+                                    'All your data will be permanently removed, including history and follows.',
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: Navigator.of(context).maybePop,
+                                      child: const Text('CANCEL'),
+                                    ),
+                                    ElevatedButton(
+                                      child: const Text('DELETE'),
+                                      onPressed: () {
+                                        Navigator.of(context).maybePop();
+                                        context.read<IdentityService>().remove(
+                                          identity,
+                                        );
+                                      },
+                                    ),
+                                  ],
+                                ),
+                          ),
                     ),
-                  ),
-                ),
-              ],
+                  ],
             ),
           ),
         ),
@@ -98,98 +105,106 @@ class IdentitiesPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return SubStream(
       create: () => context.watch<IdentityService>().all().stream,
-      builder: (context, snapshot) => LimitedWidthLayout.builder(
-        builder: (context) {
-          List<Identity>? identities = snapshot.data;
-          return Scaffold(
-            appBar: const TransparentAppBar(
-              child: DefaultAppBar(leading: CloseButton()),
-            ),
-            floatingActionButton: identities != null
-                ? FloatingActionButton(
-                    child: const Icon(Icons.add),
-                    onPressed: () => Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => const IdentityPage(),
-                      ),
-                    ),
-                  )
-                : null,
-            body: LayoutBuilder(
-              builder: (context, constraints) {
-                bool isWide = constraints.maxWidth > 1100;
-                return Column(
-                  children: [
-                    Expanded(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: isWide
-                            ? CrossAxisAlignment.center
-                            : CrossAxisAlignment.start,
-                        children: [
-                          if (isWide)
-                            Expanded(
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  const AppIcon(radius: 64),
-                                  const SizedBox(height: 32),
-                                  Text(
-                                    AppInfo.instance.appName,
-                                    style:
-                                        Theme.of(context).textTheme.titleLarge,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          SizedBox(
-                            width: isWide ? 700 : constraints.maxWidth,
-                            child: LimitedWidthLayout.builder(
-                              maxWidth: 520,
-                              builder: (context) => Center(
-                                child: ListView(
-                                  padding: LimitedWidthLayout.of(context)
-                                      .padding
-                                      .add(defaultActionListPadding),
-                                  shrinkWrap: true,
-                                  children: [
-                                    if (!isWide)
-                                      const SizedBox(
-                                        height: 300,
-                                        child: Center(
-                                          child: AppIcon(
-                                            radius: 64,
-                                          ),
-                                        ),
-                                      ),
-                                    if (identities == null)
-                                      const Center(
-                                        child: CircularProgressIndicator(),
-                                      )
-                                    else if (snapshot.hasError)
-                                      const IconMessage(
-                                        icon: Icon(Icons.warning_amber),
-                                        title: Text(
-                                          'Failed to load identities',
-                                        ),
-                                      )
-                                    else
-                                      form(context, identities),
-                                  ],
+      builder:
+          (context, snapshot) => LimitedWidthLayout.builder(
+            builder: (context) {
+              List<Identity>? identities = snapshot.data;
+              return Scaffold(
+                appBar: const TransparentAppBar(
+                  child: DefaultAppBar(leading: CloseButton()),
+                ),
+                floatingActionButton:
+                    identities != null
+                        ? FloatingActionButton(
+                          child: const Icon(Icons.add),
+                          onPressed:
+                              () => Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) => const IdentityPage(),
                                 ),
                               ),
-                            ),
+                        )
+                        : null,
+                body: LayoutBuilder(
+                  builder: (context, constraints) {
+                    bool isWide = constraints.maxWidth > 1100;
+                    return Column(
+                      children: [
+                        Expanded(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment:
+                                isWide
+                                    ? CrossAxisAlignment.center
+                                    : CrossAxisAlignment.start,
+                            children: [
+                              if (isWide)
+                                Expanded(
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      const AppIcon(radius: 64),
+                                      const SizedBox(height: 32),
+                                      Text(
+                                        AppInfo.instance.appName,
+                                        style:
+                                            Theme.of(
+                                              context,
+                                            ).textTheme.titleLarge,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              SizedBox(
+                                width: isWide ? 700 : constraints.maxWidth,
+                                child: LimitedWidthLayout.builder(
+                                  maxWidth: 520,
+                                  builder:
+                                      (context) => Center(
+                                        child: ListView(
+                                          padding: LimitedWidthLayout.of(
+                                            context,
+                                          ).padding.add(
+                                            defaultActionListPadding,
+                                          ),
+                                          shrinkWrap: true,
+                                          children: [
+                                            if (!isWide)
+                                              const SizedBox(
+                                                height: 300,
+                                                child: Center(
+                                                  child: AppIcon(radius: 64),
+                                                ),
+                                              ),
+                                            if (identities == null)
+                                              const Center(
+                                                child:
+                                                    CircularProgressIndicator(),
+                                              )
+                                            else if (snapshot.hasError)
+                                              const IconMessage(
+                                                icon: Icon(Icons.warning_amber),
+                                                title: Text(
+                                                  'Failed to load identities',
+                                                ),
+                                              )
+                                            else
+                                              form(context, identities),
+                                          ],
+                                        ),
+                                      ),
+                                ),
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
-                    ),
-                  ],
-                );
-              },
-            ),
-          );
-        },
-      ),
+                        ),
+                      ],
+                    );
+                  },
+                ),
+              );
+            },
+          ),
     );
   }
 }

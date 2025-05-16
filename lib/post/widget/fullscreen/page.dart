@@ -43,10 +43,13 @@ class PostFullscreen extends StatelessWidget {
                       axis: Axis.horizontal,
                       child: PhotoView.customChild(
                         heroAttributes: PhotoViewHeroAttributes(tag: post.link),
-                        backgroundDecoration:
-                            const BoxDecoration(color: Colors.transparent),
-                        childSize:
-                            Size(post.width.toDouble(), post.height.toDouble()),
+                        backgroundDecoration: const BoxDecoration(
+                          color: Colors.transparent,
+                        ),
+                        childSize: Size(
+                          post.width.toDouble(),
+                          post.height.toDouble(),
+                        ),
                         initialScale: PhotoViewComputedScale.contained,
                         minScale: PhotoViewComputedScale.contained,
                         maxScale: PhotoViewComputedScale.covered * 6,
@@ -73,7 +76,8 @@ class PostFullscreen extends StatelessWidget {
                 case PostType.unsupported:
                   // this never occurs, ImageOverlay will display instead.
                   throw StateError(
-                      'PostFullscreen received an unsupported image!');
+                    'PostFullscreen received an unsupported image!',
+                  );
               }
             },
           ),

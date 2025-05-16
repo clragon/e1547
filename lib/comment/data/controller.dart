@@ -27,28 +27,25 @@ class CommentController extends PageClientDataController<Comment> {
 
   @override
   @protected
-  Future<List<Comment>> fetch(
-    int page,
-    bool force,
-  ) =>
-      client.comments.byPost(
-        id: postId,
-        page: page,
-        force: force,
-        cancelToken: cancelToken,
-        ascending: orderByOldest,
-      );
+  Future<List<Comment>> fetch(int page, bool force) => client.comments.byPost(
+    id: postId,
+    page: page,
+    force: force,
+    cancelToken: cancelToken,
+    ascending: orderByOldest,
+  );
 
   @override
-  List<Comment>? filter(List<Comment>? items) => super.filter(items
-      ?.whereNot(
-          (e) => client.traits.value.denylist.contains('user:${e.creatorId}'))
-      .toList());
+  List<Comment>? filter(List<Comment>? items) => super.filter(
+    items
+        ?.whereNot(
+          (e) => client.traits.value.denylist.contains('user:${e.creatorId}'),
+        )
+        .toList(),
+  );
 
-  void replaceComment(Comment comment) => updateItem(
-        items?.indexWhere((e) => e.id == comment.id) ?? -1,
-        comment,
-      );
+  void replaceComment(Comment comment) =>
+      updateItem(items?.indexWhere((e) => e.id == comment.id) ?? -1, comment);
 
   Future<bool> vote({
     required Comment comment,
@@ -88,9 +85,10 @@ class CommentController extends PageClientDataController<Comment> {
 class CommentProvider
     extends SubChangeNotifierProvider<Client, CommentController> {
   CommentProvider({required int postId, super.child, super.builder})
-      : super(
-          create: (context, client) =>
-              CommentController(client: client, postId: postId),
-          keys: (context) => [postId],
-        );
+    : super(
+        create:
+            (context, client) =>
+                CommentController(client: client, postId: postId),
+        keys: (context) => [postId],
+      );
 }

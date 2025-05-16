@@ -4,11 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:recase/recase.dart';
 
 class LogStringCard extends StatelessWidget {
-  const LogStringCard({
-    super.key,
-    required this.item,
-    this.expanded = false,
-  });
+  const LogStringCard({super.key, required this.item, this.expanded = false});
 
   final LogString item;
   final bool expanded;
@@ -21,7 +17,8 @@ class LogStringCard extends StatelessWidget {
       key: ValueKey(item),
       color: item.level.color,
       title: Text(
-          '${item.level.name.pascalCase} | ${logStringDateFormat.format(item.time)}'),
+        '${item.level.name.pascalCase} | ${logStringDateFormat.format(item.time)}',
+      ),
       content: Text(short),
       fullContent: short != long ? LogStringBody(item: item) : null,
       expanded: expanded,
@@ -38,8 +35,9 @@ class LogStringBody extends StatelessWidget {
   Widget build(BuildContext context) {
     String value = '${item.logger}: ${item.body}';
     value = value.replaceAllMapped(RegExp(r'\r\n'), (_) => '\n');
-    RegExp sectionRegex =
-        RegExp(r'╔(?<title>[^═╗\n]*)(═*╗)?\n(?<content>(║.*?\n)*)(╚═*╝)');
+    RegExp sectionRegex = RegExp(
+      r'╔(?<title>[^═╗\n]*)(═*╗)?\n(?<content>(║.*?\n)*)(╚═*╝)',
+    );
     List<RegExpMatch> matches = sectionRegex.allMatches(value).toList();
     if (matches.isEmpty) {
       return Text(value.ellipse(500).split('\n').take(10).join('\n'));

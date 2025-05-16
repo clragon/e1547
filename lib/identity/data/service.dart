@@ -6,10 +6,8 @@ import 'package:e1547/identity/identity.dart';
 import 'package:flutter/foundation.dart';
 
 class IdentityService extends IdentityRepository with ChangeNotifier {
-  IdentityService({
-    required GeneratedDatabase database,
-    this.onCreate,
-  }) : super(database);
+  IdentityService({required GeneratedDatabase database, this.onCreate})
+    : super(database);
 
   StreamSubscription<Identity?>? _subscription;
 
@@ -47,10 +45,11 @@ class IdentityService extends IdentityRepository with ChangeNotifier {
     notifyListeners();
   }
 
-  Stream<Identity?> _find(int? id) => id == null
-      ? Stream.value(null)
-      : (select(identitiesTable)..where((tbl) => tbl.id.equals(id)))
-          .watchSingleOrNull();
+  Stream<Identity?> _find(int? id) =>
+      id == null
+          ? Stream.value(null)
+          : (select(identitiesTable)
+            ..where((tbl) => tbl.id.equals(id))).watchSingleOrNull();
 
   Future<void> _onChanged(Identity? value) async {
     if (value == null) return activate(null);

@@ -2,10 +2,7 @@ import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
 
 class CodeWrap extends StatelessWidget {
-  const CodeWrap({
-    super.key,
-    required this.child,
-  });
+  const CodeWrap({super.key, required this.child});
 
   final Widget child;
 
@@ -15,9 +12,9 @@ class CodeWrap extends StatelessWidget {
       backgroundColor: Theme.of(context).canvasColor,
       color: dimTextColor(context),
       child: DefaultTextStyle(
-        style: DefaultTextStyle.of(context).style.copyWith(
-              fontFamily: 'JetBrains Mono',
-            ),
+        style: DefaultTextStyle.of(
+          context,
+        ).style.copyWith(fontFamily: 'JetBrains Mono'),
         child: Padding(
           padding: const EdgeInsets.all(8),
           child: Row(

@@ -56,17 +56,14 @@ class VideoService extends ChangeNotifier {
       _logger.fine('Too many (${loaded.length}) videos loaded!');
       disposeVideo(loaded.keys.first);
     }
-    return _videos.putIfAbsent(
-      key,
-      () {
-        VideoPlayer player = VideoPlayer();
-        // TODO: this is missing client auth headers
-        player.open(Media(key), play: false);
-        player.setPlaylistMode(PlaylistMode.single);
-        player.setVolume(_muteVideos ? 0 : 100);
-        return player;
-      },
-    );
+    return _videos.putIfAbsent(key, () {
+      VideoPlayer player = VideoPlayer();
+      // TODO: this is missing client auth headers
+      player.open(Media(key), play: false);
+      player.setPlaylistMode(PlaylistMode.single);
+      player.setVolume(_muteVideos ? 0 : 100);
+      return player;
+    });
   }
 
   Future<void> disposeVideo(String key) async {
@@ -84,11 +81,11 @@ class VideoService extends ChangeNotifier {
 class VideoServiceProvider
     extends SubChangeNotifierProvider<Settings, VideoService> {
   VideoServiceProvider({super.child, super.builder})
-      : super(
-          create: (context, settings) => VideoService(
-            muteVideos: settings.muteVideos.value,
-          ),
-        );
+    : super(
+        create:
+            (context, settings) =>
+                VideoService(muteVideos: settings.muteVideos.value),
+      );
 }
 
 class VideoServiceVolumeControl extends StatelessWidget {
@@ -120,18 +117,18 @@ enum VideoResolution {
   source;
 
   String get title => switch (this) {
-        VideoResolution.standard => 'Standard (480p)',
-        VideoResolution.high => 'High (720p)',
-        VideoResolution.full => 'Full (1080p)',
-        VideoResolution.ultra => 'Ultra (4K)',
-        VideoResolution.source => 'Source',
-      };
+    VideoResolution.standard => 'Standard (480p)',
+    VideoResolution.high => 'High (720p)',
+    VideoResolution.full => 'Full (1080p)',
+    VideoResolution.ultra => 'Ultra (4K)',
+    VideoResolution.source => 'Source',
+  };
 
   int get pixels => switch (this) {
-        VideoResolution.standard => 640 * 480,
-        VideoResolution.high => 1280 * 720,
-        VideoResolution.full => 1920 * 1080,
-        VideoResolution.ultra => 3840 * 2160,
-        VideoResolution.source => 4096 * 2160,
-      };
+    VideoResolution.standard => 640 * 480,
+    VideoResolution.high => 1280 * 720,
+    VideoResolution.full => 1920 * 1080,
+    VideoResolution.ultra => 3840 * 2160,
+    VideoResolution.source => 4096 * 2160,
+  };
 }

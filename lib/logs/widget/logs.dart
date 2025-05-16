@@ -25,43 +25,42 @@ class _LogsPageState extends State<LogsPage> {
   }
 
   LogLoader liveLoader() => LogLoader(
-        load: () => context.read<Logs>().stream().map((records) =>
-            records.reversed.map((e) => LogString.fromRecord(e)).toList()),
-      );
+    load:
+        () => context.read<Logs>().stream().map(
+          (records) =>
+              records.reversed.map((e) => LogString.fromRecord(e)).toList(),
+        ),
+  );
 
   @override
   Widget build(BuildContext context) {
     return LogPage(
       loader: loader,
-      onShowAll: () => Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (context) => LogFileList(
-            onSelected: (loader) {
-              setState(() => this.loader = loader);
-              Navigator.of(context).pop();
-            },
+      onShowAll:
+          () => Navigator.of(context).push(
+            MaterialPageRoute(
+              builder:
+                  (context) => LogFileList(
+                    onSelected: (loader) {
+                      setState(() => this.loader = loader);
+                      Navigator.of(context).pop();
+                    },
+                  ),
+            ),
           ),
-        ),
-      ),
     );
   }
 }
 
 class LogLoader {
-  const LogLoader({
-    this.date,
-    required this.load,
-  });
+  const LogLoader({this.date, required this.load});
 
   final DateTime? date;
   final Stream<List<LogString>> Function() load;
 }
 
 class LogFileList extends StatefulWidget {
-  const LogFileList({
-    super.key,
-    required this.onSelected,
-  });
+  const LogFileList({super.key, required this.onSelected});
 
   final ValueSetter<LogLoader> onSelected;
 
@@ -79,20 +78,26 @@ class _LogFileListState extends State<LogFileList> {
   }
 
   void load() {
-    files = Directory(context.read<AppStorage>().temporaryFiles)
-        .list()
-        .where((e) =>
-            FileSystemEntity.isFileSync(e.path) && e.path.endsWith('.log'))
-        .cast<File>()
-        .map((e) => LogFileInfo.parse(e.path))
-        .toList();
+    files =
+        Directory(context.read<AppStorage>().temporaryFiles)
+            .list()
+            .where(
+              (e) =>
+                  FileSystemEntity.isFileSync(e.path) &&
+                  e.path.endsWith('.log'),
+            )
+            .cast<File>()
+            .map((e) => LogFileInfo.parse(e.path))
+            .toList();
     setState(() {});
   }
 
   LogLoader liveLoader() => LogLoader(
-        load: () => context.read<Logs>().stream().map(
-            (records) => records.map((e) => LogString.fromRecord(e)).toList()),
-      );
+    load:
+        () => context.read<Logs>().stream().map(
+          (records) => records.map((e) => LogString.fromRecord(e)).toList(),
+        ),
+  );
 
   Stream<List<LogString>> loadFile(String path) {
     File file = File(path);
@@ -102,9 +107,9 @@ class _LogFileListState extends State<LogFileList> {
         controller.add(await _read(file));
         try {
           controller.addStream(
-            file.watch(events: FileSystemEvent.modify).asyncMap(
-                  (_) async => _read(file),
-                ),
+            file
+                .watch(events: FileSystemEvent.modify)
+                .asyncMap((_) async => _read(file)),
           );
         } on FileSystemException {
           controller.addStream(Stream.value(await _read(file)));
@@ -125,17 +130,16 @@ class _LogFileListState extends State<LogFileList> {
       child: FutureBuilder(
         future: files,
         builder: (context, snapshot) {
-          List<LogFileInfo>? files = snapshot.data
-              ?.map((e) => LogFileInfo.parse(e.path))
-              .sorted((a, b) => b.date.compareTo(a.date))
-              .toList();
+          List<LogFileInfo>? files =
+              snapshot.data
+                  ?.map((e) => LogFileInfo.parse(e.path))
+                  .sorted((a, b) => b.date.compareTo(a.date))
+                  .toList();
           return SelectionLayout<LogFileInfo>(
             items: files,
             child: Scaffold(
               appBar: LogFileSelectionAppBar(
-                child: const DefaultAppBar(
-                  title: Text('Log Files'),
-                ),
+                child: const DefaultAppBar(title: Text('Log Files')),
                 onDelete: (files) {
                   for (final file in files) {
                     File(file.path).delete();
@@ -152,9 +156,7 @@ class _LogFileListState extends State<LogFileList> {
                     );
                   }
                   if (files == null) {
-                    return const Center(
-                      child: CircularProgressIndicator(),
-                    );
+                    return const Center(child: CircularProgressIndicator());
                   }
                   if (files.isEmpty) {
                     return const IconMessage(
@@ -202,12 +204,13 @@ class _LogFileListState extends State<LogFileList> {
                         index--;
                         return LogFileTile(
                           file: files[index],
-                          onSelected: (file) => widget.onSelected(
-                            LogLoader(
-                              date: file.date,
-                              load: () => loadFile(file.path),
-                            ),
-                          ),
+                          onSelected:
+                              (file) => widget.onSelected(
+                                LogLoader(
+                                  date: file.date,
+                                  load: () => loadFile(file.path),
+                                ),
+                              ),
                         );
                       },
                     ),
@@ -223,11 +226,7 @@ class _LogFileListState extends State<LogFileList> {
 }
 
 class LogFileTile extends StatelessWidget {
-  const LogFileTile({
-    super.key,
-    required this.file,
-    this.onSelected,
-  });
+  const LogFileTile({super.key, required this.file, this.onSelected});
 
   final LogFileInfo file;
   final void Function(LogFileInfo file)? onSelected;
@@ -276,11 +275,7 @@ class LogFileTile extends StatelessWidget {
 }
 
 class LogPage extends StatefulWidget {
-  const LogPage({
-    super.key,
-    required this.loader,
-    this.onShowAll,
-  });
+  const LogPage({super.key, required this.loader, this.onShowAll});
 
   final LogLoader loader;
   final VoidCallback? onShowAll;
@@ -295,7 +290,8 @@ class _LogPageState extends State<LogPage> {
   @override
   Widget build(BuildContext context) {
     return SubStream<List<LogString>>(
-      create: () => widget.loader.load().map(
+      create:
+          () => widget.loader.load().map(
             (records) =>
                 records.where((e) => levels.contains(e.level.value)).toList(),
           ),
@@ -309,7 +305,8 @@ class _LogPageState extends State<LogPage> {
               appBar: LogSelectionAppBar(
                 child: DefaultAppBar(
                   title: Text(
-                      'Logs${widget.loader.date != null ? ' - ${DateFormatting.date(widget.loader.date!)}' : ''}'),
+                    'Logs${widget.loader.date != null ? ' - ${DateFormatting.date(widget.loader.date!)}' : ''}',
+                  ),
                   actions: [
                     if (widget.onShowAll != null)
                       IconButton(
@@ -320,48 +317,51 @@ class _LogPageState extends State<LogPage> {
                   ],
                 ),
               ),
-              body: Builder(builder: (context) {
-                if (logs == null) {
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
-                }
-                if (logs.isEmpty) {
-                  return const Center(
-                    child: IconMessage(
-                      title: Text('No log items!'),
-                      icon: Icon(Icons.close),
-                    ),
-                  );
-                }
-                return LimitedWidthLayout.builder(
-                  builder: (context) => ListView.builder(
-                    reverse: true,
-                    padding: LimitedWidthLayout.of(context)
-                        .padding
-                        .add(defaultActionListPadding),
-                    itemCount: logs.length,
-                    itemBuilder: (context, index) =>
-                        SelectionItemOverlay<LogString>(
-                      item: logs[index],
-                      padding: const EdgeInsets.all(4),
-                      child: LogStringCard(
-                        item: logs[index],
+              body: Builder(
+                builder: (context) {
+                  if (logs == null) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  if (logs.isEmpty) {
+                    return const Center(
+                      child: IconMessage(
+                        title: Text('No log items!'),
+                        icon: Icon(Icons.close),
                       ),
-                    ),
-                  ),
-                );
-              }),
-              floatingActionButton: (logs?.isNotEmpty ?? false)
-                  ? FloatingActionButton(
-                      onPressed: () => Share.asFile(
-                        context,
-                        logs!.map((e) => e.toString()).join('\n'),
-                        name: '${logFileDateFormat.format(DateTime.now())}.log',
-                      ),
-                      child: const Icon(Icons.file_download),
-                    )
-                  : null,
+                    );
+                  }
+                  return LimitedWidthLayout.builder(
+                    builder:
+                        (context) => ListView.builder(
+                          reverse: true,
+                          padding: LimitedWidthLayout.of(
+                            context,
+                          ).padding.add(defaultActionListPadding),
+                          itemCount: logs.length,
+                          itemBuilder:
+                              (context, index) =>
+                                  SelectionItemOverlay<LogString>(
+                                    item: logs[index],
+                                    padding: const EdgeInsets.all(4),
+                                    child: LogStringCard(item: logs[index]),
+                                  ),
+                        ),
+                  );
+                },
+              ),
+              floatingActionButton:
+                  (logs?.isNotEmpty ?? false)
+                      ? FloatingActionButton(
+                        onPressed:
+                            () => Share.asFile(
+                              context,
+                              logs!.map((e) => e.toString()).join('\n'),
+                              name:
+                                  '${logFileDateFormat.format(DateTime.now())}.log',
+                            ),
+                        child: const Icon(Icons.file_download),
+                      )
+                      : null,
               endDrawer: LogRecordDrawer(
                 levels: levels,
                 onChanged: (value) => setState(() => levels = value),

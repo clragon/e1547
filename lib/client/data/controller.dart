@@ -45,7 +45,8 @@ abstract class ClientDataController<KeyType, ItemType>
 
   @protected
   Future<PageResponse<KeyType, ItemType>> withError(
-      Future<PageResponse<KeyType, ItemType>> Function() call) async {
+    Future<PageResponse<KeyType, ItemType>> Function() call,
+  ) async {
     try {
       // this must be awaited for the catch to work.
       return await call();
@@ -76,20 +77,15 @@ abstract class PageClientDataController<T> extends ClientDataController<int, T>
   PageClientDataController({super.firstPageKey = 1});
 
   @override
-  Future<PageResponse<int, T>> performRequest(
-    int page,
-    bool force,
-  ) async =>
-      withError(
-        () async {
-          List<T> items = await withStream(fetch(page, force));
-          if (items.isEmpty) {
-            return PageResponse.last(items: items);
-          } else {
-            return PageResponse(items: items, nextPageKey: page + 1);
-          }
-        },
-      );
+  Future<PageResponse<int, T>> performRequest(int page, bool force) async =>
+      withError(() async {
+        List<T> items = await withStream(fetch(page, force));
+        if (items.isEmpty) {
+          return PageResponse.last(items: items);
+        } else {
+          return PageResponse(items: items, nextPageKey: page + 1);
+        }
+      });
 }
 
 mixin StreamableClientDataController<KeyType, ItemType>

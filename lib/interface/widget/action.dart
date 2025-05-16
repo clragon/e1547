@@ -24,7 +24,8 @@ class ControlledTextWrapper extends StatelessWidget {
     BuildContext context,
     TextEditingController controller,
     SubmitString submit,
-  ) builder;
+  )
+  builder;
 
   @override
   Widget build(BuildContext context) {
@@ -33,25 +34,27 @@ class ControlledTextWrapper extends StatelessWidget {
     return SubDefault<TextEditingController>(
       value: textController,
       create: () => TextEditingController(),
-      builder: (context, textController) => SubEffect(
-        effect: () {
-          textController.setFocusToEnd();
-          actionController.setAction(() => submit(textController.text));
-          return null;
-        },
-        keys: [textController, actionController],
-        child: PromptActions(
-          controller: actionController,
-          child: AnimatedBuilder(
-            animation: actionController,
-            builder: (context, child) => builder(
-              context,
-              textController,
-              (_) => actionController.action!(),
+      builder:
+          (context, textController) => SubEffect(
+            effect: () {
+              textController.setFocusToEnd();
+              actionController.setAction(() => submit(textController.text));
+              return null;
+            },
+            keys: [textController, actionController],
+            child: PromptActions(
+              controller: actionController,
+              child: AnimatedBuilder(
+                animation: actionController,
+                builder:
+                    (context, child) => builder(
+                      context,
+                      textController,
+                      (_) => actionController.action!(),
+                    ),
+              ),
             ),
           ),
-        ),
-      ),
     );
   }
 }
@@ -80,19 +83,20 @@ class ControlledTextField extends StatelessWidget {
       submit: submit,
       textController: textController,
       actionController: actionController,
-      builder: (context, controller, submit) => TextField(
-        controller: controller,
-        enableIMEPersonalizedLearning: !PrivateTextFields.of(context),
-        keyboardType: keyboardType,
-        autofocus: true,
-        inputFormatters: inputFormatters,
-        onSubmitted: submit,
-        decoration: InputDecoration(
-          labelText: labelText,
-          suffix: const PromptTextFieldSuffix(),
-        ),
-        readOnly: actionController.isLoading,
-      ),
+      builder:
+          (context, controller, submit) => TextField(
+            controller: controller,
+            enableIMEPersonalizedLearning: !PrivateTextFields.of(context),
+            keyboardType: keyboardType,
+            autofocus: true,
+            inputFormatters: inputFormatters,
+            onSubmitted: submit,
+            decoration: InputDecoration(
+              labelText: labelText,
+              suffix: const PromptTextFieldSuffix(),
+            ),
+            readOnly: actionController.isLoading,
+          ),
     );
   }
 }

@@ -24,12 +24,12 @@ class StreamFuture<T> extends DelegatingFuture<T> {
   factory StreamFuture.value(T value) => StreamFuture(Stream<T>.value(value));
 
   StreamFuture._(Stream<T> stream)
-      : assert(
-          stream.isBroadcast,
-          'StreamFuture can only be created from a broadcast stream.',
-        ),
-        _stream = stream,
-        super(stream.first);
+    : assert(
+        stream.isBroadcast,
+        'StreamFuture can only be created from a broadcast stream.',
+      ),
+      _stream = stream,
+      super(stream.first);
 
   final Stream<T> _stream;
 
@@ -49,9 +49,10 @@ extension FutureStreamExtension<T> on Future<T> {
   /// Creates a [StreamFuture] from this [Future].
   /// Either casts it to a [StreamFuture] if it already is one, or creates a new
   /// [StreamFuture] from it.
-  StreamFuture<T> get stream => this is StreamFuture<T>
-      ? this as StreamFuture<T>
-      : StreamFuture<T>(asStream());
+  StreamFuture<T> get stream =>
+      this is StreamFuture<T>
+          ? this as StreamFuture<T>
+          : StreamFuture<T>(asStream());
 
   /// Turns this [Future] into a [Stream].
   /// If the [Future] is already a [StreamFuture], it will return the [Stream]

@@ -6,22 +6,18 @@ import 'package:flutter_sub/flutter_sub.dart';
 Widget? mergeSuffixIcons(InputDecoration? decoration, Widget? icon) {
   return decoration?.suffixIcon != null
       ? Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (icon != null) icon,
-            const SizedBox(width: 8),
-            decoration!.suffixIcon!,
-          ],
-        )
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (icon != null) icon,
+          const SizedBox(width: 8),
+          decoration!.suffixIcon!,
+        ],
+      )
       : icon;
 }
 
 class FilterTagTheme extends InheritedTheme {
-  const FilterTagTheme({
-    super.key,
-    required this.data,
-    required super.child,
-  });
+  const FilterTagTheme({super.key, required this.data, required super.child});
 
   final FilterTagThemeData data;
 
@@ -48,32 +44,33 @@ class WrapperFilterConfig extends BuilderFilterConfig {
     required this.unwrapper,
     required this.filters,
   }) : super(
-          builder: (context, state) {
-            QueryMap wrap(QueryMap tags) {
-              return QueryMap.fromEntries(
-                tags.entries.map((e) => MapEntry(wrapper(e.key), e.value)),
-              );
-            }
+         builder: (context, state) {
+           QueryMap wrap(QueryMap tags) {
+             return QueryMap.fromEntries(
+               tags.entries.map((e) => MapEntry(wrapper(e.key), e.value)),
+             );
+           }
 
-            QueryMap unwrap(QueryMap tags) {
-              return QueryMap.fromEntries(
-                tags.entries.map((e) => MapEntry(unwrapper(e.key), e.value)),
-              );
-            }
+           QueryMap unwrap(QueryMap tags) {
+             return QueryMap.fromEntries(
+               tags.entries.map((e) => MapEntry(unwrapper(e.key), e.value)),
+             );
+           }
 
-            return FilterList.from(
-              state: FilterConfigState(
-                tags: unwrap(state.tags),
-                onChanged: (value) => state.onChanged(wrap(value)),
-                onSubmit: state.onSubmit != null
-                    ? (value) => state.onSubmit!(wrap(value))
-                    : null,
-                submitIcon: state.submitIcon,
-              ),
-              filters: filters,
-            );
-          },
-        );
+           return FilterList.from(
+             state: FilterConfigState(
+               tags: unwrap(state.tags),
+               onChanged: (value) => state.onChanged(wrap(value)),
+               onSubmit:
+                   state.onSubmit != null
+                       ? (value) => state.onSubmit!(wrap(value))
+                       : null,
+               submitIcon: state.submitIcon,
+             ),
+             filters: filters,
+           );
+         },
+       );
 
   final String Function(String tag) wrapper;
   final String Function(String tag) unwrapper;
@@ -81,16 +78,12 @@ class WrapperFilterConfig extends BuilderFilterConfig {
 }
 
 class PrimaryFilterConfig extends BuilderFilterConfig {
-  PrimaryFilterConfig({
-    required this.filter,
-    this.filters = const [],
-  }) : super(
-          builder: (context, state) => PrimaryFilter(
-            filter: filter,
-            filters: filters,
-            state: state,
-          ),
-        );
+  PrimaryFilterConfig({required this.filter, this.filters = const []})
+    : super(
+        builder:
+            (context, state) =>
+                PrimaryFilter(filter: filter, filters: filters, state: state),
+      );
 
   final FilterTag filter;
   final List<FilterConfig> filters;
@@ -104,12 +97,13 @@ class NestedFilterTag extends BuilderFilterTag {
     super.name,
     required this.filters,
   }) : super(
-          builder: (context, state) => FilterList(
-            tags: decode(state.tags[tag] ?? ''),
-            onChanged: (value) => state.onChanged(encode(value)),
-            filters: filters,
-          ),
-        );
+         builder:
+             (context, state) => FilterList(
+               tags: decode(state.tags[tag] ?? ''),
+               onChanged: (value) => state.onChanged(encode(value)),
+               filters: filters,
+             ),
+       );
 
   final List<FilterConfig> filters;
 }
@@ -122,17 +116,16 @@ class FilterList extends StatelessWidget {
     ValueSetter<QueryMap>? onSubmit,
     Widget? submitIcon,
     required List<FilterConfig> filters,
-  }) =>
-      FilterList.from(
-        key: key,
-        state: FilterConfigState(
-          tags: tags,
-          onChanged: onChanged,
-          onSubmit: onSubmit,
-          submitIcon: submitIcon,
-        ),
-        filters: filters,
-      );
+  }) => FilterList.from(
+    key: key,
+    state: FilterConfigState(
+      tags: tags,
+      onChanged: onChanged,
+      onSubmit: onSubmit,
+      submitIcon: submitIcon,
+    ),
+    filters: filters,
+  );
 
   const FilterList.from({
     super.key,
@@ -146,7 +139,8 @@ class FilterList extends StatelessWidget {
   Widget buildFilter(BuildContext context, FilterConfig config) {
     FilterTagThemeData? theme = FilterTagTheme.maybeOf(context);
     return FilterTagTheme(
-      data: theme ??
+      data:
+          theme ??
           const FilterTagThemeData(
             decoration: InputDecoration(border: OutlineInputBorder()),
           ),
@@ -177,10 +171,7 @@ class FilterList extends StatelessWidget {
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       behavior: HitTestBehavior.opaque,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: children,
-      ),
+      child: Column(mainAxisSize: MainAxisSize.min, children: children),
     );
   }
 }
@@ -199,99 +190,100 @@ class PrimaryFilter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SubFocusNode(builder: (context, focusNode) {
-      return ExpandableTheme(
-        data: ExpandableThemeData(
-          iconColor: Theme.of(context).iconTheme.color,
-        ),
-        child: ExpandableNotifier(
-          child: Builder(
-            builder: (context) {
-              ExpandableController expandableController =
-                  ExpandableController.of(
-                context,
-                required: true,
-                rebuildOnChange: false,
-              )!;
-              return SubListener(
-                listenable: expandableController,
-                listener: () {
-                  if (expandableController.expanded) {
-                    focusNode.unfocus();
-                  } else {
-                    focusNode.requestFocus();
-                  }
-                },
-                builder: (context) {
-                  bool hasChildren = filters.isNotEmpty;
-                  FilterTagThemeData? theme = FilterTagTheme.maybeOf(context);
-                  theme ??= const FilterTagThemeData();
+    return SubFocusNode(
+      builder: (context, focusNode) {
+        return ExpandableTheme(
+          data: ExpandableThemeData(
+            iconColor: Theme.of(context).iconTheme.color,
+          ),
+          child: ExpandableNotifier(
+            child: Builder(
+              builder: (context) {
+                ExpandableController expandableController =
+                    ExpandableController.of(
+                      context,
+                      required: true,
+                      rebuildOnChange: false,
+                    )!;
+                return SubListener(
+                  listenable: expandableController,
+                  listener: () {
+                    if (expandableController.expanded) {
+                      focusNode.unfocus();
+                    } else {
+                      focusNode.requestFocus();
+                    }
+                  },
+                  builder: (context) {
+                    bool hasChildren = filters.isNotEmpty;
+                    FilterTagThemeData? theme = FilterTagTheme.maybeOf(context);
+                    theme ??= const FilterTagThemeData();
 
-                  Widget? submitIcon;
-                  if (state.submitIcon != null) {
-                    submitIcon = IconButton(
-                      icon: state.submitIcon!,
-                      onPressed: () => state.onSubmit?.call(state.tags),
+                    Widget? submitIcon;
+                    if (state.submitIcon != null) {
+                      submitIcon = IconButton(
+                        icon: state.submitIcon!,
+                        onPressed: () => state.onSubmit?.call(state.tags),
+                      );
+                    }
+
+                    theme = theme.copyWith(
+                      primary: true,
+                      decoration: theme.decoration.copyWith(
+                        border: const UnderlineInputBorder(),
+                        prefixIcon:
+                            hasChildren
+                                ? ExpandableButton(child: ExpandableIcon())
+                                : null,
+                        suffixIcon: submitIcon,
+                      ),
+                      focusNode: focusNode,
                     );
-                  }
 
-                  theme = theme.copyWith(
-                    primary: true,
-                    decoration: theme.decoration.copyWith(
-                      border: const UnderlineInputBorder(),
-                      prefixIcon: hasChildren
-                          ? ExpandableButton(child: ExpandableIcon())
-                          : null,
-                      suffixIcon: submitIcon,
-                    ),
-                    focusNode: focusNode,
-                  );
-
-                  return Flexible(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        FilterTagTheme(
-                          data: theme,
-                          child: FilterList.from(
-                            state: state,
-                            filters: [filter],
+                    return Flexible(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          FilterTagTheme(
+                            data: theme,
+                            child: FilterList.from(
+                              state: state,
+                              filters: [filter],
+                            ),
                           ),
-                        ),
-                        if (hasChildren)
-                          Flexible(
-                            child: SingleChildScrollView(
-                              child: Expandable(
-                                collapsed: const SizedBox(),
-                                expanded: Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 16),
-                                  child: FilterList.from(
-                                    state: state,
-                                    filters: filters,
+                          if (hasChildren)
+                            Flexible(
+                              child: SingleChildScrollView(
+                                child: Expandable(
+                                  collapsed: const SizedBox(),
+                                  expanded: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 16,
+                                    ),
+                                    child: FilterList.from(
+                                      state: state,
+                                      filters: filters,
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
-                          ),
-                      ],
-                    ),
-                  );
-                },
-              );
-            },
+                        ],
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
           ),
-        ),
-      );
-    });
+        );
+      },
+    );
   }
 }
 
 class TextFilter extends StatefulWidget {
-  const TextFilter(
-    this.state, {
-    super.key,
-  });
+  const TextFilter(this.state, {super.key});
 
   final FilterTagState<TextFilterTag> state;
 
@@ -330,10 +322,7 @@ class _TextFilterState extends State<TextFilter> {
       focusNode: theme.focusNode,
       decoration: theme.decoration.copyWith(
         labelText: state.filter.name,
-        suffixIcon: mergeSuffixIcons(
-          theme.decoration,
-          state.filter.icon,
-        ),
+        suffixIcon: mergeSuffixIcons(theme.decoration, state.filter.icon),
       ),
       controller: _controller,
       onChanged: (value) => state.onChanged(value.isNotEmpty ? value : null),
@@ -345,10 +334,7 @@ class _TextFilterState extends State<TextFilter> {
 }
 
 class NumberRangeFilter extends StatelessWidget {
-  const NumberRangeFilter(
-    this.state, {
-    super.key,
-  });
+  const NumberRangeFilter(this.state, {super.key});
 
   final FilterTagState<NumberRangeFilterTag> state;
 
@@ -356,28 +342,31 @@ class NumberRangeFilter extends StatelessWidget {
   Widget build(BuildContext context) {
     FilterTagThemeData theme = FilterTagTheme.of(context);
     return InkWell(
-      onTap: () => showDialog(
-        context: context,
-        builder: (context) => RangeDialog(
-          title: state.filter.name != null ? Text(state.filter.name!) : null,
-          value: state.value != null
-              ? NumberRange.tryParse(state.value!)
-              : state.filter.initial,
-          division: 10,
-          max: 100,
-          onSubmit: (value) => state.onChanged(value?.toString()),
-        ),
-      ),
+      onTap:
+          () => showDialog(
+            context: context,
+            builder:
+                (context) => RangeDialog(
+                  title:
+                      state.filter.name != null
+                          ? Text(state.filter.name!)
+                          : null,
+                  value:
+                      state.value != null
+                          ? NumberRange.tryParse(state.value!)
+                          : state.filter.initial,
+                  division: 10,
+                  max: 100,
+                  onSubmit: (value) => state.onChanged(value?.toString()),
+                ),
+          ),
       child: ExcludeFocus(
         child: IgnorePointer(
           child: TextFormField(
             key: Key('FilterList/${state.filter.tag}:${state.value}'),
             decoration: theme.decoration.copyWith(
               labelText: state.filter.name,
-              suffixIcon: mergeSuffixIcons(
-                theme.decoration,
-                state.filter.icon,
-              ),
+              suffixIcon: mergeSuffixIcons(theme.decoration, state.filter.icon),
             ),
             readOnly: true,
             initialValue: state.value,
@@ -389,10 +378,7 @@ class NumberRangeFilter extends StatelessWidget {
 }
 
 class ChoiceFilter extends StatelessWidget {
-  const ChoiceFilter(
-    this.state, {
-    super.key,
-  });
+  const ChoiceFilter(this.state, {super.key});
 
   final FilterTagState<ChoiceFilterTag> state;
 
@@ -411,10 +397,7 @@ class ChoiceFilter extends StatelessWidget {
       isExpanded: true,
       items: [
         for (final option in state.filter.options)
-          DropdownMenuItem(
-            value: option.value,
-            child: Text(option.title),
-          ),
+          DropdownMenuItem(value: option.value, child: Text(option.title)),
       ],
       onChanged: state.onChanged,
     );
@@ -422,10 +405,7 @@ class ChoiceFilter extends StatelessWidget {
 }
 
 class ToggleFilter extends StatelessWidget {
-  const ToggleFilter(
-    this.state, {
-    super.key,
-  });
+  const ToggleFilter(this.state, {super.key});
 
   final FilterTagState<ToggleFilterTag> state;
 
@@ -463,19 +443,17 @@ class ToggleFilter extends StatelessWidget {
         }
       },
       label: state.filter.name,
-      title: state.filter.description != null
-          ? Text(state.filter.description!)
-          : null,
+      title:
+          state.filter.description != null
+              ? Text(state.filter.description!)
+              : null,
       decoration: theme.decoration,
     );
   }
 }
 
 class BuilderTagFilter extends StatelessWidget {
-  const BuilderTagFilter(
-    this.state, {
-    super.key,
-  });
+  const BuilderTagFilter(this.state, {super.key});
 
   final FilterTagState<BuilderFilterTag> state;
 

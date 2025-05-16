@@ -17,16 +17,14 @@ Future<void> showTopicPrompt({
   }
 }
 
-void showTopicSheet({
-  required BuildContext context,
-  required Topic topic,
-}) {
+void showTopicSheet({required BuildContext context, required Topic topic}) {
   showSlidingBottomSheet(
     context,
-    builder: (context) => defaultSlidingSheetDialog(
-      context,
-      (context, sheetState) => TopicSheet(topic: topic),
-    ),
+    builder:
+        (context) => defaultSlidingSheetDialog(
+          context,
+          (context, sheetState) => TopicSheet(topic: topic),
+        ),
   );
 }
 
@@ -58,10 +56,11 @@ class TopicSheet extends StatelessWidget {
                 ),
                 ActionButton(
                   icon: const Icon(Icons.share),
-                  onTap: () async => Share.text(
-                    context,
-                    context.read<Client>().withHost(topic.link),
-                  ),
+                  onTap:
+                      () async => Share.text(
+                        context,
+                        context.read<Client>().withHost(topic.link),
+                      ),
                   label: const Text('Share'),
                 ),
               ],
@@ -89,17 +88,12 @@ class TopicInfo extends StatelessWidget {
     Widget textInfoRow(String label, String value) {
       return Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(label),
-          Text(value),
-        ],
+        children: [Text(label), Text(value)],
       );
     }
 
     return DefaultTextStyle(
-      style: TextStyle(
-        color: dimTextColor(context),
-      ),
+      style: TextStyle(color: dimTextColor(context)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
@@ -110,37 +104,31 @@ class TopicInfo extends StatelessWidget {
             children: [
               const Text('id'),
               InkWell(
-                child: Text(
-                  '#${topic.id}',
-                ),
+                child: Text('#${topic.id}'),
                 onLongPress: () async {
-                  ScaffoldMessengerState messenger =
-                      ScaffoldMessenger.of(context);
-                  Clipboard.setData(ClipboardData(
-                    text: topic.id.toString(),
-                  ));
+                  ScaffoldMessengerState messenger = ScaffoldMessenger.of(
+                    context,
+                  );
+                  Clipboard.setData(ClipboardData(text: topic.id.toString()));
                   await Navigator.of(context).maybePop();
-                  messenger.showSnackBar(SnackBar(
-                    duration: const Duration(seconds: 1),
-                    content: Text('Copied topic id #${topic.id}'),
-                  ));
+                  messenger.showSnackBar(
+                    SnackBar(
+                      duration: const Duration(seconds: 1),
+                      content: Text('Copied topic id #${topic.id}'),
+                    ),
+                  );
                 },
               ),
             ],
           ),
-          textInfoRow(
-            'locked',
-            topic.locked ? 'yes' : 'no',
-          ),
+          textInfoRow('locked', topic.locked ? 'yes' : 'no'),
           textInfoRow(
             'created',
             DateFormatting.dateTime(topic.createdAt.toLocal()),
           ),
           textInfoRow(
             'updated',
-            DateFormatting.dateTime(
-              topic.updatedAt.toLocal(),
-            ),
+            DateFormatting.dateTime(topic.updatedAt.toLocal()),
           ),
         ],
       ),
@@ -187,10 +175,11 @@ class TopicDialog extends StatelessWidget {
                 ),
                 ActionButton(
                   icon: const Icon(Icons.share),
-                  onTap: () async => Share.text(
-                    context,
-                    context.read<Client>().withHost(topic.link),
-                  ),
+                  onTap:
+                      () async => Share.text(
+                        context,
+                        context.read<Client>().withHost(topic.link),
+                      ),
                   label: const Text('Share'),
                 ),
               ],

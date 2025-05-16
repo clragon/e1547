@@ -40,17 +40,15 @@ class LowercaseTextInputFormatter extends TextInputFormatter {
   TextEditingValue formatEditUpdate(
     TextEditingValue oldValue,
     TextEditingValue newValue,
-  ) =>
-      newValue.copyWith(text: newValue.text.toLowerCase());
+  ) => newValue.copyWith(text: newValue.text.toLowerCase());
 }
 
 extension TextEditingSelectionMovement on TextEditingController {
-  void setFocusToStart() => selection = const TextSelection(
-        baseOffset: 0,
-        extentOffset: 0,
-      );
+  void setFocusToStart() =>
+      selection = const TextSelection(baseOffset: 0, extentOffset: 0);
 
-  void setFocusToEnd() => selection = TextSelection(
+  void setFocusToEnd() =>
+      selection = TextSelection(
         baseOffset: text.length,
         extentOffset: text.length,
       );

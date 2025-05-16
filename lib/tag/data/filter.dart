@@ -21,13 +21,11 @@ class FilterConfigState {
   final Widget? submitIcon;
 }
 
-typedef BuilderFilterConfigBuilder = Widget Function(
-    BuildContext context, FilterConfigState state);
+typedef BuilderFilterConfigBuilder =
+    Widget Function(BuildContext context, FilterConfigState state);
 
 class BuilderFilterConfig extends FilterConfig {
-  const BuilderFilterConfig({
-    required this.builder,
-  });
+  const BuilderFilterConfig({required this.builder});
 
   final BuilderFilterConfigBuilder builder;
 }
@@ -35,10 +33,7 @@ class BuilderFilterConfig extends FilterConfig {
 /// A filter in a filter list.
 @immutable
 sealed class FilterTag implements FilterConfig {
-  const FilterTag({
-    required this.tag,
-    this.name,
-  });
+  const FilterTag({required this.tag, this.name});
 
   /// The tag of this filter.
   final String tag;
@@ -51,11 +46,7 @@ sealed class FilterTag implements FilterConfig {
 ///
 /// This is represented by a text field.
 class TextFilterTag extends FilterTag {
-  const TextFilterTag({
-    required super.tag,
-    super.name,
-    this.icon,
-  });
+  const TextFilterTag({required super.tag, super.name, this.icon});
 
   /// The icon of this filter.
   final Widget? icon;
@@ -96,10 +87,7 @@ class NumberRangeFilterTag extends FilterTag {
 /// An choice in a choice filter.
 @immutable
 class ChoiceFilterTagValue {
-  const ChoiceFilterTagValue({
-    required this.value,
-    required this.name,
-  });
+  const ChoiceFilterTagValue({required this.value, required this.name});
 
   /// The value of this choice. Must be unique.
   ///
@@ -163,19 +151,13 @@ class ToggleFilterTag extends FilterTag {
 
 extension FilterStateConfigExtension on FilterConfigState {
   FilterTagState<T> apply<T extends FilterTag>(T filter) {
-    return FilterTagState<T>(
-      config: this,
-      filter: filter,
-    );
+    return FilterTagState<T>(config: this, filter: filter);
   }
 }
 
 @immutable
 class FilterTagState<T extends FilterTag> {
-  const FilterTagState({
-    required this.config,
-    required this.filter,
-  });
+  const FilterTagState({required this.config, required this.filter});
 
   static QueryMap _setOrRemove(QueryMap tags, String key, String? value) {
     tags = Map.of(tags);
@@ -196,9 +178,10 @@ class FilterTagState<T extends FilterTag> {
   ValueSetter<QueryMap>? get onSubmitTags => config.onSubmit;
   ValueSetter<String?> get onChanged =>
       ((value) => onChangedTags(_setOrRemove(tags, filter.tag, value)));
-  ValueSetter<String?>? get onSubmit => onSubmitTags != null
-      ? ((value) => onSubmitTags!(_setOrRemove(tags, filter.tag, value)))
-      : null;
+  ValueSetter<String?>? get onSubmit =>
+      onSubmitTags != null
+          ? ((value) => onSubmitTags!(_setOrRemove(tags, filter.tag, value)))
+          : null;
 
   @override
   String toString() => 'FilterState<$T>(tag: ${filter.tag}, value: $value)';
@@ -213,8 +196,11 @@ class FilterTagState<T extends FilterTag> {
   int get hashCode => Object.hash(filter, value);
 }
 
-typedef BuilderFilterTagBuilder = Widget Function(
-    BuildContext context, FilterTagState<BuilderFilterTag> state);
+typedef BuilderFilterTagBuilder =
+    Widget Function(
+      BuildContext context,
+      FilterTagState<BuilderFilterTag> state,
+    );
 
 class BuilderFilterTag extends FilterTag {
   const BuilderFilterTag({

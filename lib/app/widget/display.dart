@@ -6,10 +6,7 @@ import 'package:flutter_sub/flutter_sub.dart';
 import 'package:secure_app_switcher/secure_app_switcher.dart';
 
 class SecureDisplay extends StatelessWidget {
-  const SecureDisplay({
-    super.key,
-    required this.child,
-  });
+  const SecureDisplay({super.key, required this.child});
 
   final Widget child;
 

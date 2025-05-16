@@ -13,17 +13,12 @@ class WikiInfo extends StatelessWidget {
     Widget textInfoRow(String label, String value) {
       return Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(label),
-          Text(value),
-        ],
+        children: [Text(label), Text(value)],
       );
     }
 
     return DefaultTextStyle(
-      style: TextStyle(
-        color: dimTextColor(context),
-      ),
+      style: TextStyle(color: dimTextColor(context)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
@@ -33,29 +28,25 @@ class WikiInfo extends StatelessWidget {
             children: [
               const Text('id'),
               InkWell(
-                child: Text(
-                  '#${wiki.id}',
-                ),
+                child: Text('#${wiki.id}'),
                 onLongPress: () async {
-                  ScaffoldMessengerState messenger =
-                      ScaffoldMessenger.of(context);
-                  Clipboard.setData(ClipboardData(
-                    text: wiki.id.toString(),
-                  ));
+                  ScaffoldMessengerState messenger = ScaffoldMessenger.of(
+                    context,
+                  );
+                  Clipboard.setData(ClipboardData(text: wiki.id.toString()));
                   await Navigator.of(context).maybePop();
-                  messenger.showSnackBar(SnackBar(
-                    duration: const Duration(seconds: 1),
-                    content: Text('Copied wiki id #${wiki.id}'),
-                  ));
+                  messenger.showSnackBar(
+                    SnackBar(
+                      duration: const Duration(seconds: 1),
+                      content: Text('Copied wiki id #${wiki.id}'),
+                    ),
+                  );
                 },
               ),
             ],
           ),
           if (wiki.otherNames case final otherNames?)
-            textInfoRow(
-              'alias',
-              otherNames.join(', '),
-            ),
+            textInfoRow('alias', otherNames.join(', ')),
           textInfoRow(
             'created',
             DateFormatting.dateTime(wiki.createdAt.toLocal()),
@@ -67,10 +58,7 @@ class WikiInfo extends StatelessWidget {
             ),
           ),
           if (wiki.isLocked case final isLocked?)
-            textInfoRow(
-              'locked',
-              isLocked ? 'yes' : 'no',
-            ),
+            textInfoRow('locked', isLocked ? 'yes' : 'no'),
         ],
       ),
     );

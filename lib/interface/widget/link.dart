@@ -9,10 +9,7 @@ import 'package:flutter/material.dart';
 // so this is not possible right now.
 // See: https://github.com/flutter/flutter/issues/129677
 class LinkPreviewProvider extends StatefulWidget {
-  const LinkPreviewProvider({
-    super.key,
-    required this.child,
-  });
+  const LinkPreviewProvider({super.key, required this.child});
 
   final Widget child;
 
@@ -58,10 +55,7 @@ class LinkPreviewProviderState extends State<LinkPreviewProvider> {
 }
 
 class LinkOverlay extends StatefulWidget {
-  const LinkOverlay({
-    super.key,
-    required this.notifier,
-  });
+  const LinkOverlay({super.key, required this.notifier});
 
   final ValueNotifier<String?> notifier;
 
@@ -126,15 +120,14 @@ class _LinkOverlayState extends State<LinkOverlay>
         opacity: _controller,
         child: Material(
           color: Theme.of(context).cardColor,
-          borderRadius: const BorderRadius.only(
-            topRight: Radius.circular(4),
-          ),
-          child: _currentLink != null
-              ? Padding(
-                  padding: const EdgeInsets.all(4),
-                  child: Text(_currentLink!),
-                )
-              : Container(),
+          borderRadius: const BorderRadius.only(topRight: Radius.circular(4)),
+          child:
+              _currentLink != null
+                  ? Padding(
+                    padding: const EdgeInsets.all(4),
+                    child: Text(_currentLink!),
+                  )
+                  : Container(),
         ),
       ),
     );

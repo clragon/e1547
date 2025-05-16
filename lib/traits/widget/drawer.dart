@@ -12,13 +12,14 @@ class DrawerDenySwitch extends StatelessWidget {
   Widget build(BuildContext context) {
     return AnimatedBuilder(
       animation: controller,
-      builder: (context, child) => DrawerDenySwitchBody(
-        denying: controller.denying,
-        denied: controller.deniedPosts ?? {},
-        updateAllowedList: (value) => controller.allowedTags = value,
-        updateDenying: (value) => controller.denying = value,
-        allowedList: controller.allowedTags,
-      ),
+      builder:
+          (context, child) => DrawerDenySwitchBody(
+            denying: controller.denying,
+            denied: controller.deniedPosts ?? {},
+            updateAllowedList: (value) => controller.allowedTags = value,
+            updateDenying: (value) => controller.denying = value,
+            allowedList: controller.allowedTags,
+          ),
     );
   }
 }
@@ -100,11 +101,12 @@ class DrawerDenyTile extends StatelessWidget {
         children: [
           Expanded(
             child: Wrap(
-              children: entry.key
-                  .split(' ')
-                  .where((tag) => tag.isNotEmpty)
-                  .map(DenyListTagCard.new)
-                  .toList(),
+              children:
+                  entry.key
+                      .split(' ')
+                      .where((tag) => tag.isNotEmpty)
+                      .map(DenyListTagCard.new)
+                      .toList(),
             ),
           ),
         ],
@@ -114,11 +116,12 @@ class DrawerDenyTile extends StatelessWidget {
         child: TweenAnimationBuilder(
           tween: IntTween(begin: 0, end: entry.value.length),
           duration: const Duration(milliseconds: 200),
-          builder: (context, value, child) => Text(
-            value.toString(),
-            style: Theme.of(context).textTheme.titleLarge,
-            textAlign: TextAlign.center,
-          ),
+          builder:
+              (context, value, child) => Text(
+                value.toString(),
+                style: Theme.of(context).textTheme.titleLarge,
+                textAlign: TextAlign.center,
+              ),
         ),
       ),
     );
@@ -164,14 +167,15 @@ class DrawerDenySwitchBody extends StatelessWidget {
       children: [
         SwitchListTile(
           title: const Text('Blacklist'),
-          subtitle: denying && count > 0
-              ? TweenAnimationBuilder<int>(
-                  tween: IntTween(begin: 0, end: count),
-                  duration: defaultAnimationDuration,
-                  builder: (context, value, child) =>
-                      Text('blocked $value posts'),
-                )
-              : null,
+          subtitle:
+              denying && count > 0
+                  ? TweenAnimationBuilder<int>(
+                    tween: IntTween(begin: 0, end: count),
+                    duration: defaultAnimationDuration,
+                    builder:
+                        (context, value, child) => Text('blocked $value posts'),
+                  )
+                  : null,
           secondary: const Icon(Icons.block),
           value: denying,
           onChanged: updateDenying,

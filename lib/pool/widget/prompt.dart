@@ -59,12 +59,13 @@ class PoolSheet extends StatelessWidget {
             PoolActions(pool: pool),
             Padding(
               padding: const EdgeInsets.all(16),
-              child: pool.description.isNotEmpty
-                  ? DText(pool.description)
-                  : const Text(
-                      'no description',
-                      style: TextStyle(fontStyle: FontStyle.italic),
-                    ),
+              child:
+                  pool.description.isNotEmpty
+                      ? DText(pool.description)
+                      : const Text(
+                        'no description',
+                        style: TextStyle(fontStyle: FontStyle.italic),
+                      ),
             ),
             const Divider(),
             Padding(
@@ -84,9 +85,7 @@ Future<void> showPoolDialog({
 }) {
   return showDialog(
     context: context,
-    builder: (context) => PoolDialog(
-      pool: pool,
-    ),
+    builder: (context) => PoolDialog(pool: pool),
   );
 }
 
@@ -98,61 +97,62 @@ class PoolDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-        content: SizedBox(
-      width: 800,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          OverflowBar(
-            alignment: MainAxisAlignment.spaceBetween,
-            overflowSpacing: 8,
-            children: [
-              Text(
-                tagToName(pool.name),
-                style: Theme.of(context).textTheme.titleLarge,
-                softWrap: true,
-              ),
-              PoolActions(pool: pool),
-            ],
-          ),
-          const Divider(indent: 4, endIndent: 4),
-          Flexible(
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: pool.description.isNotEmpty
-                        ? DText(pool.description)
-                        : const Text(
-                            'no description',
-                            style: TextStyle(fontStyle: FontStyle.italic),
-                          ),
-                  ),
-                  const Divider(),
-                  Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    child: PoolInfo(pool: pool),
-                  ),
-                ],
+      content: SizedBox(
+        width: 800,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            OverflowBar(
+              alignment: MainAxisAlignment.spaceBetween,
+              overflowSpacing: 8,
+              children: [
+                Text(
+                  tagToName(pool.name),
+                  style: Theme.of(context).textTheme.titleLarge,
+                  softWrap: true,
+                ),
+                PoolActions(pool: pool),
+              ],
+            ),
+            const Divider(indent: 4, endIndent: 4),
+            Flexible(
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(16),
+                      child:
+                          pool.description.isNotEmpty
+                              ? DText(pool.description)
+                              : const Text(
+                                'no description',
+                                style: TextStyle(fontStyle: FontStyle.italic),
+                              ),
+                    ),
+                    const Divider(),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 8,
+                      ),
+                      child: PoolInfo(pool: pool),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
-    ));
+    );
   }
 }
 
 class PoolActions extends StatelessWidget {
-  const PoolActions({
-    super.key,
-    required this.pool,
-  });
+  const PoolActions({super.key, required this.pool});
 
   final Pool pool;
 
@@ -167,10 +167,11 @@ class PoolActions extends StatelessWidget {
           ActionButton(
             icon: const Icon(Icons.share),
             label: const Text('share'),
-            onTap: () async => Share.text(
-              context,
-              context.read<Client>().withHost(pool.link),
-            ),
+            onTap:
+                () async => Share.text(
+                  context,
+                  context.read<Client>().withHost(pool.link),
+                ),
           ),
           TagListActions(tag: 'pool:${pool.id}'),
         ],

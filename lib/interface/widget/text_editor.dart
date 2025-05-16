@@ -5,8 +5,8 @@ import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
 
 typedef TextEditorSubmit = FutureOr<String?> Function(String value);
-typedef TextEditorBuilder = Widget Function(
-    BuildContext context, TextEditingController controller);
+typedef TextEditorBuilder =
+    Widget Function(BuildContext context, TextEditingController controller);
 
 class TextEditor extends StatelessWidget {
   const TextEditor({
@@ -34,44 +34,40 @@ class TextEditor extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiTextEditor(
-      content: [
-        TextEditorContent(
-          key: _contentKey,
-          value: content,
-        ),
-      ],
+      content: [TextEditorContent(key: _contentKey, value: content)],
       onSubmitted: (values) => onSubmitted.call(values.first.value!),
       onClosed: onClosed,
       title: title,
       actions: actions,
-      preview: preview != null
-          ? (context, controllers) =>
-              preview!.call(context, controllers[_contentKey]!)
-          : null,
-      toolbar: toolbar != null
-          ? (context, controllers) =>
-              toolbar!.call(context, controllers[_contentKey]!)
-          : null,
+      preview:
+          preview != null
+              ? (context, controllers) =>
+                  preview!.call(context, controllers[_contentKey]!)
+              : null,
+      toolbar:
+          toolbar != null
+              ? (context, controllers) =>
+                  toolbar!.call(context, controllers[_contentKey]!)
+              : null,
     );
   }
 }
 
 class TextEditorContent {
-  const TextEditorContent({
-    required this.key,
-    this.title,
-    this.value,
-  });
+  const TextEditorContent({required this.key, this.title, this.value});
 
   final String key;
   final String? title;
   final String? value;
 }
 
-typedef MultiTextEditorSubmit = FutureOr<String?> Function(
-    List<TextEditorContent> values);
-typedef MultiTextEditorBuilder = Widget Function(
-    BuildContext context, Map<String, TextEditingController> controllers);
+typedef MultiTextEditorSubmit =
+    FutureOr<String?> Function(List<TextEditorContent> values);
+typedef MultiTextEditorBuilder =
+    Widget Function(
+      BuildContext context,
+      Map<String, TextEditingController> controllers,
+    );
 
 class MultiTextEditor extends StatefulWidget {
   const MultiTextEditor({
@@ -114,16 +110,14 @@ class _MultiTextEditorState extends State<MultiTextEditor> {
       LoadingDialogActionController();
 
   Future<void> submit() async {
-    String? error = await widget.onSubmitted(
-      [
-        for (final content in textControllers.keys)
-          TextEditorContent(
-            key: content.key,
-            title: content.title,
-            value: textControllers[content]!.text.trim(),
-          ),
-      ],
-    );
+    String? error = await widget.onSubmitted([
+      for (final content in textControllers.keys)
+        TextEditorContent(
+          key: content.key,
+          title: content.title,
+          value: textControllers[content]!.text.trim(),
+        ),
+    ]);
     if (error != null) {
       throw ActionControllerException(message: error);
     }
@@ -139,10 +133,7 @@ class _MultiTextEditorState extends State<MultiTextEditor> {
             slivers: [
               SliverPadding(
                 padding: defaultActionListPadding.add(const EdgeInsets.all(8)),
-                sliver: SliverFillRemaining(
-                  hasScrollBody: false,
-                  child: child,
-                ),
+                sliver: SliverFillRemaining(hasScrollBody: false, child: child),
               ),
             ],
           );
@@ -182,19 +173,26 @@ class _MultiTextEditorState extends State<MultiTextEditor> {
 
         Widget fab() {
           return Builder(
-            builder: (context) => FloatingActionButton(
-              backgroundColor: Theme.of(context).cardColor,
-              onPressed: actionController.isLoading
-                  ? null
-                  : () async {
-                      await actionController.showAndAction(context, submit);
-                      if (!actionController.isError) {
-                        widget.onClosed?.call();
-                      }
-                    },
-              child:
-                  Icon(Icons.check, color: Theme.of(context).iconTheme.color),
-            ),
+            builder:
+                (context) => FloatingActionButton(
+                  backgroundColor: Theme.of(context).cardColor,
+                  onPressed:
+                      actionController.isLoading
+                          ? null
+                          : () async {
+                            await actionController.showAndAction(
+                              context,
+                              submit,
+                            );
+                            if (!actionController.isError) {
+                              widget.onClosed?.call();
+                            }
+                          },
+                  child: Icon(
+                    Icons.check,
+                    color: Theme.of(context).iconTheme.color,
+                  ),
+                ),
           );
         }
 
@@ -202,10 +200,7 @@ class _MultiTextEditorState extends State<MultiTextEditor> {
           const Tab(text: 'Write'): editor(),
           if (widget.preview case final preview?)
             const Tab(text: 'Preview'): scrollView(
-              preview(
-                context,
-                textControllerMap,
-              ),
+              preview(context, textControllerMap),
             ),
         };
 
@@ -216,40 +211,49 @@ class _MultiTextEditorState extends State<MultiTextEditor> {
               TabController tabController = DefaultTabController.of(context);
               return ListenableBuilder(
                 listenable: tabController,
-                builder: (context, child) => Scaffold(
-                  floatingActionButton: fab(),
-                  bottomSheet: tabController.index == 0
-                      ? widget.toolbar?.call(context, textControllerMap)
-                      : null,
-                  body: NestedScrollView(
-                    headerSliverBuilder: (context, innerBoxIsScrolled) => [
-                      SliverOverlapAbsorber(
-                        handle: NestedScrollView.sliverOverlapAbsorberHandleFor(
-                          context,
-                        ),
-                        sliver: DefaultSliverAppBar(
-                          pinned: true,
-                          leading: ModalRoute.of(context)!.canPop
-                              ? const CloseButton()
+                builder:
+                    (context, child) => Scaffold(
+                      floatingActionButton: fab(),
+                      bottomSheet:
+                          tabController.index == 0
+                              ? widget.toolbar?.call(context, textControllerMap)
                               : null,
-                          title: widget.title,
-                          actions: widget.actions,
-                          bottom: tabs.length > 1
-                              ? TabBar(
-                                  tabs: tabs.keys.toList(),
-                                  labelColor: Theme.of(context).iconTheme.color,
-                                  indicatorColor:
-                                      Theme.of(context).iconTheme.color,
-                                )
-                              : null,
-                        ),
+                      body: NestedScrollView(
+                        headerSliverBuilder:
+                            (context, innerBoxIsScrolled) => [
+                              SliverOverlapAbsorber(
+                                handle:
+                                    NestedScrollView.sliverOverlapAbsorberHandleFor(
+                                      context,
+                                    ),
+                                sliver: DefaultSliverAppBar(
+                                  pinned: true,
+                                  leading:
+                                      ModalRoute.of(context)!.canPop
+                                          ? const CloseButton()
+                                          : null,
+                                  title: widget.title,
+                                  actions: widget.actions,
+                                  bottom:
+                                      tabs.length > 1
+                                          ? TabBar(
+                                            tabs: tabs.keys.toList(),
+                                            labelColor:
+                                                Theme.of(
+                                                  context,
+                                                ).iconTheme.color,
+                                            indicatorColor:
+                                                Theme.of(
+                                                  context,
+                                                ).iconTheme.color,
+                                          )
+                                          : null,
+                                ),
+                              ),
+                            ],
+                        body: TabBarView(children: tabs.values.toList()),
                       ),
-                    ],
-                    body: TabBarView(
-                      children: tabs.values.toList(),
                     ),
-                  ),
-                ),
               );
             },
           ),

@@ -30,7 +30,8 @@ class PostDetailFloatingActionButton extends StatelessWidget {
             ),
           );
           throw ActionControllerException(
-              message: 'failed to edit Post #${post.id}');
+            message: 'failed to edit Post #${post.id}',
+          );
         }
       }
     }
@@ -42,8 +43,9 @@ class PostDetailFloatingActionButton extends StatelessWidget {
           actionController: editingController,
           labelText: 'Reason',
           submit: (value) async {
-            editingController.value =
-                editingController.value!.copyWith(editReason: value);
+            editingController.value = editingController.value!.copyWith(
+              editReason: value,
+            );
             return editPost();
           },
         ),
@@ -55,15 +57,17 @@ class PostDetailFloatingActionButton extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       backgroundColor: Theme.of(context).cardColor,
       foregroundColor: Theme.of(context).iconTheme.color,
-      onPressed: editingController.editing
-          ? editingController.action ?? submitEdit
-          : () {},
-      child: editingController.editing
-          ? Icon(editingController.isShown ? Icons.add : Icons.check)
-          : Padding(
-              padding: const EdgeInsets.only(left: 2),
-              child: FavoriteButton(post: post),
-            ),
+      onPressed:
+          editingController.editing
+              ? editingController.action ?? submitEdit
+              : () {},
+      child:
+          editingController.editing
+              ? Icon(editingController.isShown ? Icons.add : Icons.check)
+              : Padding(
+                padding: const EdgeInsets.only(left: 2),
+                child: FavoriteButton(post: post),
+              ),
     );
   }
 }

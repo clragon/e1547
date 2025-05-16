@@ -77,10 +77,7 @@ class _DTextState extends State<DText> {
               size: 20,
             ),
           ),
-          Text(
-            'DText parsing has failed',
-            style: TextStyle(color: errorColor),
-          ),
+          Text('DText parsing has failed', style: TextStyle(color: errorColor)),
         ],
       );
     }
@@ -128,30 +125,30 @@ class DTextBody extends StatelessWidget {
     PointerExitEventListener? onExit,
   }) {
     return spans
-        ?.map((e) => switch (e) {
-              TextSpan() => TextSpan(
-                  text: e.text,
-                  children: wrapWithGesture(
-                    spans: e.children,
-                    recognizer: recognizer,
-                    onEnter: onEnter,
-                    onExit: onExit,
-                  ),
-                  recognizer: e.recognizer ?? recognizer,
-                  style: e.style,
-                  onEnter: e.onEnter ?? onEnter,
-                  onExit: e.onExit ?? onExit,
-                ),
-              _ => e,
-            })
+        ?.map(
+          (e) => switch (e) {
+            TextSpan() => TextSpan(
+              text: e.text,
+              children: wrapWithGesture(
+                spans: e.children,
+                recognizer: recognizer,
+                onEnter: onEnter,
+                onExit: onExit,
+              ),
+              recognizer: e.recognizer ?? recognizer,
+              style: e.style,
+              onEnter: e.onEnter ?? onEnter,
+              onExit: e.onExit ?? onExit,
+            ),
+            _ => e,
+          },
+        )
         .toList();
   }
 
   Widget _buildInner(BuildContext context, DTextElement content) {
     return MediaQuery(
-      data: MediaQuery.of(context).copyWith(
-        textScaler: TextScaler.noScaling,
-      ),
+      data: MediaQuery.of(context).copyWith(textScaler: TextScaler.noScaling),
       child: DTextBody(
         content: content,
         style: style,
@@ -174,9 +171,10 @@ class DTextBody extends StatelessWidget {
       ),
       style: TextStyle(
         color: hidden ? Colors.transparent : null,
-        backgroundColor: hidden
-            ? Theme.of(context).textTheme.bodyMedium!.color!.withAlpha(255)
-            : Theme.of(context).textTheme.bodyMedium!.color!.withAlpha(26),
+        backgroundColor:
+            hidden
+                ? Theme.of(context).textTheme.bodyMedium!.color!.withAlpha(255)
+                : Theme.of(context).textTheme.bodyMedium!.color!.withAlpha(26),
       ),
     );
   }
@@ -193,8 +191,10 @@ class DTextBody extends StatelessWidget {
     // TODO: this should not be hardcoded
     bool home = uri != null && ['e621.net', 'e926.net'].contains(uri.host);
     if (local || home) {
-      VoidCallback? linkAction =
-          const E621LinkParser().parseOnTap(context, link);
+      VoidCallback? linkAction = const E621LinkParser().parseOnTap(
+        context,
+        link,
+      );
       if (linkAction != null) {
         action = linkAction;
       } else {
@@ -211,149 +211,146 @@ class DTextBody extends StatelessWidget {
           if (name != null)
             _buildSpan(context, name)
           else
-            TextSpan(text: linkToDisplay(link))
+            TextSpan(text: linkToDisplay(link)),
         ],
         recognizer: TapGestureRecognizer()..onTap = action,
         onEnter: (_) => preview.showLink(previewLink),
         onExit: (_) => preview.hideLink(),
       ),
-      style: TextStyle(
-        color: Theme.of(context).colorScheme.secondary,
-      ),
+      style: TextStyle(color: Theme.of(context).colorScheme.secondary),
     );
   }
 
   InlineSpan _buildSpan(BuildContext context, DTextElement element) {
     return switch (element) {
       DTextElements() => TextSpan(
-          children:
-              element.elements.map((e) => _buildSpan(context, e)).toList(),
-        ),
+        children: element.elements.map((e) => _buildSpan(context, e)).toList(),
+      ),
       DTextContent() => TextSpan(text: element.content),
       DTextSection() => WidgetSpan(
-          child: SectionWrap(
-            key: ValueKey(element.id),
-            title: element.title,
-            expanded: element.expanded,
-            child: _buildInner(context, element.children),
-          ),
+        child: SectionWrap(
+          key: ValueKey(element.id),
+          title: element.title,
+          expanded: element.expanded,
+          child: _buildInner(context, element.children),
         ),
+      ),
       DTextQuote() => WidgetSpan(
-          child: QuoteWrap(
-            child: _buildInner(context, element.children),
-          ),
-        ),
+        child: QuoteWrap(child: _buildInner(context, element.children)),
+      ),
       DTextCode() => WidgetSpan(
-          child: CodeWrap(
-            child: _buildInner(context, element.children),
-          ),
-        ),
+        child: CodeWrap(child: _buildInner(context, element.children)),
+      ),
       DTextBold() => TextSpan(
-          children: [_buildSpan(context, element.children)],
-          style: const TextStyle(fontWeight: FontWeight.bold),
-        ),
+        children: [_buildSpan(context, element.children)],
+        style: const TextStyle(fontWeight: FontWeight.bold),
+      ),
       DTextItalic() => TextSpan(
-          children: [_buildSpan(context, element.children)],
-          style: const TextStyle(fontStyle: FontStyle.italic),
-        ),
+        children: [_buildSpan(context, element.children)],
+        style: const TextStyle(fontStyle: FontStyle.italic),
+      ),
       DTextOverline() => TextSpan(
-          children: [_buildSpan(context, element.children)],
-          style: const TextStyle(decoration: TextDecoration.overline),
-        ),
+        children: [_buildSpan(context, element.children)],
+        style: const TextStyle(decoration: TextDecoration.overline),
+      ),
       DTextUnderline() => TextSpan(
-          children: [_buildSpan(context, element.children)],
-          style: const TextStyle(decoration: TextDecoration.underline),
-        ),
+        children: [_buildSpan(context, element.children)],
+        style: const TextStyle(decoration: TextDecoration.underline),
+      ),
       DTextStrikethrough() => TextSpan(
-          children: [_buildSpan(context, element.children)],
-          style: const TextStyle(decoration: TextDecoration.lineThrough),
-        ),
+        children: [_buildSpan(context, element.children)],
+        style: const TextStyle(decoration: TextDecoration.lineThrough),
+      ),
       DTextSuperscript() => TextSpan(
-          children: [_buildSpan(context, element.children)],
-        ),
+        children: [_buildSpan(context, element.children)],
+      ),
       DTextSubscript() => TextSpan(
-          children: [_buildSpan(context, element.children)],
-        ),
+        children: [_buildSpan(context, element.children)],
+      ),
       DTextSpoiler() => _buildSpoiler(context, element),
       DTextColor() => TextSpan(
-          children: [_buildSpan(context, element.children)],
-          style: TextStyle(
-            color: parseColor(element.color),
-          ),
-        ),
+        children: [_buildSpan(context, element.children)],
+        style: TextStyle(color: parseColor(element.color)),
+      ),
       DTextInlineCode() => TextSpan(
-          text: element.content,
-          style: TextStyle(
-            fontFamily: 'JetBrains Mono',
-            backgroundColor: Theme.of(context).cardColor,
-          ),
+        text: element.content,
+        style: TextStyle(
+          fontFamily: 'JetBrains Mono',
+          backgroundColor: Theme.of(context).cardColor,
         ),
+      ),
       DTextHeader() => TextSpan(
-          children: [_buildSpan(context, element.children)],
-          style: TextStyle(
-            fontSize: Theme.of(context).textTheme.bodyMedium!.fontSize! +
-                ((element.level - 7).abs() * 2),
-          ),
+        children: [_buildSpan(context, element.children)],
+        style: TextStyle(
+          fontSize:
+              Theme.of(context).textTheme.bodyMedium!.fontSize! +
+              ((element.level - 7).abs() * 2),
         ),
+      ),
       DTextList() => TextSpan(
-          children: element.items
-              .map((e) => [
+        children:
+            element.items
+                .map(
+                  (e) => [
                     if (element.items.indexOf(e) != 0)
                       const TextSpan(text: '\n'),
                     _buildSpan(context, e),
-                  ])
-              .flattened
-              .toList(),
-        ),
+                  ],
+                )
+                .flattened
+                .toList(),
+      ),
       DTextBullet() => TextSpan(
-          children: [
-            TextSpan(text: '${' ' * element.indent}• '),
-            _buildSpan(context, element.children),
-          ],
-        ),
+        children: [
+          TextSpan(text: '${' ' * element.indent}• '),
+          _buildSpan(context, element.children),
+        ],
+      ),
       DTextLinkWord() => _buildLink(
-          context: context,
-          name: DTextContent('${element.type.name} #${element.id}'),
-          link: element.type.toLink(element.id),
-          local: true,
-        ),
+        context: context,
+        name: DTextContent('${element.type.name} #${element.id}'),
+        link: element.type.toLink(element.id),
+        local: true,
+      ),
       DTextLink() => _buildLink(
-          context: context,
-          name: element.name,
-          link: element.link,
-        ),
+        context: context,
+        name: element.name,
+        link: element.link,
+      ),
       DTextLocalLink() => _buildLink(
-          context: context,
-          name: element.name,
-          link: element.link,
-          local: true,
-        ),
+        context: context,
+        name: element.name,
+        link: element.link,
+        local: true,
+      ),
       DTextTagLink() => _buildLink(
-          context: context,
-          name:
-              DTextContent((element.name ?? element.tag).replaceAll('\n', ' ')),
-          link: Uri(
-            path: '/posts',
-            queryParameters: {
-              'tags': element.tag
-                  .replaceAll(' ', '_')
-                  .replaceAll('\n', ' ')
-                  .toLowerCase(),
-            },
-          ).toString(),
-          local: true,
-        ),
+        context: context,
+        name: DTextContent((element.name ?? element.tag).replaceAll('\n', ' ')),
+        link:
+            Uri(
+              path: '/posts',
+              queryParameters: {
+                'tags':
+                    element.tag
+                        .replaceAll(' ', '_')
+                        .replaceAll('\n', ' ')
+                        .toLowerCase(),
+              },
+            ).toString(),
+        local: true,
+      ),
       DTextTagSearchLink() => _buildLink(
-          context: context,
-          name: DTextContent(element.tags.replaceAll('\n', ' ')),
-          link: Uri(
-            path: '/posts',
-            queryParameters: {
-              'tags': element.tags.replaceAll('\n', ' ').toLowerCase(),
-            },
-          ).toString(),
-          local: true,
-        ),
+        context: context,
+        name: DTextContent(element.tags.replaceAll('\n', ' ')),
+        link:
+            Uri(
+              path: '/posts',
+              queryParameters: {
+                'tags': element.tags.replaceAll('\n', ' ').toLowerCase(),
+              },
+            ).toString(),
+        local: true,
+      ),
     };
   }
 
@@ -363,13 +360,14 @@ class DTextBody extends StatelessWidget {
       style: style ?? DefaultTextStyle.of(context).style,
       child: Expandables(
         child: SpoilerProvider(
-          builder: (context, child) => Text.rich(
-            _buildSpan(context, content),
-            maxLines: maxLines,
-            overflow: overflow,
-            textAlign: textAlign,
-            softWrap: softWrap,
-          ),
+          builder:
+              (context, child) => Text.rich(
+                _buildSpan(context, content),
+                maxLines: maxLines,
+                overflow: overflow,
+                textAlign: textAlign,
+                softWrap: softWrap,
+              ),
         ),
       ),
     );

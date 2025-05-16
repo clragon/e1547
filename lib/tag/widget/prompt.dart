@@ -12,16 +12,10 @@ Future<void> showTagSearchPrompt({
   required String tag,
 }) async {
   if (Theme.of(context).isDesktop) {
-    return showTagSearchDialog(
-      context: context,
-      tag: tag,
-    );
+    return showTagSearchDialog(context: context, tag: tag);
   }
 
-  return showTagSearchSheet(
-    context: context,
-    tag: tag,
-  );
+  return showTagSearchSheet(context: context, tag: tag);
 }
 
 Future<void> showTagSearchSheet({
@@ -31,10 +25,7 @@ Future<void> showTagSearchSheet({
   PostController? controller = context.read<PostController?>();
   return showDefaultSlidingBottomSheet(
     context,
-    (context, sheetState) => TagSearchSheet(
-      tag: tag,
-      controller: controller,
-    ),
+    (context, sheetState) => TagSearchSheet(tag: tag, controller: controller),
   );
 }
 
@@ -60,9 +51,9 @@ class TagSearchSheet extends StatelessWidget {
                       Navigator.of(context).maybePop();
                       Navigator.of(context).push(
                         MaterialPageRoute(
-                          builder: (context) => PostsSearchPage(
-                            query: TagMap({'tags': tag}),
-                          ),
+                          builder:
+                              (context) =>
+                                  PostsSearchPage(query: TagMap({'tags': tag})),
                         ),
                       );
                     },
@@ -82,13 +73,8 @@ class TagSearchSheet extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   if (controller != null)
-                    TagSearchActions(
-                      tag: tag,
-                      controller: controller!,
-                    ),
-                  TagListActions(
-                    tag: tag,
-                  ),
+                    TagSearchActions(tag: tag, controller: controller!),
+                  TagListActions(tag: tag),
                 ],
               ),
             ),
@@ -99,10 +85,7 @@ class TagSearchSheet extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: ConstrainedBox(
           constraints: const BoxConstraints(minHeight: 600),
-          child: TagSearchInfo(
-            tag: tag,
-            controller: controller,
-          ),
+          child: TagSearchInfo(tag: tag, controller: controller),
         ),
       ),
     );
@@ -110,11 +93,7 @@ class TagSearchSheet extends StatelessWidget {
 }
 
 class TagSearchInfo extends StatelessWidget {
-  const TagSearchInfo({
-    super.key,
-    required this.tag,
-    this.controller,
-  });
+  const TagSearchInfo({super.key, required this.tag, this.controller});
 
   final String tag;
   final PostController? controller;
@@ -128,14 +107,12 @@ class TagSearchInfo extends StatelessWidget {
         primary: true,
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          children: tags
-              .map(
-                (e) => TagSearchInfoChild(
-                  tag: e,
-                  controller: controller,
-                ),
-              )
-              .toList(),
+          children:
+              tags
+                  .map(
+                    (e) => TagSearchInfoChild(tag: e, controller: controller),
+                  )
+                  .toList(),
         ),
       );
     } else {
@@ -148,11 +125,7 @@ class TagSearchInfo extends StatelessWidget {
 }
 
 class TagSearchInfoChild extends StatelessWidget {
-  const TagSearchInfoChild({
-    super.key,
-    required this.tag,
-    this.controller,
-  });
+  const TagSearchInfoChild({super.key, required this.tag, this.controller});
 
   final String tag;
   final PostController? controller;
@@ -169,13 +142,8 @@ class TagSearchInfoChild extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             if (controller != null)
-              TagSearchActions(
-                tag: tag,
-                controller: controller!,
-              ),
-            TagListActions(
-              tag: tag,
-            ),
+              TagSearchActions(tag: tag, controller: controller!),
+            TagListActions(tag: tag),
           ],
         ),
       );
@@ -199,9 +167,10 @@ class TagSearchInfoChild extends StatelessWidget {
                   Expanded(
                     child: AnimatedDefaultTextStyle(
                       duration: const Duration(milliseconds: 200),
-                      style: expanded
-                          ? Theme.of(context).textTheme.titleLarge!
-                          : Theme.of(context).textTheme.titleMedium!,
+                      style:
+                          expanded
+                              ? Theme.of(context).textTheme.titleLarge!
+                              : Theme.of(context).textTheme.titleMedium!,
                       child: Padding(
                         padding: const EdgeInsets.all(16),
                         child: Text(tagToName(tag)),
@@ -274,46 +243,47 @@ class _SearchTagDisplayState extends State<SearchTagDisplay> {
   Widget build(BuildContext context) {
     return FutureBuilder<Wiki?>(
       future: wiki,
-      builder: (context, snapshot) => CrossFade.builder(
-        style: FadeAnimationStyle.stacked,
-        showChild: snapshot.connectionState == ConnectionState.done,
-        builder: (context) {
-          if (snapshot.hasData) {
-            return DText(snapshot.data!.body);
-          } else if (snapshot.hasError) {
-            return const IconMessage(
-              title: Text('unable to retrieve wiki entry'),
-              icon: Icon(Icons.warning_amber_outlined),
-              direction: Axis.horizontal,
-            );
-          } else {
-            return Row(
+      builder:
+          (context, snapshot) => CrossFade.builder(
+            style: FadeAnimationStyle.stacked,
+            showChild: snapshot.connectionState == ConnectionState.done,
+            builder: (context) {
+              if (snapshot.hasData) {
+                return DText(snapshot.data!.body);
+              } else if (snapshot.hasError) {
+                return const IconMessage(
+                  title: Text('unable to retrieve wiki entry'),
+                  icon: Icon(Icons.warning_amber_outlined),
+                  direction: Axis.horizontal,
+                );
+              } else {
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Text(
+                        'no wiki entry',
+                        style: TextStyle(
+                          color: dimTextColor(context, 0.5),
+                          fontStyle: FontStyle.italic,
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              }
+            },
+            secondChild: const Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Text(
-                    'no wiki entry',
-                    style: TextStyle(
-                      color: dimTextColor(context, 0.5),
-                      fontStyle: FontStyle.italic,
-                    ),
-                  ),
+                  padding: EdgeInsets.all(16),
+                  child: CircularProgressIndicator(),
                 ),
               ],
-            );
-          }
-        },
-        secondChild: const Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Padding(
-              padding: EdgeInsets.all(16),
-              child: CircularProgressIndicator(),
             ),
-          ],
-        ),
-      ),
+          ),
     );
   }
 }
@@ -325,19 +295,12 @@ Future<void> showTagSearchDialog({
   PostController? controller = context.read<PostController?>();
   return showDialog(
     context: context,
-    builder: (context) => TagSearchDialog(
-      tag: tag,
-      controller: controller,
-    ),
+    builder: (context) => TagSearchDialog(tag: tag, controller: controller),
   );
 }
 
 class TagSearchDialog extends StatelessWidget {
-  const TagSearchDialog({
-    super.key,
-    required this.tag,
-    this.controller,
-  });
+  const TagSearchDialog({super.key, required this.tag, this.controller});
 
   final String tag;
   final PostController? controller;
@@ -367,13 +330,8 @@ class TagSearchDialog extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       if (controller != null)
-                        TagSearchActions(
-                          tag: tag,
-                          controller: controller!,
-                        ),
-                      TagListActions(
-                        tag: tag,
-                      ),
+                        TagSearchActions(tag: tag, controller: controller!),
+                      TagListActions(tag: tag),
                     ],
                   ),
                 ],
@@ -383,10 +341,7 @@ class TagSearchDialog extends StatelessWidget {
                 child: Row(
                   children: [
                     Expanded(
-                      child: TagSearchInfo(
-                        tag: tag,
-                        controller: controller,
-                      ),
+                      child: TagSearchInfo(tag: tag, controller: controller),
                     ),
                   ],
                 ),

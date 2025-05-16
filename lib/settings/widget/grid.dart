@@ -33,29 +33,32 @@ class GridSettingsTile extends StatelessWidget {
       title: const Text('Quilt'),
       subtitle: Text(state.description),
       leading: Icon(state.icon),
-      onTap: () => showDialog(
-        context: context,
-        builder: (context) => SimpleDialog(
-          title: const Text('Grid'),
-          children: [
-            Column(
-              mainAxisSize: MainAxisSize.min,
-              children: GridQuilt.values
-                  .map(
-                    (state) => ListTile(
-                      trailing: Icon(state.icon),
-                      title: Text(state.description),
-                      onTap: () {
-                        onChange!(state);
-                        Navigator.of(context).maybePop();
-                      },
+      onTap:
+          () => showDialog(
+            context: context,
+            builder:
+                (context) => SimpleDialog(
+                  title: const Text('Grid'),
+                  children: [
+                    Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children:
+                          GridQuilt.values
+                              .map(
+                                (state) => ListTile(
+                                  trailing: Icon(state.icon),
+                                  title: Text(state.description),
+                                  onTap: () {
+                                    onChange!(state);
+                                    Navigator.of(context).maybePop();
+                                  },
+                                ),
+                              )
+                              .toList(),
                     ),
-                  )
-                  .toList(),
-            )
-          ],
-        ),
-      ),
+                  ],
+                ),
+          ),
     );
   }
 }

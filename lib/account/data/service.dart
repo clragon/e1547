@@ -22,10 +22,7 @@ class AccountService {
 
   Future<void> available() => dio.get('');
 
-  Future<void> push({
-    required Traits traits,
-    CancelToken? cancelToken,
-  }) async {
+  Future<void> push({required Traits traits, CancelToken? cancelToken}) async {
     Traits previous = this.traits.value;
     this.traits.value = traits;
     if (identity.username == null) return;
@@ -43,32 +40,29 @@ class AccountService {
       }
     } on DioException {
       this.traits.value = this.traits.value.copyWith(
-            denylist: previous.denylist,
-          );
+        denylist: previous.denylist,
+      );
       rethrow;
     }
   }
 
-  Future<void> pull({
-    bool? force,
-    CancelToken? cancelToken,
-  }) =>
+  Future<void> pull({bool? force, CancelToken? cancelToken}) =>
       get(force: force, cancelToken: cancelToken);
 
-  Future<Account?> get({
-    bool? force,
-    CancelToken? cancelToken,
-  }) async {
+  Future<Account?> get({bool? force, CancelToken? cancelToken}) async {
     if (identity.username == null) return null;
 
     Account result = await dio
         .get(
           '/users/${identity.username}.json',
-          options: ClientCacheConfig(
-            maxAge: const Duration(hours: 1),
-            policy:
-                (force ?? false) ? CachePolicy.refresh : CachePolicy.request,
-          ).toOptions(),
+          options:
+              ClientCacheConfig(
+                maxAge: const Duration(hours: 1),
+                policy:
+                    (force ?? false)
+                        ? CachePolicy.refresh
+                        : CachePolicy.request,
+              ).toOptions(),
           cancelToken: cancelToken,
         )
         .then((response) => E621Account.fromJson(response.data));
@@ -98,12 +92,12 @@ class AccountService {
 
 extension E621Account on Account {
   static Account fromJson(dynamic json) => pick(json).letOrThrow(
-        (pick) => Account(
-          id: pick('id').asIntOrThrow(),
-          name: pick('name').asStringOrThrow(),
-          avatarId: pick('avatar_id').asIntOrNull(),
-          blacklistedTags: pick('blacklisted_tags').asStringOrNull(),
-          perPage: pick('per_page').asIntOrNull(),
-        ),
-      );
+    (pick) => Account(
+      id: pick('id').asIntOrThrow(),
+      name: pick('name').asStringOrThrow(),
+      avatarId: pick('avatar_id').asIntOrNull(),
+      blacklistedTags: pick('blacklisted_tags').asStringOrNull(),
+      perPage: pick('per_page').asIntOrNull(),
+    ),
+  );
 }

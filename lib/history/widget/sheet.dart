@@ -10,9 +10,7 @@ Future<void> historySheet({
 }) async {
   return showDefaultSlidingBottomSheet(
     context,
-    (context, sheetState) => HistorySheet(
-      entry: entry,
-    ),
+    (context, sheetState) => HistorySheet(entry: entry),
   );
 }
 
@@ -23,20 +21,23 @@ class HistorySheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    VoidCallback? onTap =
-        const E621LinkParser().parseOnTap(context, entry.link);
+    VoidCallback? onTap = const E621LinkParser().parseOnTap(
+      context,
+      entry.link,
+    );
     return DefaultSheetBody(
       title: Padding(
         padding: const EdgeInsets.all(8),
         child: Row(
           children: [
             InkWell(
-              onTap: onTap != null
-                  ? () {
-                      Navigator.of(context).maybePop();
-                      onTap();
-                    }
-                  : null,
+              onTap:
+                  onTap != null
+                      ? () {
+                        Navigator.of(context).maybePop();
+                        onTap();
+                      }
+                      : null,
               child: Text(entry.getName(context)),
             ),
           ],
@@ -44,17 +45,18 @@ class HistorySheet extends StatelessWidget {
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-        child: entry.subtitle != null
-            ? DText(entry.subtitle!)
-            : Center(
-                child: Text(
-                  'no description',
-                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                        color: dimTextColor(context),
-                        fontStyle: FontStyle.italic,
-                      ),
+        child:
+            entry.subtitle != null
+                ? DText(entry.subtitle!)
+                : Center(
+                  child: Text(
+                    'no description',
+                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                      color: dimTextColor(context),
+                      fontStyle: FontStyle.italic,
+                    ),
+                  ),
                 ),
-              ),
       ),
     );
   }

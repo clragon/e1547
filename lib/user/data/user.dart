@@ -18,10 +18,8 @@ class User with _$User {
 
 @freezed
 class UserAbout with _$UserAbout {
-  const factory UserAbout({
-    required String? bio,
-    required String? comission,
-  }) = _UserAbout;
+  const factory UserAbout({required String? bio, required String? comission}) =
+      _UserAbout;
 
   factory UserAbout.fromJson(dynamic json) => _$UserAboutFromJson(json);
 }

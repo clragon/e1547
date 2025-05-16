@@ -15,20 +15,19 @@ class _FollowsTimelinePageState extends State<FollowsTimelinePage> {
   Widget build(BuildContext context) {
     return RouterDrawerEntry<FollowsTimelinePage>(
       child: PostProvider.builder(
-        create: (context, client) => FollowTimelineController(
-          client: client,
-        ),
+        create: (context, client) => FollowTimelineController(client: client),
         child: Consumer<PostController>(
-          builder: (context, controller, child) => PostsPage(
-            appBar: const DefaultAppBar(
-              title: Text('Timeline'),
-              actions: [ContextDrawerButton()],
-            ),
-            controller: controller,
-            drawerActions: const [FollowEditingTile()],
-            displayType: PostDisplayType.timeline,
-            canSelect: false,
-          ),
+          builder:
+              (context, controller, child) => PostsPage(
+                appBar: const DefaultAppBar(
+                  title: Text('Timeline'),
+                  actions: [ContextDrawerButton()],
+                ),
+                controller: controller,
+                drawerActions: const [FollowEditingTile()],
+                displayType: PostDisplayType.timeline,
+                canSelect: false,
+              ),
         ),
       ),
     );

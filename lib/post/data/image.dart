@@ -3,11 +3,7 @@ import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
-enum PostImageSize {
-  preview,
-  sample,
-  file,
-}
+enum PostImageSize { preview, sample, file }
 
 Future<void> preloadPostImage({
   required BuildContext context,
@@ -17,7 +13,7 @@ Future<void> preloadPostImage({
   String? url = switch (size) {
     PostImageSize.preview => post.preview,
     PostImageSize.sample => post.sample,
-    PostImageSize.file => post.file
+    PostImageSize.file => post.file,
   };
   if (post.type != PostType.image) return;
   if (url != null) {

@@ -23,13 +23,10 @@ class ActionController extends ChangeNotifier {
   @protected
   void forgive() {
     errorTimer?.cancel();
-    errorTimer = Timer(
-      errorTimeout,
-      () {
-        isForgiven = true;
-        notifyListeners();
-      },
-    );
+    errorTimer = Timer(errorTimeout, () {
+      isForgiven = true;
+      notifyListeners();
+    });
   }
 
   @mustCallSuper

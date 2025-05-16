@@ -6,12 +6,15 @@ String encodeBasicAuth(String username, String password) =>
 
 (String username, String password)? parseBasicAuth(String? auth) {
   if (auth == null) return null;
-  RegExpMatch? fullBasicMatch =
-      RegExp(r'Basic (?<encoded>[A-Za-z\d/=]+)').firstMatch(auth);
+  RegExpMatch? fullBasicMatch = RegExp(
+    r'Basic (?<encoded>[A-Za-z\d/=]+)',
+  ).firstMatch(auth);
   if (fullBasicMatch == null) return null;
-  RegExpMatch? credentialMatch = RegExp(r'(?<username>.+):(?<password>.+)')
-      .firstMatch(
-          utf8.decode(base64Decode(fullBasicMatch.namedGroup('encoded')!)));
+  RegExpMatch? credentialMatch = RegExp(
+    r'(?<username>.+):(?<password>.+)',
+  ).firstMatch(
+    utf8.decode(base64Decode(fullBasicMatch.namedGroup('encoded')!)),
+  );
   if (credentialMatch == null) return null;
   return (
     credentialMatch.namedGroup('username')!,
@@ -59,11 +62,7 @@ String assembleHostedUrl(String host, String path) {
   if (fragment.isEmpty) fragment = null;
 
   return uri
-      .replace(
-        path: path,
-        queryParameters: queryParameters,
-        fragment: fragment,
-      )
+      .replace(path: path, queryParameters: queryParameters, fragment: fragment)
       .toString();
 }
 

@@ -14,8 +14,8 @@ class RefreshableDataPage extends StatelessWidget {
     this.drawer,
     this.endDrawer,
     this.floatingActionButton,
-  })  : builder = null,
-        child = ((context) => child);
+  }) : builder = null,
+       child = ((context) => child);
 
   const RefreshableDataPage.builder({
     super.key,
@@ -44,23 +44,24 @@ class RefreshableDataPage extends StatelessWidget {
       key: ValueKey(controller),
       child: SubValue<RefreshController>(
         create: () => RefreshController(),
-        builder: (context, refreshController) => RefreshablePage(
-          refreshHeader: refreshHeader,
-          drawer: drawer,
-          endDrawer: endDrawer,
-          appBar: appBar,
-          floatingActionButton: floatingActionButton,
-          refreshController: refreshController,
-          refresh: (_) async {
-            await controller.refresh(force: true, background: true);
-            if (controller.error != null) {
-              refreshController.refreshFailed();
-            }
-            refreshController.refreshCompleted();
-          },
-          builder: builder,
-          child: child,
-        ),
+        builder:
+            (context, refreshController) => RefreshablePage(
+              refreshHeader: refreshHeader,
+              drawer: drawer,
+              endDrawer: endDrawer,
+              appBar: appBar,
+              floatingActionButton: floatingActionButton,
+              refreshController: refreshController,
+              refresh: (_) async {
+                await controller.refresh(force: true, background: true);
+                if (controller.error != null) {
+                  refreshController.refreshFailed();
+                }
+                refreshController.refreshCompleted();
+              },
+              builder: builder,
+              child: child,
+            ),
       ),
     );
   }
@@ -115,17 +116,18 @@ class RefreshableLoadingPage extends StatelessWidget {
       isEmpty: isEmpty,
       isError: isError,
       isBuilt: isBuilt,
-      pageBuilder: (context, child) => RefreshablePage(
-        refreshController: refreshController,
-        refreshHeader: refreshHeader,
-        refresh: refresh,
-        appBar: appBar,
-        drawer: drawer,
-        endDrawer: endDrawer,
-        floatingActionButton: floatingActionButton,
-        builder: builder,
-        child: child,
-      ),
+      pageBuilder:
+          (context, child) => RefreshablePage(
+            refreshController: refreshController,
+            refreshHeader: refreshHeader,
+            refresh: refresh,
+            appBar: appBar,
+            drawer: drawer,
+            endDrawer: endDrawer,
+            floatingActionButton: floatingActionButton,
+            builder: builder,
+            child: child,
+          ),
       child: child,
     );
   }
@@ -162,37 +164,41 @@ class RefreshablePage extends StatelessWidget {
     return SubDefault<RefreshController>(
       value: refreshController,
       create: () => RefreshController(),
-      builder: (context, refreshController) => CallbackShortcuts(
-        bindings: {
-          const SingleActivator(LogicalKeyboardKey.f5): () =>
-              refreshController.requestRefresh(
-                duration: const Duration(milliseconds: 100),
-              ),
-        },
-        child: FocusScope(
-          autofocus: true,
-          child: AdaptiveScaffold(
-            extendBodyBehindAppBar: extendBodyBehindAppBar,
-            appBar: appBar,
-            body: (builder ?? (context, child) => child)(
-              context,
-              Builder(
-                builder: (context) => SmartRefresher(
-                  // Fix for SmartRefresher.didUpdateWidget accessing properties on disposed controllers
-                  key: ValueKey(refreshController),
-                  controller: refreshController,
-                  onRefresh: () => refresh(refreshController),
-                  header: refreshHeader ?? const RefreshablePageDefaultHeader(),
-                  child: child(context),
+      builder:
+          (context, refreshController) => CallbackShortcuts(
+            bindings: {
+              const SingleActivator(LogicalKeyboardKey.f5):
+                  () => refreshController.requestRefresh(
+                    duration: const Duration(milliseconds: 100),
+                  ),
+            },
+            child: FocusScope(
+              autofocus: true,
+              child: AdaptiveScaffold(
+                extendBodyBehindAppBar: extendBodyBehindAppBar,
+                appBar: appBar,
+                body: (builder ?? (context, child) => child)(
+                  context,
+                  Builder(
+                    builder:
+                        (context) => SmartRefresher(
+                          // Fix for SmartRefresher.didUpdateWidget accessing properties on disposed controllers
+                          key: ValueKey(refreshController),
+                          controller: refreshController,
+                          onRefresh: () => refresh(refreshController),
+                          header:
+                              refreshHeader ??
+                              const RefreshablePageDefaultHeader(),
+                          child: child(context),
+                        ),
+                  ),
                 ),
+                drawer: drawer,
+                endDrawer: endDrawer,
+                floatingActionButton: floatingActionButton,
               ),
             ),
-            drawer: drawer,
-            endDrawer: endDrawer,
-            floatingActionButton: floatingActionButton,
           ),
-        ),
-      ),
     );
   }
 }

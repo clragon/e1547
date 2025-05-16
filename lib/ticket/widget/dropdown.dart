@@ -32,14 +32,15 @@ class ReportFormDropdown<T> extends StatelessWidget {
           }
           return null;
         },
-        items: types.keys
-            .map<DropdownMenuItem<T>>(
-              (T value) => DropdownMenuItem<T>(
-                value: value,
-                child: Text(types[value]!),
-              ),
-            )
-            .toList(),
+        items:
+            types.keys
+                .map<DropdownMenuItem<T>>(
+                  (T value) => DropdownMenuItem<T>(
+                    value: value,
+                    child: Text(types[value]!),
+                  ),
+                )
+                .toList(),
       ),
     );
   }

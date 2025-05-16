@@ -7,9 +7,9 @@ class PopupMenuTile<T> extends PopupMenuItem<T> {
     required this.icon,
     required this.title,
   }) : super(
-          child: ListMenuTile(leading: Icon(icon), title: Text(title)),
-          value: value,
-        );
+         child: ListMenuTile(leading: Icon(icon), title: Text(title)),
+         value: value,
+       );
 
   final IconData icon;
   final String title;

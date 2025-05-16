@@ -58,10 +58,12 @@ extension PostTagging on Post {
         case 'tagcount':
           NumberRange? range = NumberRange.tryParse(value);
           if (range == null) return false;
-          return range.has(tags.values.fold<int>(
-            0,
-            (previousValue, element) => previousValue + element.length,
-          ));
+          return range.has(
+            tags.values.fold<int>(
+              0,
+              (previousValue, element) => previousValue + element.length,
+            ),
+          );
       }
     }
 
@@ -134,11 +136,7 @@ extension PostDenying on Post {
   }
 }
 
-enum PostType {
-  image,
-  video,
-  unsupported,
-}
+enum PostType { image, video, unsupported }
 
 extension PostTyping on Post {
   PostType get type {
@@ -214,29 +212,19 @@ mixin PostActionController<KeyType> on ClientDataController<KeyType, Post> {
     return rawItems![index];
   }
 
-  void replacePost(Post post) => updateItem(
-        rawItems?.indexWhere((e) => e.id == post.id) ?? -1,
-        post,
-      );
+  void replacePost(Post post) =>
+      updateItem(rawItems?.indexWhere((e) => e.id == post.id) ?? -1, post);
 
   Future<bool> fav(Post post) async {
     assertOwnsItem(post);
-    replacePost(
-      post.copyWith(
-        isFavorited: true,
-        favCount: post.favCount + 1,
-      ),
-    );
+    replacePost(post.copyWith(isFavorited: true, favCount: post.favCount + 1));
     try {
       await client.posts.addFavorite(post.id);
       evictCache();
       return true;
     } on ClientException {
       replacePost(
-        post.copyWith(
-          isFavorited: false,
-          favCount: post.favCount - 1,
-        ),
+        post.copyWith(isFavorited: false, favCount: post.favCount - 1),
       );
       return false;
     }
@@ -244,22 +232,14 @@ mixin PostActionController<KeyType> on ClientDataController<KeyType, Post> {
 
   Future<bool> unfav(Post post) async {
     assertOwnsItem(post);
-    replacePost(
-      post.copyWith(
-        isFavorited: false,
-        favCount: post.favCount - 1,
-      ),
-    );
+    replacePost(post.copyWith(isFavorited: false, favCount: post.favCount - 1));
     try {
       await client.posts.removeFavorite(post.id);
       evictCache();
       return true;
     } on ClientException {
       replacePost(
-        post.copyWith(
-          isFavorited: true,
-          favCount: post.favCount + 1,
-        ),
+        post.copyWith(isFavorited: true, favCount: post.favCount + 1),
       );
       return false;
     }
@@ -272,10 +252,11 @@ mixin PostActionController<KeyType> on ClientDataController<KeyType, Post> {
   }) async {
     assertOwnsItem(post);
     post = post.copyWith(
-        vote: post.vote.withVote(
-      upvote ? VoteStatus.upvoted : VoteStatus.downvoted,
-      replace,
-    ));
+      vote: post.vote.withVote(
+        upvote ? VoteStatus.upvoted : VoteStatus.downvoted,
+        replace,
+      ),
+    );
     replacePost(post);
     try {
       await client.posts.vote(post.id, upvote, replace);

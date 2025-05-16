@@ -3,11 +3,7 @@ import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
 
 class PostEditor extends StatelessWidget {
-  const PostEditor({
-    super.key,
-    required this.child,
-    required this.post,
-  });
+  const PostEditor({super.key, required this.child, required this.post});
 
   final Widget child;
   final Post post;
@@ -25,10 +21,7 @@ class PostEditor extends StatelessWidget {
           onPopInvokedWithResult: (didPop, result) {
             if (!didPop) controller.stopEditing();
           },
-          child: PromptActions(
-            controller: controller,
-            child: child!,
-          ),
+          child: PromptActions(controller: controller, child: child!),
         );
       },
       child: child,
@@ -37,11 +30,7 @@ class PostEditor extends StatelessWidget {
 }
 
 class PostEditorChild extends StatelessWidget {
-  const PostEditorChild({
-    super.key,
-    required this.child,
-    required this.shown,
-  });
+  const PostEditorChild({super.key, required this.child, required this.shown});
 
   final Widget child;
   final bool shown;

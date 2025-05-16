@@ -9,11 +9,7 @@ import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
 
 class PoolTile extends StatelessWidget {
-  const PoolTile({
-    super.key,
-    required this.pool,
-    this.onPressed,
-  });
+  const PoolTile({super.key, required this.pool, this.onPressed});
 
   final Pool pool;
   final VoidCallback? onPressed;
@@ -48,8 +44,9 @@ class PoolTile extends StatelessWidget {
 
     if (pool.postIds.isNotEmpty && controller != null) {
       int thumbnail = pool.postIds.first;
-      Post? post = controller.thumbnails.items
-          ?.firstWhereOrNull((e) => e.id == thumbnail);
+      Post? post = controller.thumbnails.items?.firstWhereOrNull(
+        (e) => e.id == thumbnail,
+      );
       if (post != null) {
         image = ChangeNotifierProvider<PostController>.value(
           value: controller.thumbnails,
@@ -103,14 +100,10 @@ class PoolTile extends StatelessWidget {
                   type: MaterialType.transparency,
                   child: InkWell(
                     onTap: onPressed,
-                    onLongPress: () => showPoolPrompt(
-                      context: context,
-                      pool: pool,
-                    ),
-                    onSecondaryTap: () => showPoolPrompt(
-                      context: context,
-                      pool: pool,
-                    ),
+                    onLongPress:
+                        () => showPoolPrompt(context: context, pool: pool),
+                    onSecondaryTap:
+                        () => showPoolPrompt(context: context, pool: pool),
                   ),
                 ),
               ),

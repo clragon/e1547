@@ -5,7 +5,7 @@ import 'package:flutter/foundation.dart';
 
 class TopicController extends PageClientDataController<Topic> {
   TopicController({required this.client, QueryMap? query})
-      : _query = query ?? QueryMap();
+    : _query = query ?? QueryMap();
 
   @override
   final Client client;
@@ -29,11 +29,11 @@ class TopicController extends PageClientDataController<Topic> {
   @override
   @protected
   Future<List<Topic>> fetch(int page, bool force) => client.topics.page(
-        page: page,
-        query: query,
-        force: force,
-        cancelToken: cancelToken,
-      );
+    page: page,
+    query: query,
+    force: force,
+    cancelToken: cancelToken,
+  );
 
   @override
   List<Topic>? filter(List<Topic>? items) {
@@ -47,9 +47,9 @@ class TopicController extends PageClientDataController<Topic> {
 
 class TopicProvider extends SubChangeNotifierProvider<Client, TopicController> {
   TopicProvider({QueryMap? query, super.child, super.builder})
-      : super(
-          create: (context, client) =>
-              TopicController(client: client, query: query),
-          keys: (context) => [query],
-        );
+    : super(
+        create:
+            (context, client) => TopicController(client: client, query: query),
+        keys: (context) => [query],
+      );
 }

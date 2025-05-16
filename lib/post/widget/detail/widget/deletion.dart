@@ -8,10 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_sub/flutter_sub.dart';
 
 class DeletionDisplay extends StatelessWidget {
-  const DeletionDisplay({
-    super.key,
-    required this.post,
-  });
+  const DeletionDisplay({super.key, required this.post});
 
   final Post post;
 
@@ -21,49 +18,44 @@ class DeletionDisplay extends StatelessWidget {
     return SubFuture<PostFlag>(
       create: () async {
         List<PostFlag> flags = await context.read<Client>().posts.flags(
-              limit: 1,
-              query: TagMap({
-                'type': 'deletion',
-                'search[post_id]': post.id,
-                'search[is_resolved]': 'false',
-              }),
-            );
+          limit: 1,
+          query: TagMap({
+            'type': 'deletion',
+            'search[post_id]': post.id,
+            'search[is_resolved]': 'false',
+          }),
+        );
         return flags.first;
       },
-      builder: (context, value) => HiddenWidget(
-        show: value.data != null,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-              child: Text(
-                'Deletion',
-                style: TextStyle(fontSize: 16),
-              ),
-            ),
-            Row(
+      builder:
+          (context, value) => HiddenWidget(
+            show: value.data != null,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Expanded(
-                  child: Card(
-                    color: Theme.of(context)
-                        .colorScheme
-                        .errorContainer
-                        .withAlpha(150),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: DText(
-                        value.data?.reason ?? '',
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                  child: Text('Deletion', style: TextStyle(fontSize: 16)),
+                ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Card(
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.errorContainer.withAlpha(150),
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: DText(value.data?.reason ?? ''),
+                        ),
                       ),
                     ),
-                  ),
+                  ],
                 ),
+                const Divider(),
               ],
             ),
-            const Divider(),
-          ],
-        ),
-      ),
+          ),
     );
   }
 }

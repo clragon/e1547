@@ -50,19 +50,19 @@ class ScaffoldFrame extends StatelessWidget {
 
   static ScaffoldFrameController of(BuildContext context) => maybeOf(context)!;
 
-  static ScaffoldFrameController? maybeOf(BuildContext context) => context
-      .dependOnInheritedWidgetOfExactType<_ScaffoldFrameData>()
-      ?.notifier;
+  static ScaffoldFrameController? maybeOf(BuildContext context) =>
+      context
+          .dependOnInheritedWidgetOfExactType<_ScaffoldFrameData>()
+          ?.notifier;
 
   @override
   Widget build(BuildContext context) => SubDefault<ScaffoldFrameController>(
-        value: controller,
-        create: () => ScaffoldFrameController(),
-        builder: (context, controller) => _ScaffoldFrameData(
-          controller: controller,
-          child: child,
-        ),
-      );
+    value: controller,
+    create: () => ScaffoldFrameController(),
+    builder:
+        (context, controller) =>
+            _ScaffoldFrameData(controller: controller, child: child),
+  );
 }
 
 class _ScaffoldFrameData extends InheritedNotifier<ScaffoldFrameController> {
@@ -89,10 +89,7 @@ class ScaffoldFrameChild extends StatelessWidget {
         duration: defaultAnimationDuration,
         child: ExcludeFocus(
           excluding: !shown,
-          child: IgnorePointer(
-            ignoring: !shown,
-            child: child,
-          ),
+          child: IgnorePointer(ignoring: !shown, child: child),
         ),
       );
     }
@@ -143,14 +140,12 @@ class _ScaffoldFrameSystemUIState extends State<ScaffoldFrameSystemUI>
   @override
   void initState() {
     super.initState();
-    SystemChrome.setSystemUIChangeCallback(
-      (shown) async {
-        ScaffoldFrameController controller = ScaffoldFrame.of(context);
-        if (controller.visible != shown) {
-          controller.toggleFrame(shown: shown);
-        }
-      },
-    );
+    SystemChrome.setSystemUIChangeCallback((shown) async {
+      ScaffoldFrameController controller = ScaffoldFrame.of(context);
+      if (controller.visible != shown) {
+        controller.toggleFrame(shown: shown);
+      }
+    });
   }
 
   @override

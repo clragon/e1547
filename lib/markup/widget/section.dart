@@ -26,9 +26,7 @@ class SectionWrap extends StatelessWidget {
             title?.replaceAll('\n', 'replace') ?? '',
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: const TextStyle(
-              fontSize: 16,
-            ),
+            style: const TextStyle(fontSize: 16),
           ),
         ),
         collapsed: const SizedBox.shrink(),

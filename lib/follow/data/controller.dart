@@ -4,23 +4,20 @@ import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 
 class FollowTimelineController extends PostController {
-  FollowTimelineController({
-    required super.client,
-  }) : super(canSearch: false);
+  FollowTimelineController({required super.client}) : super(canSearch: false);
 
   @override
   Future<List<Post>> fetch(int page, bool force) async {
     List<Follow> follows = await client.follows.all(
-      query: FollowsQuery(
-        types: [FollowType.update, FollowType.notify],
-      ),
+      query: FollowsQuery(types: [FollowType.update, FollowType.notify]),
       force: force,
     );
     return client.posts.byTags(
-      tags: follows
-          .where((e) => !e.tags.contains(' '))
-          .map((e) => e.tags)
-          .toList(),
+      tags:
+          follows
+              .where((e) => !e.tags.contains(' '))
+              .map((e) => e.tags)
+              .toList(),
       page: page,
       force: force,
       cancelToken: cancelToken,
@@ -51,23 +48,18 @@ class FollowController extends PageClientDataController<Follow> {
   Future<List<Follow>> fetch(int page, bool force) {
     StreamFuture<List<Follow>> result;
     if (page == 1) {
-      result = client.follows
-          .all(
-            query: FollowsQuery(
-              types: types,
-              hasUnseen: _filterUnseen,
-            ),
-            force: force,
-          )
-          .stream;
+      result =
+          client.follows
+              .all(
+                query: FollowsQuery(types: types, hasUnseen: _filterUnseen),
+                force: force,
+              )
+              .stream;
       if (_filterUnseen) {
         return result.stream.asyncExpand((event) {
           if (event.fold(0, (a, b) => a + b.unseen!) == 0) {
             return client.follows
-                .all(
-                  query: FollowsQuery(types: types),
-                  force: force,
-                )
+                .all(query: FollowsQuery(types: types), force: force)
                 .stream
                 .stream; // I can explain
           } else {

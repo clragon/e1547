@@ -23,18 +23,18 @@ extension HistorySearchFilterDisplaying on HistoryCategory {
 
 extension HistoryTypeFilterDisplaying on HistoryType {
   String get title => switch (this) {
-        HistoryType.posts => 'Posts',
-        HistoryType.pools => 'Pools',
-        HistoryType.topics => 'Topics',
-        HistoryType.wikis => 'Wikis',
-        HistoryType.users => 'Users'
-      };
+    HistoryType.posts => 'Posts',
+    HistoryType.pools => 'Pools',
+    HistoryType.topics => 'Topics',
+    HistoryType.wikis => 'Wikis',
+    HistoryType.users => 'Users',
+  };
 
   Widget? get icon => switch (this) {
-        HistoryType.posts => const Icon(Icons.image),
-        HistoryType.pools => const Icon(Icons.collections),
-        HistoryType.topics => const Icon(Icons.forum),
-        HistoryType.users => const Icon(Icons.person),
-        HistoryType.wikis => const Icon(Icons.info_outlined)
-      };
+    HistoryType.posts => const Icon(Icons.image),
+    HistoryType.pools => const Icon(Icons.collections),
+    HistoryType.topics => const Icon(Icons.forum),
+    HistoryType.users => const Icon(Icons.person),
+    HistoryType.wikis => const Icon(Icons.info_outlined),
+  };
 }

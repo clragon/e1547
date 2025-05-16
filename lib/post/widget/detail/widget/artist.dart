@@ -30,22 +30,26 @@ class ArtistDisplay extends StatelessWidget {
                   ),
                   onLongPress: () {
                     Clipboard.setData(ClipboardData(text: post.id.toString()));
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                      duration: const Duration(seconds: 1),
-                      content: Text('Copied post id #${post.id}'),
-                    ));
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        duration: const Duration(seconds: 1),
+                        content: Text('Copied post id #${post.id}'),
+                      ),
+                    );
                   },
                 ),
                 InkWell(
                   borderRadius: BorderRadius.circular(4),
-                  onTap: () => Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => UserLoadingPage(
-                        post.uploaderId.toString(),
-                        initalPage: UserPageSection.uploads,
+                  onTap:
+                      () => Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder:
+                              (context) => UserLoadingPage(
+                                post.uploaderId.toString(),
+                                initalPage: UserPageSection.uploads,
+                              ),
+                        ),
                       ),
-                    ),
-                  ),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 4),
                     child: Row(
@@ -77,9 +81,10 @@ class ArtistName extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Map<String, List<String>> tags =
-        context.select<PostEditingController?, Map<String, List<String>>>(
-            (value) => value?.value?.tags ?? post.tags);
+    Map<String, List<String>> tags = context
+        .select<PostEditingController?, Map<String, List<String>>>(
+          (value) => value?.value?.tags ?? post.tags,
+        );
 
     List<String> artists = filterArtists((tags)['artist'] ?? []);
     if (artists.isNotEmpty) {

@@ -35,15 +35,6 @@ class HistoryRequest with _$HistoryRequest {
       _$HistoryRequestFromJson(json);
 }
 
-enum HistoryCategory {
-  items,
-  searches,
-}
+enum HistoryCategory { items, searches }
 
-enum HistoryType {
-  posts,
-  pools,
-  topics,
-  users,
-  wikis,
-}
+enum HistoryType { posts, pools, topics, users, wikis }

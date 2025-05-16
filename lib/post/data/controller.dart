@@ -13,9 +13,9 @@ class PostController extends PageClientDataController<Post>
     bool denying = true,
     this.canSearch = true,
     this.filterMode = PostFilterMode.filtering,
-  })  : _query = query ?? {},
-        _orderFavorites = orderFavorites,
-        _orderPools = orderPools {
+  }) : _query = query ?? {},
+       _orderFavorites = orderFavorites,
+       _orderPools = orderPools {
     this.denying = denying;
     client.traits.addListener(applyFilter);
   }
@@ -58,13 +58,13 @@ class PostController extends PageClientDataController<Post>
   @override
   @protected
   Future<List<Post>> fetch(int page, bool force) async => client.posts.page(
-        page: page,
-        query: query,
-        force: force,
-        orderPoolsByOldest: orderPools,
-        orderFavoritesByAdded: orderFavorites,
-        cancelToken: cancelToken,
-      );
+    page: page,
+    query: query,
+    force: force,
+    orderPoolsByOldest: orderPools,
+    orderFavoritesByAdded: orderFavorites,
+    cancelToken: cancelToken,
+  );
 
   @override
   void dispose() {
@@ -84,13 +84,9 @@ class SinglePostController extends PostController {
 
   @override
   Future<List<Post>> fetch(int page, bool force) async => [
-        if (page == firstPageKey)
-          await client.posts.get(
-            id: id,
-            force: force,
-            cancelToken: cancelToken,
-          ),
-      ];
+    if (page == firstPageKey)
+      await client.posts.get(id: id, force: force, cancelToken: cancelToken),
+  ];
 }
 
 class PostProvider extends SubChangeNotifierProvider<Client, PostController> {
@@ -104,15 +100,16 @@ class PostProvider extends SubChangeNotifierProvider<Client, PostController> {
     super.child,
     super.builder,
   }) : super(
-          create: (context, client) => PostController(
-            client: client,
-            query: query,
-            orderPools: orderPools,
-            denying: denying,
-            canSearch: canSearch,
-            filterMode: filterMode,
-          ),
-        );
+         create:
+             (context, client) => PostController(
+               client: client,
+               query: query,
+               orderPools: orderPools,
+               denying: denying,
+               canSearch: canSearch,
+               filterMode: filterMode,
+             ),
+       );
 
   // ignore: use_key_in_widget_constructors
   PostProvider.builder({
@@ -130,10 +127,11 @@ class SinglePostProvider extends PostProvider {
     super.child,
     super.builder,
   }) : super.builder(
-          create: (context, client) => SinglePostController(
-            id: id,
-            client: client,
-            filterMode: filterMode,
-          ),
-        );
+         create:
+             (context, client) => SinglePostController(
+               id: id,
+               client: client,
+               filterMode: filterMode,
+             ),
+       );
 }

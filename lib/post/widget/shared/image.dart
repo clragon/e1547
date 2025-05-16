@@ -67,24 +67,26 @@ class PostImageWidget extends StatelessWidget {
                 showProgress: showProgress,
                 fit: fit,
                 cacheSize: cacheSize,
-                progressIndicatorBuilder: withLowRes
-                    ? (context, url, progress) => ImageProgressWrapper(
+                progressIndicatorBuilder:
+                    withLowRes
+                        ? (context, url, progress) => ImageProgressWrapper(
                           aspectRatio: aspectRatio,
                           progress: progress.progress,
-                          child: lowResCacheSize != null
-                              ? RawPostImageWidget(
-                                  post: post,
-                                  size: PostImageSize.sample,
-                                  fit: fit,
-                                  cacheSize: lowResCacheSize,
-                                )
-                              : RawPostImageWidget(
-                                  post: post,
-                                  size: PostImageSize.preview,
-                                  fit: fit,
-                                ),
+                          child:
+                              lowResCacheSize != null
+                                  ? RawPostImageWidget(
+                                    post: post,
+                                    size: PostImageSize.sample,
+                                    fit: fit,
+                                    cacheSize: lowResCacheSize,
+                                  )
+                                  : RawPostImageWidget(
+                                    post: post,
+                                    size: PostImageSize.preview,
+                                    fit: fit,
+                                  ),
                         )
-                    : null,
+                        : null,
               );
             case PostImageSize.file:
               return RawPostImageWidget(
@@ -94,18 +96,18 @@ class PostImageWidget extends StatelessWidget {
                 showProgress: showProgress,
                 fit: fit,
                 cacheSize: cacheSize,
-                progressIndicatorBuilder: (context, url, progress) =>
-                    ImageProgressWrapper(
-                  progress: progress.progress,
-                  aspectRatio: aspectRatio,
-                  child: RawPostImageWidget(
-                    post: post,
-                    size: PostImageSize.sample,
-                    showProgress: showProgress,
-                    fit: fit,
-                    cacheSize: lowResCacheSize,
-                  ),
-                ),
+                progressIndicatorBuilder:
+                    (context, url, progress) => ImageProgressWrapper(
+                      progress: progress.progress,
+                      aspectRatio: aspectRatio,
+                      child: RawPostImageWidget(
+                        post: post,
+                        size: PostImageSize.sample,
+                        showProgress: showProgress,
+                        fit: fit,
+                        cacheSize: lowResCacheSize,
+                      ),
+                    ),
               );
           }
         },
@@ -152,10 +154,11 @@ class RawPostImageWidget extends StatelessWidget {
       );
     }
 
-    String url = switch (size) {
+    String url =
+        switch (size) {
           PostImageSize.preview => post.preview,
           PostImageSize.sample => post.sample,
-          PostImageSize.file => post.file!
+          PostImageSize.file => post.file!,
         } ??
         post.file!;
     Size dimensions = Size(post.width.toDouble(), post.height.toDouble());
@@ -176,12 +179,14 @@ class RawPostImageWidget extends StatelessWidget {
       fadeInDuration: fades,
       fadeOutDuration: fades,
       imageUrl: url,
-      errorWidget: stacked
-          ? defaultErrorBuilder
-          : (context, url, error) => const SizedBox.shrink(),
-      progressIndicatorBuilder: showProgress || stacked
-          ? progressIndicatorBuilder ?? progressIndicator
-          : null,
+      errorWidget:
+          stacked
+              ? defaultErrorBuilder
+              : (context, url, error) => const SizedBox.shrink(),
+      progressIndicatorBuilder:
+          showProgress || stacked
+              ? progressIndicatorBuilder ?? progressIndicator
+              : null,
       memCacheWidth: memCacheWidth,
       memCacheHeight: memCacheHeight,
       cacheManager: context.read<BaseCacheManager>(),
@@ -216,14 +221,11 @@ class _ImageProgressWrapperState extends State<ImageProgressWrapper> {
   @override
   void initState() {
     super.initState();
-    Timer(
-      const Duration(milliseconds: 1000),
-      () {
-        if (mounted) {
-          setState(() => visible = true);
-        }
-      },
-    );
+    Timer(const Duration(milliseconds: 1000), () {
+      if (mounted) {
+        setState(() => visible = true);
+      }
+    });
   }
 
   @override
@@ -271,14 +273,12 @@ class ImageCacheSize {
 class ImageCacheSizeProvider extends SubProvider0<ImageCacheSize> {
   /// Provides the cache size for images to a subtree.
   ImageCacheSizeProvider({required int? size, super.child, super.builder})
-      : super(
-          create: (context) => ImageCacheSize(size),
-          keys: (context) => [size],
-        );
+    : super(
+        create: (context) => ImageCacheSize(size),
+        keys: (context) => [size],
+      );
 
   /// Removes the cache size for images for a subtree.
   ImageCacheSizeProvider.none({super.child, super.builder})
-      : super(
-          create: (context) => const ImageCacheSize(null),
-        );
+    : super(create: (context) => const ImageCacheSize(null));
 }

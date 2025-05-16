@@ -20,25 +20,24 @@ class TagEditor extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SubTextEditingController(
-      builder: (context, textController) => SubEffect(
-        effect: () {
-          controller.setAction(() => submit(textController.text));
-          return null;
-        },
-        child: TagInput(
-          labelText: category,
-          decoration: const InputDecoration(
-            suffix: PromptTextFieldSuffix(
-              icon: Icon(Icons.add),
+      builder:
+          (context, textController) => SubEffect(
+            effect: () {
+              controller.setAction(() => submit(textController.text));
+              return null;
+            },
+            child: TagInput(
+              labelText: category,
+              decoration: const InputDecoration(
+                suffix: PromptTextFieldSuffix(icon: Icon(Icons.add)),
+              ),
+              direction: VerticalDirection.up,
+              textInputAction: TextInputAction.done,
+              submit: (_) => controller.action!(),
+              controller: textController,
+              category: TagCategory.byName(category!)?.id,
             ),
           ),
-          direction: VerticalDirection.up,
-          textInputAction: TextInputAction.done,
-          submit: (_) => controller.action!(),
-          controller: textController,
-          category: TagCategory.byName(category!)?.id,
-        ),
-      ),
     );
   }
 }

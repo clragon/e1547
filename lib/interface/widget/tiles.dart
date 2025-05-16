@@ -4,10 +4,7 @@ import 'package:e1547/interface/interface.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:flutter/material.dart';
 
-enum GridQuilt {
-  square,
-  vertical,
-}
+enum GridQuilt { square, vertical }
 
 class TileLayoutData extends InheritedWidget {
   const TileLayoutData({
@@ -57,27 +54,29 @@ class TileLayout extends StatelessWidget {
   Widget build(BuildContext context) {
     return ValueListenableBuilder<int>(
       valueListenable: context.watch<Settings>().tileSize,
-      builder: (context, tileSize, child) => ValueListenableBuilder<GridQuilt>(
-        valueListenable: context.watch<Settings>().quilt,
-        builder: (context, stagger, child) => LayoutBuilder(
-          builder: (context, constraints) {
-            tileSize = this.tileSize ?? tileSize;
-            stagger = this.stagger ?? stagger;
-            int crossAxisCount =
-                max(1, constraints.maxWidth / tileSize).round();
-            int mainAxisCount =
-                max(1, constraints.maxHeight / tileSize).round();
-            return TileLayoutData(
-              tileHeightFactor: tileHeightFactor,
-              tileSize: tileSize,
-              mainAxisCount: mainAxisCount,
-              crossAxisCount: crossAxisCount,
-              stagger: stagger,
-              child: this.child,
-            );
-          },
-        ),
-      ),
+      builder:
+          (context, tileSize, child) => ValueListenableBuilder<GridQuilt>(
+            valueListenable: context.watch<Settings>().quilt,
+            builder:
+                (context, stagger, child) => LayoutBuilder(
+                  builder: (context, constraints) {
+                    tileSize = this.tileSize ?? tileSize;
+                    stagger = this.stagger ?? stagger;
+                    int crossAxisCount =
+                        max(1, constraints.maxWidth / tileSize).round();
+                    int mainAxisCount =
+                        max(1, constraints.maxHeight / tileSize).round();
+                    return TileLayoutData(
+                      tileHeightFactor: tileHeightFactor,
+                      tileSize: tileSize,
+                      mainAxisCount: mainAxisCount,
+                      crossAxisCount: crossAxisCount,
+                      stagger: stagger,
+                      child: this.child,
+                    );
+                  },
+                ),
+          ),
     );
   }
 }

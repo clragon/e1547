@@ -61,10 +61,7 @@ class GalleryButtons extends StatelessWidget {
   }
 }
 
-enum GalleryButtonDirection {
-  left,
-  right,
-}
+enum GalleryButtonDirection { left, right }
 
 class GalleryPageButton extends StatefulWidget {
   const GalleryPageButton({
@@ -120,11 +117,13 @@ class _GalleryPageButtonState extends State<GalleryPageButton> {
             widget.controller.position.hasContentDimensions) {
           switch (widget.direction) {
             case GalleryButtonDirection.left:
-              enabled = widget.controller.position.minScrollExtent <
+              enabled =
+                  widget.controller.position.minScrollExtent <
                   widget.controller.position.pixels;
               break;
             case GalleryButtonDirection.right:
-              enabled = widget.controller.position.maxScrollExtent >
+              enabled =
+                  widget.controller.position.maxScrollExtent >
                   widget.controller.position.pixels;
               break;
           }
@@ -143,31 +142,33 @@ class _GalleryPageButtonState extends State<GalleryPageButton> {
                 child: TweenAnimationBuilder<Color?>(
                   tween: ColorTween(
                     begin: dimTextColor(context, 0.4),
-                    end: dimButton
-                        ? dimTextColor(context, 0.4)
-                        : Theme.of(context).iconTheme.color,
+                    end:
+                        dimButton
+                            ? dimTextColor(context, 0.4)
+                            : Theme.of(context).iconTheme.color,
                   ),
                   duration: const Duration(milliseconds: 100),
-                  builder: (context, value, child) => IconButton(
-                    onPressed: () {
-                      int page = widget.controller.page!.round();
-                      switch (widget.direction) {
-                        case GalleryButtonDirection.left:
-                          page--;
-                          break;
-                        case GalleryButtonDirection.right:
-                          page++;
-                          break;
-                      }
-                      widget.controller.animateToPage(
-                        page,
-                        duration: const Duration(milliseconds: 200),
-                        curve: Curves.easeInOut,
-                      );
-                    },
-                    icon: getIcon(),
-                    color: value,
-                  ),
+                  builder:
+                      (context, value, child) => IconButton(
+                        onPressed: () {
+                          int page = widget.controller.page!.round();
+                          switch (widget.direction) {
+                            case GalleryButtonDirection.left:
+                              page--;
+                              break;
+                            case GalleryButtonDirection.right:
+                              page++;
+                              break;
+                          }
+                          widget.controller.animateToPage(
+                            page,
+                            duration: const Duration(milliseconds: 200),
+                            curve: Curves.easeInOut,
+                          );
+                        },
+                        icon: getIcon(),
+                        color: value,
+                      ),
                 ),
               ),
             ),

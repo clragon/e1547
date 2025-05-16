@@ -84,10 +84,7 @@ class IndentedCard extends StatelessWidget {
       child: Stack(
         fit: StackFit.passthrough,
         children: [
-          Padding(
-            padding: const EdgeInsets.only(left: 5),
-            child: child,
-          ),
+          Padding(padding: const EdgeInsets.only(left: 5), child: child),
           if (color != null)
             Positioned(
               top: 0,

@@ -55,13 +55,14 @@ class _PostsRouteConnectorState extends State<PostsRouteConnector> {
 
   @override
   Widget build(BuildContext context) => SubListener(
-        listener: updatePages,
-        listenable: widget.controller,
-        builder: (context) => ChangeNotifierProvider.value(
+    listener: updatePages,
+    listenable: widget.controller,
+    builder:
+        (context) => ChangeNotifierProvider.value(
           value: widget.controller,
           child: widget.child,
         ),
-      );
+  );
 }
 
 class PostsIdConnector extends StatelessWidget {
@@ -97,20 +98,13 @@ class PostsControllerConnector extends StatelessWidget {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<PostController>.value(
       value: controller,
-      child: PostsIdConnector(
-        id: id,
-        builder: builder,
-      ),
+      child: PostsIdConnector(id: id, builder: builder),
     );
   }
 }
 
 class PostsConnector extends StatelessWidget {
-  const PostsConnector({
-    super.key,
-    required this.post,
-    required this.builder,
-  });
+  const PostsConnector({super.key, required this.post, required this.builder});
 
   final Post post;
   final Widget Function(BuildContext context, Post value) builder;
@@ -119,10 +113,7 @@ class PostsConnector extends StatelessWidget {
   Widget build(BuildContext context) {
     return PostsIdConnector(
       id: post.id,
-      builder: (context, post) => builder(
-        context,
-        post ?? this.post,
-      ),
+      builder: (context, post) => builder(context, post ?? this.post),
     );
   }
 }
@@ -139,11 +130,11 @@ class PostHistoryConnector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => ItemHistoryConnector<Post>(
-        item: post,
-        addToHistory: (context, client, item) =>
-            client.histories.addPost(post: post),
-        child: child,
-      );
+    item: post,
+    addToHistory:
+        (context, client, item) => client.histories.addPost(post: post),
+    child: child,
+  );
 }
 
 class PostsControllerHistoryConnector extends StatelessWidget {
@@ -160,10 +151,11 @@ class PostsControllerHistoryConnector extends StatelessWidget {
   Widget build(BuildContext context) =>
       ControllerHistoryConnector<PostController>(
         controller: controller,
-        addToHistory: (context, client, data) => client.histories.addPostSearch(
-          query: data.query,
-          posts: data.items,
-        ),
+        addToHistory:
+            (context, client, data) => client.histories.addPostSearch(
+              query: data.query,
+              posts: data.items,
+            ),
         child: child,
       );
 }

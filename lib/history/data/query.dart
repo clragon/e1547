@@ -12,14 +12,16 @@ extension type HistoryQuery._(QueryMap self) implements QueryMap {
     List<HistoryCategory>? categories,
     List<HistoryType>? types,
   }) {
-    return HistoryQuery._({
-      'search[date]': date != null ? _dateFormat.format(date) : null,
-      'search[link]': link,
-      'search[title]': title,
-      'search[subtitle]': subtitle,
-      'search[category]': categories?.map((e) => e.name).join(','),
-      'search[type]': types?.map((e) => e.name).join(','),
-    }.toQuery());
+    return HistoryQuery._(
+      {
+        'search[date]': date != null ? _dateFormat.format(date) : null,
+        'search[link]': link,
+        'search[title]': title,
+        'search[subtitle]': subtitle,
+        'search[category]': categories?.map((e) => e.name).join(','),
+        'search[type]': types?.map((e) => e.name).join(','),
+      }.toQuery(),
+    );
   }
 
   HistoryQuery.from(QueryMap map) : this._(map);
@@ -42,7 +44,9 @@ extension type HistoryQuery._(QueryMap self) implements QueryMap {
   }
 
   set date(DateTime? value) => setOrRemove(
-      'search[date]', value != null ? _dateFormat.format(value) : null);
+    'search[date]',
+    value != null ? _dateFormat.format(value) : null,
+  );
 
   String? get link => self['search[link]'];
 
@@ -56,20 +60,22 @@ extension type HistoryQuery._(QueryMap self) implements QueryMap {
 
   set subtitle(String? value) => setOrRemove('search[subtitle]', value);
 
-  Set<HistoryCategory>? get categories => self['search[category]']
-      ?.split(',')
-      .map((e) => HistoryCategory.values.asNameMap()[e])
-      .whereType<HistoryCategory>()
-      .toSet();
+  Set<HistoryCategory>? get categories =>
+      self['search[category]']
+          ?.split(',')
+          .map((e) => HistoryCategory.values.asNameMap()[e])
+          .whereType<HistoryCategory>()
+          .toSet();
 
   set categories(Set<HistoryCategory>? value) =>
       setOrRemove('search[category]', value?.map((e) => e.name).join(','));
 
-  Set<HistoryType>? get types => self['search[type]']
-      ?.split(',')
-      .map((e) => HistoryType.values.asNameMap()[e])
-      .whereType<HistoryType>()
-      .toSet();
+  Set<HistoryType>? get types =>
+      self['search[type]']
+          ?.split(',')
+          .map((e) => HistoryType.values.asNameMap()[e])
+          .whereType<HistoryType>()
+          .toSet();
 
   set types(Set<HistoryType>? value) =>
       setOrRemove('search[type]', value?.map((e) => e.name).join(','));

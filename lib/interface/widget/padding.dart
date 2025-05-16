@@ -13,5 +13,6 @@ const EdgeInsets defaultListPadding = EdgeInsets.symmetric(
 
 const double defaultActionListBottomHeight = kBottomNavigationBarHeight + 24;
 
-final EdgeInsets defaultActionListPadding =
-    defaultListPadding.copyWith(bottom: defaultActionListBottomHeight);
+final EdgeInsets defaultActionListPadding = defaultListPadding.copyWith(
+  bottom: defaultActionListBottomHeight,
+);

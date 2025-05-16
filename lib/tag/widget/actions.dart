@@ -16,9 +16,7 @@ class ActionButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialButton(
       onPressed: onTap,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(4),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
       minWidth: 60,
       height: 60,
       child: Column(
@@ -30,7 +28,8 @@ class ActionButton extends StatelessWidget {
             child: icon,
           ),
           DefaultTextStyle(
-            style: Theme.of(context).textTheme.bodyMedium ??
+            style:
+                Theme.of(context).textTheme.bodyMedium ??
                 TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w500,

@@ -62,10 +62,7 @@ class IconMessage extends StatelessWidget {
                   child: icon,
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: title,
-              ),
+              Padding(padding: const EdgeInsets.only(bottom: 8), child: title),
             ],
           ),
           if (action != null) action!,
@@ -76,15 +73,10 @@ class IconMessage extends StatelessWidget {
 }
 
 /// Similar to [TransitionBuilder] except that child is guaranteed to be non-null.
-typedef WidgetChildBuilder = Widget Function(
-    BuildContext context, Widget child);
+typedef WidgetChildBuilder =
+    Widget Function(BuildContext context, Widget child);
 
-enum LoadingPageState {
-  loading,
-  empty,
-  error,
-  done,
-}
+enum LoadingPageState { loading, empty, error, done }
 
 class LoadingPage extends StatelessWidget {
   const LoadingPage({
@@ -103,7 +95,7 @@ class LoadingPage extends StatelessWidget {
   final WidgetBuilder child;
   final Widget Function(BuildContext context, WidgetBuilder child)? pageBuilder;
   final Widget Function(BuildContext context, WidgetBuilder child)?
-      loadingBuilder;
+  loadingBuilder;
   final Widget? onEmpty;
   final Widget? onError;
   final bool isLoading;
@@ -157,9 +149,7 @@ class LoadingPage extends StatelessWidget {
       return body ?? content(context);
     }
 
-    return Material(
-      child: body(),
-    );
+    return Material(child: body());
   }
 }
 
@@ -187,15 +177,14 @@ class AsyncLoadingPage<T> extends StatelessWidget {
   Widget build(BuildContext context) {
     return LoadingPage(
       child: (context) => builder(context, snapshot.data as T),
-      loadingBuilder: (context, child) => Scaffold(
-        appBar: title != null
-            ? AppBar(
-                leading: const CloseButton(),
-                title: title,
-              )
-            : null,
-        body: child(context),
-      ),
+      loadingBuilder:
+          (context, child) => Scaffold(
+            appBar:
+                title != null
+                    ? AppBar(leading: const CloseButton(), title: title)
+                    : null,
+            body: child(context),
+          ),
       isLoading: snapshot.connectionState != ConnectionState.done,
       isError: snapshot.hasError,
       isEmpty: isEmpty ?? snapshot.connectionState != ConnectionState.done,
@@ -230,15 +219,16 @@ class FutureLoadingPage<T> extends StatelessWidget {
   Widget build(BuildContext context) {
     return FutureBuilder<T>(
       future: future,
-      builder: (context, snapshot) => AsyncLoadingPage(
-        snapshot: snapshot,
-        title: title,
-        isEmpty: isEmpty,
-        isBuilt: isBuilt,
-        onEmpty: onEmpty,
-        onError: onError,
-        builder: builder,
-      ),
+      builder:
+          (context, snapshot) => AsyncLoadingPage(
+            snapshot: snapshot,
+            title: title,
+            isEmpty: isEmpty,
+            isBuilt: isBuilt,
+            onEmpty: onEmpty,
+            onError: onError,
+            builder: builder,
+          ),
     );
   }
 }

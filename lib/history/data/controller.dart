@@ -4,10 +4,8 @@ import 'package:e1547/interface/interface.dart';
 import 'package:flutter/foundation.dart';
 
 class HistoryController extends PageClientDataController<History> {
-  HistoryController({
-    required this.client,
-    QueryMap? query,
-  }) : _query = query ?? {};
+  HistoryController({required this.client, QueryMap? query})
+    : _query = query ?? {};
 
   @override
   final Client client;
@@ -34,16 +32,15 @@ class HistoryController extends PageClientDataController<History> {
 class HistoryProvider
     extends SubChangeNotifierProvider<Client, HistoryController> {
   HistoryProvider({QueryMap? search, super.child, super.builder})
-      : super(
-          create: (context, client) => HistoryController(
-            client: client,
-            query: search,
-          ),
-          update: (context, service, controller) {
-            if (search != null) {
-              controller.search = search;
-            }
-            return controller;
-          },
-        );
+    : super(
+        create:
+            (context, client) =>
+                HistoryController(client: client, query: search),
+        update: (context, service, controller) {
+          if (search != null) {
+            controller.search = search;
+          }
+          return controller;
+        },
+      );
 }

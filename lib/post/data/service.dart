@@ -22,20 +22,14 @@ class PostService {
   final Identity identity;
   final PoolService poolsService;
 
-  Future<Post> get({
-    required int id,
-    bool? force,
-    CancelToken? cancelToken,
-  }) =>
+  Future<Post> get({required int id, bool? force, CancelToken? cancelToken}) =>
       dio
           .get(
             '/posts/$id.json',
             options: forceOptions(force),
             cancelToken: cancelToken,
           )
-          .then(
-            (response) => E621Post.fromJson(response.data['post']),
-          );
+          .then((response) => E621Post.fromJson(response.data['post']));
 
   Future<List<Post>> page({
     int? page,
@@ -55,7 +49,8 @@ class PostService {
     String? tags = query?['tags'];
     if (ordered && tags != null) {
       Map<RegExp, Future<List<Post>> Function(RegExpMatch match)> redirects = {
-        poolRegex(): (match) => byPool(
+        poolRegex():
+            (match) => byPool(
               id: int.parse(match.namedGroup('id')!),
               page: page,
               orderByOldest: orderPoolsByOldest ?? true,
@@ -63,8 +58,8 @@ class PostService {
               cancelToken: cancelToken,
             ),
         if ((orderFavoritesByAdded ?? false) && identity.username != null)
-          favRegex(identity.username!): (match) =>
-              favorites(page: page, limit: limit, force: force),
+          favRegex(identity.username!):
+              (match) => favorites(page: page, limit: limit, force: force),
       };
 
       for (final entry in redirects.entries) {
@@ -78,21 +73,18 @@ class PostService {
     return dio
         .get(
           '/posts.json',
-          queryParameters: {
-            'page': page,
-            'limit': limit,
-            ...?query,
-          },
+          queryParameters: {'page': page, 'limit': limit, ...?query},
           options: forceOptions(force),
           cancelToken: cancelToken,
         )
         .then(
-          (response) => (response.data['posts'] as List<dynamic>)
-              .map<Post>(E621Post.fromJson)
-              .whereNot(
-                (e) => (e.file == null && !e.isDeleted) || e.ext == 'swf',
-              )
-              .toList(),
+          (response) =>
+              (response.data['posts'] as List<dynamic>)
+                  .map<Post>(E621Post.fromJson)
+                  .whereNot(
+                    (e) => (e.file == null && !e.isDeleted) || e.ext == 'swf',
+                  )
+                  .toList(),
         );
   }
 
@@ -141,9 +133,9 @@ class PostService {
         cancelToken: cancelToken,
       );
       Map<int, Post> table = {for (Post e in part) e.id: e};
-      part = (chunk.map((e) => table[e]).toList()
-            ..removeWhere((e) => e == null))
-          .cast<Post>();
+      part =
+          (chunk.map((e) => table[e]).toList()..removeWhere((e) => e == null))
+              .cast<Post>();
       result.addAll(part);
     }
     return result;
@@ -185,15 +177,14 @@ class PostService {
     int? limit,
     bool? force,
     CancelToken? cancelToken,
-  }) =>
-      this.page(
-        page: page,
-        query: {'tags': 'fav:$username'},
-        limit: limit,
-        ordered: false,
-        force: force,
-        cancelToken: cancelToken,
-      );
+  }) => this.page(
+    page: page,
+    query: {'tags': 'fav:$username'},
+    limit: limit,
+    ordered: false,
+    force: force,
+    cancelToken: cancelToken,
+  );
 
   Future<List<Post>> byUploader({
     required String username,
@@ -201,15 +192,14 @@ class PostService {
     int? limit,
     bool? force,
     CancelToken? cancelToken,
-  }) =>
-      this.page(
-        page: page,
-        query: {'tags': 'user:$username'},
-        limit: limit,
-        ordered: false,
-        force: force,
-        cancelToken: cancelToken,
-      );
+  }) => this.page(
+    page: page,
+    query: {'tags': 'user:$username'},
+    limit: limit,
+    ordered: false,
+    force: force,
+    cancelToken: cancelToken,
+  );
 
   Future<List<Post>> byPool({
     required int id,
@@ -222,8 +212,11 @@ class PostService {
     page ??= 1;
     // TODO: store per page count in Traits
     int limit = 75;
-    Pool pool =
-        await poolsService.get(id: id, force: force, cancelToken: cancelToken);
+    Pool pool = await poolsService.get(
+      id: id,
+      force: force,
+      cancelToken: cancelToken,
+    );
     List<int> ids = pool.postIds;
     if (!orderByOldest) ids = ids.reversed.toList();
     int lower = (page - 1) * limit;
@@ -246,12 +239,13 @@ class PostService {
 
   // TODO: votes should be their own service
   Future<void> vote(int postId, bool upvote, bool replace) async {
-    await dio.cache
-        ?.deleteFromPath(RegExp(RegExp.escape('/posts/$postId.json')));
-    await dio.post('/posts/$postId/votes.json', queryParameters: {
-      'score': upvote ? 1 : -1,
-      'no_unvote': replace,
-    });
+    await dio.cache?.deleteFromPath(
+      RegExp(RegExp.escape('/posts/$postId.json')),
+    );
+    await dio.post(
+      '/posts/$postId/votes.json',
+      queryParameters: {'score': upvote ? 1 : -1, 'no_unvote': replace},
+    );
   }
 
   // TODO: favorites should be their own service
@@ -272,11 +266,7 @@ class PostService {
       Map<String, dynamic> body = await dio
           .get(
             '/favorites.json',
-            queryParameters: {
-              'page': page,
-              'limit': limit,
-              ...?query,
-            },
+            queryParameters: {'page': page, 'limit': limit, ...?query},
             options: forceOptions(force),
             cancelToken: cancelToken,
           )
@@ -300,41 +290,40 @@ class PostService {
   }
 
   Future<void> addFavorite(int postId) async {
-    await dio.cache
-        ?.deleteFromPath(RegExp(RegExp.escape('/posts/$postId.json')));
+    await dio.cache?.deleteFromPath(
+      RegExp(RegExp.escape('/posts/$postId.json')),
+    );
     await dio.post('/favorites.json', queryParameters: {'post_id': postId});
   }
 
   Future<void> removeFavorite(int postId) async {
-    await dio.cache
-        ?.deleteFromPath(RegExp(RegExp.escape('/posts/$postId.json')));
+    await dio.cache?.deleteFromPath(
+      RegExp(RegExp.escape('/posts/$postId.json')),
+    );
     await dio.delete('/favorites/$postId.json');
   }
 
   // TODO: tickets should be their own service
   Future<void> report(int postId, int reportId, String reason) => dio.post(
-        '/tickets',
-        queryParameters: {
-          'ticket[reason]': reason,
-          'ticket[report_reason]': reportId,
-          'ticket[disp_id]': postId,
-          'ticket[qtype]': 'post',
-        },
-        options: Options(
-          validateStatus: (status) => status == 302,
-        ),
-      );
+    '/tickets',
+    queryParameters: {
+      'ticket[reason]': reason,
+      'ticket[report_reason]': reportId,
+      'ticket[disp_id]': postId,
+      'ticket[qtype]': 'post',
+    },
+    options: Options(validateStatus: (status) => status == 302),
+  );
 
   // TODO: flags should be their own service
   Future<void> addFlag(int postId, String flag, {int? parent}) => dio.post(
-        '/post_flags.json',
-        queryParameters: {
-          'post_flag[post_id]': postId,
-          'post_flag[reason_name]': flag,
-          if (flag == 'inferior' && parent != null)
-            'post_flag[parent_id]': parent,
-        },
-      );
+    '/post_flags.json',
+    queryParameters: {
+      'post_flag[post_id]': postId,
+      'post_flag[reason_name]': flag,
+      if (flag == 'inferior' && parent != null) 'post_flag[parent_id]': parent,
+    },
+  );
 
   Future<List<PostFlag>> flags({
     int? page,
@@ -342,85 +331,80 @@ class PostService {
     QueryMap? query,
     bool? force,
     CancelToken? cancelToken,
-  }) =>
-      dio
-          .get(
-            '/post_flags.json',
-            queryParameters: {
-              'page': page,
-              'limit': limit,
-              ...?query,
-            },
-            options: forceOptions(force),
-            cancelToken: cancelToken,
-          )
-          .then(
-            (response) => pick(response.data).asListOrThrow(
-              (p0) => PostFlag.fromJson(p0.asMapOrThrow()),
-            ),
-          );
+  }) => dio
+      .get(
+        '/post_flags.json',
+        queryParameters: {'page': page, 'limit': limit, ...?query},
+        options: forceOptions(force),
+        cancelToken: cancelToken,
+      )
+      .then(
+        (response) => pick(
+          response.data,
+        ).asListOrThrow((p0) => PostFlag.fromJson(p0.asMapOrThrow())),
+      );
 }
 
 extension E621Post on Post {
   static Post fromJson(dynamic json) => pick(json).letOrThrow(
-        (pick) => Post(
-          id: pick('id').asIntOrThrow(),
-          file: pick('file').letOrThrow((pick) => pick('url').asStringOrNull()),
-          sample:
-              pick('sample').letOrThrow((pick) => pick('url').asStringOrNull()),
-          preview: pick('preview')
-              .letOrThrow((pick) => pick('url').asStringOrNull()),
-          width:
-              pick('file').letOrThrow((pick) => pick('width').asIntOrThrow()),
-          height:
-              pick('file').letOrThrow((pick) => pick('height').asIntOrThrow()),
-          ext: pick('file').letOrThrow((pick) => pick('ext').asStringOrThrow()),
-          size: pick('file').letOrThrow((pick) => pick('size').asIntOrThrow()),
-          variants: pick.letOrThrow((pick) {
-            final sample = pick('sample');
-            // TODO: remove this once "original" includes width and height
-            final file = pick('file');
-            final alternates = sample('alternates');
+    (pick) => Post(
+      id: pick('id').asIntOrThrow(),
+      file: pick('file').letOrThrow((pick) => pick('url').asStringOrNull()),
+      sample: pick('sample').letOrThrow((pick) => pick('url').asStringOrNull()),
+      preview: pick(
+        'preview',
+      ).letOrThrow((pick) => pick('url').asStringOrNull()),
+      width: pick('file').letOrThrow((pick) => pick('width').asIntOrThrow()),
+      height: pick('file').letOrThrow((pick) => pick('height').asIntOrThrow()),
+      ext: pick('file').letOrThrow((pick) => pick('ext').asStringOrThrow()),
+      size: pick('file').letOrThrow((pick) => pick('size').asIntOrThrow()),
+      variants: pick.letOrThrow((pick) {
+        final sample = pick('sample');
+        // TODO: remove this once "original" includes width and height
+        final file = pick('file');
+        final alternates = sample('alternates');
 
-            if (alternates.asMapOrNull()?.isEmpty ?? true) return null;
+        if (alternates.asMapOrNull()?.isEmpty ?? true) return null;
 
-            return {
-              '${file('width').asIntOrThrow()}x${file('height').asIntOrThrow()}':
-                  alternates('original', 'url').asStringOrThrow(),
-              ...Map.fromEntries(alternates('samples')
-                  .asMapOrEmpty()
-                  .entries
-                  .map((e) => MapEntry(
-                        '${e.value['width']}x${e.value['height']}',
-                        e.value['url'],
-                      ))),
-            };
-          }),
-          tags: pick('tags').letOrThrow(
-            (pick) => pick.asMapOrThrow<String, List<dynamic>>().map(
-                  (key, value) => MapEntry(key, List.from(value)),
-                ),
+        return {
+          '${file('width').asIntOrThrow()}x${file('height').asIntOrThrow()}':
+              alternates('original', 'url').asStringOrThrow(),
+          ...Map.fromEntries(
+            alternates('samples').asMapOrEmpty().entries.map(
+              (e) => MapEntry(
+                '${e.value['width']}x${e.value['height']}',
+                e.value['url'],
+              ),
+            ),
           ),
-          uploaderId: pick('uploader_id').asIntOrThrow(),
-          createdAt: pick('created_at').asDateTimeOrThrow(),
-          updatedAt: pick('updated_at').asDateTimeOrNull(),
-          vote: VoteInfo(
-            score: pick('score')
-                .letOrThrow((pick) => pick('total').asIntOrThrow()),
-          ),
-          isDeleted: pick('flags')
-              .letOrThrow((pick) => pick('deleted').asBoolOrThrow()),
-          rating: pick('rating').letOrThrow(
-              (pick) => Rating.values.asNameMap()[pick.asString()]!),
-          favCount: pick('fav_count').asIntOrThrow(),
-          isFavorited: pick('is_favorited').asBoolOrThrow(),
-          commentCount: pick('comment_count').asIntOrThrow(),
-          description: pick('description').asStringOrThrow(),
-          sources:
-              pick('sources').asListOrThrow((pick) => pick.asStringOrThrow()),
-          pools: pick('pools').asListOrThrow((pick) => pick.asIntOrThrow()),
-          relationships: pick('relationships').letOrThrow((pick) =>
-              Relationships.fromJson(pick.asMapOrThrow<String, dynamic>())),
+        };
+      }),
+      tags: pick('tags').letOrThrow(
+        (pick) => pick.asMapOrThrow<String, List<dynamic>>().map(
+          (key, value) => MapEntry(key, List.from(value)),
         ),
-      );
+      ),
+      uploaderId: pick('uploader_id').asIntOrThrow(),
+      createdAt: pick('created_at').asDateTimeOrThrow(),
+      updatedAt: pick('updated_at').asDateTimeOrNull(),
+      vote: VoteInfo(
+        score: pick('score').letOrThrow((pick) => pick('total').asIntOrThrow()),
+      ),
+      isDeleted: pick(
+        'flags',
+      ).letOrThrow((pick) => pick('deleted').asBoolOrThrow()),
+      rating: pick(
+        'rating',
+      ).letOrThrow((pick) => Rating.values.asNameMap()[pick.asString()]!),
+      favCount: pick('fav_count').asIntOrThrow(),
+      isFavorited: pick('is_favorited').asBoolOrThrow(),
+      commentCount: pick('comment_count').asIntOrThrow(),
+      description: pick('description').asStringOrThrow(),
+      sources: pick('sources').asListOrThrow((pick) => pick.asStringOrThrow()),
+      pools: pick('pools').asListOrThrow((pick) => pick.asIntOrThrow()),
+      relationships: pick('relationships').letOrThrow(
+        (pick) => Relationships.fromJson(pick.asMapOrThrow<String, dynamic>()),
+      ),
+    ),
+  );
 }

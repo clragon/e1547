@@ -6,10 +6,7 @@ import 'package:e1547/user/user.dart';
 import 'package:flutter/material.dart';
 
 class ReplyTile extends StatelessWidget {
-  const ReplyTile({
-    super.key,
-    required this.reply,
-  });
+  const ReplyTile({super.key, required this.reply});
 
   final Reply reply;
 
@@ -56,10 +53,7 @@ class ReplyTile extends StatelessWidget {
 }
 
 class ReplyHeader extends StatelessWidget {
-  const ReplyHeader({
-    super.key,
-    required this.reply,
-  });
+  const ReplyHeader({super.key, required this.reply});
 
   final Reply reply;
 
@@ -81,22 +75,21 @@ class ReplyHeader extends StatelessWidget {
                     Flexible(
                       child: Text(
                         reply.creator,
-                        style: TextStyle(
-                          color: dimTextColor(context),
-                        ),
+                        style: TextStyle(color: dimTextColor(context)),
                       ),
                     ),
                   ],
                 ),
               ),
             ),
-            onTap: () => Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => UserLoadingPage(
-                  reply.creatorId.toString(),
+            onTap:
+                () => Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder:
+                        (context) =>
+                            UserLoadingPage(reply.creatorId.toString()),
+                  ),
                 ),
-              ),
-            ),
           ),
         ),
         const SizedBox(width: 4),
@@ -107,10 +100,7 @@ class ReplyHeader extends StatelessWidget {
 }
 
 class ReplyVisibilityIndicator extends StatelessWidget {
-  const ReplyVisibilityIndicator({
-    super.key,
-    required this.reply,
-  });
+  const ReplyVisibilityIndicator({super.key, required this.reply});
 
   final Reply reply;
 
@@ -129,10 +119,7 @@ class ReplyVisibilityIndicator extends StatelessWidget {
 }
 
 class ReplyWarning extends StatelessWidget {
-  const ReplyWarning({
-    super.key,
-    required this.reply,
-  });
+  const ReplyWarning({super.key, required this.reply});
 
   final Reply reply;
 
@@ -153,8 +140,8 @@ class ReplyWarning extends StatelessWidget {
         Text(
           warning.message,
           style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                color: Theme.of(context).colorScheme.error,
-              ),
+            color: Theme.of(context).colorScheme.error,
+          ),
         ),
       ],
     );

@@ -8,11 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class CommentTile extends StatelessWidget {
-  const CommentTile({
-    super.key,
-    required this.comment,
-    this.hasActions = true,
-  });
+  const CommentTile({super.key, required this.comment, this.hasActions = true});
 
   final Comment comment;
   final bool hasActions;
@@ -46,23 +42,23 @@ class CommentTile extends StatelessWidget {
                 ),
               ],
             ),
-            flightShuttleBuilder: (
-              flightContext,
-              animation,
-              flightDirection,
-              fromHeroContext,
-              toHeroContext,
-            ) =>
-                Material(
-              type: MaterialType.transparency,
-              child: SingleChildScrollView(
-                physics: const NeverScrollableScrollPhysics(),
-                child: switch (flightDirection) {
-                  HeroFlightDirection.push => fromHeroContext.widget,
-                  HeroFlightDirection.pop => toHeroContext.widget,
-                },
-              ),
-            ),
+            flightShuttleBuilder:
+                (
+                  flightContext,
+                  animation,
+                  flightDirection,
+                  fromHeroContext,
+                  toHeroContext,
+                ) => Material(
+                  type: MaterialType.transparency,
+                  child: SingleChildScrollView(
+                    physics: const NeverScrollableScrollPhysics(),
+                    child: switch (flightDirection) {
+                      HeroFlightDirection.push => fromHeroContext.widget,
+                      HeroFlightDirection.pop => toHeroContext.widget,
+                    },
+                  ),
+                ),
           ),
           if (hasActions)
             Padding(
@@ -85,10 +81,7 @@ class CommentTile extends StatelessWidget {
 }
 
 class CommentHeader extends StatelessWidget {
-  const CommentHeader({
-    super.key,
-    required this.comment,
-  });
+  const CommentHeader({super.key, required this.comment});
 
   final Comment comment;
 
@@ -99,13 +92,14 @@ class CommentHeader extends StatelessWidget {
         Dimmed(
           child: InkWell(
             borderRadius: BorderRadius.circular(4),
-            onTap: () => Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => UserLoadingPage(
-                  comment.creatorId.toString(),
+            onTap:
+                () => Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder:
+                        (context) =>
+                            UserLoadingPage(comment.creatorId.toString()),
+                  ),
                 ),
-              ),
-            ),
             child: TimedText(
               created: comment.createdAt,
               updated: comment.updatedAt,
@@ -113,9 +107,7 @@ class CommentHeader extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(vertical: 4),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Flexible(child: Text(comment.creatorName)),
-                  ],
+                  children: [Flexible(child: Text(comment.creatorName))],
                 ),
               ),
             ),
@@ -129,10 +121,7 @@ class CommentHeader extends StatelessWidget {
 }
 
 class CommentVotes extends StatelessWidget {
-  const CommentVotes({
-    super.key,
-    required this.comment,
-  });
+  const CommentVotes({super.key, required this.comment});
 
   final Comment comment;
 
@@ -150,47 +139,53 @@ class CommentVotes extends StatelessWidget {
         padding: EdgeInsets.zero,
         score: vote.score,
         status: vote.status,
-        onUpvote: client.hasLogin
-            ? (isLiked) async {
-                controller
-                    .vote(comment: comment, upvote: true, replace: !isLiked)
-                    .then((value) {
-                  if (!value) {
-                    messenger.showSnackBar(SnackBar(
-                      duration: const Duration(seconds: 1),
-                      content: Text('Failed to upvote comment #${comment.id}'),
-                    ));
-                  }
-                });
-                return !isLiked;
-              }
-            : null,
-        onDownvote: client.hasLogin
-            ? (isLiked) async {
-                controller
-                    .vote(comment: comment, upvote: false, replace: !isLiked)
-                    .then((value) {
-                  if (!value) {
-                    messenger.showSnackBar(SnackBar(
-                      duration: const Duration(seconds: 1),
-                      content:
-                          Text('Failed to downvote comment #${comment.id}'),
-                    ));
-                  }
-                });
-                return !isLiked;
-              }
-            : null,
+        onUpvote:
+            client.hasLogin
+                ? (isLiked) async {
+                  controller
+                      .vote(comment: comment, upvote: true, replace: !isLiked)
+                      .then((value) {
+                        if (!value) {
+                          messenger.showSnackBar(
+                            SnackBar(
+                              duration: const Duration(seconds: 1),
+                              content: Text(
+                                'Failed to upvote comment #${comment.id}',
+                              ),
+                            ),
+                          );
+                        }
+                      });
+                  return !isLiked;
+                }
+                : null,
+        onDownvote:
+            client.hasLogin
+                ? (isLiked) async {
+                  controller
+                      .vote(comment: comment, upvote: false, replace: !isLiked)
+                      .then((value) {
+                        if (!value) {
+                          messenger.showSnackBar(
+                            SnackBar(
+                              duration: const Duration(seconds: 1),
+                              content: Text(
+                                'Failed to downvote comment #${comment.id}',
+                              ),
+                            ),
+                          );
+                        }
+                      });
+                  return !isLiked;
+                }
+                : null,
       ),
     );
   }
 }
 
 class CommentVisibilityIndicator extends StatelessWidget {
-  const CommentVisibilityIndicator({
-    super.key,
-    required this.comment,
-  });
+  const CommentVisibilityIndicator({super.key, required this.comment});
 
   final Comment comment;
 
@@ -209,10 +204,7 @@ class CommentVisibilityIndicator extends StatelessWidget {
 }
 
 class CommentMenu extends StatelessWidget {
-  const CommentMenu({
-    super.key,
-    required this.comment,
-  });
+  const CommentMenu({super.key, required this.comment});
 
   final Comment comment;
 
@@ -222,85 +214,86 @@ class CommentMenu extends StatelessWidget {
     return PopupMenuButton<VoidCallback>(
       icon: const Dimmed(child: Icon(Icons.more_vert)),
       onSelected: (value) => value(),
-      itemBuilder: (context) => [
-        if (client.identity.username == comment.creatorName)
-          PopupMenuTile(
-            title: 'Edit',
-            icon: Icons.edit,
-            value: () => guardWithLogin(
-              context: context,
-              callback: () {
-                CommentController controller =
-                    context.read<CommentController>();
-                editComment(
-                  context: context,
-                  comment: comment,
-                ).then((value) {
-                  if (value) {
-                    controller.refresh(force: true);
-                  }
-                });
-              },
-              error: 'You must be logged in to edit comments!',
-            ),
-          ),
-        PopupMenuTile(
-          title: 'Reply',
-          icon: Icons.reply,
-          value: () => guardWithLogin(
-            context: context,
-            callback: () {
-              CommentController controller = context.read<CommentController>();
-              replyComment(
-                context: context,
-                comment: comment,
-              ).then((value) {
-                if (value) {
-                  controller.refresh(force: true);
-                }
-              });
-            },
-            error: 'You must be logged in to reply to comments!',
-          ),
-        ),
-        PopupMenuTile(
-          title: 'Copy ID',
-          icon: Icons.tag,
-          value: () async {
-            Clipboard.setData(
-              ClipboardData(text: comment.id.toString()),
-            );
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              duration: const Duration(seconds: 1),
-              content: Text('Copied comment id #${comment.id}'),
-            ));
-          },
-        ),
-        PopupMenuTile(
-          title: 'Report',
-          icon: Icons.report,
-          value: () => guardWithLogin(
-            context: context,
-            callback: () => Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => CommentReportScreen(
-                  comment: comment,
-                ),
+      itemBuilder:
+          (context) => [
+            if (client.identity.username == comment.creatorName)
+              PopupMenuTile(
+                title: 'Edit',
+                icon: Icons.edit,
+                value:
+                    () => guardWithLogin(
+                      context: context,
+                      callback: () {
+                        CommentController controller =
+                            context.read<CommentController>();
+                        editComment(context: context, comment: comment).then((
+                          value,
+                        ) {
+                          if (value) {
+                            controller.refresh(force: true);
+                          }
+                        });
+                      },
+                      error: 'You must be logged in to edit comments!',
+                    ),
               ),
+            PopupMenuTile(
+              title: 'Reply',
+              icon: Icons.reply,
+              value:
+                  () => guardWithLogin(
+                    context: context,
+                    callback: () {
+                      CommentController controller =
+                          context.read<CommentController>();
+                      replyComment(context: context, comment: comment).then((
+                        value,
+                      ) {
+                        if (value) {
+                          controller.refresh(force: true);
+                        }
+                      });
+                    },
+                    error: 'You must be logged in to reply to comments!',
+                  ),
             ),
-            error: 'You must be logged in to report comments!',
-          ),
-        ),
-      ],
+            PopupMenuTile(
+              title: 'Copy ID',
+              icon: Icons.tag,
+              value: () async {
+                Clipboard.setData(ClipboardData(text: comment.id.toString()));
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    duration: const Duration(seconds: 1),
+                    content: Text('Copied comment id #${comment.id}'),
+                  ),
+                );
+              },
+            ),
+            PopupMenuTile(
+              title: 'Report',
+              icon: Icons.report,
+              value:
+                  () => guardWithLogin(
+                    context: context,
+                    callback:
+                        () => Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder:
+                                (context) =>
+                                    CommentReportScreen(comment: comment),
+                          ),
+                        ),
+                    error: 'You must be logged in to report comments!',
+                  ),
+            ),
+          ],
     );
   }
 }
 
 class CommentWarnings extends StatelessWidget {
-  const CommentWarnings({
-    super.key,
-    required this.comment,
-  });
+  const CommentWarnings({super.key, required this.comment});
 
   final Comment comment;
 
@@ -323,8 +316,8 @@ class CommentWarnings extends StatelessWidget {
           Text(
             warning.message,
             style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                  color: Theme.of(context).colorScheme.error,
-                ),
+              color: Theme.of(context).colorScheme.error,
+            ),
           ),
         ],
       ),

@@ -28,9 +28,7 @@ extension Updating on Follow {
     Follow updated = this;
     updated = updated.withTitle(tagToName(pool.name));
     if (!pool.active) {
-      updated = updated.copyWith(
-        type: FollowType.bookmark,
-      );
+      updated = updated.copyWith(type: FollowType.bookmark);
     }
     return updated;
   }
@@ -60,15 +58,10 @@ extension Updating on Follow {
     }
     if (post != null) {
       if (updated.latest == null || updated.latest! < post.id) {
-        updated = updated.copyWith(
-          latest: post.id,
-          thumbnail: post.sample,
-        );
+        updated = updated.copyWith(latest: post.id, thumbnail: post.sample);
       } else {
         if (updated.thumbnail != post.sample) {
-          updated = updated.copyWith(
-            thumbnail: post.sample,
-          );
+          updated = updated.copyWith(thumbnail: post.sample);
         }
       }
     }

@@ -18,11 +18,10 @@ class ErrorNotifier extends StatelessWidget {
     if (logs == null) return child;
     return LoggerErrorNotifier(
       logs: logs,
-      onOpenLogs: () => navigatorKey.currentState!.push(
-        MaterialPageRoute(
-          builder: (context) => const LogsPage(),
-        ),
-      ),
+      onOpenLogs:
+          () => navigatorKey.currentState!.push(
+            MaterialPageRoute(builder: (context) => const LogsPage()),
+          ),
       child: child,
     );
   }

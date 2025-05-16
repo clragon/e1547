@@ -1,21 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-const MaterialColor primarySwatch = MaterialColor(
-  0xFFFCB328,
-  <int, Color>{
-    50: Color(0xFFFFF6E5),
-    100: Color(0xFFFEE8BF),
-    200: Color(0xFFFED994),
-    300: Color(0xFFFDCA69),
-    400: Color(0xFFFCBE48),
-    500: Color(0xFFFCB328),
-    600: Color(0xFFFCAC24),
-    700: Color(0xFFFBA31E),
-    800: Color(0xFFFB9A18),
-    900: Color(0xFFFA8B0F),
-  },
-);
+const MaterialColor primarySwatch = MaterialColor(0xFFFCB328, <int, Color>{
+  50: Color(0xFFFFF6E5),
+  100: Color(0xFFFEE8BF),
+  200: Color(0xFFFED994),
+  300: Color(0xFFFDCA69),
+  400: Color(0xFFFCBE48),
+  500: Color(0xFFFCB328),
+  600: Color(0xFFFCAC24),
+  700: Color(0xFFFBA31E),
+  800: Color(0xFFFB9A18),
+  900: Color(0xFFFA8B0F),
+});
 
 final Color accentColor = primarySwatch.shade400;
 
@@ -104,50 +101,51 @@ extension M2ThemeData on ThemeData {
   }
 
   static ThemeData prepareTheme(ThemeData theme) => theme.copyWith(
-        applyElevationOverlayColor: false,
-        appBarTheme: theme.appBarTheme.copyWith(
-          surfaceTintColor:
-              theme.appBarTheme.backgroundColor ?? theme.colorScheme.surface,
-          systemOverlayStyle: SystemUiOverlayStyle(
-            statusBarColor: Colors.transparent,
-            statusBarBrightness: theme.brightness,
-            statusBarIconBrightness: theme.brightness == Brightness.light
+    applyElevationOverlayColor: false,
+    appBarTheme: theme.appBarTheme.copyWith(
+      surfaceTintColor:
+          theme.appBarTheme.backgroundColor ?? theme.colorScheme.surface,
+      systemOverlayStyle: SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarBrightness: theme.brightness,
+        statusBarIconBrightness:
+            theme.brightness == Brightness.light
                 ? Brightness.dark
                 : Brightness.light,
-            systemNavigationBarColor: Colors.transparent,
-            systemNavigationBarIconBrightness:
-                theme.brightness == Brightness.light
-                    ? Brightness.dark
-                    : Brightness.light,
-          ),
-          color: theme.canvasColor,
-          foregroundColor: theme.iconTheme.color,
-        ),
-        dialogTheme: theme.dialogTheme.copyWith(
-          backgroundColor: theme.canvasColor,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(4),
-          ),
-        ),
-        cardTheme: theme.cardTheme.copyWith(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
-          color: theme.cardTheme.color,
-        ),
-        bannerTheme: theme.bannerTheme.copyWith(
-          backgroundColor: theme.canvasColor,
-        ),
-        tooltipTheme: theme.tooltipTheme.copyWith(
-          waitDuration: const Duration(milliseconds: 400),
-        ),
-        pageTransitionsTheme:
-            SnapshotlessPageTransitionTheme(parent: theme.pageTransitionsTheme),
-      );
+        systemNavigationBarColor: Colors.transparent,
+        systemNavigationBarIconBrightness:
+            theme.brightness == Brightness.light
+                ? Brightness.dark
+                : Brightness.light,
+      ),
+      color: theme.canvasColor,
+      foregroundColor: theme.iconTheme.color,
+    ),
+    dialogTheme: theme.dialogTheme.copyWith(
+      backgroundColor: theme.canvasColor,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+    ),
+    cardTheme: theme.cardTheme.copyWith(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+      color: theme.cardTheme.color,
+    ),
+    bannerTheme: theme.bannerTheme.copyWith(backgroundColor: theme.canvasColor),
+    tooltipTheme: theme.tooltipTheme.copyWith(
+      waitDuration: const Duration(milliseconds: 400),
+    ),
+    pageTransitionsTheme: SnapshotlessPageTransitionTheme(
+      parent: theme.pageTransitionsTheme,
+    ),
+  );
 }
 
 class AndroidStretchScrollBehaviour extends ScrollBehavior {
   @override
   Widget buildOverscrollIndicator(
-      BuildContext context, Widget child, ScrollableDetails details) {
+    BuildContext context,
+    Widget child,
+    ScrollableDetails details,
+  ) {
     if (getPlatform(context) == TargetPlatform.android) {
       return StretchingOverscrollIndicator(
         axisDirection: details.direction,
@@ -159,9 +157,7 @@ class AndroidStretchScrollBehaviour extends ScrollBehavior {
 }
 
 class SnapshotlessPageTransitionTheme extends PageTransitionsTheme {
-  const SnapshotlessPageTransitionTheme({
-    this.parent,
-  });
+  const SnapshotlessPageTransitionTheme({this.parent});
 
   final PageTransitionsTheme? parent;
 
@@ -170,25 +166,24 @@ class SnapshotlessPageTransitionTheme extends PageTransitionsTheme {
       _transformBuilders(parent);
 
   Map<TargetPlatform, PageTransitionsBuilder> _transformBuilders(
-      PageTransitionsTheme? parent) {
+    PageTransitionsTheme? parent,
+  ) {
     Map<TargetPlatform, PageTransitionsBuilder> builders = {};
     if (parent != null) {
-      builders.addAll(Map.fromEntries(
-        parent.builders.entries.map(
-          (e) {
+      builders.addAll(
+        Map.fromEntries(
+          parent.builders.entries.map((e) {
             if (e.value is ZoomPageTransitionsBuilder) {
               return MapEntry(
                 e.key,
-                const ZoomPageTransitionsBuilder(
-                  allowSnapshotting: false,
-                ),
+                const ZoomPageTransitionsBuilder(allowSnapshotting: false),
               );
             } else {
               return e;
             }
-          },
+          }),
         ),
-      ));
+      );
     }
     for (final platform in TargetPlatform.values) {
       if (builders[platform] == null) {

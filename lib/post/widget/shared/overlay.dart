@@ -18,12 +18,7 @@ class PostImageOverlay extends StatelessWidget {
     PostController? controller = context.read<PostController?>();
 
     Widget centerText(String text) {
-      return Center(
-        child: Text(
-          text,
-          textAlign: TextAlign.center,
-        ),
-      );
+      return Center(child: Text(text, textAlign: TextAlign.center));
     }
 
     if (post.isDeleted) {

@@ -25,9 +25,7 @@ extension DonationSummaryExtension on Donor {
 }
 
 extension DonorSortingExtension on List<Donor> {
-  List<Donor> sortByDonation({
-    String preferredCurrency = 'USD',
-  }) {
+  List<Donor> sortByDonation({String preferredCurrency = 'USD'}) {
     List<Donor> sortedDonors = List.from(this);
     sortedDonors.sort((Donor a, Donor b) {
       double totalA = a.totalForCurrency(preferredCurrency);
@@ -53,10 +51,7 @@ extension DonorSortingExtension on List<Donor> {
 }
 
 class Donors extends StatelessWidget {
-  const Donors({
-    super.key,
-    required this.donors,
-  });
+  const Donors({super.key, required this.donors});
 
   final List<Donor> donors;
 
@@ -66,21 +61,20 @@ class Donors extends StatelessWidget {
     return Column(
       children: [
         ...donors.sortByDonation().map(
-              (summary) => ListTile(
-                selected:
-                    username != null && summary.handles['e621'] == username,
-                leading: CircleAvatar(
-                  backgroundColor: Colors.transparent,
-                  backgroundImage: summary.avatar != null
+          (summary) => ListTile(
+            selected: username != null && summary.handles['e621'] == username,
+            leading: CircleAvatar(
+              backgroundColor: Colors.transparent,
+              backgroundImage:
+                  summary.avatar != null
                       ? CachedNetworkImageProvider(summary.avatar!)
                       : null,
-                  child:
-                      summary.avatar == null ? const Icon(Icons.person) : null,
-                ),
-                title: Text(summary.name),
-                subtitle: Text(summary.formattedAmounts()),
-              ),
+              child: summary.avatar == null ? const Icon(Icons.person) : null,
             ),
+            title: Text(summary.name),
+            subtitle: Text(summary.formattedAmounts()),
+          ),
+        ),
         Padding(
           padding: const EdgeInsets.all(4),
           child: Text(

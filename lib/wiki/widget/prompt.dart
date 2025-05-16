@@ -48,8 +48,10 @@ class WikiSheet extends StatelessWidget {
                       Navigator.of(context).maybePop();
                       Navigator.of(context).push(
                         MaterialPageRoute(
-                          builder: (context) => PostsSearchPage(
-                              query: TagMap({'tags': wiki.title})),
+                          builder:
+                              (context) => PostsSearchPage(
+                                query: TagMap({'tags': wiki.title}),
+                              ),
                         ),
                       );
                     },
@@ -81,23 +83,24 @@ class WikiDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-        content: SizedBox(
-      width: 800,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            tagToName(wiki.title),
-            style: Theme.of(context).textTheme.titleLarge,
-            softWrap: true,
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: WikiInfo(wiki: wiki),
-          ),
-        ],
+      content: SizedBox(
+        width: 800,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              tagToName(wiki.title),
+              style: Theme.of(context).textTheme.titleLarge,
+              softWrap: true,
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: WikiInfo(wiki: wiki),
+            ),
+          ],
+        ),
       ),
-    ));
+    );
   }
 }

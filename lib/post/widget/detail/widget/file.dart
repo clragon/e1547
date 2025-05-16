@@ -16,12 +16,7 @@ class FileDisplay extends StatelessWidget {
       children: [
         const Padding(
           padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-          child: Text(
-            'File',
-            style: TextStyle(
-              fontSize: 16,
-            ),
-          ),
+          child: Text('File', style: TextStyle(fontSize: 16)),
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
@@ -53,10 +48,7 @@ class FileDisplay extends StatelessWidget {
             children: [
               if (post.updatedAt != null)
                 Text(DateFormatting.dateTime(post.updatedAt!.toLocal())),
-              TagGesture(
-                tag: 'type:${post.ext}',
-                child: Text(post.ext),
-              ),
+              TagGesture(tag: 'type:${post.ext}', child: Text(post.ext)),
             ],
           ),
         ),

@@ -21,27 +21,23 @@ const String _e926Host = 'https://e926.net';
 
 class ClientFactory {
   Client create(ClientConfig config) => Client(
-        identity: config.identity,
-        traits: config.traits,
-        storage: config.storage,
-      );
+    identity: config.identity,
+    traits: config.traits,
+    storage: config.storage,
+  );
 
   IdentityRequest createDefaultIdentity() {
-    return const IdentityRequest(
-      host: _e926Host,
-    );
+    return const IdentityRequest(host: _e926Host);
   }
 
   TraitsRequest createDefaultTraits(Identity identity) {
     return switch (normalizeHostUrl(identity.host)) {
       _e621Host || _e926Host => TraitsRequest(
-          identity: identity.id,
-          denylist: ['young -rating:s', 'gore', 'scat', 'watersports'],
-          homeTags: 'score:>=20',
-        ),
-      _ => TraitsRequest(
-          identity: identity.id,
-        ),
+        identity: identity.id,
+        denylist: ['young -rating:s', 'gore', 'scat', 'watersports'],
+        homeTags: 'score:>=20',
+      ),
+      _ => TraitsRequest(identity: identity.id),
     };
   }
 

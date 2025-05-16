@@ -40,8 +40,10 @@ class CheckboxFormField extends StatelessWidget {
       child: InputDecorator(
         decoration: decoration.copyWith(
           labelText: label,
-          contentPadding:
-              const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 12,
+            vertical: 8,
+          ),
           suffixIcon: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -57,15 +59,16 @@ class CheckboxFormField extends StatelessWidget {
             ],
           ),
         ),
-        child: title != null
-            ? Padding(
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                child: DefaultTextStyle(
-                  style: Theme.of(context).textTheme.titleMedium!,
-                  child: title!,
-                ),
-              )
-            : null,
+        child:
+            title != null
+                ? Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  child: DefaultTextStyle(
+                    style: Theme.of(context).textTheme.titleMedium!,
+                    child: title!,
+                  ),
+                )
+                : null,
       ),
     );
   }

@@ -15,10 +15,7 @@ Future<void> main() async {
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
   runApp(
     MultiProvider(
-      providers: [
-        Provider.value(value: logs),
-        Provider.value(value: storage),
-      ],
+      providers: [Provider.value(value: logs), Provider.value(value: storage)],
       child: const App(),
     ),
   );

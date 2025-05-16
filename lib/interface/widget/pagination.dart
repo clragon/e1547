@@ -10,11 +10,8 @@ class ProxyPagingController<KeyType, ItemType>
   final DataController<KeyType, ItemType> _controller;
 
   @override
-  PagingState<KeyType, ItemType> get value => PagingState(
-        itemList: itemList,
-        nextPageKey: nextPageKey,
-        error: error,
-      );
+  PagingState<KeyType, ItemType> get value =>
+      PagingState(itemList: itemList, nextPageKey: nextPageKey, error: error);
 
   @override
   set value(PagingState<KeyType, ItemType> value) =>
@@ -60,7 +57,8 @@ class ProxyPagingController<KeyType, ItemType>
   @override
   void addPageRequestListener(PageRequestListener<KeyType> listener) =>
       throw UnsupportedError(
-          'Cannot add page request listener on a $runtimeType');
+        'Cannot add page request listener on a $runtimeType',
+      );
 
   @override
   void notifyPageRequestListeners(KeyType pageKey) => _controller.getNextPage();
@@ -68,7 +66,8 @@ class ProxyPagingController<KeyType, ItemType>
   @override
   void removePageRequestListener(PageRequestListener<KeyType> listener) =>
       throw UnsupportedError(
-          'Cannot remove page request listener on a $runtimeType');
+        'Cannot remove page request listener on a $runtimeType',
+      );
 
   final Map<PagingStatusListener, VoidCallback> _statusListeners = {};
 
@@ -158,51 +157,54 @@ PagedChildBuilderDelegate<T> defaultPagedChildBuilderDelegate<T>({
   pageBuilder ??= (context, child) => child;
   return PagedChildBuilderDelegate<T>(
     itemBuilder: itemBuilder,
-    firstPageProgressIndicatorBuilder: (context) => pageBuilder!(
-      context,
-      const Material(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            CircularProgressIndicator(),
-          ],
-        ),
-      ),
-    ),
-    newPageProgressIndicatorBuilder: (context) => pageBuilder!(
-      context,
-      const Material(
-        child: Center(
-          child: Padding(
-            padding: EdgeInsets.all(16),
-            child: CircularProgressIndicator(),
+    firstPageProgressIndicatorBuilder:
+        (context) => pageBuilder!(
+          context,
+          const Material(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [CircularProgressIndicator()],
+            ),
           ),
         ),
-      ),
-    ),
-    noItemsFoundIndicatorBuilder: (context) => pageBuilder!(
-      context,
-      IconMessage(
-        icon: const Icon(Icons.clear),
-        title: onEmpty ?? const Text('Nothing to see here'),
-      ),
-    ),
-    firstPageErrorIndicatorBuilder: (context) => pageBuilder!(
-      context,
-      IconMessage(
-        icon: const Icon(Icons.warning_amber_outlined),
-        title: onError ?? const Text('Failed to load'),
-        action: PagedChildBuilderRetryButton(pagingController),
-      ),
-    ),
-    newPageErrorIndicatorBuilder: (context) => pageBuilder!(
-      context,
-      IconMessage(
-        direction: Axis.horizontal,
-        icon: const Icon(Icons.warning_amber_outlined),
-        title: onError ?? const Text('Failed to load'),
-        action: PagedChildBuilderRetryButton(pagingController),
-      ),
-    ),
+    newPageProgressIndicatorBuilder:
+        (context) => pageBuilder!(
+          context,
+          const Material(
+            child: Center(
+              child: Padding(
+                padding: EdgeInsets.all(16),
+                child: CircularProgressIndicator(),
+              ),
+            ),
+          ),
+        ),
+    noItemsFoundIndicatorBuilder:
+        (context) => pageBuilder!(
+          context,
+          IconMessage(
+            icon: const Icon(Icons.clear),
+            title: onEmpty ?? const Text('Nothing to see here'),
+          ),
+        ),
+    firstPageErrorIndicatorBuilder:
+        (context) => pageBuilder!(
+          context,
+          IconMessage(
+            icon: const Icon(Icons.warning_amber_outlined),
+            title: onError ?? const Text('Failed to load'),
+            action: PagedChildBuilderRetryButton(pagingController),
+          ),
+        ),
+    newPageErrorIndicatorBuilder:
+        (context) => pageBuilder!(
+          context,
+          IconMessage(
+            direction: Axis.horizontal,
+            icon: const Icon(Icons.warning_amber_outlined),
+            title: onError ?? const Text('Failed to load'),
+            action: PagedChildBuilderRetryButton(pagingController),
+          ),
+        ),
   );
 }

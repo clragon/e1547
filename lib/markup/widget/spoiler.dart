@@ -9,18 +9,12 @@ typedef SpoilerMap = Map<DTextId, SpoilerInfo>;
 
 @immutable
 class SpoilerInfo {
-  const SpoilerInfo({
-    required this.spoilered,
-    required this.recognizer,
-  });
+  const SpoilerInfo({required this.spoilered, required this.recognizer});
 
   final bool spoilered;
   final GestureRecognizer recognizer;
 
-  SpoilerInfo copyWith({
-    bool? spoilered,
-    GestureRecognizer? recognizer,
-  }) =>
+  SpoilerInfo copyWith({bool? spoilered, GestureRecognizer? recognizer}) =>
       SpoilerInfo(
         spoilered: spoilered ?? this.spoilered,
         recognizer: recognizer ?? this.recognizer,
@@ -46,14 +40,17 @@ class SpoilerController extends ChangeNotifier
     }
   }
 
-  SpoilerInfo Function() _defaultInfo(DTextId id) => () => SpoilerInfo(
-      spoilered: true,
-      recognizer: TapGestureRecognizer()
-        ..onTap = () {
-          List<DTextId> spoilers = parents(id);
-          DTextId? top = spoilers.firstWhereOrNull(spoilered);
-          toggle(top ?? id);
-        });
+  SpoilerInfo Function() _defaultInfo(DTextId id) =>
+      () => SpoilerInfo(
+        spoilered: true,
+        recognizer:
+            TapGestureRecognizer()
+              ..onTap = () {
+                List<DTextId> spoilers = parents(id);
+                DTextId? top = spoilers.firstWhereOrNull(spoilered);
+                toggle(top ?? id);
+              },
+      );
 
   void _with(SpoilerMap Function(SpoilerMap value) call) {
     SpoilerMap result = call(Map.from(value));
@@ -73,14 +70,24 @@ class SpoilerController extends ChangeNotifier
   bool hidden(DTextId id) => [...parents(id), id].any(spoilered);
 
   /// Unspoilers a text segment.
-  void unspoiler(DTextId id) => _with((value) => value
-    ..update(id, (e) => e.copyWith(spoilered: false),
-        ifAbsent: _defaultInfo(id)));
+  void unspoiler(DTextId id) => _with(
+    (value) =>
+        value..update(
+          id,
+          (e) => e.copyWith(spoilered: false),
+          ifAbsent: _defaultInfo(id),
+        ),
+  );
 
   /// Restores spoiler on a given text segment.
-  void respoiler(DTextId id) => _with((value) => value
-    ..update(id, (e) => e.copyWith(spoilered: true),
-        ifAbsent: _defaultInfo(id)));
+  void respoiler(DTextId id) => _with(
+    (value) =>
+        value..update(
+          id,
+          (e) => e.copyWith(spoilered: true),
+          ifAbsent: _defaultInfo(id),
+        ),
+  );
 
   /// Toggles the spoiler status of a text segment.
   void toggle(DTextId id) => spoilered(id) ? unspoiler(id) : respoiler(id);

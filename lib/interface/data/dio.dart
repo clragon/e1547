@@ -22,9 +22,10 @@ Future<bool> validateCall(Future<void> Function() call) async {
 /// This allows making API calls in loops while being mindful of the server.
 ///
 /// - [duration] defaults to 500 ms
-Future<T> rateLimit<T>(Future<T> call, [Duration? duration]) => Future.wait(
-        [call, Future.delayed(duration ?? const Duration(milliseconds: 500))])
-    .then((value) => value[0]);
+Future<T> rateLimit<T>(Future<T> call, [Duration? duration]) => Future.wait([
+  call,
+  Future.delayed(duration ?? const Duration(milliseconds: 500)),
+]).then((value) => value[0]);
 
 Options forceOptions(bool? force) {
   return ClientCacheConfig(
@@ -77,27 +78,27 @@ class ClientCacheConfig extends CacheOptions {
     CacheStore? store,
     Nullable<CacheCipher>? cipher,
     bool? allowPostMethod,
-  }) =>
-      ClientCacheConfig(
-        policy: policy ?? this.policy,
-        hitCacheOnErrorExcept: hitCacheOnErrorExcept != null
+  }) => ClientCacheConfig(
+    policy: policy ?? this.policy,
+    hitCacheOnErrorExcept:
+        hitCacheOnErrorExcept != null
             ? hitCacheOnErrorExcept.value
             : this.hitCacheOnErrorExcept,
-        keyBuilder: keyBuilder ?? this.keyBuilder,
-        pageParam: pageParam != null ? pageParam.value : this.pageParam,
-        maxAge: maxAge != null ? maxAge.value : this.maxAge,
-        maxStale: maxStale != null ? maxStale.value : this.maxStale,
-        priority: priority ?? this.priority,
-        store: store ?? this.store,
-        cipher: cipher != null ? cipher.value : this.cipher,
-        allowPostMethod: allowPostMethod ?? this.allowPostMethod,
-      );
+    keyBuilder: keyBuilder ?? this.keyBuilder,
+    pageParam: pageParam != null ? pageParam.value : this.pageParam,
+    maxAge: maxAge != null ? maxAge.value : this.maxAge,
+    maxStale: maxStale != null ? maxStale.value : this.maxStale,
+    priority: priority ?? this.priority,
+    store: store ?? this.store,
+    cipher: cipher != null ? cipher.value : this.cipher,
+    allowPostMethod: allowPostMethod ?? this.allowPostMethod,
+  );
 }
 
 class ClientCacheInterceptor extends DioCacheInterceptor {
   ClientCacheInterceptor({required ClientCacheConfig options})
-      : _options = options,
-        super(options: options);
+    : _options = options,
+      super(options: options);
 
   final ClientCacheConfig _options;
 
@@ -116,7 +117,7 @@ class ClientCacheInterceptor extends DioCacheInterceptor {
 
     bool isForceRefreshing = [
       CachePolicy.refresh,
-      CachePolicy.refreshForceCache
+      CachePolicy.refreshForceCache,
     ].contains(config.policy);
 
     String? pageParam = config.pageParam ?? _options.pageParam;
@@ -156,8 +157,10 @@ class ClientCacheInterceptor extends DioCacheInterceptor {
       other: cacheControl.other,
     );
 
-    response.headers
-        .set(HttpHeaders.cacheControlHeader, updatedCacheControl.toHeader());
+    response.headers.set(
+      HttpHeaders.cacheControlHeader,
+      updatedCacheControl.toHeader(),
+    );
 
     super.onResponse(response, handler);
   }

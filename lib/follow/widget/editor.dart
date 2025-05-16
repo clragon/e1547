@@ -38,15 +38,17 @@ class _FollowEditorState extends State<FollowEditor> {
     List<FollowRequest> allAdded = [];
 
     Future<void> process(List<String> updateList, FollowType type) async {
-      List<Follow> follows = await all
-          .then((value) => value.where((e) => e.type == type).toList());
+      List<Follow> follows = await all.then(
+        (value) => value.where((e) => e.type == type).toList(),
+      );
       List<Follow> removed =
           follows.whereNot((e) => updateList.contains(e.tags)).toList();
       List<String> tags = follows.map((e) => e.tags).toList();
-      List<FollowRequest> added = updateList
-          .whereNot((e) => tags.contains(e))
-          .map((e) => FollowRequest(tags: e, type: type))
-          .toList();
+      List<FollowRequest> added =
+          updateList
+              .whereNot((e) => tags.contains(e))
+              .map((e) => FollowRequest(tags: e, type: type))
+              .toList();
 
       allRemoved.addAll(removed);
       allAdded.addAll(added);
@@ -66,10 +68,7 @@ class _FollowEditorState extends State<FollowEditor> {
       await client.follows.delete(follow.id);
     }
     for (final follow in allAdded) {
-      await client.follows.create(
-        tags: follow.tags,
-        type: follow.type,
-      );
+      await client.follows.create(tags: follow.tags, type: follow.type);
     }
   }
 
@@ -79,43 +78,49 @@ class _FollowEditorState extends State<FollowEditor> {
     return FutureLoadingPage<Map<String, String>>(
       title: title,
       future: follows,
-      builder: (context, value) => MultiTextEditor(
-        title: title,
-        content: [
-          TextEditorContent(
-            key: notify,
-            title: 'Notify',
-            value: value[notify],
+      builder:
+          (context, value) => MultiTextEditor(
+            title: title,
+            content: [
+              TextEditorContent(
+                key: notify,
+                title: 'Notify',
+                value: value[notify],
+              ),
+              TextEditorContent(
+                key: subscribe,
+                title: 'Subscribe',
+                value: value[subscribe],
+              ),
+              TextEditorContent(
+                key: bookmark,
+                title: 'Bookmark',
+                value: value[bookmark],
+              ),
+            ],
+            onSubmitted: (value) async {
+              Map<String, List<String>> contents = Map.fromEntries(
+                value
+                    .whereNot((e) => e.value == null)
+                    .map(
+                      (e) => MapEntry(
+                        e.key,
+                        e.value!
+                            .split('\n')
+                            .whereNot((e) => e.isEmpty)
+                            .toList(),
+                      ),
+                    ),
+              );
+              await edit(
+                notifications: contents[notify],
+                subscriptions: contents[subscribe],
+                bookmarks: contents[bookmark],
+              );
+              return null;
+            },
+            onClosed: Navigator.of(context).maybePop,
           ),
-          TextEditorContent(
-            key: subscribe,
-            title: 'Subscribe',
-            value: value[subscribe],
-          ),
-          TextEditorContent(
-            key: bookmark,
-            title: 'Bookmark',
-            value: value[bookmark],
-          ),
-        ],
-        onSubmitted: (value) async {
-          Map<String, List<String>> contents = Map.fromEntries(
-            value.whereNot((e) => e.value == null).map(
-                  (e) => MapEntry(
-                    e.key,
-                    e.value!.split('\n').whereNot((e) => e.isEmpty).toList(),
-                  ),
-                ),
-          );
-          await edit(
-            notifications: contents[notify],
-            subscriptions: contents[subscribe],
-            bookmarks: contents[bookmark],
-          );
-          return null;
-        },
-        onClosed: Navigator.of(context).maybePop,
-      ),
     );
   }
 }

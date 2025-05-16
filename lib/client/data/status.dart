@@ -6,9 +6,8 @@ part 'status.g.dart';
 
 @freezed
 class ClientSyncStatus with _$ClientSyncStatus {
-  const factory ClientSyncStatus({
-    DenyListSyncStatus? denyList,
-  }) = _ClientSyncStatus;
+  const factory ClientSyncStatus({DenyListSyncStatus? denyList}) =
+      _ClientSyncStatus;
 
   factory ClientSyncStatus.fromJson(Map<String, dynamic> json) =>
       _$ClientSyncStatusFromJson(json);

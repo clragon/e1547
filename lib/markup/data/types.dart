@@ -7,10 +7,7 @@ import 'package:flutter/material.dart';
 /// To identify spoilers and sections, we therefore use this class.
 @immutable
 class DTextId {
-  const DTextId({
-    required this.start,
-    required this.end,
-  });
+  const DTextId({required this.start, required this.end});
 
   final int start;
   final int end;

@@ -1,5 +1,1 @@
-enum DenyListSyncStatus {
-  idle,
-  loading,
-  error,
-}
+enum DenyListSyncStatus { idle, loading, error }

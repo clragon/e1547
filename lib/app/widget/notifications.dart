@@ -51,7 +51,8 @@ class _NotificationHandlerState extends State<NotificationHandler> {
 
   Future<void> setupFollowBackground(List<Follow> follows) async {
     if (!PlatformCapabilities.hasNotifications) return;
-    bool wasNotifying = previousFollows != null &&
+    bool wasNotifying =
+        previousFollows != null &&
         previousFollows!.where((e) => e.type == FollowType.notify).isNotEmpty;
     bool isNotifying =
         follows.where((e) => e.type == FollowType.notify).isNotEmpty;
@@ -61,16 +62,15 @@ class _NotificationHandlerState extends State<NotificationHandler> {
       bool? result;
       result = await (await notifications)
           .resolvePlatformSpecificImplementation<
-              IOSFlutterLocalNotificationsPlugin>()
-          ?.requestPermissions(
-            alert: true,
-            badge: true,
-            sound: true,
-          );
-      result = await (await notifications)
-          .resolvePlatformSpecificImplementation<
-              AndroidFlutterLocalNotificationsPlugin>()
-          ?.requestNotificationsPermission();
+            IOSFlutterLocalNotificationsPlugin
+          >()
+          ?.requestPermissions(alert: true, badge: true, sound: true);
+      result =
+          await (await notifications)
+              .resolvePlatformSpecificImplementation<
+                AndroidFlutterLocalNotificationsPlugin
+              >()
+              ?.requestNotificationsPermission();
       if (!(result ?? true)) return;
     }
     registerFollowBackgroundTask(follows);
@@ -102,17 +102,21 @@ class _NotificationHandlerState extends State<NotificationHandler> {
 
     switch (notification.type) {
       case 'follow':
-        widget.navigatorKey.currentState!
-            .pushNamedAndRemoveUntil('/subscriptions', (_) => false);
+        widget.navigatorKey.currentState!.pushNamedAndRemoveUntil(
+          '/subscriptions',
+          (_) => false,
+        );
         if (notification.query != null) {
           widget.navigatorKey.currentState!.push(
             MaterialPageRoute(
-              builder: (context) => PostsSearchPage(
-                query: TagMap(notification!.query!),
-                orderPoolsByOldest: false,
-                readerMode:
-                    poolRegex().hasMatch(notification.query!['tags'] ?? ''),
-              ),
+              builder:
+                  (context) => PostsSearchPage(
+                    query: TagMap(notification!.query!),
+                    orderPoolsByOldest: false,
+                    readerMode: poolRegex().hasMatch(
+                      notification.query!['tags'] ?? '',
+                    ),
+                  ),
             ),
           );
         }
@@ -134,9 +138,11 @@ class _NotificationHandlerState extends State<NotificationHandler> {
   Widget build(BuildContext context) {
     Client client = context.watch<Client>();
     return SubStream<List<Follow>>(
-      create: () => client.follows
-          .all(query: FollowsQuery(types: [FollowType.notify]))
-          .streamed,
+      create:
+          () =>
+              client.follows
+                  .all(query: FollowsQuery(types: [FollowType.notify]))
+                  .streamed,
       keys: [client],
       listener: (event) async {
         await Future.wait([

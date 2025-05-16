@@ -33,9 +33,9 @@ class LogRecordExpandable extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
               child: DefaultTextStyle(
-                style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                      color: color,
-                    ),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyMedium!.copyWith(color: color),
                 child: Stack(
                   clipBehavior: Clip.none,
                   fit: StackFit.passthrough,
@@ -62,7 +62,9 @@ class LogRecordExpandable extends StatelessWidget {
                           child: Container(
                             color: Theme.of(context).cardColor,
                             padding: const EdgeInsets.symmetric(
-                                vertical: 4, horizontal: 10),
+                              vertical: 4,
+                              horizontal: 10,
+                            ),
                             child: title!,
                           ),
                         ),
@@ -77,12 +79,15 @@ class LogRecordExpandable extends StatelessWidget {
                             if (actions != null) ...actions!,
                             if (fullContent != null)
                               Builder(
-                                builder: (context) => InkWell(
-                                  onTap: ExpandableController.of(context,
-                                          required: true)!
-                                      .toggle,
-                                  child: ExpandableIcon(),
-                                ),
+                                builder:
+                                    (context) => InkWell(
+                                      onTap:
+                                          ExpandableController.of(
+                                            context,
+                                            required: true,
+                                          )!.toggle,
+                                      child: ExpandableIcon(),
+                                    ),
                               ),
                           ],
                         ),

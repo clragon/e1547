@@ -15,16 +15,17 @@ export 'package:window_manager/window_manager.dart' show WindowManager;
 
 /// Initializes an AppInfo with default production values.
 Future<void> initializeAppInfo() => AppInfo.initializePlatform(
-      developer: 'binaryfloof',
-      github: 'clragon/e1547',
-      discord: 'MRwKGqfmUz',
-      website: 'e1547.clynamic.net',
-      kofi: 'binaryfloof',
-      email: 'support@clynamic.net',
-    );
+  developer: 'binaryfloof',
+  github: 'clragon/e1547',
+  discord: 'MRwKGqfmUz',
+  website: 'e1547.clynamic.net',
+  kofi: 'binaryfloof',
+  email: 'support@clynamic.net',
+);
 
-Future<String> getTemporaryAppDirectory() => getTemporaryDirectory()
-    .then((dir) => join(dir.path, AppInfo.instance.appName));
+Future<String> getTemporaryAppDirectory() => getTemporaryDirectory().then(
+  (dir) => join(dir.path, AppInfo.instance.appName),
+);
 
 /// Initializes the logger used by the app with default production values.
 Future<Logs> initializeLogger({
@@ -47,29 +48,29 @@ Future<Logs> initializeLogger({
   }
 
   registerFlutterErrorHandler(
-    (error, trace) => Logger('Flutter').log(
-      Level.SHOUT,
-      error,
-      error,
-      trace,
-    ),
+    (error, trace) => Logger('Flutter').log(Level.SHOUT, error, error, trace),
   );
   return logs;
 }
 
 File createLogFile(String directoryPath, String? postfix) {
-  File logFile = File(join(directoryPath,
-      '${logFileDateFormat.format(DateTime.now())}${postfix != null ? '.$postfix' : ''}.log'));
+  File logFile = File(
+    join(
+      directoryPath,
+      '${logFileDateFormat.format(DateTime.now())}${postfix != null ? '.$postfix' : ''}.log',
+    ),
+  );
 
   Directory dir = Directory(directoryPath);
   if (!dir.existsSync()) {
     dir.createSync(recursive: true);
   }
-  List<File> logFiles = dir
-      .listSync()
-      .whereType<File>()
-      .where((entity) => entity.path.endsWith('.log'))
-      .toList();
+  List<File> logFiles =
+      dir
+          .listSync()
+          .whereType<File>()
+          .where((entity) => entity.path.endsWith('.log'))
+          .toList();
 
   DateTime getFileDate(String fileName) {
     var name = basenameWithoutExtension(fileName);
@@ -111,9 +112,10 @@ Future<AppStorage> initializeAppStorage({bool cache = true}) async {
         name: 'app',
         native: DriftNativeOptions(
           shareAcrossIsolates: true,
-          databasePath: () => getApplicationSupportDirectory().then(
-            (dir) => join(dir.path, 'app.db'),
-          ),
+          databasePath:
+              () => getApplicationSupportDirectory().then(
+                (dir) => join(dir.path, 'app.db'),
+              ),
         ),
       ),
     ),

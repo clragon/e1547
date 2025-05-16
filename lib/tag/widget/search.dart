@@ -22,20 +22,22 @@ class SearchPromptFloatingActionButton extends StatelessWidget {
     bool isDesktop = Theme.of(context).isDesktop;
     return SubValue<PromptActionController>(
       create: () => PromptActionController(),
-      builder: (context, actionController) => PromptFloatingActionButton(
-        controller: actionController,
-        builder: (context) => Material(
-          child: PromptFilterList(
-            tags: tags,
-            onChanged: onChanged,
-            onSubmit: onSubmit,
-            submitIcon: isDesktop ? const Icon(Icons.search) : null,
-            filters: filters,
+      builder:
+          (context, actionController) => PromptFloatingActionButton(
             controller: actionController,
+            builder:
+                (context) => Material(
+                  child: PromptFilterList(
+                    tags: tags,
+                    onChanged: onChanged,
+                    onSubmit: onSubmit,
+                    submitIcon: isDesktop ? const Icon(Icons.search) : null,
+                    filters: filters,
+                    controller: actionController,
+                  ),
+                ),
+            icon: const Icon(Icons.search),
           ),
-        ),
-        icon: const Icon(Icons.search),
-      ),
     );
   }
 }
@@ -96,8 +98,8 @@ class _PromptFilterListState extends State<PromptFilterList> {
       child: FilterList(
         tags: tags,
         onChanged: onChanged,
-        onSubmit: (value) =>
-            widget.controller?.action?.call() ?? onSubmit(value),
+        onSubmit:
+            (value) => widget.controller?.action?.call() ?? onSubmit(value),
         submitIcon: widget.submitIcon,
         filters: widget.filters,
       ),
@@ -105,8 +107,8 @@ class _PromptFilterListState extends State<PromptFilterList> {
   }
 }
 
-typedef SubTextValueShouldUpdate = bool Function(
-    String fromController, String fromValue);
+typedef SubTextValueShouldUpdate =
+    bool Function(String fromController, String fromValue);
 
 class SubTextValue extends StatefulWidget {
   const SubTextValue({
@@ -120,7 +122,7 @@ class SubTextValue extends StatefulWidget {
   final String? value;
   final ValueSetter<String>? onChanged;
   final Widget Function(BuildContext context, TextEditingController controller)
-      builder;
+  builder;
   final SubTextValueShouldUpdate? shouldUpdate;
 
   @override
@@ -128,8 +130,9 @@ class SubTextValue extends StatefulWidget {
 }
 
 class _SubTextValueState extends State<SubTextValue> {
-  late TextEditingController controller =
-      TextEditingController(text: widget.value);
+  late TextEditingController controller = TextEditingController(
+    text: widget.value,
+  );
   bool controllerUpdate = false;
   bool valueUpdate = false;
   bool isUpdating = false;

@@ -20,11 +20,8 @@ import 'package:flutter/foundation.dart';
 export 'package:dio/dio.dart' show CancelToken;
 
 class Client with Disposable {
-  Client({
-    required this.identity,
-    required this.traits,
-    required this.storage,
-  }) : dio = createDefaultDio(identity, cache: storage.httpCache);
+  Client({required this.identity, required this.traits, required this.storage})
+    : dio = createDefaultDio(identity, cache: storage.httpCache);
 
   final Dio dio;
   final AppStorage storage;

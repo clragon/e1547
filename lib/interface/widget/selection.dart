@@ -68,10 +68,7 @@ class SelectionLayoutData<T> extends InheritedWidget {
   }
 
   /// Toggles the selection state of an item.
-  void toggleSelection(T item) => setSelection(
-        item,
-        !isSelected(item),
-      );
+  void toggleSelection(T item) => setSelection(item, !isSelected(item));
 
   @override
   bool updateShouldNotify(covariant SelectionLayoutData<T> oldWidget) =>
@@ -118,7 +115,8 @@ class _SelectionLayoutState<T> extends State<SelectionLayout<T>> {
     if (oldWidget.items != widget.items) {
       Set<T> updated = Set.from(selections);
       updated.removeWhere(
-          (element) => !(widget.items?.contains(element) ?? false));
+        (element) => !(widget.items?.contains(element) ?? false),
+      );
       onSelectionChanged(updated);
     }
   }
@@ -161,12 +159,18 @@ class SelectionAppBar<T> extends StatelessWidget with AppBarBuilderWidget {
   /// The list of actions for the selection appbar.
   /// Automatically contains an action to select all items.
   final List<Widget> Function(
-      BuildContext context, SelectionLayoutData<T> layoutData) actionBuilder;
+    BuildContext context,
+    SelectionLayoutData<T> layoutData,
+  )
+  actionBuilder;
 
   /// Called to display the title for the selection appbar.
   /// Defaults to '<count> items'.
   final Widget Function(
-      BuildContext context, SelectionLayoutData<T> layoutData)? titleBuilder;
+    BuildContext context,
+    SelectionLayoutData<T> layoutData,
+  )?
+  titleBuilder;
 
   /// The appbar that is shown when no selection is taking place.
   @override
@@ -177,23 +181,25 @@ class SelectionAppBar<T> extends StatelessWidget with AppBarBuilderWidget {
     SelectionLayoutData<T>? layoutData = SelectionLayout.maybeOf<T>(context);
     return CrossFade.builder(
       showChild: layoutData != null && layoutData.selections.isNotEmpty,
-      builder: (context) => DefaultAppBar(
-        title: titleBuilder?.call(context, layoutData!) ??
-            Text('${layoutData!.selections.length} items'),
-        leading: IconButton(
-          icon: const Icon(Icons.clear),
-          tooltip: 'Abort',
-          onPressed: layoutData!.clear,
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.select_all),
-            tooltip: 'Select all',
-            onPressed: layoutData.selectAll,
+      builder:
+          (context) => DefaultAppBar(
+            title:
+                titleBuilder?.call(context, layoutData!) ??
+                Text('${layoutData!.selections.length} items'),
+            leading: IconButton(
+              icon: const Icon(Icons.clear),
+              tooltip: 'Abort',
+              onPressed: layoutData!.clear,
+            ),
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.select_all),
+                tooltip: 'Select all',
+                onPressed: layoutData.selectAll,
+              ),
+              ...actionBuilder(context, layoutData),
+            ],
           ),
-          ...actionBuilder(context, layoutData),
-        ],
-      ),
       secondChild: child,
     );
   }
@@ -228,9 +234,10 @@ class SelectionItemOverlay<T> extends StatelessWidget {
           Positioned.fill(
             child: MouseCursorRegion(
               behavior: HitTestBehavior.translucent,
-              onTap: layoutData.selections.isNotEmpty
-                  ? () => layoutData.toggleSelection(item)
-                  : null,
+              onTap:
+                  layoutData.selections.isNotEmpty
+                      ? () => layoutData.toggleSelection(item)
+                      : null,
               onLongPress: () => layoutData.toggleSelection(item),
               onSecondaryTap: () => layoutData.toggleSelection(item),
               child: ExcludeFocus(

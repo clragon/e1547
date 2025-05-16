@@ -3,11 +3,8 @@ import 'package:e1547/interface/interface.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sub/flutter_sub.dart';
 
-typedef HistoryConnector<T> = void Function(
-  BuildContext context,
-  Client client,
-  T data,
-);
+typedef HistoryConnector<T> =
+    void Function(BuildContext context, Client client, T data);
 
 class ItemHistoryConnector<T> extends StatefulWidget {
   const ItemHistoryConnector({
@@ -79,11 +76,7 @@ class _ControllerHistoryConnectorState<T extends DataController?>
         if (controller.error != null) return;
         if (!context.mounted) return;
         Client client = context.read<Client>();
-        widget.addToHistory(
-          context,
-          client,
-          controller,
-        );
+        widget.addToHistory(context, client, controller);
       },
       builder: (context) => widget.child,
     );

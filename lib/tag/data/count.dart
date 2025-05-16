@@ -28,7 +28,8 @@ List<CountedTag> countTagsByPosts(List<Post> posts) {
   for (MapEntry<String, Map<String, int>> category in categoryCounts.entries) {
     for (MapEntry<String, int> tags in category.value.entries) {
       counted.add(
-          CountedTag(category: category.key, tag: tags.key, count: tags.value));
+        CountedTag(category: category.key, tag: tags.key, count: tags.value),
+      );
     }
   }
 
@@ -36,11 +37,7 @@ List<CountedTag> countTagsByPosts(List<Post> posts) {
 }
 
 class CountedTag {
-  CountedTag({
-    required this.category,
-    required this.tag,
-    required this.count,
-  });
+  CountedTag({required this.category, required this.tag, required this.count});
 
   final String category;
   final String tag;

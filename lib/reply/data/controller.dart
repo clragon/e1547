@@ -27,12 +27,12 @@ class ReplyController extends PageClientDataController<Reply> {
   @override
   @protected
   Future<List<Reply>> fetch(int page, bool force) => client.replies.byTopic(
-        id: topicId,
-        page: page,
-        ascending: orderByOldest,
-        force: force,
-        cancelToken: cancelToken,
-      );
+    id: topicId,
+    page: page,
+    ascending: orderByOldest,
+    force: force,
+    cancelToken: cancelToken,
+  );
 
   @override
   void dispose() {
@@ -48,11 +48,12 @@ class ReplyProvider extends SubChangeNotifierProvider<Client, ReplyController> {
     super.child,
     super.builder,
   }) : super(
-          create: (context, client) => ReplyController(
-            client: client,
-            topicId: topicId,
-            orderByOldest: orderByOldest,
-          ),
-          keys: (context) => [topicId, orderByOldest],
-        );
+         create:
+             (context, client) => ReplyController(
+               client: client,
+               topicId: topicId,
+               orderByOldest: orderByOldest,
+             ),
+         keys: (context) => [topicId, orderByOldest],
+       );
 }

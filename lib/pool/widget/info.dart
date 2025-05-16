@@ -13,17 +13,12 @@ class PoolInfo extends StatelessWidget {
     Widget textInfoRow(String label, String value) {
       return Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(label),
-          Text(value),
-        ],
+        children: [Text(label), Text(value)],
       );
     }
 
     return DefaultTextStyle(
-      style: TextStyle(
-        color: dimTextColor(context),
-      ),
+      style: TextStyle(color: dimTextColor(context)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
@@ -34,37 +29,31 @@ class PoolInfo extends StatelessWidget {
             children: [
               const Text('id'),
               InkWell(
-                child: Text(
-                  '#${pool.id}',
-                ),
+                child: Text('#${pool.id}'),
                 onLongPress: () async {
-                  ScaffoldMessengerState messenger =
-                      ScaffoldMessenger.of(context);
-                  Clipboard.setData(ClipboardData(
-                    text: pool.id.toString(),
-                  ));
+                  ScaffoldMessengerState messenger = ScaffoldMessenger.of(
+                    context,
+                  );
+                  Clipboard.setData(ClipboardData(text: pool.id.toString()));
                   await Navigator.of(context).maybePop();
-                  messenger.showSnackBar(SnackBar(
-                    duration: const Duration(seconds: 1),
-                    content: Text('Copied pool id #${pool.id}'),
-                  ));
+                  messenger.showSnackBar(
+                    SnackBar(
+                      duration: const Duration(seconds: 1),
+                      content: Text('Copied pool id #${pool.id}'),
+                    ),
+                  );
                 },
               ),
             ],
           ),
-          textInfoRow(
-            'activity',
-            pool.active ? 'active' : 'inactive',
-          ),
+          textInfoRow('activity', pool.active ? 'active' : 'inactive'),
           textInfoRow(
             'created',
             DateFormatting.dateTime(pool.createdAt.toLocal()),
           ),
           textInfoRow(
             'updated',
-            DateFormatting.dateTime(
-              pool.updatedAt.toLocal(),
-            ),
+            DateFormatting.dateTime(pool.updatedAt.toLocal()),
           ),
         ],
       ),

@@ -40,22 +40,20 @@ class CurrentIdentityTile extends StatelessWidget {
           Expanded(
             child: InkWell(
               borderRadius: const BorderRadius.all(Radius.circular(4)),
-              onTap: identity.username != null
-                  ? () => Navigator.of(context).push(
+              onTap:
+                  identity.username != null
+                      ? () => Navigator.of(context).push(
                         MaterialPageRoute(
-                          builder: (context) =>
-                              UserLoadingPage(identity.username!),
+                          builder:
+                              (context) => UserLoadingPage(identity.username!),
                         ),
                       )
-                  : null,
+                      : null,
               child: Padding(
                 padding: const EdgeInsets.all(8),
                 child: Row(
                   children: [
-                    IdentityAvatar(
-                      identity.id,
-                      radius: 32,
-                    ),
+                    IdentityAvatar(identity.id, radius: 32),
                     const SizedBox(width: 16),
                     Expanded(
                       child: Column(
@@ -80,11 +78,12 @@ class CurrentIdentityTile extends StatelessWidget {
           ),
           InkWell(
             borderRadius: const BorderRadius.all(Radius.circular(4)),
-            onTap: () => Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => const IdentitiesPage(),
-              ),
-            ),
+            onTap:
+                () => Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const IdentitiesPage(),
+                  ),
+                ),
             child: const Center(
               child: Padding(
                 padding: EdgeInsets.all(16),

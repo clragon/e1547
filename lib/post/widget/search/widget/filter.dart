@@ -4,10 +4,7 @@ import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
 
 class PostsPageFloatingActionButton extends StatelessWidget {
-  const PostsPageFloatingActionButton({
-    super.key,
-    required this.controller,
-  });
+  const PostsPageFloatingActionButton({super.key, required this.controller});
 
   final PostController controller;
 
@@ -18,10 +15,7 @@ class PostsPageFloatingActionButton extends StatelessWidget {
       onSubmit: (value) => controller.query = value,
       filters: [
         PrimaryFilterConfig(
-          filter: TagSearchFilterTag(
-            tag: 'tags',
-            name: 'Tags',
-          ),
+          filter: TagSearchFilterTag(tag: 'tags', name: 'Tags'),
           filters: [
             NestedFilterTag(
               tag: 'tags',

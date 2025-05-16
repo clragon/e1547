@@ -18,7 +18,9 @@ class LoggingDioInterceptor extends Interceptor {
 
   @override
   void onRequest(
-      RequestOptions options, RequestInterceptorHandler handler) async {
+    RequestOptions options,
+    RequestInterceptorHandler handler,
+  ) async {
     StringBuffer buffer = StringBuffer();
 
     final Uri uri = options.uri;
@@ -27,7 +29,8 @@ class LoggingDioInterceptor extends Interceptor {
 
     if (requestHeader) {
       buffer.write(
-          prettyLogObject(options.queryParameters, header: 'Query Parameters'));
+        prettyLogObject(options.queryParameters, header: 'Query Parameters'),
+      );
       final Map<String, dynamic> requestHeaders = <String, dynamic>{};
       requestHeaders.addAll(options.headers);
       requestHeaders['contentType'] = options.contentType?.toString();
@@ -43,11 +46,13 @@ class LoggingDioInterceptor extends Interceptor {
     final Object? data = options.data;
     if (data != null) {
       if (data is FormData) {
-        final Map<String, Object> formDataMap = <String, Object>{}
-          ..addEntries(data.fields)
-          ..addEntries(data.files);
-        buffer.write(prettyLogObject(formDataMap,
-            header: 'Form data | ${data.boundary}'));
+        final Map<String, Object> formDataMap =
+            <String, Object>{}
+              ..addEntries(data.fields)
+              ..addEntries(data.files);
+        buffer.write(
+          prettyLogObject(formDataMap, header: 'Form data | ${data.boundary}'),
+        );
       } else {
         buffer.write(prettyLogObject(data, header: 'Body'));
       }
@@ -59,13 +64,16 @@ class LoggingDioInterceptor extends Interceptor {
 
   @override
   void onResponse(
-      Response<dynamic> response, ResponseInterceptorHandler handler) async {
+    Response<dynamic> response,
+    ResponseInterceptorHandler handler,
+  ) async {
     StringBuffer buffer = StringBuffer();
 
     final Uri uri = response.requestOptions.uri;
     final String method = response.requestOptions.method;
     buffer.writeln(
-        '<<< Response │ $method │ ${response.statusCode} ${response.statusMessage} │ $uri');
+      '<<< Response │ $method │ ${response.statusCode} ${response.statusMessage} │ $uri',
+    );
 
     if (responseHeader) {
       buffer.write(prettyLogObject(response.headers, header: 'Headers'));
@@ -93,13 +101,15 @@ class LoggingDioInterceptor extends Interceptor {
       }
 
       buffer.writeln(
-          '<<< DioError │ ${err.requestOptions.method} │ ${err.response?.statusCode} ${err.response?.statusMessage} │ ${err.response?.requestOptions.uri}');
+        '<<< DioError │ ${err.requestOptions.method} │ ${err.response?.statusCode} ${err.response?.statusMessage} │ ${err.response?.requestOptions.uri}',
+      );
       if (err.response != null && err.response?.data != null) {
         prettyLogObject(err.response?.data, header: 'DioError │ ${err.type}');
       }
     } else if (err.message != null) {
       buffer.writeln(
-          '<<< DioError (No response) │ ${err.requestOptions.method} │ ${err.requestOptions.uri}');
+        '<<< DioError (No response) │ ${err.requestOptions.method} │ ${err.requestOptions.uri}',
+      );
       buffer.write(prettyLogObject(err.message!, header: 'ERROR'));
     }
 

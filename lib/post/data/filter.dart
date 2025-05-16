@@ -109,8 +109,4 @@ mixin PostFilterableController<KeyType> on DataController<KeyType, Post> {
   }
 }
 
-enum PostFilterMode {
-  unavailable,
-  filtering,
-  plain,
-}
+enum PostFilterMode { unavailable, filtering, plain }

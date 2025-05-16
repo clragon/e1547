@@ -9,8 +9,9 @@ class FavoritePostController extends PostController {
   @override
   @protected
   List<Post>? filter(List<Post>? items) {
-    List<Post>? result =
-        super.filter(items?.where((p) => !p.isFavorited).toList());
+    List<Post>? result = super.filter(
+      items?.where((p) => !p.isFavorited).toList(),
+    );
     return items
         ?.where((p) => (result?.contains(p) ?? false) || p.isFavorited)
         .toList();

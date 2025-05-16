@@ -4,12 +4,7 @@ import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
 
 class TagCard extends StatelessWidget {
-  const TagCard({
-    super.key,
-    required this.tag,
-    this.category,
-    this.onRemove,
-  });
+  const TagCard({super.key, required this.tag, this.category, this.onRemove});
 
   final String tag;
   final String? category;
@@ -18,29 +13,28 @@ class TagCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ColoredCard(
-      color: (category != null ? TagCategory.byName(category!)?.color : null) ??
+      color:
+          (category != null ? TagCategory.byName(category!)?.color : null) ??
           Colors.grey,
-      onTap: () => Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (context) => PostsSearchPage(
-            query: TagMap({'tags': tag}),
+      onTap:
+          () => Navigator.of(context).push(
+            MaterialPageRoute(
+              builder:
+                  (context) => PostsSearchPage(query: TagMap({'tags': tag})),
+            ),
           ),
-        ),
-      ),
       onLongPress: () => showTagSearchPrompt(context: context, tag: tag),
       onSecondaryTap: () => showTagSearchPrompt(context: context, tag: tag),
-      leading: onRemove != null
-          ? IconButton(
-              constraints: const BoxConstraints(),
-              padding: EdgeInsets.zero,
-              icon: const Icon(Icons.clear, size: 16),
-              onPressed: onRemove,
-            )
-          : null,
-      child: Text(
-        tagToTitle(tag),
-        overflow: TextOverflow.ellipsis,
-      ),
+      leading:
+          onRemove != null
+              ? IconButton(
+                constraints: const BoxConstraints(),
+                padding: EdgeInsets.zero,
+                icon: const Icon(Icons.clear, size: 16),
+                onPressed: onRemove,
+              )
+              : null,
+      child: Text(tagToTitle(tag), overflow: TextOverflow.ellipsis),
     );
   }
 }
@@ -75,17 +69,12 @@ class TagCounterCard extends StatelessWidget {
           Flexible(
             child: Padding(
               padding: const EdgeInsets.all(4),
-              child: Text(
-                count.toString(),
-              ),
+              child: Text(count.toString()),
             ),
           ),
         ],
       ),
-      child: Text(
-        tagToTitle(tag),
-        overflow: TextOverflow.ellipsis,
-      ),
+      child: Text(tagToTitle(tag), overflow: TextOverflow.ellipsis),
     );
   }
 }
@@ -114,10 +103,7 @@ class DenyListTagCard extends StatelessWidget {
       onTap: () => showTagSearchPrompt(context: context, tag: tag),
       onLongPress: () => showTagSearchPrompt(context: context, tag: tag),
       onSecondaryTap: () => showTagSearchPrompt(context: context, tag: tag),
-      child: Text(
-        tagToTitle(tag),
-        overflow: TextOverflow.ellipsis,
-      ),
+      child: Text(tagToTitle(tag), overflow: TextOverflow.ellipsis),
     );
   }
 }

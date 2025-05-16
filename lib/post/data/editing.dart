@@ -41,16 +41,15 @@ class PostEdit {
     int? parentId,
     List<String>? sources,
     Map<String, List<String>>? tags,
-  }) =>
-      PostEdit(
-        post: post ?? this.post,
-        editReason: editReason ?? this.editReason,
-        rating: rating ?? this.rating,
-        description: description ?? this.description,
-        parentId: parentId ?? this.parentId,
-        sources: sources ?? this.sources,
-        tags: tags ?? this.tags,
-      );
+  }) => PostEdit(
+    post: post ?? this.post,
+    editReason: editReason ?? this.editReason,
+    rating: rating ?? this.rating,
+    description: description ?? this.description,
+    parentId: parentId ?? this.parentId,
+    sources: sources ?? this.sources,
+    tags: tags ?? this.tags,
+  );
 
   Map<String, String?>? toForm() {
     Map<String, String?> body = {};
@@ -73,12 +72,7 @@ class PostEdit {
     tagDiff.addAll(addedTags);
 
     if (tagDiff.isNotEmpty) {
-      body.addEntries([
-        MapEntry(
-          'post[tag_string_diff]',
-          tagDiff.join(' '),
-        ),
-      ]);
+      body.addEntries([MapEntry('post[tag_string_diff]', tagDiff.join(' '))]);
     }
 
     List<String> removedSource =
@@ -91,49 +85,24 @@ class PostEdit {
     sourceDiff.addAll(addedSource);
 
     if (sourceDiff.isNotEmpty) {
-      body.addEntries([
-        MapEntry(
-          'post[source_diff]',
-          sourceDiff.join(' '),
-        ),
-      ]);
+      body.addEntries([MapEntry('post[source_diff]', sourceDiff.join(' '))]);
     }
 
     if (post.relationships.parentId != parentId) {
-      body.addEntries([
-        MapEntry(
-          'post[parent_id]',
-          parentId?.toString(),
-        ),
-      ]);
+      body.addEntries([MapEntry('post[parent_id]', parentId?.toString())]);
     }
 
     if (post.description != description) {
-      body.addEntries([
-        MapEntry(
-          'post[description]',
-          description,
-        ),
-      ]);
+      body.addEntries([MapEntry('post[description]', description)]);
     }
 
     if (post.rating != rating) {
-      body.addEntries([
-        MapEntry(
-          'post[rating]',
-          rating.name,
-        ),
-      ]);
+      body.addEntries([MapEntry('post[rating]', rating.name)]);
     }
 
     if (body.isNotEmpty) {
       if (editReason?.trim().isNotEmpty ?? false) {
-        body.addEntries([
-          MapEntry(
-            'post[edit_reason]',
-            editReason!.trim(),
-          ),
-        ]);
+        body.addEntries([MapEntry('post[edit_reason]', editReason!.trim())]);
       }
       return body;
     } else {

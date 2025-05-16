@@ -38,15 +38,15 @@ class LoggerErrorNotifier extends StatelessWidget {
                     background.computeLuminance() - textLuminance;
                 if (colorDifference.abs() < 0.2) {
                   if (textLuminance > 0.5) {
-                    textColor = ThemeData(brightness: Brightness.light)
-                        .textTheme
-                        .titleMedium!
-                        .color!;
+                    textColor =
+                        ThemeData(
+                          brightness: Brightness.light,
+                        ).textTheme.titleMedium!.color!;
                   } else {
-                    textColor = ThemeData(brightness: Brightness.dark)
-                        .textTheme
-                        .titleMedium!
-                        .color!;
+                    textColor =
+                        ThemeData(
+                          brightness: Brightness.dark,
+                        ).textTheme.titleMedium!.color!;
                   }
                 }
                 return Column(
@@ -55,17 +55,13 @@ class LoggerErrorNotifier extends StatelessWidget {
                   children: [
                     Text(
                       'A critical error has occured!',
-                      style: style.copyWith(
-                        color: textColor,
-                      ),
+                      style: style.copyWith(color: textColor),
                     ),
                     Text(
                       item.message,
                       overflow: TextOverflow.ellipsis,
                       maxLines: 1,
-                      style: style.copyWith(
-                        color: textColor,
-                      ),
+                      style: style.copyWith(color: textColor),
                     ),
                   ],
                 );
@@ -73,12 +69,10 @@ class LoggerErrorNotifier extends StatelessWidget {
             ),
             backgroundColor: background,
             behavior: SnackBarBehavior.floating,
-            action: onOpenLogs != null
-                ? SnackBarAction(
-                    label: 'LOGS',
-                    onPressed: onOpenLogs!,
-                  )
-                : null,
+            action:
+                onOpenLogs != null
+                    ? SnackBarAction(label: 'LOGS', onPressed: onOpenLogs!)
+                    : null,
           ),
         );
       }
@@ -87,7 +81,8 @@ class LoggerErrorNotifier extends StatelessWidget {
       // ignore: avoid_catching_errors
       on Error catch (e) {
         if (!e.toString().contains(
-            'ScaffoldMessenger.showSnackBar was called, but there are currently no descendant Scaffolds to present to')) {
+          'ScaffoldMessenger.showSnackBar was called, but there are currently no descendant Scaffolds to present to',
+        )) {
           rethrow;
         }
       }
@@ -96,9 +91,9 @@ class LoggerErrorNotifier extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => SubStream<List<LogRecord>>(
-        create: () => logs.stream(),
-        listener: (e) => onMessage(context, e),
-        keys: [logs],
-        builder: (context, value) => child,
-      );
+    create: () => logs.stream(),
+    listener: (e) => onMessage(context, e),
+    keys: [logs],
+    builder: (context, value) => child,
+  );
 }

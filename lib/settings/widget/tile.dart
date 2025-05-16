@@ -52,9 +52,10 @@ class ImageGrid extends StatelessWidget {
             physics: const NeverScrollableScrollPhysics(),
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: count.clamp(1, 2),
-              mainAxisExtent: count > 2
-                  ? constraints.maxHeight * 0.5
-                  : constraints.maxHeight,
+              mainAxisExtent:
+                  count > 2
+                      ? constraints.maxHeight * 0.5
+                      : constraints.maxHeight,
               mainAxisSpacing: 6,
               crossAxisSpacing: 6,
             ),
@@ -153,12 +154,13 @@ class ImageTile extends StatelessWidget {
                           )
                         else
                           Expanded(
-                            child: hero != null
-                                ? Hero(
-                                    tag: hero!,
-                                    child: ImageGrid(images: images),
-                                  )
-                                : ImageGrid(images: images),
+                            child:
+                                hero != null
+                                    ? Hero(
+                                      tag: hero!,
+                                      child: ImageGrid(images: images),
+                                    )
+                                    : ImageGrid(images: images),
                           ),
                       ],
                     ),

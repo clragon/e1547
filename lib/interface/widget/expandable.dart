@@ -20,21 +20,16 @@ class _Expandables extends InheritedWidget {
 }
 
 class Expandables extends StatefulWidget {
-  const Expandables({
-    super.key,
-    required this.child,
-    this.expanded = false,
-  });
+  const Expandables({super.key, required this.child, this.expanded = false});
 
   static ExpandableController of(
     BuildContext context,
     Object key, {
     bool? expanded,
-  }) =>
-      context.dependOnInheritedWidgetOfExactType<_Expandables>()!.get(
-            key,
-            expanded: expanded,
-          );
+  }) => context.dependOnInheritedWidgetOfExactType<_Expandables>()!.get(
+    key,
+    expanded: expanded,
+  );
 
   final Widget child;
   final bool expanded;
@@ -49,9 +44,7 @@ class _ExpandablesState extends State<Expandables> {
   ExpandableController get(Object key, {bool? expanded}) {
     _controllers.putIfAbsent(
       key,
-      () => ExpandableController(
-        initialExpanded: expanded ?? widget.expanded,
-      ),
+      () => ExpandableController(initialExpanded: expanded ?? widget.expanded),
     );
     return _controllers[key]!;
   }

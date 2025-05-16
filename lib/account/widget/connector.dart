@@ -30,18 +30,19 @@ class AccountConnector extends StatelessWidget {
           create: () => client.follows.all().streamed,
           keys: [client],
           listener: (event) => client.follows.sync(),
-          builder: (context, _) => SubEffect(
-            effect: () {
-              client.accounts.pull(force: true);
-              return null;
-            },
-            keys: [client],
-            child: SubValueListener(
-              listenable: client.traits,
-              listener: (traits) => client.accounts.push(traits: traits),
-              builder: (context, _) => child,
-            ),
-          ),
+          builder:
+              (context, _) => SubEffect(
+                effect: () {
+                  client.accounts.pull(force: true);
+                  return null;
+                },
+                keys: [client],
+                child: SubValueListener(
+                  listenable: client.traits,
+                  listener: (traits) => client.accounts.push(traits: traits),
+                  builder: (context, _) => child,
+                ),
+              ),
         ),
       ),
     );

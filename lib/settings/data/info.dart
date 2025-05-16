@@ -117,7 +117,8 @@ final class AppInfo extends PackageInfo {
 }
 
 extension StoreSource on Source {
-  bool get isFromStore => ![
+  bool get isFromStore =>
+      ![
         Source.IS_INSTALLED_FROM_LOCAL_SOURCE,
         Source.IS_INSTALLED_FROM_OTHER_SOURCE,
         Source.UNKNOWN,

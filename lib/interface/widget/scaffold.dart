@@ -133,7 +133,8 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
     endDrawerBreakpoint: 1600,
   );
 
-  late bool _isInlineDrawerOpen = widget.isDrawerOpen ??
+  late bool _isInlineDrawerOpen =
+      widget.isDrawerOpen ??
       context.read<AdaptiveScaffoldController?>()?.isDrawerOpen ??
       true;
 
@@ -152,7 +153,8 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
     _isInlineDrawerOpen = value;
   }
 
-  late bool _isInlineEndDrawerOpen = widget.isEndDrawerOpen ??
+  late bool _isInlineEndDrawerOpen =
+      widget.isEndDrawerOpen ??
       context.read<AdaptiveScaffoldController?>()?.isEndDrawerOpen ??
       true;
 
@@ -176,11 +178,14 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
     return LayoutBuilder(
       builder: (context, constraints) {
         AdaptiveScaffoldConfig effectiveConfig = AdaptiveScaffoldConfig(
-          drawerBreakpoint: widget.config?.drawerBreakpoint ??
+          drawerBreakpoint:
+              widget.config?.drawerBreakpoint ??
               _defaultConfig.drawerBreakpoint,
-          endDrawerBreakpoint: widget.config?.endDrawerBreakpoint ??
+          endDrawerBreakpoint:
+              widget.config?.endDrawerBreakpoint ??
               _defaultConfig.endDrawerBreakpoint,
-          navigationRailBreakpoint: widget.config?.navigationRailBreakpoint ??
+          navigationRailBreakpoint:
+              widget.config?.navigationRailBreakpoint ??
               _defaultConfig.navigationRailBreakpoint,
           adaptDrawer: widget.config?.adaptDrawer ?? _defaultConfig.adaptDrawer,
           adaptEndDrawer:
@@ -209,8 +214,8 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
         if (inlineDrawer != null && effectiveConfig.collapseDrawer) {
           drawerAction = _CustomDrawerAction(
             isDrawerOpen: isInlineDrawerOpen,
-            onDrawerChanged: (value) =>
-                setState(() => isInlineDrawerOpen = value),
+            onDrawerChanged:
+                (value) => setState(() => isInlineDrawerOpen = value),
           );
         }
 
@@ -218,8 +223,8 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
         if (inlineEndDrawer != null && effectiveConfig.collapseEndDrawer) {
           endDrawerAction = _CustomDrawerAction(
             isDrawerOpen: isInlineEndDrawerOpen,
-            onDrawerChanged: (value) =>
-                setState(() => isInlineEndDrawerOpen = value),
+            onDrawerChanged:
+                (value) => setState(() => isInlineEndDrawerOpen = value),
           );
         }
 
@@ -449,8 +454,8 @@ class AdaptiveScaffoldController extends ChangeNotifier {
   AdaptiveScaffoldController({
     bool isDrawerOpen = true,
     bool isEndDrawerOpen = true,
-  })  : _isDrawerOpen = isDrawerOpen,
-        _isEndDrawerOpen = isEndDrawerOpen;
+  }) : _isDrawerOpen = isDrawerOpen,
+       _isEndDrawerOpen = isEndDrawerOpen;
 
   bool _isDrawerOpen;
 
@@ -485,10 +490,11 @@ class AdaptiveScaffoldScope
     bool isDrawerOpen = true,
     bool isEndDrawerOpen = false,
   }) : super(
-          create: (context) => AdaptiveScaffoldController(
-            isDrawerOpen: isDrawerOpen,
-            isEndDrawerOpen: isEndDrawerOpen,
-          ),
-          keys: (context) => [isDrawerOpen, isEndDrawerOpen],
-        );
+         create:
+             (context) => AdaptiveScaffoldController(
+               isDrawerOpen: isDrawerOpen,
+               isEndDrawerOpen: isEndDrawerOpen,
+             ),
+         keys: (context) => [isDrawerOpen, isEndDrawerOpen],
+       );
 }

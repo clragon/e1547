@@ -19,8 +19,10 @@ class ContextDrawer extends StatelessWidget {
             children: [
               if (title != null)
                 Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 22, vertical: 18),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 22,
+                    vertical: 18,
+                  ),
                   child: DefaultTextStyle(
                     style: Theme.of(context).textTheme.titleLarge!,
                     child: title!,

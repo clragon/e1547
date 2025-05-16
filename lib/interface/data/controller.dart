@@ -7,9 +7,7 @@ export 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
 abstract class DataController<KeyType, ItemType> with ChangeNotifier {
   /// A controller for a paged widget.
-  DataController({
-    required this.firstPageKey,
-  }) : _nextPageKey = firstPageKey;
+  DataController({required this.firstPageKey}) : _nextPageKey = firstPageKey;
 
   /// The key for the first page to be fetched.
   final KeyType firstPageKey;
@@ -58,8 +56,9 @@ abstract class DataController<KeyType, ItemType> with ChangeNotifier {
   bool _disposed = false;
 
   /// The proxy paging controller for this controller.
-  late final PagingController<KeyType, ItemType> paging =
-      ProxyPagingController(this);
+  late final PagingController<KeyType, ItemType> paging = ProxyPagingController(
+    this,
+  );
 
   /// Retrieves the next page of items.
   @protected
@@ -220,18 +219,16 @@ class PageResponse<KeyType, ItemType> {
   /// The response for a page request.
   ///
   /// Is treated as the last page to be added.
-  const PageResponse.last({
-    required List<ItemType> this.items,
-  })  : nextPageKey = null,
-        error = null;
+  const PageResponse.last({required List<ItemType> this.items})
+    : nextPageKey = null,
+      error = null;
 
   /// The response for a page request.
   ///
   /// Is treated as a failed page request.
-  const PageResponse.error({
-    required Object this.error,
-  })  : items = null,
-        nextPageKey = null;
+  const PageResponse.error({required Object this.error})
+    : items = null,
+      nextPageKey = null;
 
   /// The key for the next page.
   ///

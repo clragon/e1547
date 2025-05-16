@@ -33,10 +33,7 @@ class FollowTile extends StatelessWidget {
             submit: (value) {
               String? title = value.trim();
               if (follow.title != value) {
-                client.follows.update(
-                  id: follow.id,
-                  title: title,
-                );
+                client.follows.update(id: follow.id, title: title);
               }
             },
           ),
@@ -51,10 +48,7 @@ class FollowTile extends StatelessWidget {
           onSubmit: (value) {
             value = value.trim();
             if (value.isNotEmpty) {
-              client.follows.update(
-                id: follow.id,
-                tags: value,
-              );
+              client.follows.update(id: follow.id, tags: value);
             } else {
               client.follows.delete(follow.id);
             }
@@ -73,52 +67,57 @@ class FollowTile extends StatelessWidget {
       return PopupMenuButton<VoidCallback>(
         icon: const Dimmed(child: Icon(Icons.more_vert)),
         onSelected: (value) => value(),
-        itemBuilder: (context) => [
-          if ((follow.unseen ?? 0) > 0)
-            PopupMenuTile(
-              value: () => client.follows.markSeen(follow.id),
-              title: 'Mark as read',
-              icon: Icons.mark_email_read,
-            ),
-          if (PlatformCapabilities.hasNotifications && !bookmarked)
-            PopupMenuTile(
-              value: () => client.follows.update(
-                id: follow.id,
-                type: !notified ? FollowType.notify : FollowType.update,
+        itemBuilder:
+            (context) => [
+              if ((follow.unseen ?? 0) > 0)
+                PopupMenuTile(
+                  value: () => client.follows.markSeen(follow.id),
+                  title: 'Mark as read',
+                  icon: Icons.mark_email_read,
+                ),
+              if (PlatformCapabilities.hasNotifications && !bookmarked)
+                PopupMenuTile(
+                  value:
+                      () => client.follows.update(
+                        id: follow.id,
+                        type: !notified ? FollowType.notify : FollowType.update,
+                      ),
+                  title:
+                      notified
+                          ? 'Disable notifications'
+                          : 'Enable notifications',
+                  icon:
+                      notified
+                          ? Icons.notifications_off
+                          : Icons.notifications_active,
+                ),
+              if (!PlatformCapabilities.hasNotifications || !notified)
+                PopupMenuTile(
+                  value:
+                      () => client.follows.update(
+                        id: follow.id,
+                        type:
+                            !bookmarked
+                                ? FollowType.bookmark
+                                : FollowType.update,
+                      ),
+                  title: bookmarked ? 'Subscribe' : 'Bookmark',
+                  icon: bookmarked ? Icons.person_add : Icons.bookmark,
+                ),
+              if (promptController != null && follow.tags.split(' ').length > 1)
+                PopupMenuTile(
+                  value: editTitle,
+                  title: 'Rename',
+                  icon: Icons.label,
+                ),
+              if (promptController != null)
+                PopupMenuTile(value: edit, title: 'Edit', icon: Icons.edit),
+              PopupMenuTile(
+                value: () => client.follows.delete(follow.id),
+                title: 'Unfollow',
+                icon: Icons.person_remove,
               ),
-              title:
-                  notified ? 'Disable notifications' : 'Enable notifications',
-              icon: notified
-                  ? Icons.notifications_off
-                  : Icons.notifications_active,
-            ),
-          if (!PlatformCapabilities.hasNotifications || !notified)
-            PopupMenuTile(
-              value: () => client.follows.update(
-                id: follow.id,
-                type: !bookmarked ? FollowType.bookmark : FollowType.update,
-              ),
-              title: bookmarked ? 'Subscribe' : 'Bookmark',
-              icon: bookmarked ? Icons.person_add : Icons.bookmark,
-            ),
-          if (promptController != null && follow.tags.split(' ').length > 1)
-            PopupMenuTile(
-              value: editTitle,
-              title: 'Rename',
-              icon: Icons.label,
-            ),
-          if (promptController != null)
-            PopupMenuTile(
-              value: edit,
-              title: 'Edit',
-              icon: Icons.edit,
-            ),
-          PopupMenuTile(
-            value: () => client.follows.delete(follow.id),
-            title: 'Unfollow',
-            icon: Icons.person_remove,
-          ),
-        ],
+            ],
       );
     }
 
@@ -152,23 +151,25 @@ class FollowTile extends StatelessWidget {
                   child: CrossFade.builder(
                     showChild: active,
                     secondChild: const Icon(Icons.image_not_supported_outlined),
-                    builder: (context) => Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Expanded(
-                          child: Hero(
-                            tag: PostLinking.getPostLink(follow.latest!),
-                            child: CachedNetworkImage(
-                              imageUrl: follow.thumbnail!,
-                              errorWidget: defaultErrorBuilder,
-                              fit: BoxFit.cover,
-                              cacheManager: context.read<BaseCacheManager>(),
+                    builder:
+                        (context) => Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Expanded(
+                              child: Hero(
+                                tag: PostLinking.getPostLink(follow.latest!),
+                                child: CachedNetworkImage(
+                                  imageUrl: follow.thumbnail!,
+                                  errorWidget: defaultErrorBuilder,
+                                  fit: BoxFit.cover,
+                                  cacheManager:
+                                      context.read<BaseCacheManager>(),
+                                ),
+                              ),
                             ),
-                          ),
+                          ],
                         ),
-                      ],
-                    ),
                   ),
                 ),
               ),
@@ -178,15 +179,20 @@ class FollowTile extends StatelessWidget {
                   child: SelectionItemOverlay<Follow>(
                     item: follow,
                     child: InkWell(
-                      onTap: () => Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => PostsSearchPage(
-                            query: TagMap({'tags': follow.tags}),
-                            orderPoolsByOldest: (follow.unseen ?? 0) == 0,
-                            readerMode: poolRegex().hasMatch(follow.tags),
+                      onTap:
+                          () => Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder:
+                                  (context) => PostsSearchPage(
+                                    query: TagMap({'tags': follow.tags}),
+                                    orderPoolsByOldest:
+                                        (follow.unseen ?? 0) == 0,
+                                    readerMode: poolRegex().hasMatch(
+                                      follow.tags,
+                                    ),
+                                  ),
+                            ),
                           ),
-                        ),
-                      ),
                     ),
                   ),
                 ),
@@ -194,8 +200,9 @@ class FollowTile extends StatelessWidget {
             ],
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8)
-                .copyWith(bottom: 4, right: 0),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 8,
+            ).copyWith(bottom: 4, right: 0),
             child: Row(
               children: [
                 Expanded(
@@ -221,7 +228,8 @@ class FollowTile extends StatelessWidget {
                         ),
                       ),
                       CrossFade(
-                        showChild: follow.title != null &&
+                        showChild:
+                            follow.title != null &&
                             follow.tags.split(' ').length > 1,
                         child: Dimmed(
                           child: Text(

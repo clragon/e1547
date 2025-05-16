@@ -46,8 +46,4 @@ class FollowUpdate with _$FollowUpdate {
       _$FollowUpdateFromJson(json);
 }
 
-enum FollowType {
-  update,
-  notify,
-  bookmark,
-}
+enum FollowType { update, notify, bookmark }
