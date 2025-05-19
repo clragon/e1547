@@ -43,6 +43,12 @@ extension PostDownloading on Post {
       } else {
         String directory;
 
+        // We have changed how paths are stored. These old paths break the upgrade path.
+        // We can remove this in a future version.
+        if (path?.contains('/tree/primary') ?? false) {
+          path = null;
+        }
+
         if (path != null) {
           directory = path;
         } else {

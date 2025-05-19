@@ -224,8 +224,9 @@ class SettingsPage extends StatelessWidget {
                                               max: 400,
                                               onSubmit: (value) {
                                                 if (value == null ||
-                                                    value.value <= 0)
+                                                    value.value <= 0) {
                                                   return;
+                                                }
                                                 settings.tileSize.value =
                                                     value.value;
                                               },
