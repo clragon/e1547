@@ -7,6 +7,7 @@ import 'package:e1547/tag/tag.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:image_gallery_saver_plus/image_gallery_saver_plus.dart';
+import 'package:media_scanner/media_scanner.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -43,8 +44,8 @@ extension PostDownloading on Post {
       } else {
         String directory;
 
-        // We have changed how paths are stored. These old paths break the upgrade path.
-        // We can remove this in a future version.
+        // We have changed how paths are stored. These old paths break when updating.
+        // This crude mechanism will clean that up. We can remove this in a future version.
         if (path?.contains('/tree/primary') ?? false) {
           path = null;
         }
@@ -72,6 +73,11 @@ extension PostDownloading on Post {
 
         Uint8List downloadBytes = await download.readAsBytes();
         await target.writeAsBytes(downloadBytes);
+
+        if (Platform.isAndroid) {
+          // Android devices require a media scan to show the file in the gallery.
+          await MediaScanner.loadMedia(path: target.path);
+        }
       }
     } on PostDownloadException {
       rethrow;

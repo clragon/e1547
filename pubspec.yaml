@@ -86,6 +86,7 @@ dependencies:
   window_manager: ^0.4.3
   workmanager: ^0.5.2
   drift_flutter: ^0.2.4
+  media_scanner: ^2.2.0
 
 dependency_overrides:
   infinite_scroll_pagination:
