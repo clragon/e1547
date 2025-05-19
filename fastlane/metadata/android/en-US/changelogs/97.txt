@@ -1,0 +1,2 @@
+### Fixed
+- Downloading and showing images in the photo gallery on Android
