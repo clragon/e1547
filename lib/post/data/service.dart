@@ -9,7 +9,6 @@ import 'package:e1547/interface/interface.dart';
 import 'package:e1547/pool/pool.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/tag/tag.dart';
-import 'package:e1547/ticket/ticket.dart';
 
 class PostService {
   PostService({
@@ -314,35 +313,6 @@ class PostService {
     },
     options: Options(validateStatus: (status) => status == 302),
   );
-
-  // TODO: flags should be their own service
-  Future<void> addFlag(int postId, String flag, {int? parent}) => dio.post(
-    '/post_flags.json',
-    queryParameters: {
-      'post_flag[post_id]': postId,
-      'post_flag[reason_name]': flag,
-      if (flag == 'inferior' && parent != null) 'post_flag[parent_id]': parent,
-    },
-  );
-
-  Future<List<PostFlag>> flags({
-    int? page,
-    int? limit,
-    QueryMap? query,
-    bool? force,
-    CancelToken? cancelToken,
-  }) => dio
-      .get(
-        '/post_flags.json',
-        queryParameters: {'page': page, 'limit': limit, ...?query},
-        options: forceOptions(force),
-        cancelToken: cancelToken,
-      )
-      .then(
-        (response) => pick(
-          response.data,
-        ).asListOrThrow((p0) => PostFlag.fromJson(p0.asMapOrThrow())),
-      );
 }
 
 extension E621Post on Post {

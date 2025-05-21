@@ -1,7 +1,6 @@
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/ticket/ticket.dart';
 import 'package:flutter/material.dart';
-import 'package:keyboard_dismisser/keyboard_dismisser.dart';
 
 class ReportFormReason extends StatelessWidget {
   const ReportFormReason({

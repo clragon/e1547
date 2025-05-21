@@ -3,6 +3,7 @@ import 'package:e1547/account/account.dart';
 import 'package:e1547/app/app.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/comment/comment.dart';
+import 'package:e1547/flag/flag.dart';
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/history/history.dart';
 import 'package:e1547/identity/identity.dart';
@@ -52,6 +53,8 @@ class Client with Disposable {
 
   late final TopicService topics = TopicService(dio: dio);
   late final ReplyService replies = ReplyService(dio: dio);
+
+  late final FlagService flags = FlagService(dio: dio);
 
   late final FollowService follows = FollowService(
     database: storage.sqlite,

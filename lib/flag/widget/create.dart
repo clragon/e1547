@@ -7,79 +7,36 @@ import 'package:e1547/post/post.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:e1547/ticket/ticket.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
-class PostReportImage extends StatelessWidget {
-  const PostReportImage({
-    super.key,
-    required this.post,
-    required this.height,
-    this.isLoading = false,
-  });
-
-  final Post post;
-  final bool isLoading;
-  final double height;
-
-  @override
-  Widget build(BuildContext context) {
-    return ConstrainedBox(
-      constraints: BoxConstraints(
-        minHeight: defaultFormTargetHeight,
-        maxHeight: max(height * 0.5, defaultFormTargetHeight),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Center(
-          child: Card(
-            clipBehavior: Clip.antiAlias,
-            child: ReportLoadingOverlay(
-              isLoading: isLoading,
-              child: PostImageOverlay(
-                post: post,
-                builder:
-                    (context) => Hero(
-                      tag: post.link,
-                      child: PostImageWidget(
-                        post: post,
-                        size: PostImageSize.sample,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class PostReportScreen extends StatefulWidget {
-  const PostReportScreen({super.key, required this.post});
+class PostFlagScreen extends StatefulWidget {
+  const PostFlagScreen({super.key, required this.post});
 
   final Post post;
 
   @override
-  State<PostReportScreen> createState() => _PostReportScreenState();
+  State<PostFlagScreen> createState() => _PostFlagScreenState();
 }
 
-class _PostReportScreenState extends State<PostReportScreen> {
+class _PostFlagScreenState extends State<PostFlagScreen> {
   ScrollController scrollController = ScrollController();
-  TextEditingController reasonController = TextEditingController();
-  ReportType? type;
+  TextEditingController parentController = TextEditingController();
+  FlagType? type;
 
   bool isLoading = false;
 
   @override
   void dispose() {
     scrollController.dispose();
-    reasonController.dispose();
+    parentController.dispose();
     super.dispose();
   }
 
-  Future<void> _sendReport(BuildContext context) async {
+  Future<void> _sendFlag(BuildContext context) async {
     if (Form.of(context).validate()) {
-      setState(() => isLoading = true);
+      setState(() {
+        isLoading = true;
+      });
       scrollController.animateTo(
         0,
         duration: defaultAnimationDuration,
@@ -87,10 +44,10 @@ class _PostReportScreenState extends State<PostReportScreen> {
       );
       ScaffoldMessengerState messenger = ScaffoldMessenger.of(context);
       try {
-        await context.read<Client>().posts.report(
+        await context.read<Client>().flags.add(
           widget.post.id,
-          type!.id,
-          reasonController.text.trim(),
+          type!.title,
+          parent: int.tryParse(parentController.text),
         );
         if (context.mounted) {
           Navigator.of(context).maybePop();
@@ -98,7 +55,7 @@ class _PostReportScreenState extends State<PostReportScreen> {
         messenger.showSnackBar(
           SnackBar(
             duration: const Duration(seconds: 1),
-            content: Text('Reported post #${widget.post.id}'),
+            content: Text('Flagged post #${widget.post.id}'),
             behavior: SnackBarBehavior.floating,
           ),
         );
@@ -106,11 +63,13 @@ class _PostReportScreenState extends State<PostReportScreen> {
         messenger.showSnackBar(
           SnackBar(
             duration: const Duration(seconds: 1),
-            content: Text('Failed to report post #${widget.post.id}'),
+            content: Text('Failed to flag post #${widget.post.id}'),
           ),
         );
       }
-      setState(() => isLoading = false);
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 
@@ -127,7 +86,7 @@ class _PostReportScreenState extends State<PostReportScreen> {
           floatingActionButton: Builder(
             builder:
                 (context) => FloatingActionButton(
-                  onPressed: isLoading ? null : () => _sendReport(context),
+                  onPressed: isLoading ? null : () => _sendFlag(context),
                   child: const Icon(Icons.check),
                 ),
           ),
@@ -146,21 +105,54 @@ class _PostReportScreenState extends State<PostReportScreen> {
                         isLoading: isLoading,
                       ),
                       ReportFormHeader(
-                        title: const Text('Report'),
+                        title: const Text('Flag'),
                         icon: IconButton(
                           onPressed:
                               () => showTagSearchPrompt(
                                 context: context,
-                                tag: 'e621:report_post',
+                                tag: 'e621:flag_for_deletion',
                               ),
                           icon: const Icon(Icons.info_outline),
                         ),
                       ),
-                      ReportFormDropdown<ReportType?>(
+                      ReportFormDropdown<FlagType?>(
                         type: type,
-                        types: {for (final e in ReportType.values) e: e.title},
+                        types: {for (final e in FlagType.values) e: e.title},
                         onChanged: (value) => setState(() => type = value),
                         isLoading: isLoading,
+                      ),
+                      CrossFade.builder(
+                        showChild: type == FlagType.inferior,
+                        builder:
+                            (context) => Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 24,
+                                vertical: 12,
+                              ),
+                              child: TextFormField(
+                                enabled: !isLoading,
+                                controller: parentController,
+                                decoration: const InputDecoration(
+                                  labelText: 'Parent ID',
+                                  border: OutlineInputBorder(),
+                                ),
+                                keyboardType: TextInputType.number,
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.allow(
+                                    RegExp(r'^ ?\d*'),
+                                  ),
+                                ],
+                                validator: (value) {
+                                  if (value!.trim().isEmpty) {
+                                    return 'Parent ID cannot be empty';
+                                  }
+                                  if (int.tryParse(value) == null) {
+                                    return 'Parent ID must be a number';
+                                  }
+                                  return null;
+                                },
+                              ),
+                            ),
                       ),
                       CrossFade.builder(
                         showChild: type != null,
@@ -183,10 +175,6 @@ class _PostReportScreenState extends State<PostReportScreen> {
                                 ],
                               ),
                             ),
-                      ),
-                      ReportFormReason(
-                        controller: reasonController,
-                        isLoading: isLoading,
                       ),
                     ],
                   ),
