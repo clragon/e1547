@@ -337,10 +337,10 @@
         "platform": "ko-fi"
       },
       {
-          "amount": 3.0,
-          "currency": "USD",
-          "date": "2024-09-05T09:07:00",
-          "platform": "ko-fi"
+        "amount": 3.0,
+        "currency": "USD",
+        "date": "2024-09-05T09:07:00",
+        "platform": "ko-fi"
       }
     ]
   },
@@ -370,6 +370,35 @@
         "currency": "USD",
         "date": "2024-07-23T00:00:00",
         "platform": "github"
+      }
+    ]
+  },
+  {
+    "name": "Blasp Berry",
+    "handles": {
+      "ko-fi": "Blasp Berry"
+    },
+    "donations": [
+      {
+        "amount": 3.0,
+        "currency": "USD",
+        "date": "2025-02-25T15:57:00",
+        "platform": "ko-fi"
+      }
+    ]
+  },
+  {
+    "name": "pifox",
+    "handles": {
+      "ko-fi": "pifox",
+      "github": "hunting4code"
+    },
+    "donations": [
+      {
+        "amount": 25.0,
+        "currency": "USD",
+        "date": "2025-05-24T19:55:00",
+        "platform": "ko-fi"
       }
     ]
   }
