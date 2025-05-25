@@ -111,18 +111,6 @@ class CommentService {
       queryParameters: {'score': upvote ? 1 : -1, 'no_unvote': replace},
     );
   }
-
-  Future<void> report({required int id, required String reason}) async {
-    await dio.post(
-      '/tickets',
-      queryParameters: {
-        'ticket[reason]': reason,
-        'ticket[disp_id]': id,
-        'ticket[qtype]': 'comment',
-      },
-      options: Options(validateStatus: (status) => status == 302),
-    );
-  }
 }
 
 extension E621Comment on Comment {

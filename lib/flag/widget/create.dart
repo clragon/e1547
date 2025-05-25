@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:e1547/client/client.dart';
+import 'package:e1547/flag/flag.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/markup/markup.dart';
 import 'package:e1547/post/post.dart';
@@ -44,7 +45,7 @@ class _PostFlagScreenState extends State<PostFlagScreen> {
       );
       ScaffoldMessengerState messenger = ScaffoldMessenger.of(context);
       try {
-        await context.read<Client>().flags.add(
+        await context.read<Client>().flags.create(
           widget.post.id,
           type!.title,
           parent: int.tryParse(parentController.text),

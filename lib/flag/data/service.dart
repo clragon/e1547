@@ -27,7 +27,7 @@ class FlagService {
         ).asListOrThrow((p0) => E621PostFlag.fromJson(p0.asMapOrThrow())),
       );
 
-  Future<void> add(int postId, String flag, {int? parent}) => dio.post(
+  Future<void> create(int postId, String flag, {int? parent}) => dio.post(
     '/post_flags.json',
     queryParameters: {
       'post_flag[post_id]': postId,

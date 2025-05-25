@@ -15,8 +15,9 @@ class CommentReportScreen extends StatelessWidget {
       title: Text('Comment #${comment.id}'),
       onReport:
           (reason) => validateCall(
-            () => context.read<Client>().comments.report(
-              id: comment.id,
+            () => context.read<Client>().tickets.create(
+              type: TicketType.comment,
+              item: comment.id,
               reason: reason,
             ),
           ),

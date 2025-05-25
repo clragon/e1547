@@ -301,18 +301,6 @@ class PostService {
     );
     await dio.delete('/favorites/$postId.json');
   }
-
-  // TODO: tickets should be their own service
-  Future<void> report(int postId, int reportId, String reason) => dio.post(
-    '/tickets',
-    queryParameters: {
-      'ticket[reason]': reason,
-      'ticket[report_reason]': reportId,
-      'ticket[disp_id]': postId,
-      'ticket[qtype]': 'post',
-    },
-    options: Options(validateStatus: (status) => status == 302),
-  );
 }
 
 extension E621Post on Post {

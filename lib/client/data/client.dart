@@ -12,6 +12,7 @@ import 'package:e1547/pool/pool.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/reply/reply.dart';
 import 'package:e1547/tag/tag.dart';
+import 'package:e1547/ticket/ticket.dart';
 import 'package:e1547/topic/topic.dart';
 import 'package:e1547/traits/traits.dart';
 import 'package:e1547/user/user.dart';
@@ -55,6 +56,7 @@ class Client with Disposable {
   late final ReplyService replies = ReplyService(dio: dio);
 
   late final FlagService flags = FlagService(dio: dio);
+  late final TicketService tickets = TicketService(dio: dio);
 
   late final FollowService follows = FollowService(
     database: storage.sqlite,

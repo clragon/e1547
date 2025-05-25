@@ -66,7 +66,7 @@ class PostReportScreen extends StatefulWidget {
 class _PostReportScreenState extends State<PostReportScreen> {
   ScrollController scrollController = ScrollController();
   TextEditingController reasonController = TextEditingController();
-  ReportType? type;
+  PostReportType? type;
 
   bool isLoading = false;
 
@@ -87,10 +87,11 @@ class _PostReportScreenState extends State<PostReportScreen> {
       );
       ScaffoldMessengerState messenger = ScaffoldMessenger.of(context);
       try {
-        await context.read<Client>().posts.report(
-          widget.post.id,
-          type!.id,
-          reasonController.text.trim(),
+        await context.read<Client>().tickets.create(
+          type: TicketType.post,
+          item: widget.post.id,
+          reason: reasonController.text.trim(),
+          postReportType: type,
         );
         if (context.mounted) {
           Navigator.of(context).maybePop();
@@ -156,9 +157,11 @@ class _PostReportScreenState extends State<PostReportScreen> {
                           icon: const Icon(Icons.info_outline),
                         ),
                       ),
-                      ReportFormDropdown<ReportType?>(
+                      ReportFormDropdown<PostReportType?>(
                         type: type,
-                        types: {for (final e in ReportType.values) e: e.title},
+                        types: {
+                          for (final e in PostReportType.values) e: e.title,
+                        },
                         onChanged: (value) => setState(() => type = value),
                         isLoading: isLoading,
                       ),
