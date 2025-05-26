@@ -1,10 +1,10 @@
-# flutter pub global activate flutter_distributor
-# flutter_distributor package --platform windows --targets exe --skip-clean true
+# flutter pub global activate fastforge
+# fastforge package --platform=windows --targets=exe --skip-clean=true
 app_id: 3476740f-3ce1-412e-b1e3-ba65615da738
 display_name: e1547
 publisher: clynamic
 publisher_url: https://clynamic.net/
 privileges_required: lowest
-setup_icon_file: ..\..\windows\runner\resources\app_icon.ico
+setup_icon_file: windows\runner\resources\app_icon.ico
 locales:
   - en

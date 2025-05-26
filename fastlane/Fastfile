@@ -120,11 +120,11 @@ platform :windows do
     )
   end
 
-  desc "Builds an exe installer with flutter_distributor and InnoSetup"
+  desc "Builds an exe installer with fastforge and InnoSetup"
     lane :build do
-      sh("flutter pub global activate flutter_distributor")
+      sh("flutter pub global activate fastforge")
       Dir.chdir("../") do
-        sh("flutter_distributor package --platform windows --targets exe --skip-clean")
+        sh("fastforge package --platform=windows --targets=exe --skip-clean")
       end
     end
 end

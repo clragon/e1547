@@ -111,7 +111,7 @@ Ensures InnoSetup is installed
 [bundle exec] fastlane windows build
 ```
 
-Builds an exe installer with flutter_distributor and InnoSetup
+Builds an exe installer with fastforge and InnoSetup
 
 ----
 
