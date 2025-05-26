@@ -4,14 +4,15 @@ version: 20.1.1+97
 publish_to: none
 
 environment:
-  sdk: ">=3.7.2 <4.0.0"
-  flutter: ">=3.29.3 <4.0.0"
+  sdk: ">=3.8.0 <4.0.0"
+  flutter: ">=3.32.0 <4.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
+  intl: # sdk pins intl
 
   # widgets
   animations: ^2.0.7
@@ -33,7 +34,7 @@ dependencies:
   keyboard_dismisser: ^3.0.0
   like_button: ^2.0.4
   local_auth: ^2.2.0
-  overflow_view: ^0.4.0
+  overflow_view: ^0.5.0
   photo_view: ^0.15.0
   provider: ^6.1.2
   pull_to_refresh: ^2.0.0
@@ -60,7 +61,6 @@ dependencies:
   freezed_annotation: ^2.4.1
   html_character_entities: ^1.0.0+1
   image_gallery_saver_plus: ^4.0.1
-  intl: ^0.19.0
   json_annotation: ^4.8.1
   logging: ^1.2.0
   meta: ^1.15.0
