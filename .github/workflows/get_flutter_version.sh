@@ -20,12 +20,18 @@ if [ -z "$grep_result" ]; then
 fi
 
 # Extract the version string from the line
-version_string=$(echo "$grep_result" | awk -F"'" '{print $2}')
+version_string=$(echo "$grep_result" | sed -E 's/.*flutter:[[:space:]]*["'\'']?([^"'\'' ]+)["'\'']?.*/\1/')
 
 # Split by <, >, =, and space to find the version.
 # We look for the lower bound, so the first non-empty string is the version.
 # This should also work if the version is not a range.
 FLUTTER_VERSION=$(echo "$version_string" | awk -F"[<>= ]" '{for(i=1;i<=NF;i++) if($i!="") {print $i; exit}}')
+
+# Check if we found a version
+if [ -z "$FLUTTER_VERSION" ]; then
+  echo "No valid flutter version found in the 'flutter:' entry."
+  exit 1
+fi
 
 # Return the version
 echo $FLUTTER_VERSION
