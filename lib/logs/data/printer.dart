@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:collection/collection.dart';
 import 'package:e1547/logs/logs.dart';
+import 'package:flutter/foundation.dart';
 
 export 'package:logging/logging.dart';
 
@@ -108,19 +109,10 @@ class ConsoleLogPrinter extends LogPrinter {
     }
   }
 
-  String wrapWithColor(String message, Level level) {
-    if (Platform.isWindows) {
-      return message;
-    }
-    return '${getColor(level)}$message\x1B[0m';
-  }
+  String wrapWithColor(String message, Level level) =>
+      '${getColor(level)}$message\x1B[0m';
 
   @override
-  void onLog(LogRecord record) {
-    if (record.level >= Level.SEVERE) {
-      stderr.writeln(wrapWithColor(record.toFullString(), record.level));
-    } else {
-      stdout.writeln(wrapWithColor(record.toFullString(), record.level));
-    }
-  }
+  void onLog(LogRecord record) =>
+      debugPrint(wrapWithColor(record.toFullString(), record.level));
 }
