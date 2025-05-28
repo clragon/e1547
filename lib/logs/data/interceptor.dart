@@ -46,10 +46,9 @@ class LoggingDioInterceptor extends Interceptor {
     final Object? data = options.data;
     if (data != null) {
       if (data is FormData) {
-        final Map<String, Object> formDataMap =
-            <String, Object>{}
-              ..addEntries(data.fields)
-              ..addEntries(data.files);
+        final Map<String, Object> formDataMap = <String, Object>{}
+          ..addEntries(data.fields)
+          ..addEntries(data.files);
         buffer.write(
           prettyLogObject(formDataMap, header: 'Form data | ${data.boundary}'),
         );

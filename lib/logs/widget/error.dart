@@ -38,15 +38,13 @@ class LoggerErrorNotifier extends StatelessWidget {
                     background.computeLuminance() - textLuminance;
                 if (colorDifference.abs() < 0.2) {
                   if (textLuminance > 0.5) {
-                    textColor =
-                        ThemeData(
-                          brightness: Brightness.light,
-                        ).textTheme.titleMedium!.color!;
+                    textColor = ThemeData(
+                      brightness: Brightness.light,
+                    ).textTheme.titleMedium!.color!;
                   } else {
-                    textColor =
-                        ThemeData(
-                          brightness: Brightness.dark,
-                        ).textTheme.titleMedium!.color!;
+                    textColor = ThemeData(
+                      brightness: Brightness.dark,
+                    ).textTheme.titleMedium!.color!;
                   }
                 }
                 return Column(
@@ -69,10 +67,9 @@ class LoggerErrorNotifier extends StatelessWidget {
             ),
             backgroundColor: background,
             behavior: SnackBarBehavior.floating,
-            action:
-                onOpenLogs != null
-                    ? SnackBarAction(label: 'LOGS', onPressed: onOpenLogs!)
-                    : null,
+            action: onOpenLogs != null
+                ? SnackBarAction(label: 'LOGS', onPressed: onOpenLogs!)
+                : null,
           ),
         );
       }

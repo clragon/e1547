@@ -60,22 +60,20 @@ extension type HistoryQuery._(QueryMap self) implements QueryMap {
 
   set subtitle(String? value) => setOrRemove('search[subtitle]', value);
 
-  Set<HistoryCategory>? get categories =>
-      self['search[category]']
-          ?.split(',')
-          .map((e) => HistoryCategory.values.asNameMap()[e])
-          .whereType<HistoryCategory>()
-          .toSet();
+  Set<HistoryCategory>? get categories => self['search[category]']
+      ?.split(',')
+      .map((e) => HistoryCategory.values.asNameMap()[e])
+      .whereType<HistoryCategory>()
+      .toSet();
 
   set categories(Set<HistoryCategory>? value) =>
       setOrRemove('search[category]', value?.map((e) => e.name).join(','));
 
-  Set<HistoryType>? get types =>
-      self['search[type]']
-          ?.split(',')
-          .map((e) => HistoryType.values.asNameMap()[e])
-          .whereType<HistoryType>()
-          .toSet();
+  Set<HistoryType>? get types => self['search[type]']
+      ?.split(',')
+      .map((e) => HistoryType.values.asNameMap()[e])
+      .whereType<HistoryType>()
+      .toSet();
 
   set types(Set<HistoryType>? value) =>
       setOrRemove('search[type]', value?.map((e) => e.name).join(','));

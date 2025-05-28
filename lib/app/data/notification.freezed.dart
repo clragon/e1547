@@ -12,7 +12,8 @@ part of 'notification.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
+  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
+);
 
 NotificationPayload _$NotificationPayloadFromJson(Map<String, dynamic> json) {
   return _NotificationPayload.fromJson(json);
@@ -38,8 +39,9 @@ mixin _$NotificationPayload {
 /// @nodoc
 abstract class $NotificationPayloadCopyWith<$Res> {
   factory $NotificationPayloadCopyWith(
-          NotificationPayload value, $Res Function(NotificationPayload) then) =
-      _$NotificationPayloadCopyWithImpl<$Res, NotificationPayload>;
+    NotificationPayload value,
+    $Res Function(NotificationPayload) then,
+  ) = _$NotificationPayloadCopyWithImpl<$Res, NotificationPayload>;
   @useResult
   $Res call({int identity, String type, Map<String, String>? query, int? id});
 }
@@ -64,33 +66,37 @@ class _$NotificationPayloadCopyWithImpl<$Res, $Val extends NotificationPayload>
     Object? query = freezed,
     Object? id = freezed,
   }) {
-    return _then(_value.copyWith(
-      identity: null == identity
-          ? _value.identity
-          : identity // ignore: cast_nullable_to_non_nullable
-              as int,
-      type: null == type
-          ? _value.type
-          : type // ignore: cast_nullable_to_non_nullable
-              as String,
-      query: freezed == query
-          ? _value.query
-          : query // ignore: cast_nullable_to_non_nullable
-              as Map<String, String>?,
-      id: freezed == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as int?,
-    ) as $Val);
+    return _then(
+      _value.copyWith(
+            identity: null == identity
+                ? _value.identity
+                : identity // ignore: cast_nullable_to_non_nullable
+                      as int,
+            type: null == type
+                ? _value.type
+                : type // ignore: cast_nullable_to_non_nullable
+                      as String,
+            query: freezed == query
+                ? _value.query
+                : query // ignore: cast_nullable_to_non_nullable
+                      as Map<String, String>?,
+            id: freezed == id
+                ? _value.id
+                : id // ignore: cast_nullable_to_non_nullable
+                      as int?,
+          )
+          as $Val,
+    );
   }
 }
 
 /// @nodoc
 abstract class _$$NotificationPayloadImplCopyWith<$Res>
     implements $NotificationPayloadCopyWith<$Res> {
-  factory _$$NotificationPayloadImplCopyWith(_$NotificationPayloadImpl value,
-          $Res Function(_$NotificationPayloadImpl) then) =
-      __$$NotificationPayloadImplCopyWithImpl<$Res>;
+  factory _$$NotificationPayloadImplCopyWith(
+    _$NotificationPayloadImpl value,
+    $Res Function(_$NotificationPayloadImpl) then,
+  ) = __$$NotificationPayloadImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({int identity, String type, Map<String, String>? query, int? id});
@@ -100,9 +106,10 @@ abstract class _$$NotificationPayloadImplCopyWith<$Res>
 class __$$NotificationPayloadImplCopyWithImpl<$Res>
     extends _$NotificationPayloadCopyWithImpl<$Res, _$NotificationPayloadImpl>
     implements _$$NotificationPayloadImplCopyWith<$Res> {
-  __$$NotificationPayloadImplCopyWithImpl(_$NotificationPayloadImpl _value,
-      $Res Function(_$NotificationPayloadImpl) _then)
-      : super(_value, _then);
+  __$$NotificationPayloadImplCopyWithImpl(
+    _$NotificationPayloadImpl _value,
+    $Res Function(_$NotificationPayloadImpl) _then,
+  ) : super(_value, _then);
 
   /// Create a copy of NotificationPayload
   /// with the given fields replaced by the non-null parameter values.
@@ -114,36 +121,38 @@ class __$$NotificationPayloadImplCopyWithImpl<$Res>
     Object? query = freezed,
     Object? id = freezed,
   }) {
-    return _then(_$NotificationPayloadImpl(
-      identity: null == identity
-          ? _value.identity
-          : identity // ignore: cast_nullable_to_non_nullable
-              as int,
-      type: null == type
-          ? _value.type
-          : type // ignore: cast_nullable_to_non_nullable
-              as String,
-      query: freezed == query
-          ? _value._query
-          : query // ignore: cast_nullable_to_non_nullable
-              as Map<String, String>?,
-      id: freezed == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as int?,
-    ));
+    return _then(
+      _$NotificationPayloadImpl(
+        identity: null == identity
+            ? _value.identity
+            : identity // ignore: cast_nullable_to_non_nullable
+                  as int,
+        type: null == type
+            ? _value.type
+            : type // ignore: cast_nullable_to_non_nullable
+                  as String,
+        query: freezed == query
+            ? _value._query
+            : query // ignore: cast_nullable_to_non_nullable
+                  as Map<String, String>?,
+        id: freezed == id
+            ? _value.id
+            : id // ignore: cast_nullable_to_non_nullable
+                  as int?,
+      ),
+    );
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$NotificationPayloadImpl implements _NotificationPayload {
-  const _$NotificationPayloadImpl(
-      {required this.identity,
-      required this.type,
-      final Map<String, String>? query,
-      this.id})
-      : _query = query;
+  const _$NotificationPayloadImpl({
+    required this.identity,
+    required this.type,
+    final Map<String, String>? query,
+    this.id,
+  }) : _query = query;
 
   factory _$NotificationPayloadImpl.fromJson(Map<String, dynamic> json) =>
       _$$NotificationPayloadImplFromJson(json);
@@ -184,8 +193,13 @@ class _$NotificationPayloadImpl implements _NotificationPayload {
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, identity, type,
-      const DeepCollectionEquality().hash(_query), id);
+  int get hashCode => Object.hash(
+    runtimeType,
+    identity,
+    type,
+    const DeepCollectionEquality().hash(_query),
+    id,
+  );
 
   /// Create a copy of NotificationPayload
   /// with the given fields replaced by the non-null parameter values.
@@ -194,22 +208,23 @@ class _$NotificationPayloadImpl implements _NotificationPayload {
   @pragma('vm:prefer-inline')
   _$$NotificationPayloadImplCopyWith<_$NotificationPayloadImpl> get copyWith =>
       __$$NotificationPayloadImplCopyWithImpl<_$NotificationPayloadImpl>(
-          this, _$identity);
+        this,
+        _$identity,
+      );
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$NotificationPayloadImplToJson(
-      this,
-    );
+    return _$$NotificationPayloadImplToJson(this);
   }
 }
 
 abstract class _NotificationPayload implements NotificationPayload {
-  const factory _NotificationPayload(
-      {required final int identity,
-      required final String type,
-      final Map<String, String>? query,
-      final int? id}) = _$NotificationPayloadImpl;
+  const factory _NotificationPayload({
+    required final int identity,
+    required final String type,
+    final Map<String, String>? query,
+    final int? id,
+  }) = _$NotificationPayloadImpl;
 
   factory _NotificationPayload.fromJson(Map<String, dynamic> json) =
       _$NotificationPayloadImpl.fromJson;

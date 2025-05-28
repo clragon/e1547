@@ -33,9 +33,8 @@ class HistoryProvider
     extends SubChangeNotifierProvider<Client, HistoryController> {
   HistoryProvider({QueryMap? search, super.child, super.builder})
     : super(
-        create:
-            (context, client) =>
-                HistoryController(client: client, query: search),
+        create: (context, client) =>
+            HistoryController(client: client, query: search),
         update: (context, service, controller) {
           if (search != null) {
             controller.search = search;

@@ -57,11 +57,10 @@ class _PostsRouteConnectorState extends State<PostsRouteConnector> {
   Widget build(BuildContext context) => SubListener(
     listener: updatePages,
     listenable: widget.controller,
-    builder:
-        (context) => ChangeNotifierProvider.value(
-          value: widget.controller,
-          child: widget.child,
-        ),
+    builder: (context) => ChangeNotifierProvider.value(
+      value: widget.controller,
+      child: widget.child,
+    ),
   );
 }
 
@@ -131,8 +130,8 @@ class PostHistoryConnector extends StatelessWidget {
   @override
   Widget build(BuildContext context) => ItemHistoryConnector<Post>(
     item: post,
-    addToHistory:
-        (context, client, item) => client.histories.addPost(post: post),
+    addToHistory: (context, client, item) =>
+        client.histories.addPost(post: post),
     child: child,
   );
 }
@@ -151,11 +150,10 @@ class PostsControllerHistoryConnector extends StatelessWidget {
   Widget build(BuildContext context) =>
       ControllerHistoryConnector<PostController>(
         controller: controller,
-        addToHistory:
-            (context, client, data) => client.histories.addPostSearch(
-              query: data.query,
-              posts: data.items,
-            ),
+        addToHistory: (context, client, data) => client.histories.addPostSearch(
+          query: data.query,
+          posts: data.items,
+        ),
         child: child,
       );
 }

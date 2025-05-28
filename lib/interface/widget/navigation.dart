@@ -70,11 +70,10 @@ class NavigationProvider
     super.child,
     super.builder,
   }) : super(
-         create:
-             (context) => RouterDrawerController(
-               destinations: destinations,
-               drawerHeader: drawerHeader,
-             ),
+         create: (context) => RouterDrawerController(
+           destinations: destinations,
+           drawerHeader: drawerHeader,
+         ),
        );
 }
 
@@ -92,8 +91,8 @@ class RouterDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final RouterDrawerController controller =
-        context.watch<RouterDrawerController>();
+    final RouterDrawerController controller = context
+        .watch<RouterDrawerController>();
 
     List<Widget> children = [];
     if (controller.drawerHeader != null) {
@@ -122,15 +121,14 @@ class RouterDrawer extends StatelessWidget {
               destination.path == controller.drawerSelection,
           title: Text(destination.name),
           leading: destination.icon,
-          onTap:
-              destination.unique
-                  ? () => Navigator.of(
-                    context,
-                  ).pushNamedAndRemoveUntil(destination.path, (_) => false)
-                  : () {
-                    Scaffold.maybeOf(context)?.closeDrawer();
-                    Navigator.of(context).pushNamed(destination.path);
-                  },
+          onTap: destination.unique
+              ? () => Navigator.of(
+                  context,
+                ).pushNamedAndRemoveUntil(destination.path, (_) => false)
+              : () {
+                  Scaffold.maybeOf(context)?.closeDrawer();
+                  Navigator.of(context).pushNamed(destination.path);
+                },
         ),
       );
     }

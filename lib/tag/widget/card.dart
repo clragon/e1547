@@ -16,24 +16,21 @@ class TagCard extends StatelessWidget {
       color:
           (category != null ? TagCategory.byName(category!)?.color : null) ??
           Colors.grey,
-      onTap:
-          () => Navigator.of(context).push(
-            MaterialPageRoute(
-              builder:
-                  (context) => PostsSearchPage(query: TagMap({'tags': tag})),
-            ),
-          ),
+      onTap: () => Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => PostsSearchPage(query: TagMap({'tags': tag})),
+        ),
+      ),
       onLongPress: () => showTagSearchPrompt(context: context, tag: tag),
       onSecondaryTap: () => showTagSearchPrompt(context: context, tag: tag),
-      leading:
-          onRemove != null
-              ? IconButton(
-                constraints: const BoxConstraints(),
-                padding: EdgeInsets.zero,
-                icon: const Icon(Icons.clear, size: 16),
-                onPressed: onRemove,
-              )
-              : null,
+      leading: onRemove != null
+          ? IconButton(
+              constraints: const BoxConstraints(),
+              padding: EdgeInsets.zero,
+              icon: const Icon(Icons.clear, size: 16),
+              onPressed: onRemove,
+            )
+          : null,
       child: Text(tagToTitle(tag), overflow: TextOverflow.ellipsis),
     );
   }

@@ -12,7 +12,8 @@ part of 'pool.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
+  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
+);
 
 Pool _$PoolFromJson(Map<String, dynamic> json) {
   return _Pool.fromJson(json);
@@ -43,15 +44,16 @@ abstract class $PoolCopyWith<$Res> {
   factory $PoolCopyWith(Pool value, $Res Function(Pool) then) =
       _$PoolCopyWithImpl<$Res, Pool>;
   @useResult
-  $Res call(
-      {int id,
-      String name,
-      DateTime createdAt,
-      DateTime updatedAt,
-      String description,
-      List<int> postIds,
-      int postCount,
-      bool active});
+  $Res call({
+    int id,
+    String name,
+    DateTime createdAt,
+    DateTime updatedAt,
+    String description,
+    List<int> postIds,
+    int postCount,
+    bool active,
+  });
 }
 
 /// @nodoc
@@ -78,59 +80,64 @@ class _$PoolCopyWithImpl<$Res, $Val extends Pool>
     Object? postCount = null,
     Object? active = null,
   }) {
-    return _then(_value.copyWith(
-      id: null == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as int,
-      name: null == name
-          ? _value.name
-          : name // ignore: cast_nullable_to_non_nullable
-              as String,
-      createdAt: null == createdAt
-          ? _value.createdAt
-          : createdAt // ignore: cast_nullable_to_non_nullable
-              as DateTime,
-      updatedAt: null == updatedAt
-          ? _value.updatedAt
-          : updatedAt // ignore: cast_nullable_to_non_nullable
-              as DateTime,
-      description: null == description
-          ? _value.description
-          : description // ignore: cast_nullable_to_non_nullable
-              as String,
-      postIds: null == postIds
-          ? _value.postIds
-          : postIds // ignore: cast_nullable_to_non_nullable
-              as List<int>,
-      postCount: null == postCount
-          ? _value.postCount
-          : postCount // ignore: cast_nullable_to_non_nullable
-              as int,
-      active: null == active
-          ? _value.active
-          : active // ignore: cast_nullable_to_non_nullable
-              as bool,
-    ) as $Val);
+    return _then(
+      _value.copyWith(
+            id: null == id
+                ? _value.id
+                : id // ignore: cast_nullable_to_non_nullable
+                      as int,
+            name: null == name
+                ? _value.name
+                : name // ignore: cast_nullable_to_non_nullable
+                      as String,
+            createdAt: null == createdAt
+                ? _value.createdAt
+                : createdAt // ignore: cast_nullable_to_non_nullable
+                      as DateTime,
+            updatedAt: null == updatedAt
+                ? _value.updatedAt
+                : updatedAt // ignore: cast_nullable_to_non_nullable
+                      as DateTime,
+            description: null == description
+                ? _value.description
+                : description // ignore: cast_nullable_to_non_nullable
+                      as String,
+            postIds: null == postIds
+                ? _value.postIds
+                : postIds // ignore: cast_nullable_to_non_nullable
+                      as List<int>,
+            postCount: null == postCount
+                ? _value.postCount
+                : postCount // ignore: cast_nullable_to_non_nullable
+                      as int,
+            active: null == active
+                ? _value.active
+                : active // ignore: cast_nullable_to_non_nullable
+                      as bool,
+          )
+          as $Val,
+    );
   }
 }
 
 /// @nodoc
 abstract class _$$PoolImplCopyWith<$Res> implements $PoolCopyWith<$Res> {
   factory _$$PoolImplCopyWith(
-          _$PoolImpl value, $Res Function(_$PoolImpl) then) =
-      __$$PoolImplCopyWithImpl<$Res>;
+    _$PoolImpl value,
+    $Res Function(_$PoolImpl) then,
+  ) = __$$PoolImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call(
-      {int id,
-      String name,
-      DateTime createdAt,
-      DateTime updatedAt,
-      String description,
-      List<int> postIds,
-      int postCount,
-      bool active});
+  $Res call({
+    int id,
+    String name,
+    DateTime createdAt,
+    DateTime updatedAt,
+    String description,
+    List<int> postIds,
+    int postCount,
+    bool active,
+  });
 }
 
 /// @nodoc
@@ -138,7 +145,7 @@ class __$$PoolImplCopyWithImpl<$Res>
     extends _$PoolCopyWithImpl<$Res, _$PoolImpl>
     implements _$$PoolImplCopyWith<$Res> {
   __$$PoolImplCopyWithImpl(_$PoolImpl _value, $Res Function(_$PoolImpl) _then)
-      : super(_value, _then);
+    : super(_value, _then);
 
   /// Create a copy of Pool
   /// with the given fields replaced by the non-null parameter values.
@@ -154,56 +161,58 @@ class __$$PoolImplCopyWithImpl<$Res>
     Object? postCount = null,
     Object? active = null,
   }) {
-    return _then(_$PoolImpl(
-      id: null == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as int,
-      name: null == name
-          ? _value.name
-          : name // ignore: cast_nullable_to_non_nullable
-              as String,
-      createdAt: null == createdAt
-          ? _value.createdAt
-          : createdAt // ignore: cast_nullable_to_non_nullable
-              as DateTime,
-      updatedAt: null == updatedAt
-          ? _value.updatedAt
-          : updatedAt // ignore: cast_nullable_to_non_nullable
-              as DateTime,
-      description: null == description
-          ? _value.description
-          : description // ignore: cast_nullable_to_non_nullable
-              as String,
-      postIds: null == postIds
-          ? _value._postIds
-          : postIds // ignore: cast_nullable_to_non_nullable
-              as List<int>,
-      postCount: null == postCount
-          ? _value.postCount
-          : postCount // ignore: cast_nullable_to_non_nullable
-              as int,
-      active: null == active
-          ? _value.active
-          : active // ignore: cast_nullable_to_non_nullable
-              as bool,
-    ));
+    return _then(
+      _$PoolImpl(
+        id: null == id
+            ? _value.id
+            : id // ignore: cast_nullable_to_non_nullable
+                  as int,
+        name: null == name
+            ? _value.name
+            : name // ignore: cast_nullable_to_non_nullable
+                  as String,
+        createdAt: null == createdAt
+            ? _value.createdAt
+            : createdAt // ignore: cast_nullable_to_non_nullable
+                  as DateTime,
+        updatedAt: null == updatedAt
+            ? _value.updatedAt
+            : updatedAt // ignore: cast_nullable_to_non_nullable
+                  as DateTime,
+        description: null == description
+            ? _value.description
+            : description // ignore: cast_nullable_to_non_nullable
+                  as String,
+        postIds: null == postIds
+            ? _value._postIds
+            : postIds // ignore: cast_nullable_to_non_nullable
+                  as List<int>,
+        postCount: null == postCount
+            ? _value.postCount
+            : postCount // ignore: cast_nullable_to_non_nullable
+                  as int,
+        active: null == active
+            ? _value.active
+            : active // ignore: cast_nullable_to_non_nullable
+                  as bool,
+      ),
+    );
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$PoolImpl implements _Pool {
-  const _$PoolImpl(
-      {required this.id,
-      required this.name,
-      required this.createdAt,
-      required this.updatedAt,
-      required this.description,
-      required final List<int> postIds,
-      required this.postCount,
-      required this.active})
-      : _postIds = postIds;
+  const _$PoolImpl({
+    required this.id,
+    required this.name,
+    required this.createdAt,
+    required this.updatedAt,
+    required this.description,
+    required final List<int> postIds,
+    required this.postCount,
+    required this.active,
+  }) : _postIds = postIds;
 
   factory _$PoolImpl.fromJson(Map<String, dynamic> json) =>
       _$$PoolImplFromJson(json);
@@ -258,15 +267,16 @@ class _$PoolImpl implements _Pool {
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(
-      runtimeType,
-      id,
-      name,
-      createdAt,
-      updatedAt,
-      description,
-      const DeepCollectionEquality().hash(_postIds),
-      postCount,
-      active);
+    runtimeType,
+    id,
+    name,
+    createdAt,
+    updatedAt,
+    description,
+    const DeepCollectionEquality().hash(_postIds),
+    postCount,
+    active,
+  );
 
   /// Create a copy of Pool
   /// with the given fields replaced by the non-null parameter values.
@@ -278,22 +288,21 @@ class _$PoolImpl implements _Pool {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$PoolImplToJson(
-      this,
-    );
+    return _$$PoolImplToJson(this);
   }
 }
 
 abstract class _Pool implements Pool {
-  const factory _Pool(
-      {required final int id,
-      required final String name,
-      required final DateTime createdAt,
-      required final DateTime updatedAt,
-      required final String description,
-      required final List<int> postIds,
-      required final int postCount,
-      required final bool active}) = _$PoolImpl;
+  const factory _Pool({
+    required final int id,
+    required final String name,
+    required final DateTime createdAt,
+    required final DateTime updatedAt,
+    required final String description,
+    required final List<int> postIds,
+    required final int postCount,
+    required final bool active,
+  }) = _$PoolImpl;
 
   factory _Pool.fromJson(Map<String, dynamic> json) = _$PoolImpl.fromJson;
 

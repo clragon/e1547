@@ -8,20 +8,20 @@ import 'package:e1547/identity/data/identity.dart' as i4;
 import 'package:e1547/identity/data/database.dart' as i5;
 import 'package:e1547/interface/data/sql.dart' as i6;
 
-typedef $$IdentitiesTableTableCreateCompanionBuilder = i2.IdentityCompanion
-    Function({
-  i0.Value<int> id,
-  required String host,
-  required String? username,
-  i0.Value<Map<String, String>?> headers,
-});
-typedef $$IdentitiesTableTableUpdateCompanionBuilder = i2.IdentityCompanion
-    Function({
-  i0.Value<int> id,
-  i0.Value<String> host,
-  i0.Value<String?> username,
-  i0.Value<Map<String, String>?> headers,
-});
+typedef $$IdentitiesTableTableCreateCompanionBuilder =
+    i2.IdentityCompanion Function({
+      i0.Value<int> id,
+      required String host,
+      required String? username,
+      i0.Value<Map<String, String>?> headers,
+    });
+typedef $$IdentitiesTableTableUpdateCompanionBuilder =
+    i2.IdentityCompanion Function({
+      i0.Value<int> id,
+      i0.Value<String> host,
+      i0.Value<String?> username,
+      i0.Value<Map<String, String>?> headers,
+    });
 
 class $$IdentitiesTableTableFilterComposer
     extends i0.Composer<i0.GeneratedDatabase, i2.$IdentitiesTableTable> {
@@ -33,21 +33,30 @@ class $$IdentitiesTableTableFilterComposer
     super.$removeJoinBuilderFromRootComposer,
   });
   i0.ColumnFilters<int> get id => $composableBuilder(
-      column: $table.id, builder: (column) => i0.ColumnFilters(column));
+    column: $table.id,
+    builder: (column) => i0.ColumnFilters(column),
+  );
 
   i0.ColumnFilters<String> get host => $composableBuilder(
-      column: $table.host, builder: (column) => i0.ColumnFilters(column));
+    column: $table.host,
+    builder: (column) => i0.ColumnFilters(column),
+  );
 
   i0.ColumnWithTypeConverterFilters<String?, String, String> get username =>
       $composableBuilder(
-          column: $table.username,
-          builder: (column) => i0.ColumnWithTypeConverterFilters(column));
+        column: $table.username,
+        builder: (column) => i0.ColumnWithTypeConverterFilters(column),
+      );
 
-  i0.ColumnWithTypeConverterFilters<Map<String, String>?, Map<String, String>,
-          String>
-      get headers => $composableBuilder(
-          column: $table.headers,
-          builder: (column) => i0.ColumnWithTypeConverterFilters(column));
+  i0.ColumnWithTypeConverterFilters<
+    Map<String, String>?,
+    Map<String, String>,
+    String
+  >
+  get headers => $composableBuilder(
+    column: $table.headers,
+    builder: (column) => i0.ColumnWithTypeConverterFilters(column),
+  );
 }
 
 class $$IdentitiesTableTableOrderingComposer
@@ -60,16 +69,24 @@ class $$IdentitiesTableTableOrderingComposer
     super.$removeJoinBuilderFromRootComposer,
   });
   i0.ColumnOrderings<int> get id => $composableBuilder(
-      column: $table.id, builder: (column) => i0.ColumnOrderings(column));
+    column: $table.id,
+    builder: (column) => i0.ColumnOrderings(column),
+  );
 
   i0.ColumnOrderings<String> get host => $composableBuilder(
-      column: $table.host, builder: (column) => i0.ColumnOrderings(column));
+    column: $table.host,
+    builder: (column) => i0.ColumnOrderings(column),
+  );
 
   i0.ColumnOrderings<String> get username => $composableBuilder(
-      column: $table.username, builder: (column) => i0.ColumnOrderings(column));
+    column: $table.username,
+    builder: (column) => i0.ColumnOrderings(column),
+  );
 
   i0.ColumnOrderings<String> get headers => $composableBuilder(
-      column: $table.headers, builder: (column) => i0.ColumnOrderings(column));
+    column: $table.headers,
+    builder: (column) => i0.ColumnOrderings(column),
+  );
 }
 
 class $$IdentitiesTableTableAnnotationComposer
@@ -91,29 +108,37 @@ class $$IdentitiesTableTableAnnotationComposer
       $composableBuilder(column: $table.username, builder: (column) => column);
 
   i0.GeneratedColumnWithTypeConverter<Map<String, String>?, String>
-      get headers => $composableBuilder(
-          column: $table.headers, builder: (column) => column);
+  get headers =>
+      $composableBuilder(column: $table.headers, builder: (column) => column);
 }
 
-class $$IdentitiesTableTableTableManager extends i0.RootTableManager<
-    i0.GeneratedDatabase,
-    i2.$IdentitiesTableTable,
-    i4.Identity,
-    i2.$$IdentitiesTableTableFilterComposer,
-    i2.$$IdentitiesTableTableOrderingComposer,
-    i2.$$IdentitiesTableTableAnnotationComposer,
-    $$IdentitiesTableTableCreateCompanionBuilder,
-    $$IdentitiesTableTableUpdateCompanionBuilder,
-    (
-      i4.Identity,
-      i0.BaseReferences<i0.GeneratedDatabase, i2.$IdentitiesTableTable,
-          i4.Identity>
-    ),
-    i4.Identity,
-    i0.PrefetchHooks Function()> {
+class $$IdentitiesTableTableTableManager
+    extends
+        i0.RootTableManager<
+          i0.GeneratedDatabase,
+          i2.$IdentitiesTableTable,
+          i4.Identity,
+          i2.$$IdentitiesTableTableFilterComposer,
+          i2.$$IdentitiesTableTableOrderingComposer,
+          i2.$$IdentitiesTableTableAnnotationComposer,
+          $$IdentitiesTableTableCreateCompanionBuilder,
+          $$IdentitiesTableTableUpdateCompanionBuilder,
+          (
+            i4.Identity,
+            i0.BaseReferences<
+              i0.GeneratedDatabase,
+              i2.$IdentitiesTableTable,
+              i4.Identity
+            >,
+          ),
+          i4.Identity,
+          i0.PrefetchHooks Function()
+        > {
   $$IdentitiesTableTableTableManager(
-      i0.GeneratedDatabase db, i2.$IdentitiesTableTable table)
-      : super(i0.TableManagerState(
+    i0.GeneratedDatabase db,
+    i2.$IdentitiesTableTable table,
+  ) : super(
+        i0.TableManagerState(
           db: db,
           table: table,
           createFilteringComposer: () =>
@@ -122,57 +147,65 @@ class $$IdentitiesTableTableTableManager extends i0.RootTableManager<
               i2.$$IdentitiesTableTableOrderingComposer($db: db, $table: table),
           createComputedFieldComposer: () => i2
               .$$IdentitiesTableTableAnnotationComposer($db: db, $table: table),
-          updateCompanionCallback: ({
-            i0.Value<int> id = const i0.Value.absent(),
-            i0.Value<String> host = const i0.Value.absent(),
-            i0.Value<String?> username = const i0.Value.absent(),
-            i0.Value<Map<String, String>?> headers = const i0.Value.absent(),
-          }) =>
-              i2.IdentityCompanion(
-            id: id,
-            host: host,
-            username: username,
-            headers: headers,
-          ),
-          createCompanionCallback: ({
-            i0.Value<int> id = const i0.Value.absent(),
-            required String host,
-            required String? username,
-            i0.Value<Map<String, String>?> headers = const i0.Value.absent(),
-          }) =>
-              i2.IdentityCompanion.insert(
-            id: id,
-            host: host,
-            username: username,
-            headers: headers,
-          ),
+          updateCompanionCallback:
+              ({
+                i0.Value<int> id = const i0.Value.absent(),
+                i0.Value<String> host = const i0.Value.absent(),
+                i0.Value<String?> username = const i0.Value.absent(),
+                i0.Value<Map<String, String>?> headers =
+                    const i0.Value.absent(),
+              }) => i2.IdentityCompanion(
+                id: id,
+                host: host,
+                username: username,
+                headers: headers,
+              ),
+          createCompanionCallback:
+              ({
+                i0.Value<int> id = const i0.Value.absent(),
+                required String host,
+                required String? username,
+                i0.Value<Map<String, String>?> headers =
+                    const i0.Value.absent(),
+              }) => i2.IdentityCompanion.insert(
+                id: id,
+                host: host,
+                username: username,
+                headers: headers,
+              ),
           withReferenceMapper: (p0) => p0
               .map((e) => (e.readTable(table), i0.BaseReferences(db, table, e)))
               .toList(),
           prefetchHooksCallback: null,
-        ));
+        ),
+      );
 }
 
-typedef $$IdentitiesTableTableProcessedTableManager = i0.ProcessedTableManager<
-    i0.GeneratedDatabase,
-    i2.$IdentitiesTableTable,
-    i4.Identity,
-    i2.$$IdentitiesTableTableFilterComposer,
-    i2.$$IdentitiesTableTableOrderingComposer,
-    i2.$$IdentitiesTableTableAnnotationComposer,
-    $$IdentitiesTableTableCreateCompanionBuilder,
-    $$IdentitiesTableTableUpdateCompanionBuilder,
-    (
+typedef $$IdentitiesTableTableProcessedTableManager =
+    i0.ProcessedTableManager<
+      i0.GeneratedDatabase,
+      i2.$IdentitiesTableTable,
       i4.Identity,
-      i0.BaseReferences<i0.GeneratedDatabase, i2.$IdentitiesTableTable,
-          i4.Identity>
-    ),
-    i4.Identity,
-    i0.PrefetchHooks Function()>;
+      i2.$$IdentitiesTableTableFilterComposer,
+      i2.$$IdentitiesTableTableOrderingComposer,
+      i2.$$IdentitiesTableTableAnnotationComposer,
+      $$IdentitiesTableTableCreateCompanionBuilder,
+      $$IdentitiesTableTableUpdateCompanionBuilder,
+      (
+        i4.Identity,
+        i0.BaseReferences<
+          i0.GeneratedDatabase,
+          i2.$IdentitiesTableTable,
+          i4.Identity
+        >,
+      ),
+      i4.Identity,
+      i0.PrefetchHooks Function()
+    >;
 mixin $IdentityRepositoryMixin on i0.DatabaseAccessor<i1.GeneratedDatabase> {
-  i2.$IdentitiesTableTable get identitiesTable =>
-      i3.ReadDatabaseContainer(attachedDatabase)
-          .resultSet<i2.$IdentitiesTableTable>('identities_table');
+  i2.$IdentitiesTableTable get identitiesTable => i3.ReadDatabaseContainer(
+    attachedDatabase,
+  ).resultSet<i2.$IdentitiesTableTable>('identities_table');
 }
 
 class $IdentitiesTableTable extends i5.IdentitiesTable
@@ -184,29 +217,48 @@ class $IdentitiesTableTable extends i5.IdentitiesTable
   static const i0.VerificationMeta _idMeta = const i0.VerificationMeta('id');
   @override
   late final i0.GeneratedColumn<int> id = i0.GeneratedColumn<int>(
-      'id', aliasedName, false,
-      hasAutoIncrement: true,
-      type: i0.DriftSqlType.int,
-      requiredDuringInsert: false,
-      defaultConstraints:
-          i0.GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
-  static const i0.VerificationMeta _hostMeta =
-      const i0.VerificationMeta('host');
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: i0.DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: i0.GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const i0.VerificationMeta _hostMeta = const i0.VerificationMeta(
+    'host',
+  );
   @override
   late final i0.GeneratedColumn<String> host = i0.GeneratedColumn<String>(
-      'host', aliasedName, false,
-      type: i0.DriftSqlType.string, requiredDuringInsert: true);
+    'host',
+    aliasedName,
+    false,
+    type: i0.DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
   @override
   late final i0.GeneratedColumnWithTypeConverter<String?, String> username =
-      i0.GeneratedColumn<String>('username', aliasedName, false,
-              type: i0.DriftSqlType.string, requiredDuringInsert: true)
-          .withConverter<String?>(i2.$IdentitiesTableTable.$converterusername);
+      i0.GeneratedColumn<String>(
+        'username',
+        aliasedName,
+        false,
+        type: i0.DriftSqlType.string,
+        requiredDuringInsert: true,
+      ).withConverter<String?>(i2.$IdentitiesTableTable.$converterusername);
   @override
   late final i0.GeneratedColumnWithTypeConverter<Map<String, String>?, String>
-      headers = i0.GeneratedColumn<String>('headers', aliasedName, true,
-              type: i0.DriftSqlType.string, requiredDuringInsert: false)
-          .withConverter<Map<String, String>?>(
-              i2.$IdentitiesTableTable.$converterheadersn);
+  headers =
+      i0.GeneratedColumn<String>(
+        'headers',
+        aliasedName,
+        true,
+        type: i0.DriftSqlType.string,
+        requiredDuringInsert: false,
+      ).withConverter<Map<String, String>?>(
+        i2.$IdentitiesTableTable.$converterheadersn,
+      );
   @override
   List<i0.GeneratedColumn> get $columns => [id, host, username, headers];
   @override
@@ -215,8 +267,10 @@ class $IdentitiesTableTable extends i5.IdentitiesTable
   String get actualTableName => $name;
   static const String $name = 'identities_table';
   @override
-  i0.VerificationContext validateIntegrity(i0.Insertable<i4.Identity> instance,
-      {bool isInserting = false}) {
+  i0.VerificationContext validateIntegrity(
+    i0.Insertable<i4.Identity> instance, {
+    bool isInserting = false,
+  }) {
     final context = i0.VerificationContext();
     final data = instance.toColumns(true);
     if (data.containsKey('id')) {
@@ -224,7 +278,9 @@ class $IdentitiesTableTable extends i5.IdentitiesTable
     }
     if (data.containsKey('host')) {
       context.handle(
-          _hostMeta, host.isAcceptableOrUnknown(data['host']!, _hostMeta));
+        _hostMeta,
+        host.isAcceptableOrUnknown(data['host']!, _hostMeta),
+      );
     } else if (isInserting) {
       context.missing(_hostMeta);
     }
@@ -235,22 +291,32 @@ class $IdentitiesTableTable extends i5.IdentitiesTable
   Set<i0.GeneratedColumn> get $primaryKey => {id};
   @override
   List<Set<i0.GeneratedColumn>> get uniqueKeys => [
-        {host, username},
-      ];
+    {host, username},
+  ];
   @override
   i4.Identity map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return i4.Identity(
-      id: attachedDatabase.typeMapping
-          .read(i0.DriftSqlType.int, data['${effectivePrefix}id'])!,
-      host: attachedDatabase.typeMapping
-          .read(i0.DriftSqlType.string, data['${effectivePrefix}host'])!,
+      id: attachedDatabase.typeMapping.read(
+        i0.DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      host: attachedDatabase.typeMapping.read(
+        i0.DriftSqlType.string,
+        data['${effectivePrefix}host'],
+      )!,
       username: i2.$IdentitiesTableTable.$converterusername.fromSql(
-          attachedDatabase.typeMapping.read(
-              i0.DriftSqlType.string, data['${effectivePrefix}username'])!),
+        attachedDatabase.typeMapping.read(
+          i0.DriftSqlType.string,
+          data['${effectivePrefix}username'],
+        )!,
+      ),
       headers: i2.$IdentitiesTableTable.$converterheadersn.fromSql(
-          attachedDatabase.typeMapping
-              .read(i0.DriftSqlType.string, data['${effectivePrefix}headers'])),
+        attachedDatabase.typeMapping.read(
+          i0.DriftSqlType.string,
+          data['${effectivePrefix}headers'],
+        ),
+      ),
     );
   }
 
@@ -283,8 +349,8 @@ class IdentityCompanion extends i0.UpdateCompanion<i4.Identity> {
     required String host,
     required String? username,
     this.headers = const i0.Value.absent(),
-  })  : host = i0.Value(host),
-        username = i0.Value(username);
+  }) : host = i0.Value(host),
+       username = i0.Value(username);
   static i0.Insertable<i4.Identity> custom({
     i0.Expression<int>? id,
     i0.Expression<String>? host,
@@ -299,11 +365,12 @@ class IdentityCompanion extends i0.UpdateCompanion<i4.Identity> {
     });
   }
 
-  i2.IdentityCompanion copyWith(
-      {i0.Value<int>? id,
-      i0.Value<String>? host,
-      i0.Value<String?>? username,
-      i0.Value<Map<String, String>?>? headers}) {
+  i2.IdentityCompanion copyWith({
+    i0.Value<int>? id,
+    i0.Value<String>? host,
+    i0.Value<String?>? username,
+    i0.Value<Map<String, String>?>? headers,
+  }) {
     return i2.IdentityCompanion(
       id: id ?? this.id,
       host: host ?? this.host,
@@ -323,11 +390,13 @@ class IdentityCompanion extends i0.UpdateCompanion<i4.Identity> {
     }
     if (username.present) {
       map['username'] = i0.Variable<String>(
-          i2.$IdentitiesTableTable.$converterusername.toSql(username.value));
+        i2.$IdentitiesTableTable.$converterusername.toSql(username.value),
+      );
     }
     if (headers.present) {
       map['headers'] = i0.Variable<String>(
-          i2.$IdentitiesTableTable.$converterheadersn.toSql(headers.value));
+        i2.$IdentitiesTableTable.$converterheadersn.toSql(headers.value),
+      );
     }
     return map;
   }

@@ -11,17 +11,16 @@ import 'package:media_scanner/media_scanner.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 
-Future<String?> getDefaultDownloadPath() async => switch (Platform
-    .operatingSystem) {
-  'android' =>
-    Uri(
-      scheme: 'content',
-      host: 'com.android.externalstorage.documents',
-      path: '/tree/primary${Uri.encodeComponent(':Pictures')}',
-    ).toString(),
-  'ios' => null,
-  _ => await getDownloadsDirectory().then((value) => value?.path),
-};
+Future<String?> getDefaultDownloadPath() async =>
+    switch (Platform.operatingSystem) {
+      'android' => Uri(
+        scheme: 'content',
+        host: 'com.android.externalstorage.documents',
+        path: '/tree/primary${Uri.encodeComponent(':Pictures')}',
+      ).toString(),
+      'ios' => null,
+      _ => await getDownloadsDirectory().then((value) => value?.path),
+    };
 
 extension PostDownloading on Post {
   Future<void> download({

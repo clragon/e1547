@@ -9,8 +9,8 @@ class PostDetailFloatingActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    PostEditingController editingController =
-        context.watch<PostEditingController>();
+    PostEditingController editingController = context
+        .watch<PostEditingController>();
 
     Future<void> editPost() async {
       ScaffoldMessengerState messenger = ScaffoldMessenger.of(context);
@@ -57,17 +57,15 @@ class PostDetailFloatingActionButton extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       backgroundColor: Theme.of(context).cardColor,
       foregroundColor: Theme.of(context).iconTheme.color,
-      onPressed:
-          editingController.editing
-              ? editingController.action ?? submitEdit
-              : () {},
-      child:
-          editingController.editing
-              ? Icon(editingController.isShown ? Icons.add : Icons.check)
-              : Padding(
-                padding: const EdgeInsets.only(left: 2),
-                child: FavoriteButton(post: post),
-              ),
+      onPressed: editingController.editing
+          ? editingController.action ?? submitEdit
+          : () {},
+      child: editingController.editing
+          ? Icon(editingController.isShown ? Icons.add : Icons.check)
+          : Padding(
+              padding: const EdgeInsets.only(left: 2),
+              child: FavoriteButton(post: post),
+            ),
     );
   }
 }

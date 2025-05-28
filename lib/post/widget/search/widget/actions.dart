@@ -18,173 +18,151 @@ class TagListActions extends StatelessWidget {
       return const SizedBox.shrink();
     }
     return Consumer<Client>(
-      builder:
-          (context, client, child) => SubStream<Follow?>(
-            create: () => client.follows.getByTags(tags: tag).streamed,
-            keys: [client, tag],
-            builder:
-                (context, snapshot) => ValueListenableBuilder(
-                  valueListenable: client.traits,
-                  builder: (context, traits, child) {
-                    if ([
-                      ConnectionState.none,
-                      ConnectionState.waiting,
-                    ].contains(snapshot.connectionState)) {
-                      return const AnimatedSwitcher(
-                        duration: defaultAnimationDuration,
-                        child: SizedBox.shrink(),
-                      );
-                    }
+      builder: (context, client, child) => SubStream<Follow?>(
+        create: () => client.follows.getByTags(tags: tag).streamed,
+        keys: [client, tag],
+        builder: (context, snapshot) => ValueListenableBuilder(
+          valueListenable: client.traits,
+          builder: (context, traits, child) {
+            if ([
+              ConnectionState.none,
+              ConnectionState.waiting,
+            ].contains(snapshot.connectionState)) {
+              return const AnimatedSwitcher(
+                duration: defaultAnimationDuration,
+                child: SizedBox.shrink(),
+              );
+            }
 
-                    Follow? follow = snapshot.data;
-                    bool hasFollow = follow != null;
+            Follow? follow = snapshot.data;
+            bool hasFollow = follow != null;
 
-                    bool following = [
-                      FollowType.update,
-                      FollowType.notify,
-                    ].contains(follow?.type);
+            bool following = [
+              FollowType.update,
+              FollowType.notify,
+            ].contains(follow?.type);
 
-                    bool notifying = follow?.type == FollowType.notify;
-                    bool bookmarked = follow?.type == FollowType.bookmark;
-                    bool denied = traits.denylist.contains(tag);
+            bool notifying = follow?.type == FollowType.notify;
+            bool bookmarked = follow?.type == FollowType.bookmark;
+            bool denied = traits.denylist.contains(tag);
 
-                    VoidCallback followBookmarkToggle(FollowType type) {
-                      return () {
-                        if (hasFollow) {
-                          if (follow.type == type) {
-                            client.follows.delete(follow.id);
-                          }
-                          if (follow.type == FollowType.notify &&
-                              type == FollowType.update) {
-                            client.follows.delete(follow.id);
-                          } else {
-                            client.follows.update(id: follow.id, type: type);
-                          }
-                        } else {
-                          client.follows.create(tags: tag, type: type);
-                          if (denied) {
-                            client.traits.value = traits.copyWith(
-                              denylist: traits.denylist..remove(tag),
-                            );
-                          }
-                        }
-                      };
-                    }
-
-                    return AnimatedSwitcher(
-                      duration: defaultAnimationDuration,
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          CrossFade(
-                            showChild: !denied,
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                ActionButton(
-                                  icon:
-                                      following
-                                          ? const Icon(
-                                            Icons.person_remove_alt_1,
-                                          )
-                                          : const Icon(Icons.person_add_alt_1),
-                                  label:
-                                      following
-                                          ? const Text('Unfollow')
-                                          : const Text('Follow'),
-                                  onTap: followBookmarkToggle(
-                                    FollowType.update,
-                                  ),
-                                ),
-                                CrossFade(
-                                  showChild: following,
-                                  child: ActionButton(
-                                    icon:
-                                        notifying
-                                            ? const Icon(
-                                              Icons.notifications_active,
-                                            )
-                                            : const Icon(
-                                              Icons.notifications_none,
-                                            ),
-                                    label:
-                                        notifying
-                                            ? const Text('Mute')
-                                            : const Text('Notify'),
-                                    onTap: () {
-                                      if (notifying) {
-                                        client.follows.update(
-                                          id: follow!.id,
-                                          type: FollowType.update,
-                                        );
-                                      } else {
-                                        client.follows.update(
-                                          id: follow!.id,
-                                          type: FollowType.notify,
-                                        );
-                                      }
-                                    },
-                                  ),
-                                ),
-                                ActionButton(
-                                  icon:
-                                      bookmarked
-                                          ? const Icon(Icons.turned_in)
-                                          : const Icon(Icons.turned_in_not),
-                                  label:
-                                      bookmarked
-                                          ? const Text('Unbookmark')
-                                          : const Text('Bookmark'),
-                                  onTap: followBookmarkToggle(
-                                    FollowType.bookmark,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          CrossFade(
-                            showChild: !hasFollow,
-                            child: ActionButton(
-                              icon: CrossFade(
-                                showChild: denied,
-                                secondChild: const Icon(Icons.block),
-                                child: const Icon(Icons.check),
-                              ),
-                              label:
-                                  denied
-                                      ? const Text('Unblock')
-                                      : const Text('Block'),
-                              onTap: () {
-                                if (denied) {
-                                  client.accounts.push(
-                                    traits: traits.copyWith(
-                                      denylist:
-                                          traits.denylist
-                                              .whereNot(
-                                                (element) => element == tag,
-                                              )
-                                              .toList(),
-                                    ),
-                                  );
-                                } else {
-                                  if (hasFollow) {
-                                    client.follows.delete(follow.id);
-                                  }
-                                  client.accounts.push(
-                                    traits: traits.copyWith(
-                                      denylist: [...traits.denylist, tag],
-                                    ),
-                                  );
-                                }
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
+            VoidCallback followBookmarkToggle(FollowType type) {
+              return () {
+                if (hasFollow) {
+                  if (follow.type == type) {
+                    client.follows.delete(follow.id);
+                  }
+                  if (follow.type == FollowType.notify &&
+                      type == FollowType.update) {
+                    client.follows.delete(follow.id);
+                  } else {
+                    client.follows.update(id: follow.id, type: type);
+                  }
+                } else {
+                  client.follows.create(tags: tag, type: type);
+                  if (denied) {
+                    client.traits.value = traits.copyWith(
+                      denylist: traits.denylist..remove(tag),
                     );
-                  },
-                ),
-          ),
+                  }
+                }
+              };
+            }
+
+            return AnimatedSwitcher(
+              duration: defaultAnimationDuration,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  CrossFade(
+                    showChild: !denied,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        ActionButton(
+                          icon: following
+                              ? const Icon(Icons.person_remove_alt_1)
+                              : const Icon(Icons.person_add_alt_1),
+                          label: following
+                              ? const Text('Unfollow')
+                              : const Text('Follow'),
+                          onTap: followBookmarkToggle(FollowType.update),
+                        ),
+                        CrossFade(
+                          showChild: following,
+                          child: ActionButton(
+                            icon: notifying
+                                ? const Icon(Icons.notifications_active)
+                                : const Icon(Icons.notifications_none),
+                            label: notifying
+                                ? const Text('Mute')
+                                : const Text('Notify'),
+                            onTap: () {
+                              if (notifying) {
+                                client.follows.update(
+                                  id: follow!.id,
+                                  type: FollowType.update,
+                                );
+                              } else {
+                                client.follows.update(
+                                  id: follow!.id,
+                                  type: FollowType.notify,
+                                );
+                              }
+                            },
+                          ),
+                        ),
+                        ActionButton(
+                          icon: bookmarked
+                              ? const Icon(Icons.turned_in)
+                              : const Icon(Icons.turned_in_not),
+                          label: bookmarked
+                              ? const Text('Unbookmark')
+                              : const Text('Bookmark'),
+                          onTap: followBookmarkToggle(FollowType.bookmark),
+                        ),
+                      ],
+                    ),
+                  ),
+                  CrossFade(
+                    showChild: !hasFollow,
+                    child: ActionButton(
+                      icon: CrossFade(
+                        showChild: denied,
+                        secondChild: const Icon(Icons.block),
+                        child: const Icon(Icons.check),
+                      ),
+                      label: denied
+                          ? const Text('Unblock')
+                          : const Text('Block'),
+                      onTap: () {
+                        if (denied) {
+                          client.accounts.push(
+                            traits: traits.copyWith(
+                              denylist: traits.denylist
+                                  .whereNot((element) => element == tag)
+                                  .toList(),
+                            ),
+                          );
+                        } else {
+                          if (hasFollow) {
+                            client.follows.delete(follow.id);
+                          }
+                          client.accounts.push(
+                            traits: traits.copyWith(
+                              denylist: [...traits.denylist, tag],
+                            ),
+                          );
+                        }
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
+      ),
     );
   }
 }
@@ -207,8 +185,9 @@ class RemoveTagAction extends StatelessWidget {
       onTap: () {
         Navigator.of(context).maybePop();
         TagMap result = TagMap(controller.query);
-        result['tags'] =
-            (TagMap.parse(result['tags'] ?? '')..remove(tag)).toString();
+        result['tags'] = (TagMap.parse(
+          result['tags'] ?? '',
+        )..remove(tag)).toString();
         controller.query = result;
       },
     );
@@ -229,8 +208,9 @@ class AddTagAction extends StatelessWidget {
       onTap: () {
         Navigator.of(context).maybePop();
         TagMap result = TagMap(controller.query);
-        result['tags'] =
-            (TagMap.parse(result['tags'] ?? '')..add(tag)).toString();
+        result['tags'] = (TagMap.parse(
+          result['tags'] ?? '',
+        )..add(tag)).toString();
         controller.query = result;
       },
     );
@@ -255,8 +235,9 @@ class SubtractTagAction extends StatelessWidget {
       onTap: () {
         Navigator.of(context).maybePop();
         QueryMap result = Map.from(controller.query);
-        result['tags'] =
-            (TagMap.parse(result['tags'] ?? '')..add('-$tag')).toString();
+        result['tags'] = (TagMap.parse(
+          result['tags'] ?? '',
+        )..add('-$tag')).toString();
         controller.query = result;
       },
     );

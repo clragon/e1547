@@ -12,7 +12,8 @@ part of 'wiki.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
+  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
+);
 
 Wiki _$WikiFromJson(Map<String, dynamic> json) {
   return _Wiki.fromJson(json);
@@ -42,14 +43,15 @@ abstract class $WikiCopyWith<$Res> {
   factory $WikiCopyWith(Wiki value, $Res Function(Wiki) then) =
       _$WikiCopyWithImpl<$Res, Wiki>;
   @useResult
-  $Res call(
-      {int id,
-      String title,
-      String body,
-      DateTime createdAt,
-      DateTime? updatedAt,
-      List<String>? otherNames,
-      bool? isLocked});
+  $Res call({
+    int id,
+    String title,
+    String body,
+    DateTime createdAt,
+    DateTime? updatedAt,
+    List<String>? otherNames,
+    bool? isLocked,
+  });
 }
 
 /// @nodoc
@@ -75,54 +77,59 @@ class _$WikiCopyWithImpl<$Res, $Val extends Wiki>
     Object? otherNames = freezed,
     Object? isLocked = freezed,
   }) {
-    return _then(_value.copyWith(
-      id: null == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as int,
-      title: null == title
-          ? _value.title
-          : title // ignore: cast_nullable_to_non_nullable
-              as String,
-      body: null == body
-          ? _value.body
-          : body // ignore: cast_nullable_to_non_nullable
-              as String,
-      createdAt: null == createdAt
-          ? _value.createdAt
-          : createdAt // ignore: cast_nullable_to_non_nullable
-              as DateTime,
-      updatedAt: freezed == updatedAt
-          ? _value.updatedAt
-          : updatedAt // ignore: cast_nullable_to_non_nullable
-              as DateTime?,
-      otherNames: freezed == otherNames
-          ? _value.otherNames
-          : otherNames // ignore: cast_nullable_to_non_nullable
-              as List<String>?,
-      isLocked: freezed == isLocked
-          ? _value.isLocked
-          : isLocked // ignore: cast_nullable_to_non_nullable
-              as bool?,
-    ) as $Val);
+    return _then(
+      _value.copyWith(
+            id: null == id
+                ? _value.id
+                : id // ignore: cast_nullable_to_non_nullable
+                      as int,
+            title: null == title
+                ? _value.title
+                : title // ignore: cast_nullable_to_non_nullable
+                      as String,
+            body: null == body
+                ? _value.body
+                : body // ignore: cast_nullable_to_non_nullable
+                      as String,
+            createdAt: null == createdAt
+                ? _value.createdAt
+                : createdAt // ignore: cast_nullable_to_non_nullable
+                      as DateTime,
+            updatedAt: freezed == updatedAt
+                ? _value.updatedAt
+                : updatedAt // ignore: cast_nullable_to_non_nullable
+                      as DateTime?,
+            otherNames: freezed == otherNames
+                ? _value.otherNames
+                : otherNames // ignore: cast_nullable_to_non_nullable
+                      as List<String>?,
+            isLocked: freezed == isLocked
+                ? _value.isLocked
+                : isLocked // ignore: cast_nullable_to_non_nullable
+                      as bool?,
+          )
+          as $Val,
+    );
   }
 }
 
 /// @nodoc
 abstract class _$$WikiImplCopyWith<$Res> implements $WikiCopyWith<$Res> {
   factory _$$WikiImplCopyWith(
-          _$WikiImpl value, $Res Function(_$WikiImpl) then) =
-      __$$WikiImplCopyWithImpl<$Res>;
+    _$WikiImpl value,
+    $Res Function(_$WikiImpl) then,
+  ) = __$$WikiImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call(
-      {int id,
-      String title,
-      String body,
-      DateTime createdAt,
-      DateTime? updatedAt,
-      List<String>? otherNames,
-      bool? isLocked});
+  $Res call({
+    int id,
+    String title,
+    String body,
+    DateTime createdAt,
+    DateTime? updatedAt,
+    List<String>? otherNames,
+    bool? isLocked,
+  });
 }
 
 /// @nodoc
@@ -130,7 +137,7 @@ class __$$WikiImplCopyWithImpl<$Res>
     extends _$WikiCopyWithImpl<$Res, _$WikiImpl>
     implements _$$WikiImplCopyWith<$Res> {
   __$$WikiImplCopyWithImpl(_$WikiImpl _value, $Res Function(_$WikiImpl) _then)
-      : super(_value, _then);
+    : super(_value, _then);
 
   /// Create a copy of Wiki
   /// with the given fields replaced by the non-null parameter values.
@@ -145,51 +152,53 @@ class __$$WikiImplCopyWithImpl<$Res>
     Object? otherNames = freezed,
     Object? isLocked = freezed,
   }) {
-    return _then(_$WikiImpl(
-      id: null == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as int,
-      title: null == title
-          ? _value.title
-          : title // ignore: cast_nullable_to_non_nullable
-              as String,
-      body: null == body
-          ? _value.body
-          : body // ignore: cast_nullable_to_non_nullable
-              as String,
-      createdAt: null == createdAt
-          ? _value.createdAt
-          : createdAt // ignore: cast_nullable_to_non_nullable
-              as DateTime,
-      updatedAt: freezed == updatedAt
-          ? _value.updatedAt
-          : updatedAt // ignore: cast_nullable_to_non_nullable
-              as DateTime?,
-      otherNames: freezed == otherNames
-          ? _value._otherNames
-          : otherNames // ignore: cast_nullable_to_non_nullable
-              as List<String>?,
-      isLocked: freezed == isLocked
-          ? _value.isLocked
-          : isLocked // ignore: cast_nullable_to_non_nullable
-              as bool?,
-    ));
+    return _then(
+      _$WikiImpl(
+        id: null == id
+            ? _value.id
+            : id // ignore: cast_nullable_to_non_nullable
+                  as int,
+        title: null == title
+            ? _value.title
+            : title // ignore: cast_nullable_to_non_nullable
+                  as String,
+        body: null == body
+            ? _value.body
+            : body // ignore: cast_nullable_to_non_nullable
+                  as String,
+        createdAt: null == createdAt
+            ? _value.createdAt
+            : createdAt // ignore: cast_nullable_to_non_nullable
+                  as DateTime,
+        updatedAt: freezed == updatedAt
+            ? _value.updatedAt
+            : updatedAt // ignore: cast_nullable_to_non_nullable
+                  as DateTime?,
+        otherNames: freezed == otherNames
+            ? _value._otherNames
+            : otherNames // ignore: cast_nullable_to_non_nullable
+                  as List<String>?,
+        isLocked: freezed == isLocked
+            ? _value.isLocked
+            : isLocked // ignore: cast_nullable_to_non_nullable
+                  as bool?,
+      ),
+    );
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$WikiImpl implements _Wiki {
-  const _$WikiImpl(
-      {required this.id,
-      required this.title,
-      required this.body,
-      required this.createdAt,
-      this.updatedAt,
-      final List<String>? otherNames,
-      this.isLocked})
-      : _otherNames = otherNames;
+  const _$WikiImpl({
+    required this.id,
+    required this.title,
+    required this.body,
+    required this.createdAt,
+    this.updatedAt,
+    final List<String>? otherNames,
+    this.isLocked,
+  }) : _otherNames = otherNames;
 
   factory _$WikiImpl.fromJson(Map<String, dynamic> json) =>
       _$$WikiImplFromJson(json);
@@ -234,16 +243,26 @@ class _$WikiImpl implements _Wiki {
                 other.createdAt == createdAt) &&
             (identical(other.updatedAt, updatedAt) ||
                 other.updatedAt == updatedAt) &&
-            const DeepCollectionEquality()
-                .equals(other._otherNames, _otherNames) &&
+            const DeepCollectionEquality().equals(
+              other._otherNames,
+              _otherNames,
+            ) &&
             (identical(other.isLocked, isLocked) ||
                 other.isLocked == isLocked));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, id, title, body, createdAt,
-      updatedAt, const DeepCollectionEquality().hash(_otherNames), isLocked);
+  int get hashCode => Object.hash(
+    runtimeType,
+    id,
+    title,
+    body,
+    createdAt,
+    updatedAt,
+    const DeepCollectionEquality().hash(_otherNames),
+    isLocked,
+  );
 
   /// Create a copy of Wiki
   /// with the given fields replaced by the non-null parameter values.
@@ -255,21 +274,20 @@ class _$WikiImpl implements _Wiki {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$WikiImplToJson(
-      this,
-    );
+    return _$$WikiImplToJson(this);
   }
 }
 
 abstract class _Wiki implements Wiki {
-  const factory _Wiki(
-      {required final int id,
-      required final String title,
-      required final String body,
-      required final DateTime createdAt,
-      final DateTime? updatedAt,
-      final List<String>? otherNames,
-      final bool? isLocked}) = _$WikiImpl;
+  const factory _Wiki({
+    required final int id,
+    required final String title,
+    required final String body,
+    required final DateTime createdAt,
+    final DateTime? updatedAt,
+    final List<String>? otherNames,
+    final bool? isLocked,
+  }) = _$WikiImpl;
 
   factory _Wiki.fromJson(Map<String, dynamic> json) = _$WikiImpl.fromJson;
 

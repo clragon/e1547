@@ -42,9 +42,9 @@ class IdentityRepository extends DatabaseAccessor<GeneratedDatabase>
     )..addColumns([count])).map((row) => row.read(count)!).watchSingle().future;
   }
 
-  StreamFuture<Identity?> getOrNull(int id) =>
-      (select(identitiesTable)
-        ..where((tbl) => tbl.id.equals(id))).watchSingleOrNull().future;
+  StreamFuture<Identity?> getOrNull(int id) => (select(
+    identitiesTable,
+  )..where((tbl) => tbl.id.equals(id))).watchSingleOrNull().future;
 
   StreamFuture<Identity> get(int id) =>
       getOrNull(id).stream.map((e) => e!).future;
@@ -55,10 +55,11 @@ class IdentityRepository extends DatabaseAccessor<GeneratedDatabase>
     int? limit,
     int? offset,
   }) {
-    final selectable = select(identitiesTable)..orderBy([
-      (t) => OrderingTerm(expression: t.host),
-      (t) => OrderingTerm(expression: t.username),
-    ]);
+    final selectable = select(identitiesTable)
+      ..orderBy([
+        (t) => OrderingTerm(expression: t.host),
+        (t) => OrderingTerm(expression: t.username),
+      ]);
     if (nameRegex != null) {
       selectable.where(
         (tbl) => tbl.username.regexp(nameRegex, caseSensitive: false),
@@ -115,13 +116,13 @@ class IdentityRepository extends DatabaseAccessor<GeneratedDatabase>
   Future<void> remove(Identity item) async =>
       (delete(identitiesTable)..where((tbl) => tbl.id.equals(item.id))).go();
 
-  Future<void> removeAll(List<Identity> items) async =>
-      (delete(identitiesTable)
-        ..where((tbl) => tbl.id.isIn(items.map((e) => e.id)))).go();
+  Future<void> removeAll(List<Identity> items) async => (delete(
+    identitiesTable,
+  )..where((tbl) => tbl.id.isIn(items.map((e) => e.id)))).go();
 
-  Future<void> replace(Identity item) async =>
-      (update(identitiesTable)
-        ..where((tbl) => tbl.id.equals(item.id))).write(item.toInsertable());
+  Future<void> replace(Identity item) async => (update(
+    identitiesTable,
+  )..where((tbl) => tbl.id.equals(item.id))).write(item.toInsertable());
 }
 
 extension IdentityRequestCompanion on IdentityRequest {

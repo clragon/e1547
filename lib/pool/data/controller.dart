@@ -37,12 +37,11 @@ class PoolController extends PageClientDataController<Pool> {
       force: force,
       cancelToken: cancelToken,
     );
-    List<int> ids =
-        pools
-            .map((e) => e.postIds.isNotEmpty ? e.postIds.first : null)
-            .where((e) => e != null)
-            .toList()
-            .cast<int>();
+    List<int> ids = pools
+        .map((e) => e.postIds.isNotEmpty ? e.postIds.first : null)
+        .where((e) => e != null)
+        .toList()
+        .cast<int>();
     await thumbnails.loadIds(ids, force: force);
     return pools;
   }
@@ -51,8 +50,8 @@ class PoolController extends PageClientDataController<Pool> {
 class PoolsProvider extends SubChangeNotifierProvider<Client, PoolController> {
   PoolsProvider({QueryMap? search, super.child, super.builder})
     : super(
-        create:
-            (context, client) => PoolController(client: client, query: search),
+        create: (context, client) =>
+            PoolController(client: client, query: search),
         keys: (context) => [search],
       );
 }

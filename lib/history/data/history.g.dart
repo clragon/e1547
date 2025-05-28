@@ -53,20 +53,21 @@ _$HistoryRequestImpl _$$HistoryRequestImplFromJson(Map<String, dynamic> json) =>
       type: $enumDecode(_$HistoryTypeEnumMap, json['type']),
       title: json['title'] as String?,
       subtitle: json['subtitle'] as String?,
-      thumbnails: (json['thumbnails'] as List<dynamic>?)
+      thumbnails:
+          (json['thumbnails'] as List<dynamic>?)
               ?.map((e) => e as String)
               .toList() ??
           const [],
     );
 
 Map<String, dynamic> _$$HistoryRequestImplToJson(
-        _$HistoryRequestImpl instance) =>
-    <String, dynamic>{
-      'visited_at': instance.visitedAt.toIso8601String(),
-      'link': instance.link,
-      'category': _$HistoryCategoryEnumMap[instance.category]!,
-      'type': _$HistoryTypeEnumMap[instance.type]!,
-      'title': instance.title,
-      'subtitle': instance.subtitle,
-      'thumbnails': instance.thumbnails,
-    };
+  _$HistoryRequestImpl instance,
+) => <String, dynamic>{
+  'visited_at': instance.visitedAt.toIso8601String(),
+  'link': instance.link,
+  'category': _$HistoryCategoryEnumMap[instance.category]!,
+  'type': _$HistoryTypeEnumMap[instance.type]!,
+  'title': instance.title,
+  'subtitle': instance.subtitle,
+  'thumbnails': instance.thumbnails,
+};

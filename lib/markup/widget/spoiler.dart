@@ -43,13 +43,12 @@ class SpoilerController extends ChangeNotifier
   SpoilerInfo Function() _defaultInfo(DTextId id) =>
       () => SpoilerInfo(
         spoilered: true,
-        recognizer:
-            TapGestureRecognizer()
-              ..onTap = () {
-                List<DTextId> spoilers = parents(id);
-                DTextId? top = spoilers.firstWhereOrNull(spoilered);
-                toggle(top ?? id);
-              },
+        recognizer: TapGestureRecognizer()
+          ..onTap = () {
+            List<DTextId> spoilers = parents(id);
+            DTextId? top = spoilers.firstWhereOrNull(spoilered);
+            toggle(top ?? id);
+          },
       );
 
   void _with(SpoilerMap Function(SpoilerMap value) call) {
@@ -71,22 +70,22 @@ class SpoilerController extends ChangeNotifier
 
   /// Unspoilers a text segment.
   void unspoiler(DTextId id) => _with(
-    (value) =>
-        value..update(
-          id,
-          (e) => e.copyWith(spoilered: false),
-          ifAbsent: _defaultInfo(id),
-        ),
+    (value) => value
+      ..update(
+        id,
+        (e) => e.copyWith(spoilered: false),
+        ifAbsent: _defaultInfo(id),
+      ),
   );
 
   /// Restores spoiler on a given text segment.
   void respoiler(DTextId id) => _with(
-    (value) =>
-        value..update(
-          id,
-          (e) => e.copyWith(spoilered: true),
-          ifAbsent: _defaultInfo(id),
-        ),
+    (value) => value
+      ..update(
+        id,
+        (e) => e.copyWith(spoilered: true),
+        ifAbsent: _defaultInfo(id),
+      ),
   );
 
   /// Toggles the spoiler status of a text segment.

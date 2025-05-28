@@ -105,8 +105,9 @@ class LoadingPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    LoadingPageState state =
-        isBuilt ?? true ? LoadingPageState.done : LoadingPageState.loading;
+    LoadingPageState state = isBuilt ?? true
+        ? LoadingPageState.done
+        : LoadingPageState.loading;
     if (isEmpty) {
       if (isLoading) {
         state = LoadingPageState.loading;
@@ -177,14 +178,12 @@ class AsyncLoadingPage<T> extends StatelessWidget {
   Widget build(BuildContext context) {
     return LoadingPage(
       child: (context) => builder(context, snapshot.data as T),
-      loadingBuilder:
-          (context, child) => Scaffold(
-            appBar:
-                title != null
-                    ? AppBar(leading: const CloseButton(), title: title)
-                    : null,
-            body: child(context),
-          ),
+      loadingBuilder: (context, child) => Scaffold(
+        appBar: title != null
+            ? AppBar(leading: const CloseButton(), title: title)
+            : null,
+        body: child(context),
+      ),
       isLoading: snapshot.connectionState != ConnectionState.done,
       isError: snapshot.hasError,
       isEmpty: isEmpty ?? snapshot.connectionState != ConnectionState.done,
@@ -219,16 +218,15 @@ class FutureLoadingPage<T> extends StatelessWidget {
   Widget build(BuildContext context) {
     return FutureBuilder<T>(
       future: future,
-      builder:
-          (context, snapshot) => AsyncLoadingPage(
-            snapshot: snapshot,
-            title: title,
-            isEmpty: isEmpty,
-            isBuilt: isBuilt,
-            onEmpty: onEmpty,
-            onError: onError,
-            builder: builder,
-          ),
+      builder: (context, snapshot) => AsyncLoadingPage(
+        snapshot: snapshot,
+        title: title,
+        isEmpty: isEmpty,
+        isBuilt: isBuilt,
+        onEmpty: onEmpty,
+        onError: onError,
+        builder: builder,
+      ),
     );
   }
 }

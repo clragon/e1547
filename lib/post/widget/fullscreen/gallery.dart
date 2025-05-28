@@ -25,36 +25,33 @@ class PostFullscreenGallery extends StatelessWidget {
     return SubDefault<PageController>(
       value: pageController,
       create: () => PageController(initialPage: initialPage ?? 0),
-      builder:
-          (context, pageController) => ScaffoldFrame(
-            child: ChangeNotifierProvider.value(
-              value: controller,
-              child: Consumer<PostController>(
-                builder:
-                    (context, controller, child) => GalleryButtons(
-                      controller: pageController,
-                      child: PageView.builder(
-                        itemCount: controller.items?.length ?? 0,
-                        controller: pageController,
-                        itemBuilder:
-                            (context, index) =>
-                                PostFullscreen(post: controller.items![index]),
-                        onPageChanged: (index) {
-                          onPageChanged?.call(index);
-                          if (controller.items != null) {
-                            preloadPostImages(
-                              context: context,
-                              index: index,
-                              posts: controller.items!,
-                              size: PostImageSize.file,
-                            );
-                          }
-                        },
-                      ),
-                    ),
+      builder: (context, pageController) => ScaffoldFrame(
+        child: ChangeNotifierProvider.value(
+          value: controller,
+          child: Consumer<PostController>(
+            builder: (context, controller, child) => GalleryButtons(
+              controller: pageController,
+              child: PageView.builder(
+                itemCount: controller.items?.length ?? 0,
+                controller: pageController,
+                itemBuilder: (context, index) =>
+                    PostFullscreen(post: controller.items![index]),
+                onPageChanged: (index) {
+                  onPageChanged?.call(index);
+                  if (controller.items != null) {
+                    preloadPostImages(
+                      context: context,
+                      index: index,
+                      posts: controller.items!,
+                      size: PostImageSize.file,
+                    );
+                  }
+                },
               ),
             ),
           ),
+        ),
+      ),
     );
   }
 }

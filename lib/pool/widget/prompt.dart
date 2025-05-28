@@ -59,13 +59,12 @@ class PoolSheet extends StatelessWidget {
             PoolActions(pool: pool),
             Padding(
               padding: const EdgeInsets.all(16),
-              child:
-                  pool.description.isNotEmpty
-                      ? DText(pool.description)
-                      : const Text(
-                        'no description',
-                        style: TextStyle(fontStyle: FontStyle.italic),
-                      ),
+              child: pool.description.isNotEmpty
+                  ? DText(pool.description)
+                  : const Text(
+                      'no description',
+                      style: TextStyle(fontStyle: FontStyle.italic),
+                    ),
             ),
             const Divider(),
             Padding(
@@ -124,13 +123,12 @@ class PoolDialog extends StatelessWidget {
                   children: [
                     Padding(
                       padding: const EdgeInsets.all(16),
-                      child:
-                          pool.description.isNotEmpty
-                              ? DText(pool.description)
-                              : const Text(
-                                'no description',
-                                style: TextStyle(fontStyle: FontStyle.italic),
-                              ),
+                      child: pool.description.isNotEmpty
+                          ? DText(pool.description)
+                          : const Text(
+                              'no description',
+                              style: TextStyle(fontStyle: FontStyle.italic),
+                            ),
                     ),
                     const Divider(),
                     Padding(
@@ -167,11 +165,8 @@ class PoolActions extends StatelessWidget {
           ActionButton(
             icon: const Icon(Icons.share),
             label: const Text('share'),
-            onTap:
-                () async => Share.text(
-                  context,
-                  context.read<Client>().withHost(pool.link),
-                ),
+            onTap: () async =>
+                Share.text(context, context.read<Client>().withHost(pool.link)),
           ),
           TagListActions(tag: 'pool:${pool.id}'),
         ],

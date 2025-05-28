@@ -108,12 +108,8 @@ class E621LinkParser extends BranchLinkParser {
           r'/post'
           '$_showEnding'
           r'/:id(\d+)',
-      transformer:
-          (args, query) => Link(
-            type: LinkType.post,
-            id: int.parse(args['id']!),
-            query: query,
-          ),
+      transformer: (args, query) =>
+          Link(type: LinkType.post, id: int.parse(args['id']!), query: query),
     ),
     LeafLinkParser(
       path: r'/posts',
@@ -124,12 +120,8 @@ class E621LinkParser extends BranchLinkParser {
           r'/pool'
           '$_showEnding'
           r'/:id(\d+)',
-      transformer:
-          (args, query) => Link(
-            type: LinkType.pool,
-            id: int.parse(args['id']!),
-            query: query,
-          ),
+      transformer: (args, query) =>
+          Link(type: LinkType.pool, id: int.parse(args['id']!), query: query),
     ),
     LeafLinkParser(
       path: r'/pools',
@@ -140,22 +132,20 @@ class E621LinkParser extends BranchLinkParser {
           r'/user'
           '$_showEnding'
           r'/:name',
-      transformer:
-          (args, query) => Link(
-            type: LinkType.user,
-            id: int.tryParse(args['name']!) ?? args['name']!,
-            query: query,
-          ),
+      transformer: (args, query) => Link(
+        type: LinkType.user,
+        id: int.tryParse(args['name']!) ?? args['name']!,
+        query: query,
+      ),
     ),
     LeafLinkParser(
       path:
           r'/wiki_pages'
           r'/:name',
-      transformer:
-          (args, query) => Link(
-            type: LinkType.wiki,
-            id: int.tryParse(args['name']!) ?? args['name']!,
-          ),
+      transformer: (args, query) => Link(
+        type: LinkType.wiki,
+        id: int.tryParse(args['name']!) ?? args['name']!,
+      ),
     ),
     LeafLinkParser(
       path: r'/wiki_pages',
@@ -163,12 +153,8 @@ class E621LinkParser extends BranchLinkParser {
     ),
     LeafLinkParser(
       path: r'/forum_topics/:id(\d+)',
-      transformer:
-          (args, query) => Link(
-            type: LinkType.topic,
-            id: int.parse(args['id']!),
-            query: query,
-          ),
+      transformer: (args, query) =>
+          Link(type: LinkType.topic, id: int.parse(args['id']!), query: query),
     ),
     LeafLinkParser(
       path: r'/forum_topics',
@@ -176,9 +162,8 @@ class E621LinkParser extends BranchLinkParser {
     ),
     LeafLinkParser(
       path: r'/forum_posts/:id(\d+)',
-      transformer:
-          (args, query) =>
-              Link(type: LinkType.reply, id: int.parse(args['id']!)),
+      transformer: (args, query) =>
+          Link(type: LinkType.reply, id: int.parse(args['id']!)),
     ),
     LeafLinkParser(
       path: r'/forum_posts',

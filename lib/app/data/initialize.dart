@@ -65,12 +65,11 @@ File createLogFile(String directoryPath, String? postfix) {
   if (!dir.existsSync()) {
     dir.createSync(recursive: true);
   }
-  List<File> logFiles =
-      dir
-          .listSync()
-          .whereType<File>()
-          .where((entity) => entity.path.endsWith('.log'))
-          .toList();
+  List<File> logFiles = dir
+      .listSync()
+      .whereType<File>()
+      .where((entity) => entity.path.endsWith('.log'))
+      .toList();
 
   DateTime getFileDate(String fileName) {
     var name = basenameWithoutExtension(fileName);
@@ -112,10 +111,9 @@ Future<AppStorage> initializeAppStorage({bool cache = true}) async {
         name: 'app',
         native: DriftNativeOptions(
           shareAcrossIsolates: true,
-          databasePath:
-              () => getApplicationSupportDirectory().then(
-                (dir) => join(dir.path, 'app.db'),
-              ),
+          databasePath: () => getApplicationSupportDirectory().then(
+            (dir) => join(dir.path, 'app.db'),
+          ),
         ),
       ),
     ),

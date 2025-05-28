@@ -22,17 +22,16 @@ class _TagAddCardState extends State<TagAddCard> {
         constraints: const BoxConstraints(),
         padding: const EdgeInsets.all(2),
         icon: const Icon(Icons.add, size: 16),
-        onPressed:
-            widget.submit != null
-                ? () => PromptActions.of(context).show(
-                  context,
-                  TagEditor(
-                    category: widget.category,
-                    submit: widget.submit!,
-                    controller: PromptActions.of(context),
-                  ),
-                )
-                : null,
+        onPressed: widget.submit != null
+            ? () => PromptActions.of(context).show(
+                context,
+                TagEditor(
+                  category: widget.category,
+                  submit: widget.submit!,
+                  controller: PromptActions.of(context),
+                ),
+              )
+            : null,
       ),
     );
   }

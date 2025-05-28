@@ -120,65 +120,56 @@ class _PostsSearchPageState extends State<PostsSearchPage> {
           return SubListener(
             initialize: true,
             listenable: controller,
-            listener:
-                () => WidgetsBinding.instance.addPostFrameCallback(
-                  (_) => updateSearch(),
-                ),
-            builder:
-                (context) => PostsPage(
-                  controller: controller,
-                  displayType: readerMode ? PostDisplayType.comic : null,
-                  appBar: DefaultAppBar(
-                    title: Text(getTitle()),
-                    actions: [
-                      CrossFade(
-                        showChild:
-                            !loadingInfo &&
-                            (controller.query['tags']?.trim().isNotEmpty ??
-                                false),
-                        child: IconButton(
-                          icon: const Icon(Icons.info_outline),
-                          onPressed:
-                              pool != null
-                                  ? () => showPoolPrompt(
-                                    context: context,
-                                    pool: pool!,
-                                  )
-                                  : () => showTagSearchPrompt(
-                                    context: context,
-                                    tag: controller.query['tags'] ?? '',
-                                  ),
-                        ),
-                      ),
-                      const ContextDrawerButton(),
-                    ],
+            listener: () => WidgetsBinding.instance.addPostFrameCallback(
+              (_) => updateSearch(),
+            ),
+            builder: (context) => PostsPage(
+              controller: controller,
+              displayType: readerMode ? PostDisplayType.comic : null,
+              appBar: DefaultAppBar(
+                title: Text(getTitle()),
+                actions: [
+                  CrossFade(
+                    showChild:
+                        !loadingInfo &&
+                        (controller.query['tags']?.trim().isNotEmpty ?? false),
+                    child: IconButton(
+                      icon: const Icon(Icons.info_outline),
+                      onPressed: pool != null
+                          ? () => showPoolPrompt(context: context, pool: pool!)
+                          : () => showTagSearchPrompt(
+                              context: context,
+                              tag: controller.query['tags'] ?? '',
+                            ),
+                    ),
                   ),
-                  drawerActions: [
-                    if (pool != null)
-                      Builder(
-                        builder:
-                            (context) => PoolReaderSwitch(
-                              readerMode: readerMode,
-                              onChange: (value) {
-                                setState(() => readerMode = value);
-                                Scaffold.of(context).closeEndDrawer();
-                              },
-                            ),
-                      ),
-                    if (pool != null)
-                      AnimatedBuilder(
-                        animation: controller,
-                        builder:
-                            (context, child) => PoolOrderSwitch(
-                              oldestFirst: controller.orderPools,
-                              onChange: (value) {
-                                controller.orderPools = value;
-                                Scaffold.of(context).closeEndDrawer();
-                              },
-                            ),
-                      ),
-                  ],
-                ),
+                  const ContextDrawerButton(),
+                ],
+              ),
+              drawerActions: [
+                if (pool != null)
+                  Builder(
+                    builder: (context) => PoolReaderSwitch(
+                      readerMode: readerMode,
+                      onChange: (value) {
+                        setState(() => readerMode = value);
+                        Scaffold.of(context).closeEndDrawer();
+                      },
+                    ),
+                  ),
+                if (pool != null)
+                  AnimatedBuilder(
+                    animation: controller,
+                    builder: (context, child) => PoolOrderSwitch(
+                      oldestFirst: controller.orderPools,
+                      onChange: (value) {
+                        controller.orderPools = value;
+                        Scaffold.of(context).closeEndDrawer();
+                      },
+                    ),
+                  ),
+              ],
+            ),
           );
         },
       ),

@@ -178,10 +178,9 @@ class FilterTagState<T extends FilterTag> {
   ValueSetter<QueryMap>? get onSubmitTags => config.onSubmit;
   ValueSetter<String?> get onChanged =>
       ((value) => onChangedTags(_setOrRemove(tags, filter.tag, value)));
-  ValueSetter<String?>? get onSubmit =>
-      onSubmitTags != null
-          ? ((value) => onSubmitTags!(_setOrRemove(tags, filter.tag, value)))
-          : null;
+  ValueSetter<String?>? get onSubmit => onSubmitTags != null
+      ? ((value) => onSubmitTags!(_setOrRemove(tags, filter.tag, value)))
+      : null;
 
   @override
   String toString() => 'FilterState<$T>(tag: ${filter.tag}, value: $value)';

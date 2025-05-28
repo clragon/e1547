@@ -62,11 +62,13 @@ class PostEdit {
 
     List<String> oldTags = extractTags(post.tags);
     List<String> newTags = extractTags(tags);
-    List<String> removedTags =
-        oldTags.where((element) => !newTags.contains(element)).toList();
+    List<String> removedTags = oldTags
+        .where((element) => !newTags.contains(element))
+        .toList();
     removedTags = removedTags.map((t) => '-$t').toList();
-    List<String> addedTags =
-        newTags.where((element) => !oldTags.contains(element)).toList();
+    List<String> addedTags = newTags
+        .where((element) => !oldTags.contains(element))
+        .toList();
     List<String> tagDiff = [];
     tagDiff.addAll(removedTags);
     tagDiff.addAll(addedTags);
@@ -75,11 +77,13 @@ class PostEdit {
       body.addEntries([MapEntry('post[tag_string_diff]', tagDiff.join(' '))]);
     }
 
-    List<String> removedSource =
-        post.sources.where((element) => !sources.contains(element)).toList();
+    List<String> removedSource = post.sources
+        .where((element) => !sources.contains(element))
+        .toList();
     removedSource = removedSource.map((s) => '-$s').toList();
-    List<String> addedSource =
-        sources.where((element) => !post.sources.contains(element)).toList();
+    List<String> addedSource = sources
+        .where((element) => !post.sources.contains(element))
+        .toList();
     List<String> sourceDiff = [];
     sourceDiff.addAll(removedSource);
     sourceDiff.addAll(addedSource);

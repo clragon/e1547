@@ -75,10 +75,12 @@ extension M2ThemeData on ThemeData {
   static ThemeData from({required ColorScheme colorScheme}) {
     final bool isDark = colorScheme.brightness == Brightness.dark;
 
-    final Color primarySurfaceColor =
-        isDark ? colorScheme.surface : colorScheme.primary;
-    final Color onPrimarySurfaceColor =
-        isDark ? colorScheme.onSurface : colorScheme.onPrimary;
+    final Color primarySurfaceColor = isDark
+        ? colorScheme.surface
+        : colorScheme.primary;
+    final Color onPrimarySurfaceColor = isDark
+        ? colorScheme.onSurface
+        : colorScheme.onPrimary;
 
     return prepareTheme(
       ThemeData(
@@ -93,7 +95,7 @@ extension M2ThemeData on ThemeData {
         dividerColor: colorScheme.onSurface.withAlpha(31),
         // ignore: deprecated_member_use
         dialogBackgroundColor: colorScheme.background,
-        indicatorColor: onPrimarySurfaceColor,
+        tabBarTheme: TabBarThemeData(indicatorColor: onPrimarySurfaceColor),
         applyElevationOverlayColor: isDark,
         useMaterial3: false,
       ),
@@ -108,15 +110,13 @@ extension M2ThemeData on ThemeData {
       systemOverlayStyle: SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
         statusBarBrightness: theme.brightness,
-        statusBarIconBrightness:
-            theme.brightness == Brightness.light
-                ? Brightness.dark
-                : Brightness.light,
+        statusBarIconBrightness: theme.brightness == Brightness.light
+            ? Brightness.dark
+            : Brightness.light,
         systemNavigationBarColor: Colors.transparent,
-        systemNavigationBarIconBrightness:
-            theme.brightness == Brightness.light
-                ? Brightness.dark
-                : Brightness.light,
+        systemNavigationBarIconBrightness: theme.brightness == Brightness.light
+            ? Brightness.dark
+            : Brightness.light,
       ),
       color: theme.canvasColor,
       foregroundColor: theme.iconTheme.color,

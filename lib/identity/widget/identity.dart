@@ -28,10 +28,9 @@ class _IdentityPageState extends State<IdentityPage> {
     text: widget.identity?.username,
   );
   late final TextEditingController apikeyController = TextEditingController(
-    text:
-        widget.identity?.headers?[HttpHeaders.authorizationHeader] != null
-            ? OmittedPasswordTextInputFormatter.passwordOmitted
-            : null,
+    text: widget.identity?.headers?[HttpHeaders.authorizationHeader] != null
+        ? OmittedPasswordTextInputFormatter.passwordOmitted
+        : null,
   );
 
   late bool withAuth =
@@ -71,21 +70,20 @@ class _IdentityPageState extends State<IdentityPage> {
       showDialog(
         context: context,
         barrierDismissible: false,
-        builder:
-            (context) => LoginLoadingDialog(
-              identity: widget.identity,
-              host: hostController.text,
-              username: withAuth ? usernameController.text : null,
-              apikey: withAuth ? apikeyController.text : null,
-              onError: (value) {
-                setState(() {
-                  value ??= 'Check your network connection and login details';
-                  error = 'Failed to login. \n$value';
-                });
-                form.validate();
-              },
-              onDone: navigator.maybePop,
-            ),
+        builder: (context) => LoginLoadingDialog(
+          identity: widget.identity,
+          host: hostController.text,
+          username: withAuth ? usernameController.text : null,
+          apikey: withAuth ? apikeyController.text : null,
+          onError: (value) {
+            setState(() {
+              value ??= 'Check your network connection and login details';
+              error = 'Failed to login. \n$value';
+            });
+            form.validate();
+          },
+          onDone: navigator.maybePop,
+        ),
       );
     }
   }
@@ -94,25 +92,24 @@ class _IdentityPageState extends State<IdentityPage> {
     return showDialog<bool>(
       context: context,
       barrierDismissible: false,
-      builder:
-          (context) => AlertDialog(
-            title: const Text('Unknown host'),
-            content: Text(
-              'The host ${linkToDisplay(hostController.text)} is not recognized.\n'
-              '${AppInfo.instance.appName} only supports hosts with the official e621 API.\n'
-              'If you don\'t know what this means, please do not proceed.\n',
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(false),
-                child: const Text('CANCEL'),
-              ),
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(true),
-                child: const Text('CONFIRM'),
-              ),
-            ],
+      builder: (context) => AlertDialog(
+        title: const Text('Unknown host'),
+        content: Text(
+          'The host ${linkToDisplay(hostController.text)} is not recognized.\n'
+          '${AppInfo.instance.appName} only supports hosts with the official e621 API.\n'
+          'If you don\'t know what this means, please do not proceed.\n',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('CANCEL'),
           ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('CONFIRM'),
+          ),
+        ],
+      ),
     ).then((value) => value ?? false);
   }
 
@@ -230,10 +227,9 @@ class _IdentityPageState extends State<IdentityPage> {
                   Expanded(
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment:
-                          isWide
-                              ? CrossAxisAlignment.center
-                              : CrossAxisAlignment.start,
+                      crossAxisAlignment: isWide
+                          ? CrossAxisAlignment.center
+                          : CrossAxisAlignment.start,
                       children: [
                         if (isWide)
                           Expanded(
@@ -253,25 +249,22 @@ class _IdentityPageState extends State<IdentityPage> {
                           width: isWide ? 700 : constraints.maxWidth,
                           child: LimitedWidthLayout.builder(
                             maxWidth: 520,
-                            builder:
-                                (context) => Center(
-                                  child: ListView(
-                                    padding: LimitedWidthLayout.of(
-                                      context,
-                                    ).padding.add(defaultActionListPadding),
-                                    shrinkWrap: true,
-                                    children: [
-                                      if (!isWide)
-                                        const SizedBox(
-                                          height: 300,
-                                          child: Center(
-                                            child: AppIcon(radius: 64),
-                                          ),
-                                        ),
-                                      form(),
-                                    ],
-                                  ),
-                                ),
+                            builder: (context) => Center(
+                              child: ListView(
+                                padding: LimitedWidthLayout.of(
+                                  context,
+                                ).padding.add(defaultActionListPadding),
+                                shrinkWrap: true,
+                                children: [
+                                  if (!isWide)
+                                    const SizedBox(
+                                      height: 300,
+                                      child: Center(child: AppIcon(radius: 64)),
+                                    ),
+                                  form(),
+                                ],
+                              ),
+                            ),
                           ),
                         ),
                       ],
@@ -282,11 +275,10 @@ class _IdentityPageState extends State<IdentityPage> {
             },
           ),
           floatingActionButton: Builder(
-            builder:
-                (context) => FloatingActionButton(
-                  child: const Icon(Icons.check),
-                  onPressed: () => saveAndTest(context),
-                ),
+            builder: (context) => FloatingActionButton(
+              child: const Icon(Icons.check),
+              onPressed: () => saveAndTest(context),
+            ),
           ),
         ),
       ),
@@ -555,8 +547,8 @@ class _ApikeyFormFieldState extends State<ApikeyFormField> {
                   icon: Icon(
                     obscurePassword ? Icons.visibility_off : Icons.visibility,
                   ),
-                  onPressed:
-                      () => setState(() => obscurePassword = !obscurePassword),
+                  onPressed: () =>
+                      setState(() => obscurePassword = !obscurePassword),
                 ),
               ],
             ),

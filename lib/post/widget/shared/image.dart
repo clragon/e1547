@@ -67,26 +67,24 @@ class PostImageWidget extends StatelessWidget {
                 showProgress: showProgress,
                 fit: fit,
                 cacheSize: cacheSize,
-                progressIndicatorBuilder:
-                    withLowRes
-                        ? (context, url, progress) => ImageProgressWrapper(
-                          aspectRatio: aspectRatio,
-                          progress: progress.progress,
-                          child:
-                              lowResCacheSize != null
-                                  ? RawPostImageWidget(
-                                    post: post,
-                                    size: PostImageSize.sample,
-                                    fit: fit,
-                                    cacheSize: lowResCacheSize,
-                                  )
-                                  : RawPostImageWidget(
-                                    post: post,
-                                    size: PostImageSize.preview,
-                                    fit: fit,
-                                  ),
-                        )
-                        : null,
+                progressIndicatorBuilder: withLowRes
+                    ? (context, url, progress) => ImageProgressWrapper(
+                        aspectRatio: aspectRatio,
+                        progress: progress.progress,
+                        child: lowResCacheSize != null
+                            ? RawPostImageWidget(
+                                post: post,
+                                size: PostImageSize.sample,
+                                fit: fit,
+                                cacheSize: lowResCacheSize,
+                              )
+                            : RawPostImageWidget(
+                                post: post,
+                                size: PostImageSize.preview,
+                                fit: fit,
+                              ),
+                      )
+                    : null,
               );
             case PostImageSize.file:
               return RawPostImageWidget(
@@ -96,8 +94,8 @@ class PostImageWidget extends StatelessWidget {
                 showProgress: showProgress,
                 fit: fit,
                 cacheSize: cacheSize,
-                progressIndicatorBuilder:
-                    (context, url, progress) => ImageProgressWrapper(
+                progressIndicatorBuilder: (context, url, progress) =>
+                    ImageProgressWrapper(
                       progress: progress.progress,
                       aspectRatio: aspectRatio,
                       child: RawPostImageWidget(
@@ -138,8 +136,9 @@ class RawPostImageWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Duration fades =
-        stacked ? Duration.zero : const Duration(milliseconds: 500);
+    Duration fades = stacked
+        ? Duration.zero
+        : const Duration(milliseconds: 500);
 
     Widget progressIndicator(
       BuildContext context,
@@ -179,14 +178,12 @@ class RawPostImageWidget extends StatelessWidget {
       fadeInDuration: fades,
       fadeOutDuration: fades,
       imageUrl: url,
-      errorWidget:
-          stacked
-              ? defaultErrorBuilder
-              : (context, url, error) => const SizedBox.shrink(),
-      progressIndicatorBuilder:
-          showProgress || stacked
-              ? progressIndicatorBuilder ?? progressIndicator
-              : null,
+      errorWidget: stacked
+          ? defaultErrorBuilder
+          : (context, url, error) => const SizedBox.shrink(),
+      progressIndicatorBuilder: showProgress || stacked
+          ? progressIndicatorBuilder ?? progressIndicator
+          : null,
       memCacheWidth: memCacheWidth,
       memCacheHeight: memCacheHeight,
       cacheManager: context.read<BaseCacheManager>(),

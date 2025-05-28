@@ -43,10 +43,9 @@ Future<void> loadingNotification<T>({
   Color? iconColor =
       (Theme.of(context).snackBarTheme.contentTextStyle ??
               ThemeData(
-                brightness:
-                    Theme.of(context).brightness == Brightness.dark
-                        ? Brightness.light
-                        : Brightness.dark,
+                brightness: Theme.of(context).brightness == Brightness.dark
+                    ? Brightness.light
+                    : Brightness.dark,
               ).textTheme.titleMedium)
           ?.color;
 
@@ -124,35 +123,34 @@ class LoadingNotification extends StatelessWidget {
   Widget build(BuildContext context) {
     return ValueListenableBuilder<int>(
       valueListenable: progress,
-      builder:
-          (context, value, child) => Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: messageBuilder(context, value),
-              ),
-              TweenAnimationBuilder<double>(
-                tween: Tween<double>(begin: 0, end: value.toDouble()),
-                duration: animationDuration ?? defaultAnimationDuration,
-                builder: (context, value, child) {
-                  double? indicator = 1 / max;
-                  if (indicator < 0) {
-                    indicator = 1;
-                  }
-                  indicator = indicator * value;
-                  if (indicator == 0) {
-                    indicator = null;
-                  }
-                  return LinearProgressIndicator(
-                    value: indicator,
-                    color: Theme.of(context).colorScheme.secondary,
-                  );
-                },
-              ),
-            ],
+      builder: (context, value, child) => Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: messageBuilder(context, value),
           ),
+          TweenAnimationBuilder<double>(
+            tween: Tween<double>(begin: 0, end: value.toDouble()),
+            duration: animationDuration ?? defaultAnimationDuration,
+            builder: (context, value, child) {
+              double? indicator = 1 / max;
+              if (indicator < 0) {
+                indicator = 1;
+              }
+              indicator = indicator * value;
+              if (indicator == 0) {
+                indicator = null;
+              }
+              return LinearProgressIndicator(
+                value: indicator,
+                color: Theme.of(context).colorScheme.secondary,
+              );
+            },
+          ),
+        ],
+      ),
     );
   }
 }

@@ -61,7 +61,7 @@ dependencies:
   freezed_annotation: ^2.4.1
   html_character_entities: ^1.0.0+1
   image_gallery_saver_plus: ^4.0.1
-  json_annotation: ^4.8.1
+  json_annotation: ^4.9.0
   logging: ^1.2.0
   meta: ^1.15.0
   mime: ^1.0.6
@@ -102,7 +102,7 @@ dependency_overrides:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  # dart run build_runner build
+  # dart run build_runner build --delete-conflicting-outputs
   build_runner: ^2.4.15
   drift_dev: ^2.25.2
   flutter_lints: ^5.0.0

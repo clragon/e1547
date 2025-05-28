@@ -50,18 +50,16 @@ class ScaffoldFrame extends StatelessWidget {
 
   static ScaffoldFrameController of(BuildContext context) => maybeOf(context)!;
 
-  static ScaffoldFrameController? maybeOf(BuildContext context) =>
-      context
-          .dependOnInheritedWidgetOfExactType<_ScaffoldFrameData>()
-          ?.notifier;
+  static ScaffoldFrameController? maybeOf(BuildContext context) => context
+      .dependOnInheritedWidgetOfExactType<_ScaffoldFrameData>()
+      ?.notifier;
 
   @override
   Widget build(BuildContext context) => SubDefault<ScaffoldFrameController>(
     value: controller,
     create: () => ScaffoldFrameController(),
-    builder:
-        (context, controller) =>
-            _ScaffoldFrameData(controller: controller, child: child),
+    builder: (context, controller) =>
+        _ScaffoldFrameData(controller: controller, child: child),
   );
 }
 

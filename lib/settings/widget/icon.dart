@@ -9,10 +9,9 @@ class AppIcon extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color:
-            Theme.of(context).brightness == Brightness.light
-                ? const Color(0xFF131313)
-                : null,
+        color: Theme.of(context).brightness == Brightness.light
+            ? const Color(0xFF131313)
+            : null,
         shape: BoxShape.circle,
       ),
       clipBehavior: Clip.antiAlias,

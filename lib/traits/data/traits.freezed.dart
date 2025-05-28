@@ -12,7 +12,8 @@ part of 'traits.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
+  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
+);
 
 Traits _$TraitsFromJson(Map<String, dynamic> json) {
   return _Traits.fromJson(json);
@@ -41,13 +42,14 @@ abstract class $TraitsCopyWith<$Res> {
   factory $TraitsCopyWith(Traits value, $Res Function(Traits) then) =
       _$TraitsCopyWithImpl<$Res, Traits>;
   @useResult
-  $Res call(
-      {int id,
-      int? userId,
-      List<String> denylist,
-      String homeTags,
-      String? avatar,
-      int? perPage});
+  $Res call({
+    int id,
+    int? userId,
+    List<String> denylist,
+    String homeTags,
+    String? avatar,
+    int? perPage,
+  });
 }
 
 /// @nodoc
@@ -72,49 +74,54 @@ class _$TraitsCopyWithImpl<$Res, $Val extends Traits>
     Object? avatar = freezed,
     Object? perPage = freezed,
   }) {
-    return _then(_value.copyWith(
-      id: null == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as int,
-      userId: freezed == userId
-          ? _value.userId
-          : userId // ignore: cast_nullable_to_non_nullable
-              as int?,
-      denylist: null == denylist
-          ? _value.denylist
-          : denylist // ignore: cast_nullable_to_non_nullable
-              as List<String>,
-      homeTags: null == homeTags
-          ? _value.homeTags
-          : homeTags // ignore: cast_nullable_to_non_nullable
-              as String,
-      avatar: freezed == avatar
-          ? _value.avatar
-          : avatar // ignore: cast_nullable_to_non_nullable
-              as String?,
-      perPage: freezed == perPage
-          ? _value.perPage
-          : perPage // ignore: cast_nullable_to_non_nullable
-              as int?,
-    ) as $Val);
+    return _then(
+      _value.copyWith(
+            id: null == id
+                ? _value.id
+                : id // ignore: cast_nullable_to_non_nullable
+                      as int,
+            userId: freezed == userId
+                ? _value.userId
+                : userId // ignore: cast_nullable_to_non_nullable
+                      as int?,
+            denylist: null == denylist
+                ? _value.denylist
+                : denylist // ignore: cast_nullable_to_non_nullable
+                      as List<String>,
+            homeTags: null == homeTags
+                ? _value.homeTags
+                : homeTags // ignore: cast_nullable_to_non_nullable
+                      as String,
+            avatar: freezed == avatar
+                ? _value.avatar
+                : avatar // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            perPage: freezed == perPage
+                ? _value.perPage
+                : perPage // ignore: cast_nullable_to_non_nullable
+                      as int?,
+          )
+          as $Val,
+    );
   }
 }
 
 /// @nodoc
 abstract class _$$TraitsImplCopyWith<$Res> implements $TraitsCopyWith<$Res> {
   factory _$$TraitsImplCopyWith(
-          _$TraitsImpl value, $Res Function(_$TraitsImpl) then) =
-      __$$TraitsImplCopyWithImpl<$Res>;
+    _$TraitsImpl value,
+    $Res Function(_$TraitsImpl) then,
+  ) = __$$TraitsImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call(
-      {int id,
-      int? userId,
-      List<String> denylist,
-      String homeTags,
-      String? avatar,
-      int? perPage});
+  $Res call({
+    int id,
+    int? userId,
+    List<String> denylist,
+    String homeTags,
+    String? avatar,
+    int? perPage,
+  });
 }
 
 /// @nodoc
@@ -122,8 +129,9 @@ class __$$TraitsImplCopyWithImpl<$Res>
     extends _$TraitsCopyWithImpl<$Res, _$TraitsImpl>
     implements _$$TraitsImplCopyWith<$Res> {
   __$$TraitsImplCopyWithImpl(
-      _$TraitsImpl _value, $Res Function(_$TraitsImpl) _then)
-      : super(_value, _then);
+    _$TraitsImpl _value,
+    $Res Function(_$TraitsImpl) _then,
+  ) : super(_value, _then);
 
   /// Create a copy of Traits
   /// with the given fields replaced by the non-null parameter values.
@@ -137,46 +145,48 @@ class __$$TraitsImplCopyWithImpl<$Res>
     Object? avatar = freezed,
     Object? perPage = freezed,
   }) {
-    return _then(_$TraitsImpl(
-      id: null == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as int,
-      userId: freezed == userId
-          ? _value.userId
-          : userId // ignore: cast_nullable_to_non_nullable
-              as int?,
-      denylist: null == denylist
-          ? _value._denylist
-          : denylist // ignore: cast_nullable_to_non_nullable
-              as List<String>,
-      homeTags: null == homeTags
-          ? _value.homeTags
-          : homeTags // ignore: cast_nullable_to_non_nullable
-              as String,
-      avatar: freezed == avatar
-          ? _value.avatar
-          : avatar // ignore: cast_nullable_to_non_nullable
-              as String?,
-      perPage: freezed == perPage
-          ? _value.perPage
-          : perPage // ignore: cast_nullable_to_non_nullable
-              as int?,
-    ));
+    return _then(
+      _$TraitsImpl(
+        id: null == id
+            ? _value.id
+            : id // ignore: cast_nullable_to_non_nullable
+                  as int,
+        userId: freezed == userId
+            ? _value.userId
+            : userId // ignore: cast_nullable_to_non_nullable
+                  as int?,
+        denylist: null == denylist
+            ? _value._denylist
+            : denylist // ignore: cast_nullable_to_non_nullable
+                  as List<String>,
+        homeTags: null == homeTags
+            ? _value.homeTags
+            : homeTags // ignore: cast_nullable_to_non_nullable
+                  as String,
+        avatar: freezed == avatar
+            ? _value.avatar
+            : avatar // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        perPage: freezed == perPage
+            ? _value.perPage
+            : perPage // ignore: cast_nullable_to_non_nullable
+                  as int?,
+      ),
+    );
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$TraitsImpl implements _Traits {
-  const _$TraitsImpl(
-      {required this.id,
-      required this.userId,
-      required final List<String> denylist,
-      required this.homeTags,
-      required this.avatar,
-      required this.perPage})
-      : _denylist = denylist;
+  const _$TraitsImpl({
+    required this.id,
+    required this.userId,
+    required final List<String> denylist,
+    required this.homeTags,
+    required this.avatar,
+    required this.perPage,
+  }) : _denylist = denylist;
 
   factory _$TraitsImpl.fromJson(Map<String, dynamic> json) =>
       _$$TraitsImplFromJson(json);
@@ -222,13 +232,14 @@ class _$TraitsImpl implements _Traits {
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(
-      runtimeType,
-      id,
-      userId,
-      const DeepCollectionEquality().hash(_denylist),
-      homeTags,
-      avatar,
-      perPage);
+    runtimeType,
+    id,
+    userId,
+    const DeepCollectionEquality().hash(_denylist),
+    homeTags,
+    avatar,
+    perPage,
+  );
 
   /// Create a copy of Traits
   /// with the given fields replaced by the non-null parameter values.
@@ -240,20 +251,19 @@ class _$TraitsImpl implements _Traits {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$TraitsImplToJson(
-      this,
-    );
+    return _$$TraitsImplToJson(this);
   }
 }
 
 abstract class _Traits implements Traits {
-  const factory _Traits(
-      {required final int id,
-      required final int? userId,
-      required final List<String> denylist,
-      required final String homeTags,
-      required final String? avatar,
-      required final int? perPage}) = _$TraitsImpl;
+  const factory _Traits({
+    required final int id,
+    required final int? userId,
+    required final List<String> denylist,
+    required final String homeTags,
+    required final String? avatar,
+    required final int? perPage,
+  }) = _$TraitsImpl;
 
   factory _Traits.fromJson(Map<String, dynamic> json) = _$TraitsImpl.fromJson;
 
@@ -304,16 +314,18 @@ mixin _$TraitsRequest {
 /// @nodoc
 abstract class $TraitsRequestCopyWith<$Res> {
   factory $TraitsRequestCopyWith(
-          TraitsRequest value, $Res Function(TraitsRequest) then) =
-      _$TraitsRequestCopyWithImpl<$Res, TraitsRequest>;
+    TraitsRequest value,
+    $Res Function(TraitsRequest) then,
+  ) = _$TraitsRequestCopyWithImpl<$Res, TraitsRequest>;
   @useResult
-  $Res call(
-      {int identity,
-      int? userId,
-      List<String> denylist,
-      String homeTags,
-      String? avatar,
-      int? perPage});
+  $Res call({
+    int identity,
+    int? userId,
+    List<String> denylist,
+    String homeTags,
+    String? avatar,
+    int? perPage,
+  });
 }
 
 /// @nodoc
@@ -338,32 +350,35 @@ class _$TraitsRequestCopyWithImpl<$Res, $Val extends TraitsRequest>
     Object? avatar = freezed,
     Object? perPage = freezed,
   }) {
-    return _then(_value.copyWith(
-      identity: null == identity
-          ? _value.identity
-          : identity // ignore: cast_nullable_to_non_nullable
-              as int,
-      userId: freezed == userId
-          ? _value.userId
-          : userId // ignore: cast_nullable_to_non_nullable
-              as int?,
-      denylist: null == denylist
-          ? _value.denylist
-          : denylist // ignore: cast_nullable_to_non_nullable
-              as List<String>,
-      homeTags: null == homeTags
-          ? _value.homeTags
-          : homeTags // ignore: cast_nullable_to_non_nullable
-              as String,
-      avatar: freezed == avatar
-          ? _value.avatar
-          : avatar // ignore: cast_nullable_to_non_nullable
-              as String?,
-      perPage: freezed == perPage
-          ? _value.perPage
-          : perPage // ignore: cast_nullable_to_non_nullable
-              as int?,
-    ) as $Val);
+    return _then(
+      _value.copyWith(
+            identity: null == identity
+                ? _value.identity
+                : identity // ignore: cast_nullable_to_non_nullable
+                      as int,
+            userId: freezed == userId
+                ? _value.userId
+                : userId // ignore: cast_nullable_to_non_nullable
+                      as int?,
+            denylist: null == denylist
+                ? _value.denylist
+                : denylist // ignore: cast_nullable_to_non_nullable
+                      as List<String>,
+            homeTags: null == homeTags
+                ? _value.homeTags
+                : homeTags // ignore: cast_nullable_to_non_nullable
+                      as String,
+            avatar: freezed == avatar
+                ? _value.avatar
+                : avatar // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            perPage: freezed == perPage
+                ? _value.perPage
+                : perPage // ignore: cast_nullable_to_non_nullable
+                      as int?,
+          )
+          as $Val,
+    );
   }
 }
 
@@ -371,17 +386,19 @@ class _$TraitsRequestCopyWithImpl<$Res, $Val extends TraitsRequest>
 abstract class _$$TraitsRequestImplCopyWith<$Res>
     implements $TraitsRequestCopyWith<$Res> {
   factory _$$TraitsRequestImplCopyWith(
-          _$TraitsRequestImpl value, $Res Function(_$TraitsRequestImpl) then) =
-      __$$TraitsRequestImplCopyWithImpl<$Res>;
+    _$TraitsRequestImpl value,
+    $Res Function(_$TraitsRequestImpl) then,
+  ) = __$$TraitsRequestImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call(
-      {int identity,
-      int? userId,
-      List<String> denylist,
-      String homeTags,
-      String? avatar,
-      int? perPage});
+  $Res call({
+    int identity,
+    int? userId,
+    List<String> denylist,
+    String homeTags,
+    String? avatar,
+    int? perPage,
+  });
 }
 
 /// @nodoc
@@ -389,8 +406,9 @@ class __$$TraitsRequestImplCopyWithImpl<$Res>
     extends _$TraitsRequestCopyWithImpl<$Res, _$TraitsRequestImpl>
     implements _$$TraitsRequestImplCopyWith<$Res> {
   __$$TraitsRequestImplCopyWithImpl(
-      _$TraitsRequestImpl _value, $Res Function(_$TraitsRequestImpl) _then)
-      : super(_value, _then);
+    _$TraitsRequestImpl _value,
+    $Res Function(_$TraitsRequestImpl) _then,
+  ) : super(_value, _then);
 
   /// Create a copy of TraitsRequest
   /// with the given fields replaced by the non-null parameter values.
@@ -404,46 +422,48 @@ class __$$TraitsRequestImplCopyWithImpl<$Res>
     Object? avatar = freezed,
     Object? perPage = freezed,
   }) {
-    return _then(_$TraitsRequestImpl(
-      identity: null == identity
-          ? _value.identity
-          : identity // ignore: cast_nullable_to_non_nullable
-              as int,
-      userId: freezed == userId
-          ? _value.userId
-          : userId // ignore: cast_nullable_to_non_nullable
-              as int?,
-      denylist: null == denylist
-          ? _value._denylist
-          : denylist // ignore: cast_nullable_to_non_nullable
-              as List<String>,
-      homeTags: null == homeTags
-          ? _value.homeTags
-          : homeTags // ignore: cast_nullable_to_non_nullable
-              as String,
-      avatar: freezed == avatar
-          ? _value.avatar
-          : avatar // ignore: cast_nullable_to_non_nullable
-              as String?,
-      perPage: freezed == perPage
-          ? _value.perPage
-          : perPage // ignore: cast_nullable_to_non_nullable
-              as int?,
-    ));
+    return _then(
+      _$TraitsRequestImpl(
+        identity: null == identity
+            ? _value.identity
+            : identity // ignore: cast_nullable_to_non_nullable
+                  as int,
+        userId: freezed == userId
+            ? _value.userId
+            : userId // ignore: cast_nullable_to_non_nullable
+                  as int?,
+        denylist: null == denylist
+            ? _value._denylist
+            : denylist // ignore: cast_nullable_to_non_nullable
+                  as List<String>,
+        homeTags: null == homeTags
+            ? _value.homeTags
+            : homeTags // ignore: cast_nullable_to_non_nullable
+                  as String,
+        avatar: freezed == avatar
+            ? _value.avatar
+            : avatar // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        perPage: freezed == perPage
+            ? _value.perPage
+            : perPage // ignore: cast_nullable_to_non_nullable
+                  as int?,
+      ),
+    );
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$TraitsRequestImpl implements _TraitsRequest {
-  const _$TraitsRequestImpl(
-      {required this.identity,
-      this.userId,
-      final List<String> denylist = const [],
-      this.homeTags = '',
-      this.avatar,
-      this.perPage})
-      : _denylist = denylist;
+  const _$TraitsRequestImpl({
+    required this.identity,
+    this.userId,
+    final List<String> denylist = const [],
+    this.homeTags = '',
+    this.avatar,
+    this.perPage,
+  }) : _denylist = denylist;
 
   factory _$TraitsRequestImpl.fromJson(Map<String, dynamic> json) =>
       _$$TraitsRequestImplFromJson(json);
@@ -492,13 +512,14 @@ class _$TraitsRequestImpl implements _TraitsRequest {
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(
-      runtimeType,
-      identity,
-      userId,
-      const DeepCollectionEquality().hash(_denylist),
-      homeTags,
-      avatar,
-      perPage);
+    runtimeType,
+    identity,
+    userId,
+    const DeepCollectionEquality().hash(_denylist),
+    homeTags,
+    avatar,
+    perPage,
+  );
 
   /// Create a copy of TraitsRequest
   /// with the given fields replaced by the non-null parameter values.
@@ -510,20 +531,19 @@ class _$TraitsRequestImpl implements _TraitsRequest {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$TraitsRequestImplToJson(
-      this,
-    );
+    return _$$TraitsRequestImplToJson(this);
   }
 }
 
 abstract class _TraitsRequest implements TraitsRequest {
-  const factory _TraitsRequest(
-      {required final int identity,
-      final int? userId,
-      final List<String> denylist,
-      final String homeTags,
-      final String? avatar,
-      final int? perPage}) = _$TraitsRequestImpl;
+  const factory _TraitsRequest({
+    required final int identity,
+    final int? userId,
+    final List<String> denylist,
+    final String homeTags,
+    final String? avatar,
+    final int? perPage,
+  }) = _$TraitsRequestImpl;
 
   factory _TraitsRequest.fromJson(Map<String, dynamic> json) =
       _$TraitsRequestImpl.fromJson;

@@ -119,12 +119,11 @@ class DTextGrammar extends GrammarDefinition<DTextElement> {
   Parser<DTextElement> blocks() =>
       [ref0(quote), ref0(code), ref0(section)].toChoiceParser();
 
-  Parser<void> blockMarkers() =>
-      [
-        ref1(blockMarker, 'quote'),
-        ref1(blockMarker, 'code'),
-        ref1(blockMarker, 'section'),
-      ].toChoiceParser();
+  Parser<void> blockMarkers() => [
+    ref1(blockMarker, 'quote'),
+    ref1(blockMarker, 'code'),
+    ref1(blockMarker, 'section'),
+  ].toChoiceParser();
 
   Parser<DTextElement> structures() =>
       [ref0(header), ref0(list)].toChoiceParser();
@@ -140,40 +139,37 @@ class DTextGrammar extends GrammarDefinition<DTextElement> {
   Parser<DTextElement> styles() =>
       [ref0(inlineStyles), ref0(spoiler), ref0(inlineCode)].toChoiceParser();
 
-  Parser<DTextElement> inlineStyles() =>
-      [
-        ref0(bold),
-        ref0(italic),
-        ref0(overline),
-        ref0(underline),
-        ref0(strikethrough),
-        ref0(superscript),
-        ref0(subscript),
-        ref0(color),
-      ].toChoiceParser();
+  Parser<DTextElement> inlineStyles() => [
+    ref0(bold),
+    ref0(italic),
+    ref0(overline),
+    ref0(underline),
+    ref0(strikethrough),
+    ref0(superscript),
+    ref0(subscript),
+    ref0(color),
+  ].toChoiceParser();
 
-  Parser<DTextElement> links() =>
-      [
-        ref0(linkWord),
-        ref0(link),
-        ref0(localLink),
-        ref0(tagLink),
-        ref0(tagSearchLink),
-      ].toChoiceParser();
+  Parser<DTextElement> links() => [
+    ref0(linkWord),
+    ref0(link),
+    ref0(localLink),
+    ref0(tagLink),
+    ref0(tagSearchLink),
+  ].toChoiceParser();
 
   Parser<DTextElement> character() => any().map((value) => DTextContent(value));
 
-  Parser<void> blockMarker(String tag) =>
-      (
-        char('['),
-        char('/').optional(),
-        stringIgnoreCase(tag),
-        (
-          char('='),
-          any().starLazy(char(']')).flatten(),
-        ).toSequenceParser().optional(),
-        char(']'),
-      ).toSequenceParser();
+  Parser<void> blockMarker(String tag) => (
+    char('['),
+    char('/').optional(),
+    stringIgnoreCase(tag),
+    (
+      char('='),
+      any().starLazy(char(']')).flatten(),
+    ).toSequenceParser().optional(),
+    char(']'),
+  ).toSequenceParser();
 
   Parser<DTextElement> simpleBlockTag(String tag) =>
       ref3(blockTag, tag, tag, null).map((e) => e.$2);
@@ -214,33 +210,34 @@ class DTextGrammar extends GrammarDefinition<DTextElement> {
     ).map((e) => e.$2),
   ).map(DTextCode.new);
 
-  Parser<DTextElement> section() => (
-    position(),
-    [
-      ref3(
-        blockTag,
-        'section',
-        'section',
-        null,
-      ).map((e) => (e.$1, e.$2, false)),
-      ref3(
-        blockTag,
-        'section,expanded',
-        'section',
-        null,
-      ).map((e) => (e.$1, e.$2, true)),
-    ].toChoiceParser(),
-    position(),
-  ).toSequenceParser().map((e) {
-    final (start, content, end) = e;
-    final (tag, children, expanded) = content;
-    return DTextSection(
-      DTextId(start: start, end: end),
-      tag,
-      expanded,
-      children,
-    );
-  });
+  Parser<DTextElement> section() =>
+      (
+        position(),
+        [
+          ref3(
+            blockTag,
+            'section',
+            'section',
+            null,
+          ).map((e) => (e.$1, e.$2, false)),
+          ref3(
+            blockTag,
+            'section,expanded',
+            'section',
+            null,
+          ).map((e) => (e.$1, e.$2, true)),
+        ].toChoiceParser(),
+        position(),
+      ).toSequenceParser().map((e) {
+        final (start, content, end) = e;
+        final (tag, children, expanded) = content;
+        return DTextSection(
+          DTextId(start: start, end: end),
+          tag,
+          expanded,
+          children,
+        );
+      });
 
   Parser<DTextElement> bold() => ref1(simpleBlockTag, 'b').map(DTextBold.new);
   Parser<DTextElement> italic() =>
@@ -303,12 +300,11 @@ class DTextGrammar extends GrammarDefinition<DTextElement> {
   Parser<DTextElement> linkWord() => LinkWord.values
       .map((e) => e.name)
       .map(
-        (e) =>
-            (
-              stringIgnoreCase(e),
-              stringIgnoreCase(' #'),
-              digit().plus().flatten().map(int.parse),
-            ).toSequenceParser(),
+        (e) => (
+          stringIgnoreCase(e),
+          stringIgnoreCase(' #'),
+          digit().plus().flatten().map(int.parse),
+        ).toSequenceParser(),
       )
       .toChoiceParser()
       .map(

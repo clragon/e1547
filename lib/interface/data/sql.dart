@@ -13,13 +13,9 @@ class JsonSqlConverter<T> extends TypeConverter<T, String> {
 
   static JsonSqlConverter<Map<String, R>> map<R>() =>
       JsonSqlConverter<Map<String, R>>(
-        decode:
-            (value) =>
-                (value as Map<String, dynamic>)
-                    .map(
-                      (key, dynamicValue) => MapEntry(key, dynamicValue as R),
-                    )
-                    .cast(),
+        decode: (value) => (value as Map<String, dynamic>)
+            .map((key, dynamicValue) => MapEntry(key, dynamicValue as R))
+            .cast(),
       );
 
   final T Function(dynamic value)? decode;

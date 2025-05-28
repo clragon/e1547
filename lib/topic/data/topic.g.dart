@@ -7,20 +7,20 @@ part of 'topic.dart';
 // **************************************************************************
 
 _$TopicImpl _$$TopicImplFromJson(Map<String, dynamic> json) => _$TopicImpl(
-      id: (json['id'] as num).toInt(),
-      creatorId: (json['creator_id'] as num).toInt(),
-      creator: json['creator'] as String,
-      createdAt: DateTime.parse(json['created_at'] as String),
-      updaterId: (json['updater_id'] as num).toInt(),
-      updater: json['updater'] as String,
-      updatedAt: DateTime.parse(json['updated_at'] as String),
-      title: json['title'] as String,
-      responseCount: (json['response_count'] as num).toInt(),
-      sticky: json['sticky'] as bool,
-      locked: json['locked'] as bool,
-      hidden: json['hidden'] as bool,
-      categoryId: (json['category_id'] as num).toInt(),
-    );
+  id: (json['id'] as num).toInt(),
+  creatorId: (json['creator_id'] as num).toInt(),
+  creator: json['creator'] as String,
+  createdAt: DateTime.parse(json['created_at'] as String),
+  updaterId: (json['updater_id'] as num).toInt(),
+  updater: json['updater'] as String,
+  updatedAt: DateTime.parse(json['updated_at'] as String),
+  title: json['title'] as String,
+  responseCount: (json['response_count'] as num).toInt(),
+  sticky: json['sticky'] as bool,
+  locked: json['locked'] as bool,
+  hidden: json['hidden'] as bool,
+  categoryId: (json['category_id'] as num).toInt(),
+);
 
 Map<String, dynamic> _$$TopicImplToJson(_$TopicImpl instance) =>
     <String, dynamic>{

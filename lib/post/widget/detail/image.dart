@@ -70,43 +70,37 @@ class PostDetailImageToggle extends StatelessWidget {
               (!post.isFavorited && controller.isDenied(post)) ||
               controller.isAllowed(post),
           duration: const Duration(milliseconds: 200),
-          builder:
-              (context) => Card(
-                color:
-                    controller.isAllowed(post)
-                        ? Colors.black12
-                        : Colors.transparent,
-                elevation: 0,
-                child: InkWell(
-                  onTap:
-                      () =>
-                          controller.isAllowed(post)
-                              ? controller.unallow(post)
-                              : controller.allow(post),
-                  child: Padding(
-                    padding: const EdgeInsets.all(8),
-                    child: Row(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 2),
-                          child: Icon(
-                            controller.isAllowed(post)
-                                ? Icons.visibility_off
-                                : Icons.visibility,
-                            size: 16,
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 5),
-                          child: Text(
-                            controller.isAllowed(post) ? 'hide' : 'show',
-                          ),
-                        ),
-                      ],
+          builder: (context) => Card(
+            color: controller.isAllowed(post)
+                ? Colors.black12
+                : Colors.transparent,
+            elevation: 0,
+            child: InkWell(
+              onTap: () => controller.isAllowed(post)
+                  ? controller.unallow(post)
+                  : controller.allow(post),
+              child: Padding(
+                padding: const EdgeInsets.all(8),
+                child: Row(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 2),
+                      child: Icon(
+                        controller.isAllowed(post)
+                            ? Icons.visibility_off
+                            : Icons.visibility,
+                        size: 16,
+                      ),
                     ),
-                  ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 5),
+                      child: Text(controller.isAllowed(post) ? 'hide' : 'show'),
+                    ),
+                  ],
                 ),
               ),
+            ),
+          ),
         );
       },
     );
@@ -138,32 +132,30 @@ class PostDetailImageActions extends StatelessWidget {
             (!controller.isDenied(post) || post.isFavorited);
 
         if (visible) {
-          onTap =
-              post.type == PostType.unsupported
-                  ? () => launch(post.file!)
-                  : onOpen;
+          onTap = post.type == PostType.unsupported
+              ? () => launch(post.file!)
+              : onOpen;
         }
 
         Widget fullscreenButton() {
           if (post.type == PostType.video && onTap != null) {
             return CrossFade.builder(
               showChild: visible,
-              builder:
-                  (context) => Card(
-                    elevation: 0,
-                    color: Colors.black12,
-                    child: InkWell(
-                      onTap: onTap,
-                      child: const Padding(
-                        padding: EdgeInsets.all(4),
-                        child: Icon(
-                          Icons.fullscreen,
-                          size: 24,
-                          color: Colors.white,
-                        ),
-                      ),
+              builder: (context) => Card(
+                elevation: 0,
+                color: Colors.black12,
+                child: InkWell(
+                  onTap: onTap,
+                  child: const Padding(
+                    padding: EdgeInsets.all(4),
+                    child: Icon(
+                      Icons.fullscreen,
+                      size: 24,
+                      color: Colors.white,
                     ),
                   ),
+                ),
+              ),
             );
           } else {
             return const SizedBox.shrink();
@@ -173,12 +165,11 @@ class PostDetailImageActions extends StatelessWidget {
         Widget muteButton() {
           return CrossFade.builder(
             showChild: post.type == PostType.video && post.file != null,
-            builder:
-                (context) => const Card(
-                  elevation: 0,
-                  color: Colors.black12,
-                  child: VideoServiceVolumeControl(),
-                ),
+            builder: (context) => const Card(
+              elevation: 0,
+              color: Colors.black12,
+              child: VideoServiceVolumeControl(),
+            ),
           );
         }
 
@@ -189,11 +180,9 @@ class PostDetailImageActions extends StatelessWidget {
           children: [
             InkWell(
               hoverColor: Colors.transparent,
-              onTap:
-                  player != null
-                      ? () =>
-                          player.state.playing ? player.pause() : player.play()
-                      : onTap,
+              onTap: player != null
+                  ? () => player.state.playing ? player.pause() : player.play()
+                  : onTap,
               child: child,
             ),
             Positioned(
@@ -232,19 +221,17 @@ class PostDetailImageDisplay extends StatelessWidget {
       post: post,
       child: PostImageOverlay(
         post: post,
-        builder:
-            (context) => Center(
-              child: Hero(
-                tag: post.link,
-                child: ImageCacheSizeProvider(
-                  size: context.watch<ImageCacheSize?>()?.size,
-                  child:
-                      post.type == PostType.video
-                          ? PostDetailVideo(post: post)
-                          : PostDetailImage(post: post),
-                ),
-              ),
+        builder: (context) => Center(
+          child: Hero(
+            tag: post.link,
+            child: ImageCacheSizeProvider(
+              size: context.watch<ImageCacheSize?>()?.size,
+              child: post.type == PostType.video
+                  ? PostDetailVideo(post: post)
+                  : PostDetailImage(post: post),
             ),
+          ),
+        ),
       ),
     );
   }

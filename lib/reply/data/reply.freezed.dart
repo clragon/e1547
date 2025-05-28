@@ -12,7 +12,8 @@ part of 'reply.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
+  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
+);
 
 Reply _$ReplyFromJson(Map<String, dynamic> json) {
   return _Reply.fromJson(json);
@@ -46,18 +47,19 @@ abstract class $ReplyCopyWith<$Res> {
   factory $ReplyCopyWith(Reply value, $Res Function(Reply) then) =
       _$ReplyCopyWithImpl<$Res, Reply>;
   @useResult
-  $Res call(
-      {int id,
-      int creatorId,
-      String creator,
-      DateTime createdAt,
-      int? updaterId,
-      String? updater,
-      DateTime updatedAt,
-      String body,
-      int topicId,
-      WarningType? warning,
-      bool hidden});
+  $Res call({
+    int id,
+    int creatorId,
+    String creator,
+    DateTime createdAt,
+    int? updaterId,
+    String? updater,
+    DateTime updatedAt,
+    String body,
+    int topicId,
+    WarningType? warning,
+    bool hidden,
+  });
 }
 
 /// @nodoc
@@ -87,74 +89,79 @@ class _$ReplyCopyWithImpl<$Res, $Val extends Reply>
     Object? warning = freezed,
     Object? hidden = null,
   }) {
-    return _then(_value.copyWith(
-      id: null == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as int,
-      creatorId: null == creatorId
-          ? _value.creatorId
-          : creatorId // ignore: cast_nullable_to_non_nullable
-              as int,
-      creator: null == creator
-          ? _value.creator
-          : creator // ignore: cast_nullable_to_non_nullable
-              as String,
-      createdAt: null == createdAt
-          ? _value.createdAt
-          : createdAt // ignore: cast_nullable_to_non_nullable
-              as DateTime,
-      updaterId: freezed == updaterId
-          ? _value.updaterId
-          : updaterId // ignore: cast_nullable_to_non_nullable
-              as int?,
-      updater: freezed == updater
-          ? _value.updater
-          : updater // ignore: cast_nullable_to_non_nullable
-              as String?,
-      updatedAt: null == updatedAt
-          ? _value.updatedAt
-          : updatedAt // ignore: cast_nullable_to_non_nullable
-              as DateTime,
-      body: null == body
-          ? _value.body
-          : body // ignore: cast_nullable_to_non_nullable
-              as String,
-      topicId: null == topicId
-          ? _value.topicId
-          : topicId // ignore: cast_nullable_to_non_nullable
-              as int,
-      warning: freezed == warning
-          ? _value.warning
-          : warning // ignore: cast_nullable_to_non_nullable
-              as WarningType?,
-      hidden: null == hidden
-          ? _value.hidden
-          : hidden // ignore: cast_nullable_to_non_nullable
-              as bool,
-    ) as $Val);
+    return _then(
+      _value.copyWith(
+            id: null == id
+                ? _value.id
+                : id // ignore: cast_nullable_to_non_nullable
+                      as int,
+            creatorId: null == creatorId
+                ? _value.creatorId
+                : creatorId // ignore: cast_nullable_to_non_nullable
+                      as int,
+            creator: null == creator
+                ? _value.creator
+                : creator // ignore: cast_nullable_to_non_nullable
+                      as String,
+            createdAt: null == createdAt
+                ? _value.createdAt
+                : createdAt // ignore: cast_nullable_to_non_nullable
+                      as DateTime,
+            updaterId: freezed == updaterId
+                ? _value.updaterId
+                : updaterId // ignore: cast_nullable_to_non_nullable
+                      as int?,
+            updater: freezed == updater
+                ? _value.updater
+                : updater // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            updatedAt: null == updatedAt
+                ? _value.updatedAt
+                : updatedAt // ignore: cast_nullable_to_non_nullable
+                      as DateTime,
+            body: null == body
+                ? _value.body
+                : body // ignore: cast_nullable_to_non_nullable
+                      as String,
+            topicId: null == topicId
+                ? _value.topicId
+                : topicId // ignore: cast_nullable_to_non_nullable
+                      as int,
+            warning: freezed == warning
+                ? _value.warning
+                : warning // ignore: cast_nullable_to_non_nullable
+                      as WarningType?,
+            hidden: null == hidden
+                ? _value.hidden
+                : hidden // ignore: cast_nullable_to_non_nullable
+                      as bool,
+          )
+          as $Val,
+    );
   }
 }
 
 /// @nodoc
 abstract class _$$ReplyImplCopyWith<$Res> implements $ReplyCopyWith<$Res> {
   factory _$$ReplyImplCopyWith(
-          _$ReplyImpl value, $Res Function(_$ReplyImpl) then) =
-      __$$ReplyImplCopyWithImpl<$Res>;
+    _$ReplyImpl value,
+    $Res Function(_$ReplyImpl) then,
+  ) = __$$ReplyImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call(
-      {int id,
-      int creatorId,
-      String creator,
-      DateTime createdAt,
-      int? updaterId,
-      String? updater,
-      DateTime updatedAt,
-      String body,
-      int topicId,
-      WarningType? warning,
-      bool hidden});
+  $Res call({
+    int id,
+    int creatorId,
+    String creator,
+    DateTime createdAt,
+    int? updaterId,
+    String? updater,
+    DateTime updatedAt,
+    String body,
+    int topicId,
+    WarningType? warning,
+    bool hidden,
+  });
 }
 
 /// @nodoc
@@ -162,8 +169,9 @@ class __$$ReplyImplCopyWithImpl<$Res>
     extends _$ReplyCopyWithImpl<$Res, _$ReplyImpl>
     implements _$$ReplyImplCopyWith<$Res> {
   __$$ReplyImplCopyWithImpl(
-      _$ReplyImpl _value, $Res Function(_$ReplyImpl) _then)
-      : super(_value, _then);
+    _$ReplyImpl _value,
+    $Res Function(_$ReplyImpl) _then,
+  ) : super(_value, _then);
 
   /// Create a copy of Reply
   /// with the given fields replaced by the non-null parameter values.
@@ -182,70 +190,73 @@ class __$$ReplyImplCopyWithImpl<$Res>
     Object? warning = freezed,
     Object? hidden = null,
   }) {
-    return _then(_$ReplyImpl(
-      id: null == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as int,
-      creatorId: null == creatorId
-          ? _value.creatorId
-          : creatorId // ignore: cast_nullable_to_non_nullable
-              as int,
-      creator: null == creator
-          ? _value.creator
-          : creator // ignore: cast_nullable_to_non_nullable
-              as String,
-      createdAt: null == createdAt
-          ? _value.createdAt
-          : createdAt // ignore: cast_nullable_to_non_nullable
-              as DateTime,
-      updaterId: freezed == updaterId
-          ? _value.updaterId
-          : updaterId // ignore: cast_nullable_to_non_nullable
-              as int?,
-      updater: freezed == updater
-          ? _value.updater
-          : updater // ignore: cast_nullable_to_non_nullable
-              as String?,
-      updatedAt: null == updatedAt
-          ? _value.updatedAt
-          : updatedAt // ignore: cast_nullable_to_non_nullable
-              as DateTime,
-      body: null == body
-          ? _value.body
-          : body // ignore: cast_nullable_to_non_nullable
-              as String,
-      topicId: null == topicId
-          ? _value.topicId
-          : topicId // ignore: cast_nullable_to_non_nullable
-              as int,
-      warning: freezed == warning
-          ? _value.warning
-          : warning // ignore: cast_nullable_to_non_nullable
-              as WarningType?,
-      hidden: null == hidden
-          ? _value.hidden
-          : hidden // ignore: cast_nullable_to_non_nullable
-              as bool,
-    ));
+    return _then(
+      _$ReplyImpl(
+        id: null == id
+            ? _value.id
+            : id // ignore: cast_nullable_to_non_nullable
+                  as int,
+        creatorId: null == creatorId
+            ? _value.creatorId
+            : creatorId // ignore: cast_nullable_to_non_nullable
+                  as int,
+        creator: null == creator
+            ? _value.creator
+            : creator // ignore: cast_nullable_to_non_nullable
+                  as String,
+        createdAt: null == createdAt
+            ? _value.createdAt
+            : createdAt // ignore: cast_nullable_to_non_nullable
+                  as DateTime,
+        updaterId: freezed == updaterId
+            ? _value.updaterId
+            : updaterId // ignore: cast_nullable_to_non_nullable
+                  as int?,
+        updater: freezed == updater
+            ? _value.updater
+            : updater // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        updatedAt: null == updatedAt
+            ? _value.updatedAt
+            : updatedAt // ignore: cast_nullable_to_non_nullable
+                  as DateTime,
+        body: null == body
+            ? _value.body
+            : body // ignore: cast_nullable_to_non_nullable
+                  as String,
+        topicId: null == topicId
+            ? _value.topicId
+            : topicId // ignore: cast_nullable_to_non_nullable
+                  as int,
+        warning: freezed == warning
+            ? _value.warning
+            : warning // ignore: cast_nullable_to_non_nullable
+                  as WarningType?,
+        hidden: null == hidden
+            ? _value.hidden
+            : hidden // ignore: cast_nullable_to_non_nullable
+                  as bool,
+      ),
+    );
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$ReplyImpl implements _Reply {
-  const _$ReplyImpl(
-      {required this.id,
-      required this.creatorId,
-      required this.creator,
-      required this.createdAt,
-      required this.updaterId,
-      required this.updater,
-      required this.updatedAt,
-      required this.body,
-      required this.topicId,
-      required this.warning,
-      required this.hidden});
+  const _$ReplyImpl({
+    required this.id,
+    required this.creatorId,
+    required this.creator,
+    required this.createdAt,
+    required this.updaterId,
+    required this.updater,
+    required this.updatedAt,
+    required this.body,
+    required this.topicId,
+    required this.warning,
+    required this.hidden,
+  });
 
   factory _$ReplyImpl.fromJson(Map<String, dynamic> json) =>
       _$$ReplyImplFromJson(json);
@@ -302,8 +313,20 @@ class _$ReplyImpl implements _Reply {
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, id, creatorId, creator,
-      createdAt, updaterId, updater, updatedAt, body, topicId, warning, hidden);
+  int get hashCode => Object.hash(
+    runtimeType,
+    id,
+    creatorId,
+    creator,
+    createdAt,
+    updaterId,
+    updater,
+    updatedAt,
+    body,
+    topicId,
+    warning,
+    hidden,
+  );
 
   /// Create a copy of Reply
   /// with the given fields replaced by the non-null parameter values.
@@ -315,25 +338,24 @@ class _$ReplyImpl implements _Reply {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$ReplyImplToJson(
-      this,
-    );
+    return _$$ReplyImplToJson(this);
   }
 }
 
 abstract class _Reply implements Reply {
-  const factory _Reply(
-      {required final int id,
-      required final int creatorId,
-      required final String creator,
-      required final DateTime createdAt,
-      required final int? updaterId,
-      required final String? updater,
-      required final DateTime updatedAt,
-      required final String body,
-      required final int topicId,
-      required final WarningType? warning,
-      required final bool hidden}) = _$ReplyImpl;
+  const factory _Reply({
+    required final int id,
+    required final int creatorId,
+    required final String creator,
+    required final DateTime createdAt,
+    required final int? updaterId,
+    required final String? updater,
+    required final DateTime updatedAt,
+    required final String body,
+    required final int topicId,
+    required final WarningType? warning,
+    required final bool hidden,
+  }) = _$ReplyImpl;
 
   factory _Reply.fromJson(Map<String, dynamic> json) = _$ReplyImpl.fromJson;
 

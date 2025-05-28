@@ -86,9 +86,8 @@ class CommentProvider
     extends SubChangeNotifierProvider<Client, CommentController> {
   CommentProvider({required int postId, super.child, super.builder})
     : super(
-        create:
-            (context, client) =>
-                CommentController(client: client, postId: postId),
+        create: (context, client) =>
+            CommentController(client: client, postId: postId),
         keys: (context) => [postId],
       );
 }

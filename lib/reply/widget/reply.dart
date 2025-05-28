@@ -82,14 +82,12 @@ class ReplyHeader extends StatelessWidget {
                 ),
               ),
             ),
-            onTap:
-                () => Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder:
-                        (context) =>
-                            UserLoadingPage(reply.creatorId.toString()),
-                  ),
-                ),
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) =>
+                    UserLoadingPage(reply.creatorId.toString()),
+              ),
+            ),
           ),
         ),
         const SizedBox(width: 4),

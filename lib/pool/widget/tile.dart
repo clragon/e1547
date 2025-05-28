@@ -100,10 +100,10 @@ class PoolTile extends StatelessWidget {
                   type: MaterialType.transparency,
                   child: InkWell(
                     onTap: onPressed,
-                    onLongPress:
-                        () => showPoolPrompt(context: context, pool: pool),
-                    onSecondaryTap:
-                        () => showPoolPrompt(context: context, pool: pool),
+                    onLongPress: () =>
+                        showPoolPrompt(context: context, pool: pool),
+                    onSecondaryTap: () =>
+                        showPoolPrompt(context: context, pool: pool),
                   ),
                 ),
               ),

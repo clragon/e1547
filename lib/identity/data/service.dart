@@ -45,11 +45,11 @@ class IdentityService extends IdentityRepository with ChangeNotifier {
     notifyListeners();
   }
 
-  Stream<Identity?> _find(int? id) =>
-      id == null
-          ? Stream.value(null)
-          : (select(identitiesTable)
-            ..where((tbl) => tbl.id.equals(id))).watchSingleOrNull();
+  Stream<Identity?> _find(int? id) => id == null
+      ? Stream.value(null)
+      : (select(
+          identitiesTable,
+        )..where((tbl) => tbl.id.equals(id))).watchSingleOrNull();
 
   Future<void> _onChanged(Identity? value) async {
     if (value == null) return activate(null);

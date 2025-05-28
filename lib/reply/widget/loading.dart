@@ -21,11 +21,8 @@ class _ReplyLoadingPageState extends State<ReplyLoadingPage> {
   Widget build(BuildContext context) {
     return FutureLoadingPage<Reply>(
       future: reply,
-      builder:
-          (context, value) => TopicLoadingPage(
-            value.topicId,
-            orderByOldest: widget.orderByOldest,
-          ),
+      builder: (context, value) =>
+          TopicLoadingPage(value.topicId, orderByOldest: widget.orderByOldest),
       title: Text('Reply #${widget.id}'),
       onError: const Text('Failed to load reply'),
       onEmpty: const Text('Reply not found'),

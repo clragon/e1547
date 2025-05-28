@@ -56,8 +56,9 @@ class CrossFade extends StatelessWidget {
         return AnimatedCrossFade(
           firstChild: builder(context),
           secondChild: secondChild ?? const SizedBox.shrink(),
-          crossFadeState:
-              showChild ? CrossFadeState.showFirst : CrossFadeState.showSecond,
+          crossFadeState: showChild
+              ? CrossFadeState.showFirst
+              : CrossFadeState.showSecond,
           duration: duration,
         );
       case FadeAnimationStyle.adjacent:
@@ -65,10 +66,9 @@ class CrossFade extends StatelessWidget {
           duration: duration,
           child: AnimatedSwitcher(
             duration: duration,
-            child:
-                showChild
-                    ? builder(context)
-                    : secondChild ?? const SizedBox.shrink(),
+            child: showChild
+                ? builder(context)
+                : secondChild ?? const SizedBox.shrink(),
           ),
         );
     }

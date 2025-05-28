@@ -19,20 +19,18 @@ class HistoriesTable extends Table {
 
 @DataClassName('HistoryIdentity')
 class HistoriesIdentitiesTable extends Table {
-  IntColumn get identity =>
-      integer().references(
-        IdentitiesTable,
-        #id,
-        onDelete: KeyAction.noAction,
-        onUpdate: KeyAction.noAction,
-      )();
-  IntColumn get history =>
-      integer().references(
-        HistoriesTable,
-        #id,
-        onDelete: KeyAction.cascade,
-        onUpdate: KeyAction.cascade,
-      )();
+  IntColumn get identity => integer().references(
+    IdentitiesTable,
+    #id,
+    onDelete: KeyAction.noAction,
+    onUpdate: KeyAction.noAction,
+  )();
+  IntColumn get history => integer().references(
+    HistoriesTable,
+    #id,
+    onDelete: KeyAction.cascade,
+    onUpdate: KeyAction.cascade,
+  )();
 
   @override
   Set<Column> get primaryKey => {identity, history};
@@ -45,18 +43,17 @@ class HistoryRepository extends DatabaseAccessor<GeneratedDatabase>
     with $HistoryRepositoryMixin {
   HistoryRepository({required GeneratedDatabase database}) : super(database);
 
-  StreamFuture<History> get(int id) =>
-      (select(historiesTable)
-        ..where((tbl) => tbl.id.equals(id))).watchSingle().future;
+  StreamFuture<History> get(int id) => (select(
+    historiesTable,
+  )..where((tbl) => tbl.id.equals(id))).watchSingle().future;
 
   Expression<bool> _identityQuery($HistoriesTableTable tbl, int? identity) {
-    final subQuery =
-        historiesIdentitiesTable.selectOnly()
-          ..addColumns([historiesIdentitiesTable.history])
-          ..where(
-            Variable(identity).isNull() |
-                historiesIdentitiesTable.identity.equalsNullable(identity),
-          );
+    final subQuery = historiesIdentitiesTable.selectOnly()
+      ..addColumns([historiesIdentitiesTable.history])
+      ..where(
+        Variable(identity).isNull() |
+            historiesIdentitiesTable.identity.equalsNullable(identity),
+      );
 
     return tbl.id.isInQuery(subQuery);
   }
@@ -73,13 +70,11 @@ class HistoryRepository extends DatabaseAccessor<GeneratedDatabase>
     DateTime? day,
     Duration? maxAge,
   }) {
-    final selectable =
-        select(historiesTable)
-          ..orderBy([
-            (t) =>
-                OrderingTerm(expression: t.visitedAt, mode: OrderingMode.desc),
-          ])
-          ..where((tbl) => _identityQuery(tbl, identity));
+    final selectable = select(historiesTable)
+      ..orderBy([
+        (t) => OrderingTerm(expression: t.visitedAt, mode: OrderingMode.desc),
+      ])
+      ..where((tbl) => _identityQuery(tbl, identity));
     if (link != null) {
       selectable.where((tbl) => tbl.link.regexp(link, caseSensitive: false));
     }

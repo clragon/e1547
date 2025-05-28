@@ -16,10 +16,9 @@ class PostDetail extends StatelessWidget {
     child: ConstrainedBox(
       constraints: BoxConstraints(
         minHeight: (constraints.maxHeight / 2),
-        maxHeight:
-            constraints.maxWidth > constraints.maxHeight
-                ? max(400, constraints.maxHeight * 0.8)
-                : double.infinity,
+        maxHeight: constraints.maxWidth > constraints.maxHeight
+            ? max(400, constraints.maxHeight * 0.8)
+            : double.infinity,
       ),
       child: AnimatedSize(
         duration: defaultAnimationDuration,
@@ -91,10 +90,9 @@ class PostDetail extends StatelessWidget {
           child: Scaffold(
             extendBodyBehindAppBar: true,
             appBar: PostDetailAppBar(post: post),
-            floatingActionButton:
-                context.read<Client>().hasLogin
-                    ? PostDetailFloatingActionButton(post: post)
-                    : null,
+            floatingActionButton: context.read<Client>().hasLogin
+                ? PostDetailFloatingActionButton(post: post)
+                : null,
             body: MediaQuery.removeViewInsets(
               context: context,
               removeTop: true,

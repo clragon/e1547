@@ -36,51 +36,50 @@ class SourceDisplay extends StatelessWidget {
               if (editing)
                 IconButton(
                   icon: const Icon(Icons.edit),
-                  onPressed:
-                      canEdit
-                          ? () {
-                            PostEditingController editingController =
-                                context.read<PostEditingController>();
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder:
-                                    (context) => TextEditor(
-                                      title: Text('#${post.id} sources'),
-                                      content: editingController.value!.sources
-                                          .join('\n'),
-                                      onSubmitted: (text) {
-                                        editingController.value =
-                                            editingController.value!.copyWith(
-                                              sources: text.trim().split('\n'),
-                                            );
-                                        return null;
-                                      },
-                                      onClosed: Navigator.of(context).maybePop,
-                                    ),
+                  onPressed: canEdit
+                      ? () {
+                          PostEditingController editingController = context
+                              .read<PostEditingController>();
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => TextEditor(
+                                title: Text('#${post.id} sources'),
+                                content: editingController.value!.sources.join(
+                                  '\n',
+                                ),
+                                onSubmitted: (text) {
+                                  editingController.value = editingController
+                                      .value!
+                                      .copyWith(
+                                        sources: text.trim().split('\n'),
+                                      );
+                                  return null;
+                                },
+                                onClosed: Navigator.of(context).maybePop,
                               ),
-                            );
-                          }
-                          : null,
+                            ),
+                          );
+                        }
+                      : null,
                 ),
             ],
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-            child:
-                sources.join('\n').trim().isNotEmpty
-                    ? Wrap(
-                      children: sources.map((e) => SourceCard(url: e)).toList(),
-                    )
-                    : Padding(
-                      padding: const EdgeInsets.all(4),
-                      child: Text(
-                        'no sources',
-                        style: TextStyle(
-                          color: dimTextColor(context),
-                          fontStyle: FontStyle.italic,
-                        ),
+            child: sources.join('\n').trim().isNotEmpty
+                ? Wrap(
+                    children: sources.map((e) => SourceCard(url: e)).toList(),
+                  )
+                : Padding(
+                    padding: const EdgeInsets.all(4),
+                    child: Text(
+                      'no sources',
+                      style: TextStyle(
+                        color: dimTextColor(context),
+                        fontStyle: FontStyle.italic,
                       ),
                     ),
+                  ),
           ),
           const Divider(),
         ],
@@ -131,13 +130,12 @@ class SourceCard extends StatelessWidget {
                     padding: const EdgeInsets.all(6),
                     child: Text(
                       linkToDisplay(url),
-                      style:
-                          enabled
-                              ? TextStyle(color: Colors.blue[400])
-                              : const TextStyle(
-                                color: Colors.grey,
-                                decoration: TextDecoration.lineThrough,
-                              ),
+                      style: enabled
+                          ? TextStyle(color: Colors.blue[400])
+                          : const TextStyle(
+                              color: Colors.grey,
+                              decoration: TextDecoration.lineThrough,
+                            ),
                     ),
                   ),
                 ),

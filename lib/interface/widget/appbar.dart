@@ -48,8 +48,8 @@ AppBarLeadingConfiguration getLeadingConfiguration({
 
     Widget backButton =
         parentRoute is PageRoute<dynamic> && parentRoute.fullscreenDialog
-            ? const CloseButton()
-            : const BackButton();
+        ? const CloseButton()
+        : const BackButton();
 
     if (hasDrawer && isFirst) {
       effectiveLeading = drawerButton();
@@ -192,26 +192,26 @@ class ScrollToTop extends StatelessWidget {
           this.controller ??
           (primary ? PrimaryScrollController.of(context) : null);
       return GestureDetector(
-        onDoubleTap:
-            controller != null
-                ? () => controller.animateTo(
-                  0,
-                  duration: defaultAnimationDuration,
-                  curve: Curves.easeOut,
-                )
-                : null,
+        onDoubleTap: controller != null
+            ? () => controller.animateTo(
+                0,
+                duration: defaultAnimationDuration,
+                curve: Curves.easeOut,
+              )
+            : null,
         child: Container(
           height: height,
           color: Colors.transparent,
-          child:
-              child != null
-                  ? Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Expanded(child: Row(children: [Expanded(child: child)])),
-                    ],
-                  )
-                  : null,
+          child: child != null
+              ? Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      child: Row(children: [Expanded(child: child)]),
+                    ),
+                  ],
+                )
+              : null,
         ),
       );
     }

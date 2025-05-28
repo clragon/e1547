@@ -20,26 +20,24 @@ class _HomePageState extends State<HomePage> with RouterDrawerEntryWidget {
     return PostProvider(
       query: TagMap({'tags': client.traits.value.homeTags}),
       child: Consumer<PostController>(
-        builder:
-            (context, controller, child) => PostsControllerHistoryConnector(
+        builder: (context, controller, child) =>
+            PostsControllerHistoryConnector(
               controller: controller,
               child: SubListener(
                 initialize: true,
                 listenable: controller,
-                listener:
-                    () => client.accounts.push(
-                      traits: client.traits.value.copyWith(
-                        homeTags: controller.query['tags'].toString(),
-                      ),
-                    ),
-                builder:
-                    (context) => PostsPage(
-                      appBar: const DefaultAppBar(
-                        title: Center(child: AppIcon()),
-                        actions: [ContextDrawerButton()],
-                      ),
-                      controller: controller,
-                    ),
+                listener: () => client.accounts.push(
+                  traits: client.traits.value.copyWith(
+                    homeTags: controller.query['tags'].toString(),
+                  ),
+                ),
+                builder: (context) => PostsPage(
+                  appBar: const DefaultAppBar(
+                    title: Center(child: AppIcon()),
+                    actions: [ContextDrawerButton()],
+                  ),
+                  controller: controller,
+                ),
               ),
             ),
       ),

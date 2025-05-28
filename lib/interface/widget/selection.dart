@@ -181,25 +181,24 @@ class SelectionAppBar<T> extends StatelessWidget with AppBarBuilderWidget {
     SelectionLayoutData<T>? layoutData = SelectionLayout.maybeOf<T>(context);
     return CrossFade.builder(
       showChild: layoutData != null && layoutData.selections.isNotEmpty,
-      builder:
-          (context) => DefaultAppBar(
-            title:
-                titleBuilder?.call(context, layoutData!) ??
-                Text('${layoutData!.selections.length} items'),
-            leading: IconButton(
-              icon: const Icon(Icons.clear),
-              tooltip: 'Abort',
-              onPressed: layoutData!.clear,
-            ),
-            actions: [
-              IconButton(
-                icon: const Icon(Icons.select_all),
-                tooltip: 'Select all',
-                onPressed: layoutData.selectAll,
-              ),
-              ...actionBuilder(context, layoutData),
-            ],
+      builder: (context) => DefaultAppBar(
+        title:
+            titleBuilder?.call(context, layoutData!) ??
+            Text('${layoutData!.selections.length} items'),
+        leading: IconButton(
+          icon: const Icon(Icons.clear),
+          tooltip: 'Abort',
+          onPressed: layoutData!.clear,
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.select_all),
+            tooltip: 'Select all',
+            onPressed: layoutData.selectAll,
           ),
+          ...actionBuilder(context, layoutData),
+        ],
+      ),
       secondChild: child,
     );
   }
@@ -234,10 +233,9 @@ class SelectionItemOverlay<T> extends StatelessWidget {
           Positioned.fill(
             child: MouseCursorRegion(
               behavior: HitTestBehavior.translucent,
-              onTap:
-                  layoutData.selections.isNotEmpty
-                      ? () => layoutData.toggleSelection(item)
-                      : null,
+              onTap: layoutData.selections.isNotEmpty
+                  ? () => layoutData.toggleSelection(item)
+                  : null,
               onLongPress: () => layoutData.toggleSelection(item),
               onSecondaryTap: () => layoutData.toggleSelection(item),
               child: ExcludeFocus(

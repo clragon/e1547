@@ -24,9 +24,8 @@ class _UserLoadingPageState extends State<UserLoadingPage> {
   Widget build(BuildContext context) {
     return FutureLoadingPage<User>(
       future: user,
-      builder:
-          (context, value) =>
-              UserPage(user: value, initialPage: widget.initalPage),
+      builder: (context, value) =>
+          UserPage(user: value, initialPage: widget.initalPage),
       title: Text('User #${widget.id}'),
       onError: const Text('Failed to load user'),
       onEmpty: const Text('User not found'),

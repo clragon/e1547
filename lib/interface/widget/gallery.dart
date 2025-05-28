@@ -142,33 +142,31 @@ class _GalleryPageButtonState extends State<GalleryPageButton> {
                 child: TweenAnimationBuilder<Color?>(
                   tween: ColorTween(
                     begin: dimTextColor(context, 0.4),
-                    end:
-                        dimButton
-                            ? dimTextColor(context, 0.4)
-                            : Theme.of(context).iconTheme.color,
+                    end: dimButton
+                        ? dimTextColor(context, 0.4)
+                        : Theme.of(context).iconTheme.color,
                   ),
                   duration: const Duration(milliseconds: 100),
-                  builder:
-                      (context, value, child) => IconButton(
-                        onPressed: () {
-                          int page = widget.controller.page!.round();
-                          switch (widget.direction) {
-                            case GalleryButtonDirection.left:
-                              page--;
-                              break;
-                            case GalleryButtonDirection.right:
-                              page++;
-                              break;
-                          }
-                          widget.controller.animateToPage(
-                            page,
-                            duration: const Duration(milliseconds: 200),
-                            curve: Curves.easeInOut,
-                          );
-                        },
-                        icon: getIcon(),
-                        color: value,
-                      ),
+                  builder: (context, value, child) => IconButton(
+                    onPressed: () {
+                      int page = widget.controller.page!.round();
+                      switch (widget.direction) {
+                        case GalleryButtonDirection.left:
+                          page--;
+                          break;
+                        case GalleryButtonDirection.right:
+                          page++;
+                          break;
+                      }
+                      widget.controller.animateToPage(
+                        page,
+                        duration: const Duration(milliseconds: 200),
+                        curve: Curves.easeInOut,
+                      );
+                    },
+                    icon: getIcon(),
+                    color: value,
+                  ),
                 ),
               ),
             ),

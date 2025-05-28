@@ -33,12 +33,11 @@ class HistoryTile extends StatelessWidget {
                           child: TimedText(
                             created: entry.visitedAt,
                             child: DefaultTextStyle(
-                              style: Theme.of(
-                                context,
-                              ).textTheme.bodyMedium!.copyWith(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                              ),
+                              style: Theme.of(context).textTheme.bodyMedium!
+                                  .copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               child: Padding(
@@ -55,52 +54,44 @@ class HistoryTile extends StatelessWidget {
                           ),
                           iconSize: 18,
                           onSelected: (value) => value(),
-                          itemBuilder:
-                              (context) => [
-                                if (entry.isSearch(LinkType.post))
-                                  PopupMenuTile(
-                                    title: 'Wiki',
-                                    icon: Icons.info,
-                                    value:
-                                        () => showTagSearchPrompt(
-                                          context: context,
-                                          tag:
-                                              const E621LinkParser()
-                                                  .parse(entry.link)!
-                                                  .query!['tags']!,
-                                        ),
-                                  ),
-                                if (entry.subtitle != null)
-                                  PopupMenuTile(
-                                    title: 'Description',
-                                    icon: Icons.description,
-                                    value:
-                                        () => historySheet(
-                                          context: context,
-                                          entry: entry,
-                                        ),
-                                  ),
-                                PopupMenuTile(
-                                  title: 'Share',
-                                  icon: Icons.share,
-                                  value:
-                                      () => Share.text(
-                                        context,
-                                        context.read<Client>().withHost(
-                                          entry.link,
-                                        ),
-                                      ),
+                          itemBuilder: (context) => [
+                            if (entry.isSearch(LinkType.post))
+                              PopupMenuTile(
+                                title: 'Wiki',
+                                icon: Icons.info,
+                                value: () => showTagSearchPrompt(
+                                  context: context,
+                                  tag: const E621LinkParser()
+                                      .parse(entry.link)!
+                                      .query!['tags']!,
                                 ),
-                                PopupMenuTile(
-                                  title: 'Delete',
-                                  icon: Icons.delete,
-                                  value:
-                                      () => context
-                                          .read<Client>()
-                                          .histories
-                                          .remove(entry.id),
+                              ),
+                            if (entry.subtitle != null)
+                              PopupMenuTile(
+                                title: 'Description',
+                                icon: Icons.description,
+                                value: () => historySheet(
+                                  context: context,
+                                  entry: entry,
                                 ),
-                              ],
+                              ),
+                            PopupMenuTile(
+                              title: 'Share',
+                              icon: Icons.share,
+                              value: () => Share.text(
+                                context,
+                                context.read<Client>().withHost(entry.link),
+                              ),
+                            ),
+                            PopupMenuTile(
+                              title: 'Delete',
+                              icon: Icons.delete,
+                              value: () => context
+                                  .read<Client>()
+                                  .histories
+                                  .remove(entry.id),
+                            ),
+                          ],
                         ),
                       ],
                     ),

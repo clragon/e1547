@@ -14,87 +14,79 @@ class FollowsSubscriptionsPage extends StatelessWidget {
     return RouterDrawerEntry<FollowsSubscriptionsPage>(
       child: ValueListenableBuilder(
         valueListenable: context.watch<Settings>().filterUnseenFollows,
-        builder:
-            (context, filterUnseenFollows, child) =>
-                SubChangeNotifierProvider<Client, FollowController>(
-                  create:
-                      (context, value) => FollowController(
-                        client: value,
-                        types: [FollowType.update, FollowType.notify],
-                        filterUnseen: filterUnseenFollows,
-                      ),
-                  keys: (context) => [filterUnseenFollows],
-                  child: child,
-                ),
+        builder: (context, filterUnseenFollows, child) =>
+            SubChangeNotifierProvider<Client, FollowController>(
+              create: (context, value) => FollowController(
+                client: value,
+                types: [FollowType.update, FollowType.notify],
+                filterUnseen: filterUnseenFollows,
+              ),
+              keys: (context) => [filterUnseenFollows],
+              child: child,
+            ),
         child: Consumer<FollowController>(
-          builder:
-              (context, controller, _) => SubEffect(
-                effect: () {
-                  // remove this when the paged grid view is implemented
-                  controller.getNextPage();
-                  final client = context.read<Client>();
-                  client.follows.sync();
-                  return null;
-                },
-                keys: [controller],
-                child: SelectionLayout<Follow>(
-                  items: controller.items,
-                  child: PromptActions(
-                    child: RefreshableDataPage.builder(
-                      controller: controller,
-                      builder: (context, child) => TileLayout(child: child),
-                      child:
-                          (context) => PagedAlignedGridView<int, Follow>.count(
-                            primary: true,
-                            padding: defaultActionListPadding,
-                            pagingController: controller.paging,
-                            addAutomaticKeepAlives: false,
-                            builderDelegate: defaultPagedChildBuilderDelegate(
-                              pagingController: controller.paging,
-                              itemBuilder:
-                                  (context, item, index) =>
-                                      FollowTile(follow: item),
-                              onEmpty: const Text('No subscriptions'),
-                              onError: const Text(
-                                'Failed to load subscriptions',
-                              ),
-                            ),
-                            crossAxisCount:
-                                TileLayout.of(context).crossAxisCount,
-                          ),
-                      appBar: const FollowSelectionAppBar(
-                        child: DefaultAppBar(
-                          title: Text('Subscriptions'),
-                          actions: [ContextDrawerButton()],
-                        ),
-                      ),
-                      drawer: const RouterDrawer(),
-                      endDrawer: const ContextDrawer(
-                        title: Text('Subscriptions'),
-                        children: [
-                          FollowEditingTile(),
-                          Divider(),
-                          FollowFilterReadTile(),
-                          FollowMarkReadTile(),
-                          Divider(),
-                          FollowForceSyncTile(),
-                        ],
-                      ),
-                      floatingActionButton: AddTagFloatingActionButton(
-                        title: 'Add to subscriptions',
-                        onSubmit: (value) async {
-                          value = value.trim();
-                          if (value.isEmpty) return;
-                          await context.read<Client>().follows.create(
-                            tags: value,
-                            type: FollowType.update,
-                          );
-                        },
-                      ),
+          builder: (context, controller, _) => SubEffect(
+            effect: () {
+              // remove this when the paged grid view is implemented
+              controller.getNextPage();
+              final client = context.read<Client>();
+              client.follows.sync();
+              return null;
+            },
+            keys: [controller],
+            child: SelectionLayout<Follow>(
+              items: controller.items,
+              child: PromptActions(
+                child: RefreshableDataPage.builder(
+                  controller: controller,
+                  builder: (context, child) => TileLayout(child: child),
+                  child: (context) => PagedAlignedGridView<int, Follow>.count(
+                    primary: true,
+                    padding: defaultActionListPadding,
+                    pagingController: controller.paging,
+                    addAutomaticKeepAlives: false,
+                    builderDelegate: defaultPagedChildBuilderDelegate(
+                      pagingController: controller.paging,
+                      itemBuilder: (context, item, index) =>
+                          FollowTile(follow: item),
+                      onEmpty: const Text('No subscriptions'),
+                      onError: const Text('Failed to load subscriptions'),
                     ),
+                    crossAxisCount: TileLayout.of(context).crossAxisCount,
+                  ),
+                  appBar: const FollowSelectionAppBar(
+                    child: DefaultAppBar(
+                      title: Text('Subscriptions'),
+                      actions: [ContextDrawerButton()],
+                    ),
+                  ),
+                  drawer: const RouterDrawer(),
+                  endDrawer: const ContextDrawer(
+                    title: Text('Subscriptions'),
+                    children: [
+                      FollowEditingTile(),
+                      Divider(),
+                      FollowFilterReadTile(),
+                      FollowMarkReadTile(),
+                      Divider(),
+                      FollowForceSyncTile(),
+                    ],
+                  ),
+                  floatingActionButton: AddTagFloatingActionButton(
+                    title: 'Add to subscriptions',
+                    onSubmit: (value) async {
+                      value = value.trim();
+                      if (value.isEmpty) return;
+                      await context.read<Client>().follows.create(
+                        tags: value,
+                        type: FollowType.update,
+                      );
+                    },
                   ),
                 ),
               ),
+            ),
+          ),
         ),
       ),
     );

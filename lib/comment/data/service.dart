@@ -60,12 +60,11 @@ class CommentService {
   }) => this.page(
     page: page,
     limit: limit,
-    query:
-        {
-          'group_by': 'comment',
-          'search[post_id]': id,
-          'search[order]': ascending ?? false ? 'id_asc' : 'id_desc',
-        }.toQuery(),
+    query: {
+      'group_by': 'comment',
+      'search[post_id]': id,
+      'search[order]': ascending ?? false ? 'id_asc' : 'id_desc',
+    }.toQuery(),
     force: force,
     cancelToken: cancelToken,
   );

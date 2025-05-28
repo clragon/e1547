@@ -18,18 +18,17 @@ class TagSearchFilter extends StatelessWidget {
     return SubTextValue(
       value: state.value,
       onChanged: (value) => state.onChanged(TagMap.parse(value).toString()),
-      shouldUpdate:
-          (oldValue, newValue) => TagMap.parse(oldValue).toString() != newValue,
-      builder:
-          (context, controller) => TagInput(
-            textInputAction: TextInputAction.search,
-            direction: VerticalDirection.up,
-            labelText: state.filter.name,
-            decoration: theme.decoration,
-            focusNode: theme.focusNode,
-            controller: controller,
-            submit: (value) => state.onSubmit?.call(value),
-          ),
+      shouldUpdate: (oldValue, newValue) =>
+          TagMap.parse(oldValue).toString() != newValue,
+      builder: (context, controller) => TagInput(
+        textInputAction: TextInputAction.search,
+        direction: VerticalDirection.up,
+        labelText: state.filter.name,
+        decoration: theme.decoration,
+        focusNode: theme.focusNode,
+        controller: controller,
+        submit: (value) => state.onSubmit?.call(value),
+      ),
     );
   }
 }
@@ -91,13 +90,12 @@ class AddTagFloatingActionButton extends StatelessWidget {
 
     return PromptFloatingActionButton(
       controller: controller,
-      builder:
-          (context) => EditTagPrompt(
-            tag: tag,
-            onSubmit: onSubmit,
-            actionController: controller,
-            title: title,
-          ),
+      builder: (context) => EditTagPrompt(
+        tag: tag,
+        onSubmit: onSubmit,
+        actionController: controller,
+        title: title,
+      ),
       icon: const Icon(Icons.add),
     );
   }

@@ -27,35 +27,34 @@ class DeletionDisplay extends StatelessWidget {
         );
         return flags.first;
       },
-      builder:
-          (context, value) => HiddenWidget(
-            show: value.data != null,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+      builder: (context, value) => HiddenWidget(
+        show: value.data != null,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+              child: Text('Deletion', style: TextStyle(fontSize: 16)),
+            ),
+            Row(
               children: [
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-                  child: Text('Deletion', style: TextStyle(fontSize: 16)),
-                ),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Card(
-                        color: Theme.of(
-                          context,
-                        ).colorScheme.errorContainer.withAlpha(150),
-                        child: Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: DText(value.data?.reason ?? ''),
-                        ),
-                      ),
+                Expanded(
+                  child: Card(
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.errorContainer.withAlpha(150),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: DText(value.data?.reason ?? ''),
                     ),
-                  ],
+                  ),
                 ),
-                const Divider(),
               ],
             ),
-          ),
+            const Divider(),
+          ],
+        ),
+      ),
     );
   }
 }

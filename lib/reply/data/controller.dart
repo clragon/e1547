@@ -48,12 +48,11 @@ class ReplyProvider extends SubChangeNotifierProvider<Client, ReplyController> {
     super.child,
     super.builder,
   }) : super(
-         create:
-             (context, client) => ReplyController(
-               client: client,
-               topicId: topicId,
-               orderByOldest: orderByOldest,
-             ),
+         create: (context, client) => ReplyController(
+           client: client,
+           topicId: topicId,
+           orderByOldest: orderByOldest,
+         ),
          keys: (context) => [topicId, orderByOldest],
        );
 }

@@ -29,11 +29,10 @@ class AppInfoClient {
     return _dio
         .get(
           'https://api.github.com/repos/${info.github}/releases',
-          options:
-              ClientCacheConfig(
-                store: cache,
-                policy: force ? CachePolicy.refresh : CachePolicy.request,
-              ).toOptions(),
+          options: ClientCacheConfig(
+            store: cache,
+            policy: force ? CachePolicy.refresh : CachePolicy.request,
+          ).toOptions(),
         )
         .then((response) {
           try {
@@ -129,11 +128,10 @@ class AppInfoClient {
     List<dynamic> donors = await _dio
         .get(
           'https://raw.githubusercontent.com/${AppInfo.instance.github}/master/assets/static/donations.json',
-          options:
-              ClientCacheConfig(
-                store: cache,
-                policy: force ? CachePolicy.refresh : CachePolicy.request,
-              ).toOptions(),
+          options: ClientCacheConfig(
+            store: cache,
+            policy: force ? CachePolicy.refresh : CachePolicy.request,
+          ).toOptions(),
         )
         .then((e) => jsonDecode(e.data));
     return donors.map((e) => Donor.fromJson(e)).toList();

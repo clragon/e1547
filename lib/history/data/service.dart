@@ -126,14 +126,13 @@ class HistoryService with Disposable {
       link: Uri(path: '/pools', queryParameters: query).toString(),
       category: HistoryCategory.searches,
       type: HistoryType.pools,
-      subtitle:
-          pools?.isNotEmpty ?? false
-              ? _composeSearchSubtitle({
-                for (final value in pools!)
-                  // TODO: this should be part of the client parser
-                  value.link: value.name.replaceAll('_', ' '),
-              })
-              : null,
+      subtitle: pools?.isNotEmpty ?? false
+          ? _composeSearchSubtitle({
+              for (final value in pools!)
+                // TODO: this should be part of the client parser
+                value.link: value.name.replaceAll('_', ' '),
+            })
+          : null,
       thumbnails: [
         if (pools != null)
           ..._getThumbnails(
@@ -168,12 +167,11 @@ class HistoryService with Disposable {
           link: Uri(path: '/forum_topics', queryParameters: query).toString(),
           category: HistoryCategory.searches,
           type: HistoryType.topics,
-          subtitle:
-              topics?.isNotEmpty ?? false
-                  ? _composeSearchSubtitle({
-                    for (final value in topics!) value.link: value.title,
-                  })
-                  : null,
+          subtitle: topics?.isNotEmpty ?? false
+              ? _composeSearchSubtitle({
+                  for (final value in topics!) value.link: value.title,
+                })
+              : null,
         ),
       );
 
@@ -204,12 +202,11 @@ class HistoryService with Disposable {
           link: Uri(path: '/wiki_pages', queryParameters: query).toString(),
           category: HistoryCategory.searches,
           type: HistoryType.wikis,
-          subtitle:
-              wikis?.isNotEmpty ?? false
-                  ? _composeSearchSubtitle({
-                    for (final value in wikis!) value.link: value.title,
-                  })
-                  : null,
+          subtitle: wikis?.isNotEmpty ?? false
+              ? _composeSearchSubtitle({
+                  for (final value in wikis!) value.link: value.title,
+                })
+              : null,
         ),
       );
 

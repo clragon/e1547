@@ -14,8 +14,8 @@ class PostEditor extends StatelessWidget {
       create: (context) => PostEditingController(post: post),
       update: (context, value) => value..post = post,
       builder: (context, child) {
-        PostEditingController controller =
-            context.watch<PostEditingController>();
+        PostEditingController controller = context
+            .watch<PostEditingController>();
         return PopScope(
           canPop: controller.isShown || !controller.editing,
           onPopInvokedWithResult: (didPop, result) {

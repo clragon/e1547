@@ -25,74 +25,57 @@ class PostDetailGallery extends StatelessWidget {
     return SubDefault<PageController>(
       value: pageController,
       create: () => PageController(initialPage: initialPage ?? 0),
-      builder:
-          (context, pageController) => ChangeNotifierProvider.value(
-            value: controller,
-            child: Consumer<PostController>(
-              builder:
-                  (context, controller, child) => GalleryButtons(
-                    controller: pageController,
-                    child: PagedPageView(
-                      pageController: pageController,
-                      pagingController: controller.paging,
-                      builderDelegate: defaultPagedChildBuilderDelegate<Post>(
-                        pagingController: controller.paging,
-                        pageBuilder:
-                            (context, child) => Scaffold(
-                              appBar: const TransparentAppBar(
-                                child: DefaultAppBar(),
+      builder: (context, pageController) => ChangeNotifierProvider.value(
+        value: controller,
+        child: Consumer<PostController>(
+          builder: (context, controller, child) => GalleryButtons(
+            controller: pageController,
+            child: PagedPageView(
+              pageController: pageController,
+              pagingController: controller.paging,
+              builderDelegate: defaultPagedChildBuilderDelegate<Post>(
+                pagingController: controller.paging,
+                pageBuilder: (context, child) => Scaffold(
+                  appBar: const TransparentAppBar(child: DefaultAppBar()),
+                  body: child,
+                ),
+                onEmpty: const Text('No posts'),
+                onError: const Text('Failed to load posts'),
+                itemBuilder: (context, item, index) => SubScrollController(
+                  builder: (context, scrollController) =>
+                      PrimaryScrollController(
+                        controller: scrollController,
+                        child: PostDetail(
+                          post: item,
+                          onTapImage: () => Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => PostsRouteConnector(
+                                controller: controller,
+                                child: PostFullscreenGallery(
+                                  controller: controller,
+                                  initialPage: index,
+                                  onPageChanged: pageController.jumpToPage,
+                                ),
                               ),
-                              body: child,
                             ),
-                        onEmpty: const Text('No posts'),
-                        onError: const Text('Failed to load posts'),
-                        itemBuilder:
-                            (context, item, index) => SubScrollController(
-                              builder:
-                                  (
-                                    context,
-                                    scrollController,
-                                  ) => PrimaryScrollController(
-                                    controller: scrollController,
-                                    child: PostDetail(
-                                      post: item,
-                                      onTapImage:
-                                          () => Navigator.of(context).push(
-                                            MaterialPageRoute(
-                                              builder:
-                                                  (
-                                                    context,
-                                                  ) => PostsRouteConnector(
-                                                    controller: controller,
-                                                    child:
-                                                        PostFullscreenGallery(
-                                                          controller:
-                                                              controller,
-                                                          initialPage: index,
-                                                          onPageChanged:
-                                                              pageController
-                                                                  .jumpToPage,
-                                                        ),
-                                                  ),
-                                            ),
-                                          ),
-                                    ),
-                                  ),
-                            ),
+                          ),
+                        ),
                       ),
-                      onPageChanged: (index) {
-                        onPageChanged?.call(index);
-                        preloadPostImages(
-                          context: context,
-                          index: index,
-                          posts: controller.items!,
-                          size: PostImageSize.sample,
-                        );
-                      },
-                    ),
-                  ),
+                ),
+              ),
+              onPageChanged: (index) {
+                onPageChanged?.call(index);
+                preloadPostImages(
+                  context: context,
+                  index: index,
+                  posts: controller.items!,
+                  size: PostImageSize.sample,
+                );
+              },
             ),
           ),
+        ),
+      ),
     );
   }
 }

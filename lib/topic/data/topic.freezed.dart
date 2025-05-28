@@ -12,7 +12,8 @@ part of 'topic.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
+  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
+);
 
 Topic _$TopicFromJson(Map<String, dynamic> json) {
   return _Topic.fromJson(json);
@@ -48,20 +49,21 @@ abstract class $TopicCopyWith<$Res> {
   factory $TopicCopyWith(Topic value, $Res Function(Topic) then) =
       _$TopicCopyWithImpl<$Res, Topic>;
   @useResult
-  $Res call(
-      {int id,
-      int creatorId,
-      String creator,
-      DateTime createdAt,
-      int updaterId,
-      String updater,
-      DateTime updatedAt,
-      String title,
-      int responseCount,
-      bool sticky,
-      bool locked,
-      bool hidden,
-      int categoryId});
+  $Res call({
+    int id,
+    int creatorId,
+    String creator,
+    DateTime createdAt,
+    int updaterId,
+    String updater,
+    DateTime updatedAt,
+    String title,
+    int responseCount,
+    bool sticky,
+    bool locked,
+    bool hidden,
+    int categoryId,
+  });
 }
 
 /// @nodoc
@@ -93,84 +95,89 @@ class _$TopicCopyWithImpl<$Res, $Val extends Topic>
     Object? hidden = null,
     Object? categoryId = null,
   }) {
-    return _then(_value.copyWith(
-      id: null == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as int,
-      creatorId: null == creatorId
-          ? _value.creatorId
-          : creatorId // ignore: cast_nullable_to_non_nullable
-              as int,
-      creator: null == creator
-          ? _value.creator
-          : creator // ignore: cast_nullable_to_non_nullable
-              as String,
-      createdAt: null == createdAt
-          ? _value.createdAt
-          : createdAt // ignore: cast_nullable_to_non_nullable
-              as DateTime,
-      updaterId: null == updaterId
-          ? _value.updaterId
-          : updaterId // ignore: cast_nullable_to_non_nullable
-              as int,
-      updater: null == updater
-          ? _value.updater
-          : updater // ignore: cast_nullable_to_non_nullable
-              as String,
-      updatedAt: null == updatedAt
-          ? _value.updatedAt
-          : updatedAt // ignore: cast_nullable_to_non_nullable
-              as DateTime,
-      title: null == title
-          ? _value.title
-          : title // ignore: cast_nullable_to_non_nullable
-              as String,
-      responseCount: null == responseCount
-          ? _value.responseCount
-          : responseCount // ignore: cast_nullable_to_non_nullable
-              as int,
-      sticky: null == sticky
-          ? _value.sticky
-          : sticky // ignore: cast_nullable_to_non_nullable
-              as bool,
-      locked: null == locked
-          ? _value.locked
-          : locked // ignore: cast_nullable_to_non_nullable
-              as bool,
-      hidden: null == hidden
-          ? _value.hidden
-          : hidden // ignore: cast_nullable_to_non_nullable
-              as bool,
-      categoryId: null == categoryId
-          ? _value.categoryId
-          : categoryId // ignore: cast_nullable_to_non_nullable
-              as int,
-    ) as $Val);
+    return _then(
+      _value.copyWith(
+            id: null == id
+                ? _value.id
+                : id // ignore: cast_nullable_to_non_nullable
+                      as int,
+            creatorId: null == creatorId
+                ? _value.creatorId
+                : creatorId // ignore: cast_nullable_to_non_nullable
+                      as int,
+            creator: null == creator
+                ? _value.creator
+                : creator // ignore: cast_nullable_to_non_nullable
+                      as String,
+            createdAt: null == createdAt
+                ? _value.createdAt
+                : createdAt // ignore: cast_nullable_to_non_nullable
+                      as DateTime,
+            updaterId: null == updaterId
+                ? _value.updaterId
+                : updaterId // ignore: cast_nullable_to_non_nullable
+                      as int,
+            updater: null == updater
+                ? _value.updater
+                : updater // ignore: cast_nullable_to_non_nullable
+                      as String,
+            updatedAt: null == updatedAt
+                ? _value.updatedAt
+                : updatedAt // ignore: cast_nullable_to_non_nullable
+                      as DateTime,
+            title: null == title
+                ? _value.title
+                : title // ignore: cast_nullable_to_non_nullable
+                      as String,
+            responseCount: null == responseCount
+                ? _value.responseCount
+                : responseCount // ignore: cast_nullable_to_non_nullable
+                      as int,
+            sticky: null == sticky
+                ? _value.sticky
+                : sticky // ignore: cast_nullable_to_non_nullable
+                      as bool,
+            locked: null == locked
+                ? _value.locked
+                : locked // ignore: cast_nullable_to_non_nullable
+                      as bool,
+            hidden: null == hidden
+                ? _value.hidden
+                : hidden // ignore: cast_nullable_to_non_nullable
+                      as bool,
+            categoryId: null == categoryId
+                ? _value.categoryId
+                : categoryId // ignore: cast_nullable_to_non_nullable
+                      as int,
+          )
+          as $Val,
+    );
   }
 }
 
 /// @nodoc
 abstract class _$$TopicImplCopyWith<$Res> implements $TopicCopyWith<$Res> {
   factory _$$TopicImplCopyWith(
-          _$TopicImpl value, $Res Function(_$TopicImpl) then) =
-      __$$TopicImplCopyWithImpl<$Res>;
+    _$TopicImpl value,
+    $Res Function(_$TopicImpl) then,
+  ) = __$$TopicImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call(
-      {int id,
-      int creatorId,
-      String creator,
-      DateTime createdAt,
-      int updaterId,
-      String updater,
-      DateTime updatedAt,
-      String title,
-      int responseCount,
-      bool sticky,
-      bool locked,
-      bool hidden,
-      int categoryId});
+  $Res call({
+    int id,
+    int creatorId,
+    String creator,
+    DateTime createdAt,
+    int updaterId,
+    String updater,
+    DateTime updatedAt,
+    String title,
+    int responseCount,
+    bool sticky,
+    bool locked,
+    bool hidden,
+    int categoryId,
+  });
 }
 
 /// @nodoc
@@ -178,8 +185,9 @@ class __$$TopicImplCopyWithImpl<$Res>
     extends _$TopicCopyWithImpl<$Res, _$TopicImpl>
     implements _$$TopicImplCopyWith<$Res> {
   __$$TopicImplCopyWithImpl(
-      _$TopicImpl _value, $Res Function(_$TopicImpl) _then)
-      : super(_value, _then);
+    _$TopicImpl _value,
+    $Res Function(_$TopicImpl) _then,
+  ) : super(_value, _then);
 
   /// Create a copy of Topic
   /// with the given fields replaced by the non-null parameter values.
@@ -200,80 +208,83 @@ class __$$TopicImplCopyWithImpl<$Res>
     Object? hidden = null,
     Object? categoryId = null,
   }) {
-    return _then(_$TopicImpl(
-      id: null == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as int,
-      creatorId: null == creatorId
-          ? _value.creatorId
-          : creatorId // ignore: cast_nullable_to_non_nullable
-              as int,
-      creator: null == creator
-          ? _value.creator
-          : creator // ignore: cast_nullable_to_non_nullable
-              as String,
-      createdAt: null == createdAt
-          ? _value.createdAt
-          : createdAt // ignore: cast_nullable_to_non_nullable
-              as DateTime,
-      updaterId: null == updaterId
-          ? _value.updaterId
-          : updaterId // ignore: cast_nullable_to_non_nullable
-              as int,
-      updater: null == updater
-          ? _value.updater
-          : updater // ignore: cast_nullable_to_non_nullable
-              as String,
-      updatedAt: null == updatedAt
-          ? _value.updatedAt
-          : updatedAt // ignore: cast_nullable_to_non_nullable
-              as DateTime,
-      title: null == title
-          ? _value.title
-          : title // ignore: cast_nullable_to_non_nullable
-              as String,
-      responseCount: null == responseCount
-          ? _value.responseCount
-          : responseCount // ignore: cast_nullable_to_non_nullable
-              as int,
-      sticky: null == sticky
-          ? _value.sticky
-          : sticky // ignore: cast_nullable_to_non_nullable
-              as bool,
-      locked: null == locked
-          ? _value.locked
-          : locked // ignore: cast_nullable_to_non_nullable
-              as bool,
-      hidden: null == hidden
-          ? _value.hidden
-          : hidden // ignore: cast_nullable_to_non_nullable
-              as bool,
-      categoryId: null == categoryId
-          ? _value.categoryId
-          : categoryId // ignore: cast_nullable_to_non_nullable
-              as int,
-    ));
+    return _then(
+      _$TopicImpl(
+        id: null == id
+            ? _value.id
+            : id // ignore: cast_nullable_to_non_nullable
+                  as int,
+        creatorId: null == creatorId
+            ? _value.creatorId
+            : creatorId // ignore: cast_nullable_to_non_nullable
+                  as int,
+        creator: null == creator
+            ? _value.creator
+            : creator // ignore: cast_nullable_to_non_nullable
+                  as String,
+        createdAt: null == createdAt
+            ? _value.createdAt
+            : createdAt // ignore: cast_nullable_to_non_nullable
+                  as DateTime,
+        updaterId: null == updaterId
+            ? _value.updaterId
+            : updaterId // ignore: cast_nullable_to_non_nullable
+                  as int,
+        updater: null == updater
+            ? _value.updater
+            : updater // ignore: cast_nullable_to_non_nullable
+                  as String,
+        updatedAt: null == updatedAt
+            ? _value.updatedAt
+            : updatedAt // ignore: cast_nullable_to_non_nullable
+                  as DateTime,
+        title: null == title
+            ? _value.title
+            : title // ignore: cast_nullable_to_non_nullable
+                  as String,
+        responseCount: null == responseCount
+            ? _value.responseCount
+            : responseCount // ignore: cast_nullable_to_non_nullable
+                  as int,
+        sticky: null == sticky
+            ? _value.sticky
+            : sticky // ignore: cast_nullable_to_non_nullable
+                  as bool,
+        locked: null == locked
+            ? _value.locked
+            : locked // ignore: cast_nullable_to_non_nullable
+                  as bool,
+        hidden: null == hidden
+            ? _value.hidden
+            : hidden // ignore: cast_nullable_to_non_nullable
+                  as bool,
+        categoryId: null == categoryId
+            ? _value.categoryId
+            : categoryId // ignore: cast_nullable_to_non_nullable
+                  as int,
+      ),
+    );
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$TopicImpl implements _Topic {
-  const _$TopicImpl(
-      {required this.id,
-      required this.creatorId,
-      required this.creator,
-      required this.createdAt,
-      required this.updaterId,
-      required this.updater,
-      required this.updatedAt,
-      required this.title,
-      required this.responseCount,
-      required this.sticky,
-      required this.locked,
-      required this.hidden,
-      required this.categoryId});
+  const _$TopicImpl({
+    required this.id,
+    required this.creatorId,
+    required this.creator,
+    required this.createdAt,
+    required this.updaterId,
+    required this.updater,
+    required this.updatedAt,
+    required this.title,
+    required this.responseCount,
+    required this.sticky,
+    required this.locked,
+    required this.hidden,
+    required this.categoryId,
+  });
 
   factory _$TopicImpl.fromJson(Map<String, dynamic> json) =>
       _$$TopicImplFromJson(json);
@@ -339,20 +350,21 @@ class _$TopicImpl implements _Topic {
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(
-      runtimeType,
-      id,
-      creatorId,
-      creator,
-      createdAt,
-      updaterId,
-      updater,
-      updatedAt,
-      title,
-      responseCount,
-      sticky,
-      locked,
-      hidden,
-      categoryId);
+    runtimeType,
+    id,
+    creatorId,
+    creator,
+    createdAt,
+    updaterId,
+    updater,
+    updatedAt,
+    title,
+    responseCount,
+    sticky,
+    locked,
+    hidden,
+    categoryId,
+  );
 
   /// Create a copy of Topic
   /// with the given fields replaced by the non-null parameter values.
@@ -364,27 +376,26 @@ class _$TopicImpl implements _Topic {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$TopicImplToJson(
-      this,
-    );
+    return _$$TopicImplToJson(this);
   }
 }
 
 abstract class _Topic implements Topic {
-  const factory _Topic(
-      {required final int id,
-      required final int creatorId,
-      required final String creator,
-      required final DateTime createdAt,
-      required final int updaterId,
-      required final String updater,
-      required final DateTime updatedAt,
-      required final String title,
-      required final int responseCount,
-      required final bool sticky,
-      required final bool locked,
-      required final bool hidden,
-      required final int categoryId}) = _$TopicImpl;
+  const factory _Topic({
+    required final int id,
+    required final int creatorId,
+    required final String creator,
+    required final DateTime createdAt,
+    required final int updaterId,
+    required final String updater,
+    required final DateTime updatedAt,
+    required final String title,
+    required final int responseCount,
+    required final bool sticky,
+    required final bool locked,
+    required final bool hidden,
+    required final int categoryId,
+  }) = _$TopicImpl;
 
   factory _Topic.fromJson(Map<String, dynamic> json) = _$TopicImpl.fromJson;
 

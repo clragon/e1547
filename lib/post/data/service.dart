@@ -48,17 +48,16 @@ class PostService {
     String? tags = query?['tags'];
     if (ordered && tags != null) {
       Map<RegExp, Future<List<Post>> Function(RegExpMatch match)> redirects = {
-        poolRegex():
-            (match) => byPool(
-              id: int.parse(match.namedGroup('id')!),
-              page: page,
-              orderByOldest: orderPoolsByOldest ?? true,
-              force: force,
-              cancelToken: cancelToken,
-            ),
+        poolRegex(): (match) => byPool(
+          id: int.parse(match.namedGroup('id')!),
+          page: page,
+          orderByOldest: orderPoolsByOldest ?? true,
+          force: force,
+          cancelToken: cancelToken,
+        ),
         if ((orderFavoritesByAdded ?? false) && identity.username != null)
-          favRegex(identity.username!):
-              (match) => favorites(page: page, limit: limit, force: force),
+          favRegex(identity.username!): (match) =>
+              favorites(page: page, limit: limit, force: force),
       };
 
       for (final entry in redirects.entries) {
@@ -77,13 +76,12 @@ class PostService {
           cancelToken: cancelToken,
         )
         .then(
-          (response) =>
-              (response.data['posts'] as List<dynamic>)
-                  .map<Post>(E621Post.fromJson)
-                  .whereNot(
-                    (e) => (e.file == null && !e.isDeleted) || e.ext == 'swf',
-                  )
-                  .toList(),
+          (response) => (response.data['posts'] as List<dynamic>)
+              .map<Post>(E621Post.fromJson)
+              .whereNot(
+                (e) => (e.file == null && !e.isDeleted) || e.ext == 'swf',
+              )
+              .toList(),
         );
   }
 
@@ -98,8 +96,9 @@ class PostService {
       page: page,
       query: {
         ...?query,
-        'tags':
-            (TagMap.parse(query?['tags'] ?? '')..['order'] = 'rank').toString(),
+        'tags': (TagMap.parse(
+          query?['tags'] ?? '',
+        )..['order'] = 'rank').toString(),
       },
       limit: limit,
       force: force,
@@ -157,8 +156,10 @@ class PostService {
     int tagPage = page % pages != 0 ? page % pages : pages;
     int sitePage = (page / pages).ceil();
 
-    List<String> chunk =
-        tags.sublist((tagPage - 1) * chunkSize).take(chunkSize).toList();
+    List<String> chunk = tags
+        .sublist((tagPage - 1) * chunkSize)
+        .take(chunkSize)
+        .toList();
     String filter = chunk.map((e) => '~$e').join(' ');
     return this.page(
       page: sitePage,

@@ -26,8 +26,8 @@ class TileLayoutData extends InheritedWidget {
   @override
   bool updateShouldNotify(covariant TileLayoutData oldWidget) =>
       (oldWidget.tileHeightFactor != tileHeightFactor ||
-          oldWidget.crossAxisCount != crossAxisCount ||
-          oldWidget.stagger != stagger);
+      oldWidget.crossAxisCount != crossAxisCount ||
+      oldWidget.stagger != stagger);
 }
 
 class TileLayout extends StatelessWidget {
@@ -54,29 +54,31 @@ class TileLayout extends StatelessWidget {
   Widget build(BuildContext context) {
     return ValueListenableBuilder<int>(
       valueListenable: context.watch<Settings>().tileSize,
-      builder:
-          (context, tileSize, child) => ValueListenableBuilder<GridQuilt>(
-            valueListenable: context.watch<Settings>().quilt,
-            builder:
-                (context, stagger, child) => LayoutBuilder(
-                  builder: (context, constraints) {
-                    tileSize = this.tileSize ?? tileSize;
-                    stagger = this.stagger ?? stagger;
-                    int crossAxisCount =
-                        max(1, constraints.maxWidth / tileSize).round();
-                    int mainAxisCount =
-                        max(1, constraints.maxHeight / tileSize).round();
-                    return TileLayoutData(
-                      tileHeightFactor: tileHeightFactor,
-                      tileSize: tileSize,
-                      mainAxisCount: mainAxisCount,
-                      crossAxisCount: crossAxisCount,
-                      stagger: stagger,
-                      child: this.child,
-                    );
-                  },
-                ),
-          ),
+      builder: (context, tileSize, child) => ValueListenableBuilder<GridQuilt>(
+        valueListenable: context.watch<Settings>().quilt,
+        builder: (context, stagger, child) => LayoutBuilder(
+          builder: (context, constraints) {
+            tileSize = this.tileSize ?? tileSize;
+            stagger = this.stagger ?? stagger;
+            int crossAxisCount = max(
+              1,
+              constraints.maxWidth / tileSize,
+            ).round();
+            int mainAxisCount = max(
+              1,
+              constraints.maxHeight / tileSize,
+            ).round();
+            return TileLayoutData(
+              tileHeightFactor: tileHeightFactor,
+              tileSize: tileSize,
+              mainAxisCount: mainAxisCount,
+              crossAxisCount: crossAxisCount,
+              stagger: stagger,
+              child: this.child,
+            );
+          },
+        ),
+      ),
     );
   }
 }

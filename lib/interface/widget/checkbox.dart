@@ -59,16 +59,15 @@ class CheckboxFormField extends StatelessWidget {
             ],
           ),
         ),
-        child:
-            title != null
-                ? Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  child: DefaultTextStyle(
-                    style: Theme.of(context).textTheme.titleMedium!,
-                    child: title!,
-                  ),
-                )
-                : null,
+        child: title != null
+            ? Padding(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                child: DefaultTextStyle(
+                  style: Theme.of(context).textTheme.titleMedium!,
+                  child: title!,
+                ),
+              )
+            : null,
       ),
     );
   }

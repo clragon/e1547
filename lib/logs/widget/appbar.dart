@@ -13,32 +13,29 @@ class LogSelectionAppBar extends StatelessWidget with AppBarBuilderWidget {
   Widget build(BuildContext context) {
     return SelectionAppBar<LogString>(
       child: child,
-      titleBuilder:
-          (context, data) =>
-              data.selections.length == 1
-                  ? Text(data.selections.first.body, maxLines: 1)
-                  : Text('${data.selections.length} logs'),
-      actionBuilder:
-          (context, data) => [
-            IconButton(
-              tooltip: 'Copy',
-              icon: const Icon(Icons.copy),
-              onPressed: () {
-                Clipboard.setData(
-                  ClipboardData(
-                    text: data.selections.map((e) => e.toString()).join('\n'),
-                  ),
-                );
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    duration: Duration(seconds: 1),
-                    content: Text('Copied to clipboard'),
-                  ),
-                );
-                data.onChanged({});
-              },
-            ),
-          ],
+      titleBuilder: (context, data) => data.selections.length == 1
+          ? Text(data.selections.first.body, maxLines: 1)
+          : Text('${data.selections.length} logs'),
+      actionBuilder: (context, data) => [
+        IconButton(
+          tooltip: 'Copy',
+          icon: const Icon(Icons.copy),
+          onPressed: () {
+            Clipboard.setData(
+              ClipboardData(
+                text: data.selections.map((e) => e.toString()).join('\n'),
+              ),
+            );
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                duration: Duration(seconds: 1),
+                content: Text('Copied to clipboard'),
+              ),
+            );
+            data.onChanged({});
+          },
+        ),
+      ],
     );
   }
 }
@@ -54,31 +51,26 @@ class LogFileSelectionAppBar extends StatelessWidget with AppBarBuilderWidget {
   Widget build(BuildContext context) {
     return SelectionAppBar<LogFileInfo>(
       child: child,
-      titleBuilder:
-          (context, data) =>
-              data.selections.length == 1
-                  ? Text('Logs - ${data.selections.first.date}')
-                  : Text('${data.selections.length} log files'),
-      actionBuilder:
-          (context, data) => [
-            if (onDelete != null)
-              IconButton(
-                tooltip: 'Delete',
-                icon: const Icon(Icons.delete),
-                onPressed:
-                    () => showDialog(
-                      context: context,
-                      builder:
-                          (context) => LogFileDeleteConfirmation(
-                            files: data.selections.toList(),
-                            onConfirm: () {
-                              onDelete?.call(data.selections.toList());
-                              data.onChanged({});
-                            },
-                          ),
-                    ),
+      titleBuilder: (context, data) => data.selections.length == 1
+          ? Text('Logs - ${data.selections.first.date}')
+          : Text('${data.selections.length} log files'),
+      actionBuilder: (context, data) => [
+        if (onDelete != null)
+          IconButton(
+            tooltip: 'Delete',
+            icon: const Icon(Icons.delete),
+            onPressed: () => showDialog(
+              context: context,
+              builder: (context) => LogFileDeleteConfirmation(
+                files: data.selections.toList(),
+                onConfirm: () {
+                  onDelete?.call(data.selections.toList());
+                  data.onChanged({});
+                },
               ),
-          ],
+            ),
+          ),
+      ],
     );
   }
 }

@@ -88,11 +88,10 @@ class VoteDisplay extends StatelessWidget {
               dotThirdColor: Colors.deepOrange,
               dotLastColor: Colors.redAccent,
             ),
-            likeBuilder:
-                (bool isLiked) => Icon(
-                  Icons.arrow_upward,
-                  color: isLiked ? Colors.deepOrange : null,
-                ),
+            likeBuilder: (bool isLiked) => Icon(
+              Icons.arrow_upward,
+              color: isLiked ? Colors.deepOrange : null,
+            ),
             onTap: onUpvote ?? (_) async => status == VoteStatus.upvoted,
           ),
         ),
@@ -123,11 +122,8 @@ class VoteDisplay extends StatelessWidget {
               dotThirdColor: Colors.indigoAccent,
               dotLastColor: Colors.indigo,
             ),
-            likeBuilder:
-                (bool isLiked) => Icon(
-                  Icons.arrow_downward,
-                  color: isLiked ? Colors.blue : null,
-                ),
+            likeBuilder: (bool isLiked) =>
+                Icon(Icons.arrow_downward, color: isLiked ? Colors.blue : null),
             onTap: onDownvote ?? (_) async => status == VoteStatus.downvoted,
           ),
         ),

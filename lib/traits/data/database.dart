@@ -5,13 +5,12 @@ import 'package:e1547/traits/traits.dart';
 
 @UseRowClass(Traits, generateInsertable: true)
 class TraitsTable extends Table {
-  IntColumn get id =>
-      integer().references(
-        IdentitiesTable,
-        #id,
-        onUpdate: KeyAction.cascade,
-        onDelete: KeyAction.cascade,
-      )();
+  IntColumn get id => integer().references(
+    IdentitiesTable,
+    #id,
+    onUpdate: KeyAction.cascade,
+    onDelete: KeyAction.cascade,
+  )();
   IntColumn get userId => integer().nullable()();
   TextColumn get denylist => text().map(JsonSqlConverter.list<String>())();
   TextColumn get homeTags => text()();
@@ -28,8 +27,9 @@ class TraitsRepository extends DatabaseAccessor<GeneratedDatabase>
   TraitsRepository(super.db);
 
   StreamFuture<Traits?> getOrNull(int id) {
-    return (select(traitsTable)
-      ..where((t) => t.id.equals(id))).watchSingleOrNull().future;
+    return (select(
+      traitsTable,
+    )..where((t) => t.id.equals(id))).watchSingleOrNull().future;
   }
 
   StreamFuture<Traits> get(int id) =>

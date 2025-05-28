@@ -113,11 +113,12 @@ class _WindowFrameState extends State<WindowFrame> with WindowListener {
                         ),
                         Expanded(
                           child: AnimatedDefaultTextStyle(
-                            style: Theme.of(
-                              context,
-                            ).textTheme.bodyMedium!.copyWith(
-                              color: isFocused ? null : dimTextColor(context),
-                            ),
+                            style: Theme.of(context).textTheme.bodyMedium!
+                                .copyWith(
+                                  color: isFocused
+                                      ? null
+                                      : dimTextColor(context),
+                                ),
                             duration: defaultAnimationDuration,
                             child: Text(AppInfo.instance.appName),
                           ),
@@ -135,10 +136,9 @@ class _WindowFrameState extends State<WindowFrame> with WindowListener {
                     ),
                     TitleBarButton(
                       color: Colors.orange,
-                      icon:
-                          isMaximized
-                              ? const Icon(Icons.fullscreen_exit)
-                              : const Icon(Icons.fullscreen),
+                      icon: isMaximized
+                          ? const Icon(Icons.fullscreen_exit)
+                          : const Icon(Icons.fullscreen),
                       onPressed: () async {
                         if (await manager.isFullScreen()) {
                           await manager.setFullScreen(false);
@@ -212,8 +212,8 @@ class WindowShortcuts extends StatelessWidget {
   Widget build(BuildContext context) {
     return CallbackShortcuts(
       bindings: {
-        const SingleActivator(LogicalKeyboardKey.escape):
-            () => navigatorKey.currentState!.maybePop(),
+        const SingleActivator(LogicalKeyboardKey.escape): () =>
+            navigatorKey.currentState!.maybePop(),
         const SingleActivator(LogicalKeyboardKey.f11): () async {
           WindowManager? manager = context.read<WindowManager?>();
           if (manager == null) return;

@@ -17,17 +17,16 @@ class _FollowsTimelinePageState extends State<FollowsTimelinePage> {
       child: PostProvider.builder(
         create: (context, client) => FollowTimelineController(client: client),
         child: Consumer<PostController>(
-          builder:
-              (context, controller, child) => PostsPage(
-                appBar: const DefaultAppBar(
-                  title: Text('Timeline'),
-                  actions: [ContextDrawerButton()],
-                ),
-                controller: controller,
-                drawerActions: const [FollowEditingTile()],
-                displayType: PostDisplayType.timeline,
-                canSelect: false,
-              ),
+          builder: (context, controller, child) => PostsPage(
+            appBar: const DefaultAppBar(
+              title: Text('Timeline'),
+              actions: [ContextDrawerButton()],
+            ),
+            controller: controller,
+            drawerActions: const [FollowEditingTile()],
+            displayType: PostDisplayType.timeline,
+            canSelect: false,
+          ),
         ),
       ),
     );

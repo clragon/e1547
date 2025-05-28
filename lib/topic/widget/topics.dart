@@ -15,62 +15,53 @@ class TopicsPage extends StatelessWidget {
       child: TopicProvider(
         query: query,
         child: Consumer<TopicController>(
-          builder:
-              (context, controller, child) => ControllerHistoryConnector(
+          builder: (context, controller, child) => ControllerHistoryConnector(
+            controller: controller,
+            addToHistory: (context, client, controller) =>
+                client.histories.addTopicSearch(
+                  query: controller.query,
+                  topics: controller.items!,
+                ),
+            child: RefreshableDataPage(
+              appBar: const DefaultAppBar(
+                title: Text('Topics'),
+                actions: [ContextDrawerButton()],
+              ),
+              floatingActionButton: TopicsPageFloatingActionButton(
                 controller: controller,
-                addToHistory:
-                    (context, client, controller) =>
-                        client.histories.addTopicSearch(
-                          query: controller.query,
-                          topics: controller.items!,
-                        ),
-                child: RefreshableDataPage(
-                  appBar: const DefaultAppBar(
-                    title: Text('Topics'),
-                    actions: [ContextDrawerButton()],
-                  ),
-                  floatingActionButton: TopicsPageFloatingActionButton(
-                    controller: controller,
-                  ),
-                  drawer: const RouterDrawer(),
-                  endDrawer: ContextDrawer(
-                    title: const Text('Topics'),
-                    children: [TopicTagEditingTile(controller: controller)],
-                  ),
-                  controller: controller,
-                  child: PagedListView(
-                    primary: true,
-                    padding: defaultListPadding,
-                    pagingController: controller.paging,
-                    builderDelegate: defaultPagedChildBuilderDelegate<Topic>(
-                      pagingController: controller.paging,
-                      itemBuilder:
-                          (context, item, index) => TopicTile(
-                            topic: item,
-                            onPressed:
-                                () => Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder:
-                                        (context) => RepliesPage(topic: item),
-                                  ),
-                                ),
-                            onCountPressed:
-                                () => Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder:
-                                        (context) => RepliesPage(
-                                          topic: item,
-                                          orderByOldest: false,
-                                        ),
-                                  ),
-                                ),
-                          ),
-                      onEmpty: const Text('No topics'),
-                      onError: const Text('Failed to load topics'),
+              ),
+              drawer: const RouterDrawer(),
+              endDrawer: ContextDrawer(
+                title: const Text('Topics'),
+                children: [TopicTagEditingTile(controller: controller)],
+              ),
+              controller: controller,
+              child: PagedListView(
+                primary: true,
+                padding: defaultListPadding,
+                pagingController: controller.paging,
+                builderDelegate: defaultPagedChildBuilderDelegate<Topic>(
+                  pagingController: controller.paging,
+                  itemBuilder: (context, item, index) => TopicTile(
+                    topic: item,
+                    onPressed: () => Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => RepliesPage(topic: item),
+                      ),
+                    ),
+                    onCountPressed: () => Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            RepliesPage(topic: item, orderByOldest: false),
+                      ),
                     ),
                   ),
+                  onEmpty: const Text('No topics'),
+                  onError: const Text('Failed to load topics'),
                 ),
               ),
+            ),
+          ),
         ),
       ),
     );

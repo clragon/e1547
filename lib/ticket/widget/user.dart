@@ -13,53 +13,51 @@ class UserReportScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return ReasonReportScreen(
       title: Text('User #${user.id}'),
-      onReport:
-          (reason) => validateCall(
-            () => context.read<Client>().tickets.create(
-              type: TicketType.user,
-              item: user.id,
-              reason: reason,
-            ),
-          ),
+      onReport: (reason) => validateCall(
+        () => context.read<Client>().tickets.create(
+          type: TicketType.user,
+          item: user.id,
+          reason: reason,
+        ),
+      ),
       onSuccess: 'Reported user #${user.id}',
       onFailure: 'Failed to report user #${user.id}',
-      previewBuilder:
-          (context, isLoading) => Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(top: 30),
-                child: Stack(
-                  children: [
-                    SizedBox(
-                      height: 100,
-                      width: 100,
-                      child: PostAvatar(id: user.avatarId),
-                    ),
-                    Positioned.fill(
-                      child: CrossFade(
-                        showChild: isLoading,
-                        child: const DecoratedBox(
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Colors.black54,
-                          ),
-                          child: Center(child: CircularProgressIndicator()),
-                        ),
+      previewBuilder: (context, isLoading) => Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(top: 30),
+            child: Stack(
+              children: [
+                SizedBox(
+                  height: 100,
+                  width: 100,
+                  child: PostAvatar(id: user.avatarId),
+                ),
+                Positioned.fill(
+                  child: CrossFade(
+                    showChild: isLoading,
+                    child: const DecoratedBox(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.black54,
                       ),
+                      child: Center(child: CircularProgressIndicator()),
                     ),
-                  ],
+                  ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                child: Text(
-                  user.name,
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            child: Text(
+              user.name,
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

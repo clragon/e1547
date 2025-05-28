@@ -41,10 +41,8 @@ class _PostsPageState extends State<PostsPage> {
         children: [
           CrossFade.builder(
             showChild: widget.drawerActions?.isNotEmpty ?? false,
-            builder:
-                (context) => Column(
-                  children: [...widget.drawerActions!, const Divider()],
-                ),
+            builder: (context) =>
+                Column(children: [...widget.drawerActions!, const Divider()]),
           ),
           if (widget.controller.filterMode != PostFilterMode.unavailable)
             DrawerDenySwitch(controller: widget.controller),
@@ -56,38 +54,34 @@ class _PostsPageState extends State<PostsPage> {
     return ChangeNotifierProvider.value(
       value: widget.controller,
       child: Consumer<PostController>(
-        builder:
-            (context, controller, child) => SelectionLayout<Post>(
-              enabled: widget.canSelect,
-              items: controller.items,
-              child: RefreshableDataPage.builder(
-                appBar: PostSelectionAppBar(
-                  controller: widget.controller,
-                  child: widget.appBar,
-                ),
-                drawer: const RouterDrawer(),
-                endDrawer: endDrawer(),
-                floatingActionButton: floatingActionButton(),
-                builder:
-                    (context, child) =>
-                        LimitedWidthLayout(child: TileLayout(child: child)),
-                controller: widget.controller,
-                child:
-                    (context) => CustomScrollView(
-                      primary: true,
-                      slivers: [
-                        SliverPadding(
-                          padding: defaultActionListPadding,
-                          sliver: PostSliverDisplay(
-                            controller: widget.controller,
-                            displayType:
-                                widget.displayType ?? PostDisplayType.grid,
-                          ),
-                        ),
-                      ],
-                    ),
-              ),
+        builder: (context, controller, child) => SelectionLayout<Post>(
+          enabled: widget.canSelect,
+          items: controller.items,
+          child: RefreshableDataPage.builder(
+            appBar: PostSelectionAppBar(
+              controller: widget.controller,
+              child: widget.appBar,
             ),
+            drawer: const RouterDrawer(),
+            endDrawer: endDrawer(),
+            floatingActionButton: floatingActionButton(),
+            builder: (context, child) =>
+                LimitedWidthLayout(child: TileLayout(child: child)),
+            controller: widget.controller,
+            child: (context) => CustomScrollView(
+              primary: true,
+              slivers: [
+                SliverPadding(
+                  padding: defaultActionListPadding,
+                  sliver: PostSliverDisplay(
+                    controller: widget.controller,
+                    displayType: widget.displayType ?? PostDisplayType.grid,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }

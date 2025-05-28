@@ -7,12 +7,12 @@ part of 'user.dart';
 // **************************************************************************
 
 _$UserImpl _$$UserImplFromJson(Map<String, dynamic> json) => _$UserImpl(
-      id: (json['id'] as num).toInt(),
-      name: json['name'] as String,
-      avatarId: (json['avatar_id'] as num?)?.toInt(),
-      about: json['about'] == null ? null : UserAbout.fromJson(json['about']),
-      stats: json['stats'] == null ? null : UserStats.fromJson(json['stats']),
-    );
+  id: (json['id'] as num).toInt(),
+  name: json['name'] as String,
+  avatarId: (json['avatar_id'] as num?)?.toInt(),
+  about: json['about'] == null ? null : UserAbout.fromJson(json['about']),
+  stats: json['stats'] == null ? null : UserStats.fromJson(json['stats']),
+);
 
 Map<String, dynamic> _$$UserImplToJson(_$UserImpl instance) =>
     <String, dynamic>{
@@ -30,10 +30,7 @@ _$UserAboutImpl _$$UserAboutImplFromJson(Map<String, dynamic> json) =>
     );
 
 Map<String, dynamic> _$$UserAboutImplToJson(_$UserAboutImpl instance) =>
-    <String, dynamic>{
-      'bio': instance.bio,
-      'comission': instance.comission,
-    };
+    <String, dynamic>{'bio': instance.bio, 'comission': instance.comission};
 
 _$UserStatsImpl _$$UserStatsImplFromJson(Map<String, dynamic> json) =>
     _$UserStatsImpl(

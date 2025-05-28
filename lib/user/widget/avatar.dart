@@ -15,13 +15,11 @@ class IdentityAvatar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Consumer<TraitsService>(
-      builder:
-          (context, service, child) => SubStream(
-            create: () => service.getOrNull(id).stream,
-            builder:
-                (context, snapshot) =>
-                    Avatar(snapshot.data?.avatar, radius: radius),
-          ),
+      builder: (context, service, child) => SubStream(
+        create: () => service.getOrNull(id).stream,
+        builder: (context, snapshot) =>
+            Avatar(snapshot.data?.avatar, radius: radius),
+      ),
     );
   }
 }
@@ -40,36 +38,30 @@ class UserAvatar extends StatelessWidget {
       return const EmptyAvatar();
     }
     return SubFuture<PostController>(
-      create:
-          () => Future<PostController>(() async {
-            await controller.getNextPage();
-            return controller;
-          }),
+      create: () => Future<PostController>(() async {
+        await controller.getNextPage();
+        return controller;
+      }),
       keys: [controller],
-      builder:
-          (context, _) => PostsControllerConnector(
-            id: id,
-            controller: controller,
-            builder:
-                (context, post) => Avatar(
-                  post?.sample,
-                  onTap:
-                      () => Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder:
-                              (context) => PostsControllerConnector(
-                                id: id,
-                                controller: controller,
-                                builder:
-                                    (context, post) => PostsRouteConnector(
-                                      controller: controller,
-                                      child: PostDetail(post: post!),
-                                    ),
-                              ),
-                        ),
-                      ),
+      builder: (context, _) => PostsControllerConnector(
+        id: id,
+        controller: controller,
+        builder: (context, post) => Avatar(
+          post?.sample,
+          onTap: () => Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => PostsControllerConnector(
+                id: id,
+                controller: controller,
+                builder: (context, post) => PostsRouteConnector(
+                  controller: controller,
+                  child: PostDetail(post: post!),
                 ),
+              ),
+            ),
           ),
+        ),
+      ),
     );
   }
 }
@@ -87,9 +79,8 @@ class PostAvatar extends StatelessWidget {
       return SinglePostProvider(
         id: id!,
         child: Consumer<PostController>(
-          builder:
-              (context, controller, child) =>
-                  UserAvatar(id: id, controller: controller),
+          builder: (context, controller, child) =>
+              UserAvatar(id: id, controller: controller),
         ),
       );
     }
@@ -118,9 +109,8 @@ class Avatar extends StatelessWidget {
             fit: BoxFit.cover,
             cacheManager: context.read<BaseCacheManager>(),
             placeholder: (context, url) => EmptyAvatar(radius: radius),
-            errorWidget:
-                (context, url, error) =>
-                    const Center(child: Icon(Icons.warning_amber)),
+            errorWidget: (context, url, error) =>
+                const Center(child: Icon(Icons.warning_amber)),
             fadeInDuration: Duration.zero,
             fadeOutDuration: Duration.zero,
           ),

@@ -51,9 +51,8 @@ class TagSearchSheet extends StatelessWidget {
                       Navigator.of(context).maybePop();
                       Navigator.of(context).push(
                         MaterialPageRoute(
-                          builder:
-                              (context) =>
-                                  PostsSearchPage(query: TagMap({'tags': tag})),
+                          builder: (context) =>
+                              PostsSearchPage(query: TagMap({'tags': tag})),
                         ),
                       );
                     },
@@ -107,12 +106,9 @@ class TagSearchInfo extends StatelessWidget {
         primary: true,
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          children:
-              tags
-                  .map(
-                    (e) => TagSearchInfoChild(tag: e, controller: controller),
-                  )
-                  .toList(),
+          children: tags
+              .map((e) => TagSearchInfoChild(tag: e, controller: controller))
+              .toList(),
         ),
       );
     } else {
@@ -137,8 +133,9 @@ class TagSearchInfoChild extends StatelessWidget {
         reverse: alignRight,
         scrollDirection: Axis.horizontal,
         child: Row(
-          mainAxisAlignment:
-              alignRight ? MainAxisAlignment.end : MainAxisAlignment.start,
+          mainAxisAlignment: alignRight
+              ? MainAxisAlignment.end
+              : MainAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
             if (controller != null)
@@ -167,10 +164,9 @@ class TagSearchInfoChild extends StatelessWidget {
                   Expanded(
                     child: AnimatedDefaultTextStyle(
                       duration: const Duration(milliseconds: 200),
-                      style:
-                          expanded
-                              ? Theme.of(context).textTheme.titleLarge!
-                              : Theme.of(context).textTheme.titleMedium!,
+                      style: expanded
+                          ? Theme.of(context).textTheme.titleLarge!
+                          : Theme.of(context).textTheme.titleMedium!,
                       child: Padding(
                         padding: const EdgeInsets.all(16),
                         child: Text(tagToName(tag)),
@@ -243,47 +239,46 @@ class _SearchTagDisplayState extends State<SearchTagDisplay> {
   Widget build(BuildContext context) {
     return FutureBuilder<Wiki?>(
       future: wiki,
-      builder:
-          (context, snapshot) => CrossFade.builder(
-            style: FadeAnimationStyle.stacked,
-            showChild: snapshot.connectionState == ConnectionState.done,
-            builder: (context) {
-              if (snapshot.hasData) {
-                return DText(snapshot.data!.body);
-              } else if (snapshot.hasError) {
-                return const IconMessage(
-                  title: Text('unable to retrieve wiki entry'),
-                  icon: Icon(Icons.warning_amber_outlined),
-                  direction: Axis.horizontal,
-                );
-              } else {
-                return Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Text(
-                        'no wiki entry',
-                        style: TextStyle(
-                          color: dimTextColor(context, 0.5),
-                          fontStyle: FontStyle.italic,
-                        ),
-                      ),
-                    ),
-                  ],
-                );
-              }
-            },
-            secondChild: const Row(
+      builder: (context, snapshot) => CrossFade.builder(
+        style: FadeAnimationStyle.stacked,
+        showChild: snapshot.connectionState == ConnectionState.done,
+        builder: (context) {
+          if (snapshot.hasData) {
+            return DText(snapshot.data!.body);
+          } else if (snapshot.hasError) {
+            return const IconMessage(
+              title: Text('unable to retrieve wiki entry'),
+              icon: Icon(Icons.warning_amber_outlined),
+              direction: Axis.horizontal,
+            );
+          } else {
+            return Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Padding(
-                  padding: EdgeInsets.all(16),
-                  child: CircularProgressIndicator(),
+                  padding: const EdgeInsets.all(16),
+                  child: Text(
+                    'no wiki entry',
+                    style: TextStyle(
+                      color: dimTextColor(context, 0.5),
+                      fontStyle: FontStyle.italic,
+                    ),
+                  ),
                 ),
               ],
+            );
+          }
+        },
+        secondChild: const Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Padding(
+              padding: EdgeInsets.all(16),
+              child: CircularProgressIndicator(),
             ),
-          ),
+          ],
+        ),
+      ),
     );
   }
 }

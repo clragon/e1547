@@ -24,8 +24,9 @@ Future<void> runFollowUpdates({
     await allFollows.all(types: [FollowType.notify]),
   );
 
-  List<Identity> identities =
-      await IdentityService(database: storage.sqlite).all();
+  List<Identity> identities = await IdentityService(
+    database: storage.sqlite,
+  ).all();
 
   final clientFactory = ClientFactory();
 
@@ -136,11 +137,12 @@ Future<void> updateFollowNotifications({
     );
 
     if (Platform.isAndroid) {
-      List<ActiveNotification> active =
-          await notifications.getActiveNotifications();
+      List<ActiveNotification> active = await notifications
+          .getActiveNotifications();
 
-      List<ActiveNotification> grouped =
-          active.where((e) => e.groupKey == followsBackgroundTaskKey).toList();
+      List<ActiveNotification> grouped = active
+          .where((e) => e.groupKey == followsBackgroundTaskKey)
+          .toList();
 
       if (grouped.length > 3) {
         NotificationDetails notificationDetails = _createNotificationDetails(
@@ -177,15 +179,15 @@ NotificationDetails _createNotificationDetails({
       'follows',
       'Followed Tags',
       channelDescription: 'Notifications for tags you are following',
-      largeIcon:
-          thumbnailPath != null ? FilePathAndroidBitmap(thumbnailPath) : null,
-      styleInformation:
-          thumbnailPath != null
-              ? BigPictureStyleInformation(
-                FilePathAndroidBitmap(thumbnailPath),
-                hideExpandedLargeIcon: true,
-              )
-              : null,
+      largeIcon: thumbnailPath != null
+          ? FilePathAndroidBitmap(thumbnailPath)
+          : null,
+      styleInformation: thumbnailPath != null
+          ? BigPictureStyleInformation(
+              FilePathAndroidBitmap(thumbnailPath),
+              hideExpandedLargeIcon: true,
+            )
+          : null,
       groupKey: followsBackgroundTaskKey,
       setAsGroupSummary: summary ?? false,
     ),

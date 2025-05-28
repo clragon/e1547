@@ -13,11 +13,10 @@ class FollowTimelineController extends PostController {
       force: force,
     );
     return client.posts.byTags(
-      tags:
-          follows
-              .where((e) => !e.tags.contains(' '))
-              .map((e) => e.tags)
-              .toList(),
+      tags: follows
+          .where((e) => !e.tags.contains(' '))
+          .map((e) => e.tags)
+          .toList(),
       page: page,
       force: force,
       cancelToken: cancelToken,
@@ -48,18 +47,20 @@ class FollowController extends PageClientDataController<Follow> {
   Future<List<Follow>> fetch(int page, bool force) {
     StreamFuture<List<Follow>> result;
     if (page == 1) {
-      result =
-          client.follows
-              .all(
-                query: FollowsQuery(types: types, hasUnseen: _filterUnseen),
-                force: force,
-              )
-              .stream;
+      result = client.follows
+          .all(
+            query: FollowsQuery(types: types, hasUnseen: _filterUnseen),
+            force: force,
+          )
+          .stream;
       if (_filterUnseen) {
         return result.stream.asyncExpand((event) {
           if (event.fold(0, (a, b) => a + b.unseen!) == 0) {
             return client.follows
-                .all(query: FollowsQuery(types: types), force: force)
+                .all(
+                  query: FollowsQuery(types: types),
+                  force: force,
+                )
                 .stream
                 .stream; // I can explain
           } else {

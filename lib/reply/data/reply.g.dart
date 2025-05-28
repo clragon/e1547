@@ -7,18 +7,18 @@ part of 'reply.dart';
 // **************************************************************************
 
 _$ReplyImpl _$$ReplyImplFromJson(Map<String, dynamic> json) => _$ReplyImpl(
-      id: (json['id'] as num).toInt(),
-      creatorId: (json['creator_id'] as num).toInt(),
-      creator: json['creator'] as String,
-      createdAt: DateTime.parse(json['created_at'] as String),
-      updaterId: (json['updater_id'] as num?)?.toInt(),
-      updater: json['updater'] as String?,
-      updatedAt: DateTime.parse(json['updated_at'] as String),
-      body: json['body'] as String,
-      topicId: (json['topic_id'] as num).toInt(),
-      warning: $enumDecodeNullable(_$WarningTypeEnumMap, json['warning']),
-      hidden: json['hidden'] as bool,
-    );
+  id: (json['id'] as num).toInt(),
+  creatorId: (json['creator_id'] as num).toInt(),
+  creator: json['creator'] as String,
+  createdAt: DateTime.parse(json['created_at'] as String),
+  updaterId: (json['updater_id'] as num?)?.toInt(),
+  updater: json['updater'] as String?,
+  updatedAt: DateTime.parse(json['updated_at'] as String),
+  body: json['body'] as String,
+  topicId: (json['topic_id'] as num).toInt(),
+  warning: $enumDecodeNullable(_$WarningTypeEnumMap, json['warning']),
+  hidden: json['hidden'] as bool,
+);
 
 Map<String, dynamic> _$$ReplyImplToJson(_$ReplyImpl instance) =>
     <String, dynamic>{

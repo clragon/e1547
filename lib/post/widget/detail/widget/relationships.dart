@@ -37,33 +37,28 @@ class RelationshipDisplay extends StatelessWidget {
               ListTile(
                 leading: const Icon(Icons.supervisor_account),
                 title: Text(parentId?.toString() ?? 'none'),
-                trailing:
-                    editing
-                        ? IconButton(
-                          icon: const Icon(Icons.edit),
-                          onPressed:
-                              canEdit
-                                  ? () {
-                                    PostEditingController controller =
-                                        context.read<PostEditingController>();
-                                    controller.show(
-                                      context,
-                                      ParentEditor(
-                                        editingController: controller,
-                                      ),
-                                    );
-                                  }
-                                  : null,
-                        )
-                        : const Icon(Icons.arrow_right),
-                onTap:
-                    parentId != null
-                        ? () => Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => PostLoadingPage(parentId),
-                          ),
-                        )
-                        : null,
+                trailing: editing
+                    ? IconButton(
+                        icon: const Icon(Icons.edit),
+                        onPressed: canEdit
+                            ? () {
+                                PostEditingController controller = context
+                                    .read<PostEditingController>();
+                                controller.show(
+                                  context,
+                                  ParentEditor(editingController: controller),
+                                );
+                              }
+                            : null,
+                      )
+                    : const Icon(Icons.arrow_right),
+                onTap: parentId != null
+                    ? () => Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => PostLoadingPage(parentId),
+                        ),
+                      )
+                    : null,
               ),
               const Divider(),
             ],
@@ -86,12 +81,11 @@ class RelationshipDisplay extends StatelessWidget {
                   leading: const Icon(Icons.supervised_user_circle),
                   title: Text(child.toString()),
                   trailing: const Icon(Icons.arrow_right),
-                  onTap:
-                      () => Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => PostLoadingPage(child),
-                        ),
-                      ),
+                  onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => PostLoadingPage(child),
+                    ),
+                  ),
                 ),
               ),
               const Divider(),
@@ -112,55 +106,52 @@ class ParentEditor extends StatelessWidget {
   Widget build(BuildContext context) {
     return SubTextEditingController(
       text: editingController.value?.parentId?.toString(),
-      builder:
-          (context, textController) => SubEffect(
-            effect: () {
-              textController.setFocusToEnd();
-              return null;
-            },
-            child: ControlledTextField(
-              actionController: editingController,
-              submit: (value) async {
-                if (value.trim().isEmpty) {
-                  PostEdit previous = editingController.value!;
-                  editingController.value = PostEdit(
-                    post: previous.post,
-                    editReason: previous.editReason,
-                    rating: previous.rating,
-                    description: previous.description,
-                    parentId: null,
-                    sources: previous.sources,
-                    tags: previous.tags,
-                  );
-                  return;
-                }
-                try {
-                  Post parent = await context.read<Client>().posts.get(
-                    id: int.parse(value),
-                  );
-                  editingController.value = editingController.value!.copyWith(
-                    parentId: parent.id,
-                  );
-                } on ClientException {
-                  throw const ActionControllerException(
-                    message: 'Invalid parent post',
-                  );
-                } on FormatException {
-                  throw const ActionControllerException(
-                    message: 'Invalid input',
-                  );
-                }
-              },
-              textController: TextEditingController(
-                text: editingController.value?.parentId?.toString(),
-              ),
-              labelText: 'Parent ID',
-              keyboardType: TextInputType.number,
-              inputFormatters: [
-                FilteringTextInputFormatter.allow(RegExp(r'^ ?\d*')),
-              ],
-            ),
+      builder: (context, textController) => SubEffect(
+        effect: () {
+          textController.setFocusToEnd();
+          return null;
+        },
+        child: ControlledTextField(
+          actionController: editingController,
+          submit: (value) async {
+            if (value.trim().isEmpty) {
+              PostEdit previous = editingController.value!;
+              editingController.value = PostEdit(
+                post: previous.post,
+                editReason: previous.editReason,
+                rating: previous.rating,
+                description: previous.description,
+                parentId: null,
+                sources: previous.sources,
+                tags: previous.tags,
+              );
+              return;
+            }
+            try {
+              Post parent = await context.read<Client>().posts.get(
+                id: int.parse(value),
+              );
+              editingController.value = editingController.value!.copyWith(
+                parentId: parent.id,
+              );
+            } on ClientException {
+              throw const ActionControllerException(
+                message: 'Invalid parent post',
+              );
+            } on FormatException {
+              throw const ActionControllerException(message: 'Invalid input');
+            }
+          },
+          textController: TextEditingController(
+            text: editingController.value?.parentId?.toString(),
           ),
+          labelText: 'Parent ID',
+          keyboardType: TextInputType.number,
+          inputFormatters: [
+            FilteringTextInputFormatter.allow(RegExp(r'^ ?\d*')),
+          ],
+        ),
+      ),
     );
   }
 }

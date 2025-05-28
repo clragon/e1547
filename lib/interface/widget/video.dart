@@ -82,9 +82,8 @@ class VideoServiceProvider
     extends SubChangeNotifierProvider<Settings, VideoService> {
   VideoServiceProvider({super.child, super.builder})
     : super(
-        create:
-            (context, settings) =>
-                VideoService(muteVideos: settings.muteVideos.value),
+        create: (context, settings) =>
+            VideoService(muteVideos: settings.muteVideos.value),
       );
 }
 

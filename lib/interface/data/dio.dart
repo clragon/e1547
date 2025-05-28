@@ -80,10 +80,9 @@ class ClientCacheConfig extends CacheOptions {
     bool? allowPostMethod,
   }) => ClientCacheConfig(
     policy: policy ?? this.policy,
-    hitCacheOnErrorExcept:
-        hitCacheOnErrorExcept != null
-            ? hitCacheOnErrorExcept.value
-            : this.hitCacheOnErrorExcept,
+    hitCacheOnErrorExcept: hitCacheOnErrorExcept != null
+        ? hitCacheOnErrorExcept.value
+        : this.hitCacheOnErrorExcept,
     keyBuilder: keyBuilder ?? this.keyBuilder,
     pageParam: pageParam != null ? pageParam.value : this.pageParam,
     maxAge: maxAge != null ? maxAge.value : this.maxAge,

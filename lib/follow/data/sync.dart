@@ -57,28 +57,29 @@ class FollowSync {
   Stream<double> get progress =>
       _remaining.stream.map((e) => _total == null ? 0 : e / _total!);
 
-  late final StreamController<int> _remaining =
-      BehaviorSubject()
-        ..stream.listen(
-          (value) => logger.fine('Syncing ${(_total ?? 0) - value} follows...'),
-          onError: (exception, stacktrace) {
-            _error = exception;
-            if (exception is Error) {
-              logger.shout('Sync failed!', exception, stacktrace);
-            } else {
-              logger.warning('Sync failed!', exception, stacktrace);
-            }
-          },
-          onDone: () => logger.info('Sync finished!'),
-        );
+  late final StreamController<int> _remaining = BehaviorSubject()
+    ..stream.listen(
+      (value) => logger.fine('Syncing ${(_total ?? 0) - value} follows...'),
+      onError: (exception, stacktrace) {
+        _error = exception;
+        if (exception is Error) {
+          logger.shout('Sync failed!', exception, stacktrace);
+        } else {
+          logger.warning('Sync failed!', exception, stacktrace);
+        }
+      },
+      onDone: () => logger.info('Sync finished!'),
+    );
 
   int? _total;
 
   List<String> _previousTags = [];
 
   void _assertNoDuplicates(List<String> tags) {
-    bool tagsAreDifferent =
-        !const DeepCollectionEquality().equals(_previousTags, tags);
+    bool tagsAreDifferent = !const DeepCollectionEquality().equals(
+      _previousTags,
+      tags,
+    );
     assert(tagsAreDifferent, 'Sync tried refreshing same follows twice!');
     _previousTags = tags;
   }

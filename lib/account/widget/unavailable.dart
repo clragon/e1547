@@ -38,12 +38,11 @@ class HostUnvailablePage extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
                 TextButton(
-                  onPressed:
-                      () => Navigator.of(context).pushReplacement(
-                        MaterialPageRoute(
-                          builder: (context) => const CookieCapturePage(),
-                        ),
-                      ),
+                  onPressed: () => Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(
+                      builder: (context) => const CookieCapturePage(),
+                    ),
+                  ),
                   child: const Text('Resolve'),
                 ),
               ] else

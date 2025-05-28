@@ -7,21 +7,21 @@ part of 'notification.dart';
 // **************************************************************************
 
 _$NotificationPayloadImpl _$$NotificationPayloadImplFromJson(
-        Map<String, dynamic> json) =>
-    _$NotificationPayloadImpl(
-      identity: (json['identity'] as num).toInt(),
-      type: json['type'] as String,
-      query: (json['query'] as Map<String, dynamic>?)?.map(
-        (k, e) => MapEntry(k, e as String),
-      ),
-      id: (json['id'] as num?)?.toInt(),
-    );
+  Map<String, dynamic> json,
+) => _$NotificationPayloadImpl(
+  identity: (json['identity'] as num).toInt(),
+  type: json['type'] as String,
+  query: (json['query'] as Map<String, dynamic>?)?.map(
+    (k, e) => MapEntry(k, e as String),
+  ),
+  id: (json['id'] as num?)?.toInt(),
+);
 
 Map<String, dynamic> _$$NotificationPayloadImplToJson(
-        _$NotificationPayloadImpl instance) =>
-    <String, dynamic>{
-      'identity': instance.identity,
-      'type': instance.type,
-      'query': instance.query,
-      'id': instance.id,
-    };
+  _$NotificationPayloadImpl instance,
+) => <String, dynamic>{
+  'identity': instance.identity,
+  'type': instance.type,
+  'query': instance.query,
+  'id': instance.id,
+};

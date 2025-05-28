@@ -16,20 +16,18 @@ class PostDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
     return TransparentAppBar(
       child: DefaultAppBar(
         leading: isEditing ? const CloseButton() : null,
-        actions:
-            isEditing
-                ? null
-                : [
-                  PopupMenuButton<VoidCallback>(
-                    icon: const Icon(Icons.more_vert),
-                    onSelected: (value) => value(),
-                    itemBuilder:
-                        (context) => [
-                          ...postMenuPostActions(context, post),
-                          ...postMenuUserActions(context, post),
-                        ],
-                  ),
-                ],
+        actions: isEditing
+            ? null
+            : [
+                PopupMenuButton<VoidCallback>(
+                  icon: const Icon(Icons.more_vert),
+                  onSelected: (value) => value(),
+                  itemBuilder: (context) => [
+                    ...postMenuPostActions(context, post),
+                    ...postMenuUserActions(context, post),
+                  ],
+                ),
+              ],
       ),
     );
   }

@@ -38,9 +38,9 @@ class TraitsService extends TraitsRepository with ChangeNotifier {
     notifyListeners();
   }
 
-  Stream<Traits?> _find(int id) =>
-      (select(traitsTable)
-        ..where((tbl) => tbl.id.equals(id))).watchSingleOrNull();
+  Stream<Traits?> _find(int id) => (select(
+    traitsTable,
+  )..where((tbl) => tbl.id.equals(id))).watchSingleOrNull();
 
   Future<void> _onChanged(Traits? value) async {
     if (value == null) {

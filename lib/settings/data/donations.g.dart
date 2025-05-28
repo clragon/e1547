@@ -7,13 +7,13 @@ part of 'donations.dart';
 // **************************************************************************
 
 _$DonorImpl _$$DonorImplFromJson(Map<String, dynamic> json) => _$DonorImpl(
-      name: json['name'] as String,
-      avatar: json['avatar'] as String?,
-      handles: Map<String, String>.from(json['handles'] as Map),
-      donations: (json['donations'] as List<dynamic>)
-          .map((e) => Donation.fromJson(e as Map<String, dynamic>))
-          .toList(),
-    );
+  name: json['name'] as String,
+  avatar: json['avatar'] as String?,
+  handles: Map<String, String>.from(json['handles'] as Map),
+  donations: (json['donations'] as List<dynamic>)
+      .map((e) => Donation.fromJson(e as Map<String, dynamic>))
+      .toList(),
+);
 
 Map<String, dynamic> _$$DonorImplToJson(_$DonorImpl instance) =>
     <String, dynamic>{

@@ -25,28 +25,27 @@ class DTextEditor extends StatelessWidget {
       title: title,
       content: content,
       toolbar: (context, controller) => DTextEditorBar(controller: controller),
-      preview:
-          (context, controller) => Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: AnimatedBuilder(
-                animation: controller,
-                builder: (context, child) {
-                  if (controller.text.trim().isNotEmpty) {
-                    return DText(controller.text);
-                  } else {
-                    return Text(
-                      'your text here',
-                      style: TextStyle(
-                        color: dimTextColor(context),
-                        fontStyle: FontStyle.italic,
-                      ),
-                    );
-                  }
-                },
-              ),
-            ),
+      preview: (context, controller) => Card(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: AnimatedBuilder(
+            animation: controller,
+            builder: (context, child) {
+              if (controller.text.trim().isNotEmpty) {
+                return DText(controller.text);
+              } else {
+                return Text(
+                  'your text here',
+                  style: TextStyle(
+                    color: dimTextColor(context),
+                    fontStyle: FontStyle.italic,
+                  ),
+                );
+              }
+            },
           ),
+        ),
+      ),
     );
   }
 }
@@ -159,10 +158,9 @@ class _DTextEditorBarState extends State<DTextEditorBar> {
             const VerticalDivider(),
             ExpandIcon(
               isExpanded: showBlocks,
-              onPressed:
-                  (value) => setState(() {
-                    showBlocks = !value;
-                  }),
+              onPressed: (value) => setState(() {
+                showBlocks = !value;
+              }),
             ),
           ],
         ),
@@ -185,9 +183,8 @@ class _DTextEditorBarState extends State<DTextEditorBar> {
           ),
           const SizedBox(width: 48),
         ],
-        builder:
-            (context, remaining) =>
-                remaining == 3 ? const SizedBox() : switcher(),
+        builder: (context, remaining) =>
+            remaining == 3 ? const SizedBox() : switcher(),
       ),
     );
   }

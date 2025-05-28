@@ -58,10 +58,9 @@ class LoadingShell extends StatefulWidget {
 
   static LoadingShellController of(BuildContext context) => maybeOf(context)!;
 
-  static LoadingShellController? maybeOf(BuildContext context) =>
-      context
-          .dependOnInheritedWidgetOfExactType<_LoadingShellScope>()
-          ?.notifier;
+  static LoadingShellController? maybeOf(BuildContext context) => context
+      .dependOnInheritedWidgetOfExactType<_LoadingShellScope>()
+      ?.notifier;
 
   @override
   State<LoadingShell> createState() => _LoadingShellState();
@@ -82,50 +81,48 @@ class _LoadingShellState extends State<LoadingShell> {
       notifier: _controller,
       child: ValueListenableBuilder(
         valueListenable: _controller,
-        builder:
-            (context, state, _) => Stack(
-              fit: StackFit.passthrough,
-              children: [
-                widget.child,
-                if (state.loading)
-                  Positioned.fill(
-                    child: Scaffold(
-                      body: Center(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const SizedBox(
-                              height: 300,
-                              child: Center(child: AppIcon(radius: 64)),
-                            ),
-                            const CircularProgressIndicator(),
-                            const SizedBox(height: 16),
-                            AnimatedAlign(
-                              duration: const Duration(milliseconds: 200),
-                              alignment: Alignment.topCenter,
-                              heightFactor: state.message == null ? 0 : 1,
-                              child: Text(state.message ?? ''),
-                            ),
-                            AnimatedAlign(
-                              duration: const Duration(milliseconds: 200),
-                              alignment: Alignment.topCenter,
-                              heightFactor: state.error == null ? 0 : 1,
-                              child: Text(
-                                state.error?.toString() ?? '',
-                                style: Theme.of(
-                                  context,
-                                ).textTheme.bodyMedium!.copyWith(
+        builder: (context, state, _) => Stack(
+          fit: StackFit.passthrough,
+          children: [
+            widget.child,
+            if (state.loading)
+              Positioned.fill(
+                child: Scaffold(
+                  body: Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const SizedBox(
+                          height: 300,
+                          child: Center(child: AppIcon(radius: 64)),
+                        ),
+                        const CircularProgressIndicator(),
+                        const SizedBox(height: 16),
+                        AnimatedAlign(
+                          duration: const Duration(milliseconds: 200),
+                          alignment: Alignment.topCenter,
+                          heightFactor: state.message == null ? 0 : 1,
+                          child: Text(state.message ?? ''),
+                        ),
+                        AnimatedAlign(
+                          duration: const Duration(milliseconds: 200),
+                          alignment: Alignment.topCenter,
+                          heightFactor: state.error == null ? 0 : 1,
+                          child: Text(
+                            state.error?.toString() ?? '',
+                            style: Theme.of(context).textTheme.bodyMedium!
+                                .copyWith(
                                   color: Theme.of(context).colorScheme.error,
                                 ),
-                              ),
-                            ),
-                          ],
+                          ),
                         ),
-                      ),
+                      ],
                     ),
                   ),
-              ],
-            ),
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }

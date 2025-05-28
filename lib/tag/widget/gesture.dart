@@ -32,8 +32,8 @@ class TagGesture extends StatelessWidget {
         } else {
           Navigator.of(context).push(
             MaterialPageRoute(
-              builder:
-                  (context) => PostsSearchPage(query: TagMap({'tags': tag})),
+              builder: (context) =>
+                  PostsSearchPage(query: TagMap({'tags': tag})),
             ),
           );
         }

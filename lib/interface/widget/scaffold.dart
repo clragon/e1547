@@ -145,8 +145,8 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
   /// If an [AdaptiveScaffoldController] is available from context, it will be used to define the default value.
   bool get isInlineDrawerOpen => _isInlineDrawerOpen;
   set isInlineDrawerOpen(bool value) {
-    AdaptiveScaffoldController? controller =
-        context.read<AdaptiveScaffoldController?>();
+    AdaptiveScaffoldController? controller = context
+        .read<AdaptiveScaffoldController?>();
     if (controller != null) {
       controller.isDrawerOpen = value;
     }
@@ -165,8 +165,8 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
   /// If an [AdaptiveScaffoldController] is available from context, it will be used to define the default value.
   bool get isInlineEndDrawerOpen => _isInlineEndDrawerOpen;
   set isInlineEndDrawerOpen(bool value) {
-    AdaptiveScaffoldController? controller =
-        context.read<AdaptiveScaffoldController?>();
+    AdaptiveScaffoldController? controller = context
+        .read<AdaptiveScaffoldController?>();
     if (controller != null) {
       controller.isEndDrawerOpen = value;
     }
@@ -214,8 +214,8 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
         if (inlineDrawer != null && effectiveConfig.collapseDrawer) {
           drawerAction = _CustomDrawerAction(
             isDrawerOpen: isInlineDrawerOpen,
-            onDrawerChanged:
-                (value) => setState(() => isInlineDrawerOpen = value),
+            onDrawerChanged: (value) =>
+                setState(() => isInlineDrawerOpen = value),
           );
         }
 
@@ -223,8 +223,8 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
         if (inlineEndDrawer != null && effectiveConfig.collapseEndDrawer) {
           endDrawerAction = _CustomDrawerAction(
             isDrawerOpen: isInlineEndDrawerOpen,
-            onDrawerChanged:
-                (value) => setState(() => isInlineEndDrawerOpen = value),
+            onDrawerChanged: (value) =>
+                setState(() => isInlineEndDrawerOpen = value),
           );
         }
 
@@ -490,11 +490,10 @@ class AdaptiveScaffoldScope
     bool isDrawerOpen = true,
     bool isEndDrawerOpen = false,
   }) : super(
-         create:
-             (context) => AdaptiveScaffoldController(
-               isDrawerOpen: isDrawerOpen,
-               isEndDrawerOpen: isEndDrawerOpen,
-             ),
+         create: (context) => AdaptiveScaffoldController(
+           isDrawerOpen: isDrawerOpen,
+           isEndDrawerOpen: isEndDrawerOpen,
+         ),
          keys: (context) => [isDrawerOpen, isEndDrawerOpen],
        );
 }

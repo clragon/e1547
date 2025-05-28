@@ -12,7 +12,8 @@ part of 'identity.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
+  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
+);
 
 Identity _$IdentityFromJson(Map<String, dynamic> json) {
   return _Identity.fromJson(json);
@@ -40,8 +41,12 @@ abstract class $IdentityCopyWith<$Res> {
   factory $IdentityCopyWith(Identity value, $Res Function(Identity) then) =
       _$IdentityCopyWithImpl<$Res, Identity>;
   @useResult
-  $Res call(
-      {int id, String host, String? username, Map<String, String>? headers});
+  $Res call({
+    int id,
+    String host,
+    String? username,
+    Map<String, String>? headers,
+  });
 }
 
 /// @nodoc
@@ -64,24 +69,27 @@ class _$IdentityCopyWithImpl<$Res, $Val extends Identity>
     Object? username = freezed,
     Object? headers = freezed,
   }) {
-    return _then(_value.copyWith(
-      id: null == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as int,
-      host: null == host
-          ? _value.host
-          : host // ignore: cast_nullable_to_non_nullable
-              as String,
-      username: freezed == username
-          ? _value.username
-          : username // ignore: cast_nullable_to_non_nullable
-              as String?,
-      headers: freezed == headers
-          ? _value.headers
-          : headers // ignore: cast_nullable_to_non_nullable
-              as Map<String, String>?,
-    ) as $Val);
+    return _then(
+      _value.copyWith(
+            id: null == id
+                ? _value.id
+                : id // ignore: cast_nullable_to_non_nullable
+                      as int,
+            host: null == host
+                ? _value.host
+                : host // ignore: cast_nullable_to_non_nullable
+                      as String,
+            username: freezed == username
+                ? _value.username
+                : username // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            headers: freezed == headers
+                ? _value.headers
+                : headers // ignore: cast_nullable_to_non_nullable
+                      as Map<String, String>?,
+          )
+          as $Val,
+    );
   }
 }
 
@@ -89,12 +97,17 @@ class _$IdentityCopyWithImpl<$Res, $Val extends Identity>
 abstract class _$$IdentityImplCopyWith<$Res>
     implements $IdentityCopyWith<$Res> {
   factory _$$IdentityImplCopyWith(
-          _$IdentityImpl value, $Res Function(_$IdentityImpl) then) =
-      __$$IdentityImplCopyWithImpl<$Res>;
+    _$IdentityImpl value,
+    $Res Function(_$IdentityImpl) then,
+  ) = __$$IdentityImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call(
-      {int id, String host, String? username, Map<String, String>? headers});
+  $Res call({
+    int id,
+    String host,
+    String? username,
+    Map<String, String>? headers,
+  });
 }
 
 /// @nodoc
@@ -102,8 +115,9 @@ class __$$IdentityImplCopyWithImpl<$Res>
     extends _$IdentityCopyWithImpl<$Res, _$IdentityImpl>
     implements _$$IdentityImplCopyWith<$Res> {
   __$$IdentityImplCopyWithImpl(
-      _$IdentityImpl _value, $Res Function(_$IdentityImpl) _then)
-      : super(_value, _then);
+    _$IdentityImpl _value,
+    $Res Function(_$IdentityImpl) _then,
+  ) : super(_value, _then);
 
   /// Create a copy of Identity
   /// with the given fields replaced by the non-null parameter values.
@@ -115,36 +129,38 @@ class __$$IdentityImplCopyWithImpl<$Res>
     Object? username = freezed,
     Object? headers = freezed,
   }) {
-    return _then(_$IdentityImpl(
-      id: null == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as int,
-      host: null == host
-          ? _value.host
-          : host // ignore: cast_nullable_to_non_nullable
-              as String,
-      username: freezed == username
-          ? _value.username
-          : username // ignore: cast_nullable_to_non_nullable
-              as String?,
-      headers: freezed == headers
-          ? _value._headers
-          : headers // ignore: cast_nullable_to_non_nullable
-              as Map<String, String>?,
-    ));
+    return _then(
+      _$IdentityImpl(
+        id: null == id
+            ? _value.id
+            : id // ignore: cast_nullable_to_non_nullable
+                  as int,
+        host: null == host
+            ? _value.host
+            : host // ignore: cast_nullable_to_non_nullable
+                  as String,
+        username: freezed == username
+            ? _value.username
+            : username // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        headers: freezed == headers
+            ? _value._headers
+            : headers // ignore: cast_nullable_to_non_nullable
+                  as Map<String, String>?,
+      ),
+    );
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$IdentityImpl implements _Identity {
-  const _$IdentityImpl(
-      {required this.id,
-      required this.host,
-      required this.username,
-      required final Map<String, String>? headers})
-      : _headers = headers;
+  const _$IdentityImpl({
+    required this.id,
+    required this.host,
+    required this.username,
+    required final Map<String, String>? headers,
+  }) : _headers = headers;
 
   factory _$IdentityImpl.fromJson(Map<String, dynamic> json) =>
       _$$IdentityImplFromJson(json);
@@ -184,8 +200,13 @@ class _$IdentityImpl implements _Identity {
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, id, host, username,
-      const DeepCollectionEquality().hash(_headers));
+  int get hashCode => Object.hash(
+    runtimeType,
+    id,
+    host,
+    username,
+    const DeepCollectionEquality().hash(_headers),
+  );
 
   /// Create a copy of Identity
   /// with the given fields replaced by the non-null parameter values.
@@ -197,18 +218,17 @@ class _$IdentityImpl implements _Identity {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$IdentityImplToJson(
-      this,
-    );
+    return _$$IdentityImplToJson(this);
   }
 }
 
 abstract class _Identity implements Identity {
-  const factory _Identity(
-      {required final int id,
-      required final String host,
-      required final String? username,
-      required final Map<String, String>? headers}) = _$IdentityImpl;
+  const factory _Identity({
+    required final int id,
+    required final String host,
+    required final String? username,
+    required final Map<String, String>? headers,
+  }) = _$IdentityImpl;
 
   factory _Identity.fromJson(Map<String, dynamic> json) =
       _$IdentityImpl.fromJson;
@@ -253,8 +273,9 @@ mixin _$IdentityRequest {
 /// @nodoc
 abstract class $IdentityRequestCopyWith<$Res> {
   factory $IdentityRequestCopyWith(
-          IdentityRequest value, $Res Function(IdentityRequest) then) =
-      _$IdentityRequestCopyWithImpl<$Res, IdentityRequest>;
+    IdentityRequest value,
+    $Res Function(IdentityRequest) then,
+  ) = _$IdentityRequestCopyWithImpl<$Res, IdentityRequest>;
   @useResult
   $Res call({String host, String? username, Map<String, String>? headers});
 }
@@ -278,29 +299,33 @@ class _$IdentityRequestCopyWithImpl<$Res, $Val extends IdentityRequest>
     Object? username = freezed,
     Object? headers = freezed,
   }) {
-    return _then(_value.copyWith(
-      host: null == host
-          ? _value.host
-          : host // ignore: cast_nullable_to_non_nullable
-              as String,
-      username: freezed == username
-          ? _value.username
-          : username // ignore: cast_nullable_to_non_nullable
-              as String?,
-      headers: freezed == headers
-          ? _value.headers
-          : headers // ignore: cast_nullable_to_non_nullable
-              as Map<String, String>?,
-    ) as $Val);
+    return _then(
+      _value.copyWith(
+            host: null == host
+                ? _value.host
+                : host // ignore: cast_nullable_to_non_nullable
+                      as String,
+            username: freezed == username
+                ? _value.username
+                : username // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            headers: freezed == headers
+                ? _value.headers
+                : headers // ignore: cast_nullable_to_non_nullable
+                      as Map<String, String>?,
+          )
+          as $Val,
+    );
   }
 }
 
 /// @nodoc
 abstract class _$$IdentityRequestImplCopyWith<$Res>
     implements $IdentityRequestCopyWith<$Res> {
-  factory _$$IdentityRequestImplCopyWith(_$IdentityRequestImpl value,
-          $Res Function(_$IdentityRequestImpl) then) =
-      __$$IdentityRequestImplCopyWithImpl<$Res>;
+  factory _$$IdentityRequestImplCopyWith(
+    _$IdentityRequestImpl value,
+    $Res Function(_$IdentityRequestImpl) then,
+  ) = __$$IdentityRequestImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({String host, String? username, Map<String, String>? headers});
@@ -311,8 +336,9 @@ class __$$IdentityRequestImplCopyWithImpl<$Res>
     extends _$IdentityRequestCopyWithImpl<$Res, _$IdentityRequestImpl>
     implements _$$IdentityRequestImplCopyWith<$Res> {
   __$$IdentityRequestImplCopyWithImpl(
-      _$IdentityRequestImpl _value, $Res Function(_$IdentityRequestImpl) _then)
-      : super(_value, _then);
+    _$IdentityRequestImpl _value,
+    $Res Function(_$IdentityRequestImpl) _then,
+  ) : super(_value, _then);
 
   /// Create a copy of IdentityRequest
   /// with the given fields replaced by the non-null parameter values.
@@ -323,29 +349,33 @@ class __$$IdentityRequestImplCopyWithImpl<$Res>
     Object? username = freezed,
     Object? headers = freezed,
   }) {
-    return _then(_$IdentityRequestImpl(
-      host: null == host
-          ? _value.host
-          : host // ignore: cast_nullable_to_non_nullable
-              as String,
-      username: freezed == username
-          ? _value.username
-          : username // ignore: cast_nullable_to_non_nullable
-              as String?,
-      headers: freezed == headers
-          ? _value._headers
-          : headers // ignore: cast_nullable_to_non_nullable
-              as Map<String, String>?,
-    ));
+    return _then(
+      _$IdentityRequestImpl(
+        host: null == host
+            ? _value.host
+            : host // ignore: cast_nullable_to_non_nullable
+                  as String,
+        username: freezed == username
+            ? _value.username
+            : username // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        headers: freezed == headers
+            ? _value._headers
+            : headers // ignore: cast_nullable_to_non_nullable
+                  as Map<String, String>?,
+      ),
+    );
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$IdentityRequestImpl implements _IdentityRequest {
-  const _$IdentityRequestImpl(
-      {required this.host, this.username, final Map<String, String>? headers})
-      : _headers = headers;
+  const _$IdentityRequestImpl({
+    required this.host,
+    this.username,
+    final Map<String, String>? headers,
+  }) : _headers = headers;
 
   factory _$IdentityRequestImpl.fromJson(Map<String, dynamic> json) =>
       _$$IdentityRequestImplFromJson(json);
@@ -382,8 +412,12 @@ class _$IdentityRequestImpl implements _IdentityRequest {
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, host, username,
-      const DeepCollectionEquality().hash(_headers));
+  int get hashCode => Object.hash(
+    runtimeType,
+    host,
+    username,
+    const DeepCollectionEquality().hash(_headers),
+  );
 
   /// Create a copy of IdentityRequest
   /// with the given fields replaced by the non-null parameter values.
@@ -392,21 +426,22 @@ class _$IdentityRequestImpl implements _IdentityRequest {
   @pragma('vm:prefer-inline')
   _$$IdentityRequestImplCopyWith<_$IdentityRequestImpl> get copyWith =>
       __$$IdentityRequestImplCopyWithImpl<_$IdentityRequestImpl>(
-          this, _$identity);
+        this,
+        _$identity,
+      );
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$IdentityRequestImplToJson(
-      this,
-    );
+    return _$$IdentityRequestImplToJson(this);
   }
 }
 
 abstract class _IdentityRequest implements IdentityRequest {
-  const factory _IdentityRequest(
-      {required final String host,
-      final String? username,
-      final Map<String, String>? headers}) = _$IdentityRequestImpl;
+  const factory _IdentityRequest({
+    required final String host,
+    final String? username,
+    final Map<String, String>? headers,
+  }) = _$IdentityRequestImpl;
 
   factory _IdentityRequest.fromJson(Map<String, dynamic> json) =
       _$IdentityRequestImpl.fromJson;

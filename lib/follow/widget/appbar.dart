@@ -15,11 +15,9 @@ class FollowSelectionAppBar extends StatelessWidget with AppBarBuilderWidget {
     final client = context.watch<Client>();
     return SelectionAppBar<Follow>(
       child: child,
-      titleBuilder:
-          (context, data) =>
-              data.selections.length == 1
-                  ? Text(data.selections.first.name)
-                  : Text('${data.selections.length} follows'),
+      titleBuilder: (context, data) => data.selections.length == 1
+          ? Text(data.selections.first.name)
+          : Text('${data.selections.length} follows'),
       actionBuilder: (context, data) {
         int unseen = data.selections.fold(0, (a, b) => a + (b.unseen ?? 0));
         bool bookmarked = data.selections.every(
@@ -34,8 +32,9 @@ class FollowSelectionAppBar extends StatelessWidget with AppBarBuilderWidget {
               icon: Icon(
                 notified ? Icons.notifications_off : Icons.notifications_active,
               ),
-              tooltip:
-                  notified ? 'Disable notifications' : 'Enable notifications',
+              tooltip: notified
+                  ? 'Disable notifications'
+                  : 'Enable notifications',
               onPressed: () async {
                 data.clear();
                 if (notified) {
@@ -79,17 +78,17 @@ class FollowSelectionAppBar extends StatelessWidget with AppBarBuilderWidget {
           ),
           IconButton(
             icon: Icon(unseen > 0 ? Icons.mark_email_read : Icons.drafts),
-            tooltip:
-                unseen > 0 ? 'mark $unseen posts as seen' : 'no unseen posts',
-            onPressed:
-                unseen > 0
-                    ? () async {
-                      data.clear();
-                      client.follows.markAllSeen(
-                        data.selections.map((e) => e.id).toList(),
-                      );
-                    }
-                    : null,
+            tooltip: unseen > 0
+                ? 'mark $unseen posts as seen'
+                : 'no unseen posts',
+            onPressed: unseen > 0
+                ? () async {
+                    data.clear();
+                    client.follows.markAllSeen(
+                      data.selections.map((e) => e.id).toList(),
+                    );
+                  }
+                : null,
           ),
         ];
       },

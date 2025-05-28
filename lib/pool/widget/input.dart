@@ -111,8 +111,8 @@ class PoolNameFilter extends StatelessWidget {
     return SubTextValue(
       value: state.value,
       onChanged: state.onChanged,
-      builder:
-          (context, controller) => AutocompleteTextField<_PoolSearchResult>(
+      builder: (context, controller) =>
+          AutocompleteTextField<_PoolSearchResult>(
             direction: VerticalDirection.up,
             submit: (value) => state.onSubmit?.call(value),
             controller: controller,
@@ -148,45 +148,43 @@ class PoolNameFilter extends StatelessWidget {
                     (e) => _PoolSearchResult(
                       time: e.visitedAt,
                       name: e.title!.replaceAll('_', ' '),
-                      thumbnail:
-                          e.thumbnails.isNotEmpty ? e.thumbnails.first : null,
+                      thumbnail: e.thumbnails.isNotEmpty
+                          ? e.thumbnails.first
+                          : null,
                       link: e.link,
                     ),
                   )
                   .toList();
             },
-            itemBuilder:
-                (context, value) => ListTile(
-                  title: Text(value.name),
-                  leading:
-                      value.thumbnail != null
-                          ? Padding(
-                            padding: const EdgeInsets.all(4),
-                            child: ClipRRect(
-                              borderRadius: const BorderRadius.all(
-                                Radius.circular(4),
-                              ),
-                              child: AspectRatio(
-                                aspectRatio: 1,
-                                child: CachedNetworkImage(
-                                  imageUrl: value.thumbnail!,
-                                  errorWidget: defaultErrorBuilder,
-                                  fit: BoxFit.cover,
-                                  cacheManager:
-                                      context.read<BaseCacheManager>(),
-                                ),
-                              ),
-                            ),
-                          )
-                          : Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 12),
-                            child: Icon(
-                              value.link != null
-                                  ? Icons.open_in_new
-                                  : Icons.lightbulb_outline,
-                            ),
+            itemBuilder: (context, value) => ListTile(
+              title: Text(value.name),
+              leading: value.thumbnail != null
+                  ? Padding(
+                      padding: const EdgeInsets.all(4),
+                      child: ClipRRect(
+                        borderRadius: const BorderRadius.all(
+                          Radius.circular(4),
+                        ),
+                        child: AspectRatio(
+                          aspectRatio: 1,
+                          child: CachedNetworkImage(
+                            imageUrl: value.thumbnail!,
+                            errorWidget: defaultErrorBuilder,
+                            fit: BoxFit.cover,
+                            cacheManager: context.read<BaseCacheManager>(),
                           ),
-                ),
+                        ),
+                      ),
+                    )
+                  : Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      child: Icon(
+                        value.link != null
+                            ? Icons.open_in_new
+                            : Icons.lightbulb_outline,
+                      ),
+                    ),
+            ),
           ),
     );
   }

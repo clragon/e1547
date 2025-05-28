@@ -65,8 +65,9 @@ mixin PostFilterableController<KeyType> on DataController<KeyType, Post> {
   List<Post>? filter(List<Post>? items) {
     List<String> denylist = [];
     if (denying && filterMode != PostFilterMode.unavailable) {
-      denylist =
-          client.traits.value.denylist.whereNot(_allowedTags.contains).toList();
+      denylist = client.traits.value.denylist
+          .whereNot(_allowedTags.contains)
+          .toList();
     }
 
     Map<Post, List<String>>? previousDeniedPosts;

@@ -21,8 +21,8 @@ class TagDisplay extends StatelessWidget {
     bool canEdit = context.select<PostEditingController?, bool>(
       (value) => value?.canEdit ?? false,
     );
-    PostEditingController? editingController =
-        context.watch<PostEditingController?>();
+    PostEditingController? editingController = context
+        .watch<PostEditingController?>();
 
     Widget tagCategory(String category) {
       return Wrap(
@@ -31,35 +31,32 @@ class TagDisplay extends StatelessWidget {
             (tag) => TagCard(
               tag: tag,
               category: category,
-              onRemove:
-                  editing && canEdit
-                      ? () {
-                        Map<String, List<String>> edited = Map.from(
-                          editingController!.value!.tags,
-                        );
-                        edited[category]!.remove(tag);
-                        editingController.value = editingController.value!
-                            .copyWith(tags: edited);
-                      }
-                      : null,
+              onRemove: editing && canEdit
+                  ? () {
+                      Map<String, List<String>> edited = Map.from(
+                        editingController!.value!.tags,
+                      );
+                      edited[category]!.remove(tag);
+                      editingController.value = editingController.value!
+                          .copyWith(tags: edited);
+                    }
+                  : null,
             ),
           ),
           if (category != 'invalid')
             CrossFade.builder(
               showChild: editing,
-              builder:
-                  (context) => TagAddCard(
-                    category: category,
-                    submit:
-                        canEdit
-                            ? (value) => onPostTagsEdit(
-                              context,
-                              editingController!,
-                              value,
-                              category,
-                            )
-                            : null,
-                  ),
+              builder: (context) => TagAddCard(
+                category: category,
+                submit: canEdit
+                    ? (value) => onPostTagsEdit(
+                        context,
+                        editingController!,
+                        value,
+                        category,
+                      )
+                    : null,
+              ),
             ),
         ],
       );
@@ -84,15 +81,14 @@ class TagDisplay extends StatelessWidget {
 
     return Column(
       mainAxisSize: MainAxisSize.min,
-      children:
-          post.tags.keys
-              .where(
-                (category) =>
-                    (tags[category]?.isNotEmpty ?? false) ||
-                    (editing && category != 'invalid'),
-              )
-              .map((category) => categoryTile(category))
-              .toList(),
+      children: post.tags.keys
+          .where(
+            (category) =>
+                (tags[category]?.isNotEmpty ?? false) ||
+                (editing && category != 'invalid'),
+          )
+          .map((category) => categoryTile(category))
+          .toList(),
     );
   }
 }

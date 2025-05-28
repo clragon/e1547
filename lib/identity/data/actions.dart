@@ -10,11 +10,10 @@ String encodeBasicAuth(String username, String password) =>
     r'Basic (?<encoded>[A-Za-z\d/=]+)',
   ).firstMatch(auth);
   if (fullBasicMatch == null) return null;
-  RegExpMatch? credentialMatch = RegExp(
-    r'(?<username>.+):(?<password>.+)',
-  ).firstMatch(
-    utf8.decode(base64Decode(fullBasicMatch.namedGroup('encoded')!)),
-  );
+  RegExpMatch? credentialMatch = RegExp(r'(?<username>.+):(?<password>.+)')
+      .firstMatch(
+        utf8.decode(base64Decode(fullBasicMatch.namedGroup('encoded')!)),
+      );
   if (credentialMatch == null) return null;
   return (
     credentialMatch.namedGroup('username')!,

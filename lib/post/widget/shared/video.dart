@@ -16,101 +16,95 @@ class VideoButton extends StatelessWidget {
   Widget build(BuildContext context) {
     ScaffoldFrameController? frameController = ScaffoldFrame.maybeOf(context);
     return SubStream<List<bool>>(
-      create:
-          () => CombineLatestStream.list([
-            player.stream.playing.startWith(player.state.playing),
-            player.stream.buffering.startWith(player.state.buffering),
-            player.initialized.startWith(player.isInitialized),
-          ]),
+      create: () => CombineLatestStream.list([
+        player.stream.playing.startWith(player.state.playing),
+        player.stream.buffering.startWith(player.state.buffering),
+        player.initialized.startWith(player.isInitialized),
+      ]),
       keys: [player],
-      builder:
-          (context, states) => SubAnimationController(
-            duration: defaultAnimationDuration,
-            keys: [player],
-            builder:
-                (context, animationController) => AnimatedBuilder(
-                  animation: Listenable.merge([frameController]),
-                  builder: (context, child) {
-                    final [playing, buffering, initialized] =
-                        states.data ??
-                        [
-                          player.state.playing,
-                          player.state.buffering,
-                          player.isInitialized,
-                        ];
+      builder: (context, states) => SubAnimationController(
+        duration: defaultAnimationDuration,
+        keys: [player],
+        builder: (context, animationController) => AnimatedBuilder(
+          animation: Listenable.merge([frameController]),
+          builder: (context, child) {
+            final [playing, buffering, initialized] =
+                states.data ??
+                [
+                  player.state.playing,
+                  player.state.buffering,
+                  player.isInitialized,
+                ];
 
-                    bool loading = !initialized || buffering;
-                    bool alwaysVisible = !playing || loading;
-                    bool shown =
-                        alwaysVisible || (frameController?.visible ?? false);
-                    bool showPlayButton = !playing || (playing && !loading);
+            bool loading = !initialized || buffering;
+            bool alwaysVisible = !playing || loading;
+            bool shown = alwaysVisible || (frameController?.visible ?? false);
+            bool showPlayButton = !playing || (playing && !loading);
 
-                    return ScaffoldFrameChild(
-                      shown: shown,
-                      child: Material(
-                        clipBehavior: Clip.antiAlias,
-                        shape: const CircleBorder(),
-                        color: Colors.black26,
-                        child: IconButton(
-                          iconSize: size,
-                          onPressed: () {
-                            if (player.state.playing) {
-                              frameController?.cancel();
-                              player.pause();
+            return ScaffoldFrameChild(
+              shown: shown,
+              child: Material(
+                clipBehavior: Clip.antiAlias,
+                shape: const CircleBorder(),
+                color: Colors.black26,
+                child: IconButton(
+                  iconSize: size,
+                  onPressed: () {
+                    if (player.state.playing) {
+                      frameController?.cancel();
+                      player.pause();
+                    } else {
+                      player.play();
+                      frameController?.hideFrame(
+                        duration: const Duration(milliseconds: 500),
+                      );
+                    }
+                  },
+                  icon: Center(
+                    child: CrossFade(
+                      showChild: showPlayButton,
+                      duration: const Duration(milliseconds: 100),
+                      secondChild: const Center(
+                        child: Padding(
+                          padding: EdgeInsets.all(8),
+                          child: CircularProgressIndicator(),
+                        ),
+                      ),
+                      child: SubValue<StreamSubscription<bool>>(
+                        create: () {
+                          if (player.state.playing) {
+                            animationController.forward();
+                          } else {
+                            animationController.reverse();
+                          }
+                          return player.stream.playing.listen((event) {
+                            if (event) {
+                              animationController.forward();
                             } else {
-                              player.play();
-                              frameController?.hideFrame(
-                                duration: const Duration(milliseconds: 500),
-                              );
+                              animationController.reverse();
                             }
-                          },
-                          icon: Center(
-                            child: CrossFade(
-                              showChild: showPlayButton,
-                              duration: const Duration(milliseconds: 100),
-                              secondChild: const Center(
-                                child: Padding(
-                                  padding: EdgeInsets.all(8),
-                                  child: CircularProgressIndicator(),
-                                ),
-                              ),
-                              child: SubValue<StreamSubscription<bool>>(
-                                create: () {
-                                  if (player.state.playing) {
-                                    animationController.forward();
-                                  } else {
-                                    animationController.reverse();
-                                  }
-                                  return player.stream.playing.listen((event) {
-                                    if (event) {
-                                      animationController.forward();
-                                    } else {
-                                      animationController.reverse();
-                                    }
-                                  });
-                                },
-                                keys: [player, animationController],
-                                dispose: (value) => value.cancel(),
-                                builder:
-                                    (context, _) => AnimatedBuilder(
-                                      animation: animationController,
-                                      builder:
-                                          (context, child) => AnimatedIcon(
-                                            icon: AnimatedIcons.play_pause,
-                                            progress: animationController,
-                                            size: size,
-                                            color: Colors.white,
-                                          ),
-                                    ),
-                              ),
-                            ),
+                          });
+                        },
+                        keys: [player, animationController],
+                        dispose: (value) => value.cancel(),
+                        builder: (context, _) => AnimatedBuilder(
+                          animation: animationController,
+                          builder: (context, child) => AnimatedIcon(
+                            icon: AnimatedIcons.play_pause,
+                            progress: animationController,
+                            size: size,
+                            color: Colors.white,
                           ),
                         ),
                       ),
-                    );
-                  },
+                    ),
+                  ),
                 ),
-          ),
+              ),
+            );
+          },
+        ),
+      ),
     );
   }
 }
@@ -209,14 +203,13 @@ class _VideoBarState extends State<VideoBar> {
                           context,
                         )?.toggleFrame(shown: true);
                       },
-                      onChanged:
-                          position.inMilliseconds > 0
-                              ? (e) {
-                                setState(() {
-                                  position = Duration(milliseconds: e ~/ 1);
-                                });
-                              }
-                              : null,
+                      onChanged: position.inMilliseconds > 0
+                          ? (e) {
+                              setState(() {
+                                position = Duration(milliseconds: e ~/ 1);
+                              });
+                            }
+                          : null,
                       onChangeEnd: (e) {
                         seeking = false;
                         widget.player.seek(Duration(milliseconds: e ~/ 1));
@@ -323,40 +316,36 @@ class _VideoGestureState extends State<VideoGesture>
                 double size = constraints.maxHeight * 2;
                 return AnimatedBuilder(
                   animation: fadeAnimation,
-                  builder:
-                      (context, child) => Stack(
-                        alignment: Alignment.center,
-                        clipBehavior: Clip.none,
-                        children: [
-                          Positioned(
-                            right:
-                                widget.forward
-                                    ? null
-                                    : constraints.maxWidth * 0.2,
-                            left:
-                                widget.forward
-                                    ? constraints.maxWidth * 0.2
-                                    : null,
-                            child: Container(
-                              width: size,
-                              height: size,
-                              decoration: BoxDecoration(
-                                color: Theme.of(context).splashColor,
-                                borderRadius:
-                                    widget.forward
-                                        ? BorderRadius.only(
-                                          topLeft: Radius.circular(size),
-                                          bottomLeft: Radius.circular(size),
-                                        )
-                                        : BorderRadius.only(
-                                          topRight: Radius.circular(size),
-                                          bottomRight: Radius.circular(size),
-                                        ),
-                              ),
-                            ),
+                  builder: (context, child) => Stack(
+                    alignment: Alignment.center,
+                    clipBehavior: Clip.none,
+                    children: [
+                      Positioned(
+                        right: widget.forward
+                            ? null
+                            : constraints.maxWidth * 0.2,
+                        left: widget.forward
+                            ? constraints.maxWidth * 0.2
+                            : null,
+                        child: Container(
+                          width: size,
+                          height: size,
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).splashColor,
+                            borderRadius: widget.forward
+                                ? BorderRadius.only(
+                                    topLeft: Radius.circular(size),
+                                    bottomLeft: Radius.circular(size),
+                                  )
+                                : BorderRadius.only(
+                                    topRight: Radius.circular(size),
+                                    bottomRight: Radius.circular(size),
+                                  ),
                           ),
-                        ],
+                        ),
                       ),
+                    ],
+                  ),
                 );
               },
             ),
@@ -376,26 +365,21 @@ class VideoGestures extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
-      builder:
-          (context, constraints) => Stack(
-            alignment: Alignment.center,
-            children: [
-              child,
-              Positioned.fill(
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: VideoGesture(forward: false, player: player),
-                    ),
-                    SizedBox(width: constraints.maxWidth * 0.1),
-                    Expanded(
-                      child: VideoGesture(forward: true, player: player),
-                    ),
-                  ],
-                ),
-              ),
-            ],
+      builder: (context, constraints) => Stack(
+        alignment: Alignment.center,
+        children: [
+          child,
+          Positioned.fill(
+            child: Row(
+              children: [
+                Expanded(child: VideoGesture(forward: false, player: player)),
+                SizedBox(width: constraints.maxWidth * 0.1),
+                Expanded(child: VideoGesture(forward: true, player: player)),
+              ],
+            ),
           ),
+        ],
+      ),
     );
   }
 }

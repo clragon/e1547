@@ -35,16 +35,15 @@ class _LockScreenState extends State<LockScreen> {
       lock = ScreenLock(
         title: const Text('Enter PIN'),
         correctString: pin!,
-        customizedButtonChild:
-            biometrics ? const Icon(Icons.fingerprint) : null,
-        customizedButtonTap:
-            biometrics
-                ? () => tryLocalAuth(context: context, onSuccess: unlock)
-                : null,
-        onOpened:
-            biometrics
-                ? () => tryLocalAuth(context: context, onSuccess: unlock)
-                : null,
+        customizedButtonChild: biometrics
+            ? const Icon(Icons.fingerprint)
+            : null,
+        customizedButtonTap: biometrics
+            ? () => tryLocalAuth(context: context, onSuccess: unlock)
+            : null,
+        onOpened: biometrics
+            ? () => tryLocalAuth(context: context, onSuccess: unlock)
+            : null,
         onUnlocked: unlock,
         config: ScreenLockConfig(themeData: Theme.of(context)),
       );
@@ -60,27 +59,25 @@ class _LockScreenState extends State<LockScreen> {
         context.read<Settings>().appPin,
         context.read<Settings>().biometricAuth,
       ]),
-      builder:
-          (context) => Stack(
-            fit: StackFit.passthrough,
-            children: [
-              Visibility(
-                visible: !showLock,
-                maintainState: true,
-                child: widget.child,
-              ),
-              PageTransitionSwitcher(
-                transitionBuilder:
-                    (child, primaryAnimation, secondaryAnimation) =>
-                        FadeThroughTransition(
-                          animation: primaryAnimation,
-                          secondaryAnimation: secondaryAnimation,
-                          child: child,
-                        ),
-                child: showLock ? lock! : null,
-              ),
-            ],
+      builder: (context) => Stack(
+        fit: StackFit.passthrough,
+        children: [
+          Visibility(
+            visible: !showLock,
+            maintainState: true,
+            child: widget.child,
           ),
+          PageTransitionSwitcher(
+            transitionBuilder: (child, primaryAnimation, secondaryAnimation) =>
+                FadeThroughTransition(
+                  animation: primaryAnimation,
+                  secondaryAnimation: secondaryAnimation,
+                  child: child,
+                ),
+            child: showLock ? lock! : null,
+          ),
+        ],
+      ),
     );
   }
 }

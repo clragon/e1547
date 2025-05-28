@@ -148,8 +148,8 @@ class PagedSliverGroupedListView<PageKeyType, ItemType, SortType>
           groupComparator: groupComparator,
           groupSeparatorBuilder: groupSeparatorBuilder,
           groupHeaderBuilder: groupHeaderBuilder,
-          indexedItemBuilder:
-              (context, item, index) => itemBuilder(context, index),
+          indexedItemBuilder: (context, item, index) =>
+              itemBuilder(context, index),
           itemComparator: itemComparator,
           order: order,
           sort: sort,

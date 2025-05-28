@@ -5,8 +5,11 @@ Color? parseColor(String colorString) {
     if (colorString.length == 7) {
       return Color(int.parse(colorString.substring(1), radix: 16) + 0xFF000000);
     } else {
-      String expandedHex =
-          colorString.substring(1).split('').map((hex) => hex * 2).join();
+      String expandedHex = colorString
+          .substring(1)
+          .split('')
+          .map((hex) => hex * 2)
+          .join();
       return Color(int.parse(expandedHex, radix: 16) + 0xFF000000);
     }
   }

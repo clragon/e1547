@@ -39,16 +39,14 @@ class TextEditor extends StatelessWidget {
       onClosed: onClosed,
       title: title,
       actions: actions,
-      preview:
-          preview != null
-              ? (context, controllers) =>
-                  preview!.call(context, controllers[_contentKey]!)
-              : null,
-      toolbar:
-          toolbar != null
-              ? (context, controllers) =>
-                  toolbar!.call(context, controllers[_contentKey]!)
-              : null,
+      preview: preview != null
+          ? (context, controllers) =>
+                preview!.call(context, controllers[_contentKey]!)
+          : null,
+      toolbar: toolbar != null
+          ? (context, controllers) =>
+                toolbar!.call(context, controllers[_contentKey]!)
+          : null,
     );
   }
 }
@@ -161,8 +159,9 @@ class _MultiTextEditorState extends State<MultiTextEditor> {
                         ),
                         maxLines: null,
                         enabled: !actionController.isLoading,
-                        enableIMEPersonalizedLearning:
-                            !PrivateTextFields.of(context),
+                        enableIMEPersonalizedLearning: !PrivateTextFields.of(
+                          context,
+                        ),
                       ),
                     ],
                   ),
@@ -173,26 +172,21 @@ class _MultiTextEditorState extends State<MultiTextEditor> {
 
         Widget fab() {
           return Builder(
-            builder:
-                (context) => FloatingActionButton(
-                  backgroundColor: Theme.of(context).cardColor,
-                  onPressed:
-                      actionController.isLoading
-                          ? null
-                          : () async {
-                            await actionController.showAndAction(
-                              context,
-                              submit,
-                            );
-                            if (!actionController.isError) {
-                              widget.onClosed?.call();
-                            }
-                          },
-                  child: Icon(
-                    Icons.check,
-                    color: Theme.of(context).iconTheme.color,
-                  ),
-                ),
+            builder: (context) => FloatingActionButton(
+              backgroundColor: Theme.of(context).cardColor,
+              onPressed: actionController.isLoading
+                  ? null
+                  : () async {
+                      await actionController.showAndAction(context, submit);
+                      if (!actionController.isError) {
+                        widget.onClosed?.call();
+                      }
+                    },
+              child: Icon(
+                Icons.check,
+                color: Theme.of(context).iconTheme.color,
+              ),
+            ),
           );
         }
 
@@ -211,49 +205,39 @@ class _MultiTextEditorState extends State<MultiTextEditor> {
               TabController tabController = DefaultTabController.of(context);
               return ListenableBuilder(
                 listenable: tabController,
-                builder:
-                    (context, child) => Scaffold(
-                      floatingActionButton: fab(),
-                      bottomSheet:
-                          tabController.index == 0
-                              ? widget.toolbar?.call(context, textControllerMap)
+                builder: (context, child) => Scaffold(
+                  floatingActionButton: fab(),
+                  bottomSheet: tabController.index == 0
+                      ? widget.toolbar?.call(context, textControllerMap)
+                      : null,
+                  body: NestedScrollView(
+                    headerSliverBuilder: (context, innerBoxIsScrolled) => [
+                      SliverOverlapAbsorber(
+                        handle: NestedScrollView.sliverOverlapAbsorberHandleFor(
+                          context,
+                        ),
+                        sliver: DefaultSliverAppBar(
+                          pinned: true,
+                          leading: ModalRoute.of(context)!.canPop
+                              ? const CloseButton()
                               : null,
-                      body: NestedScrollView(
-                        headerSliverBuilder:
-                            (context, innerBoxIsScrolled) => [
-                              SliverOverlapAbsorber(
-                                handle:
-                                    NestedScrollView.sliverOverlapAbsorberHandleFor(
-                                      context,
-                                    ),
-                                sliver: DefaultSliverAppBar(
-                                  pinned: true,
-                                  leading:
-                                      ModalRoute.of(context)!.canPop
-                                          ? const CloseButton()
-                                          : null,
-                                  title: widget.title,
-                                  actions: widget.actions,
-                                  bottom:
-                                      tabs.length > 1
-                                          ? TabBar(
-                                            tabs: tabs.keys.toList(),
-                                            labelColor:
-                                                Theme.of(
-                                                  context,
-                                                ).iconTheme.color,
-                                            indicatorColor:
-                                                Theme.of(
-                                                  context,
-                                                ).iconTheme.color,
-                                          )
-                                          : null,
-                                ),
-                              ),
-                            ],
-                        body: TabBarView(children: tabs.values.toList()),
+                          title: widget.title,
+                          actions: widget.actions,
+                          bottom: tabs.length > 1
+                              ? TabBar(
+                                  tabs: tabs.keys.toList(),
+                                  labelColor: Theme.of(context).iconTheme.color,
+                                  indicatorColor: Theme.of(
+                                    context,
+                                  ).iconTheme.color,
+                                )
+                              : null,
+                        ),
                       ),
-                    ),
+                    ],
+                    body: TabBarView(children: tabs.values.toList()),
+                  ),
+                ),
               );
             },
           ),

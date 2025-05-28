@@ -92,11 +92,8 @@ class PostSliverComic extends StatelessWidget {
         pagingController: controller.paging,
         onEmpty: const Text('No posts'),
         onError: const Text('Failed to load posts'),
-        itemBuilder:
-            (context, item, index) => ImageCacheSizeProvider(
-              size: 800,
-              child: PostComicTile(post: item),
-            ),
+        itemBuilder: (context, item, index) =>
+            ImageCacheSizeProvider(size: 800, child: PostComicTile(post: item)),
       ),
     );
   }
@@ -115,16 +112,14 @@ class PostSliverTimeline extends StatelessWidget {
         pagingController: controller.paging,
         onEmpty: const Text('No posts'),
         onError: const Text('Failed to load posts'),
-        itemBuilder:
-            (context, item, index) => Padding(
-              padding:
-                  LimitedWidthLayout.maybeOf(context)?.padding ??
-                  EdgeInsets.zero,
-              child: ImageCacheSizeProvider(
-                size: 800,
-                child: PostFeedTile(post: item),
-              ),
-            ),
+        itemBuilder: (context, item, index) => Padding(
+          padding:
+              LimitedWidthLayout.maybeOf(context)?.padding ?? EdgeInsets.zero,
+          child: ImageCacheSizeProvider(
+            size: 800,
+            child: PostFeedTile(post: item),
+          ),
+        ),
       ),
     );
   }

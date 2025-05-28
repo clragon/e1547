@@ -29,77 +29,71 @@ class App extends StatelessWidget {
           drawerHeader: (context) => const UserDrawerHeader(),
         ),
       ],
-      builder:
-          (context, child) => ValueListenableBuilder<AppTheme>(
-            valueListenable: context.watch<Settings>().theme,
-            builder:
-                (context, value, child) => ExcludeSemantics(
-                  child: AnnotatedRegion<SystemUiOverlayStyle>(
-                    value:
-                        value.data.appBarTheme.systemOverlayStyle ??
-                        const SystemUiOverlayStyle(),
-                    child: SubValue<GlobalKey<NavigatorState>>(
-                      create: () => GlobalKey<NavigatorState>(),
-                      builder:
-                          (context, navigatorKey) => MaterialApp(
-                            title: AppInfo.instance.appName,
-                            theme: value.data,
-                            scrollBehavior: AndroidStretchScrollBehaviour(),
-                            localizationsDelegates: const [
-                              GlobalWidgetsLocalizations.delegate,
-                              GlobalMaterialLocalizations.delegate,
-                              GlobalCupertinoLocalizations.delegate,
-                              RelativeTimeLocalizations.delegate,
+      builder: (context, child) => ValueListenableBuilder<AppTheme>(
+        valueListenable: context.watch<Settings>().theme,
+        builder: (context, value, child) => ExcludeSemantics(
+          child: AnnotatedRegion<SystemUiOverlayStyle>(
+            value:
+                value.data.appBarTheme.systemOverlayStyle ??
+                const SystemUiOverlayStyle(),
+            child: SubValue<GlobalKey<NavigatorState>>(
+              create: () => GlobalKey<NavigatorState>(),
+              builder: (context, navigatorKey) => MaterialApp(
+                title: AppInfo.instance.appName,
+                theme: value.data,
+                scrollBehavior: AndroidStretchScrollBehaviour(),
+                localizationsDelegates: const [
+                  GlobalWidgetsLocalizations.delegate,
+                  GlobalMaterialLocalizations.delegate,
+                  GlobalCupertinoLocalizations.delegate,
+                  RelativeTimeLocalizations.delegate,
+                ],
+                navigatorKey: navigatorKey,
+                navigatorObservers: [
+                  context.watch<AnyRouteObserver>(),
+                  RouteLoggerObserver(),
+                  MaterialApp.createMaterialHeroController(),
+                ],
+                routes: context.watch<RouterDrawerController>().routes,
+                builder: (context, child) => WindowFrame(
+                  child: WindowShortcuts(
+                    navigatorKey: navigatorKey,
+                    child: SecureDisplay(
+                      child: LockScreen(
+                        child: LoadingShell(
+                          child: MultiProvider(
+                            providers: [
+                              IdentityServiceProvider(),
+                              TraitsServiceProvider(),
+                              ClientProvider(),
+                              CacheManagerProvider(),
                             ],
-                            navigatorKey: navigatorKey,
-                            navigatorObservers: [
-                              context.watch<AnyRouteObserver>(),
-                              RouteLoggerObserver(),
-                              MaterialApp.createMaterialHeroController(),
-                            ],
-                            routes:
-                                context.watch<RouterDrawerController>().routes,
-                            builder:
-                                (context, child) => WindowFrame(
-                                  child: WindowShortcuts(
+                            child: LoadingCore(
+                              child: ErrorNotifier(
+                                navigatorKey: navigatorKey,
+                                child: AccountConnector(
+                                  navigatorKey: navigatorKey,
+                                  child: AppLinkHandler(
                                     navigatorKey: navigatorKey,
-                                    child: SecureDisplay(
-                                      child: LockScreen(
-                                        child: LoadingShell(
-                                          child: MultiProvider(
-                                            providers: [
-                                              IdentityServiceProvider(),
-                                              TraitsServiceProvider(),
-                                              ClientProvider(),
-                                              CacheManagerProvider(),
-                                            ],
-                                            child: LoadingCore(
-                                              child: ErrorNotifier(
-                                                navigatorKey: navigatorKey,
-                                                child: AccountConnector(
-                                                  navigatorKey: navigatorKey,
-                                                  child: AppLinkHandler(
-                                                    navigatorKey: navigatorKey,
-                                                    child: NotificationHandler(
-                                                      navigatorKey:
-                                                          navigatorKey,
-                                                      child: child!,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
+                                    child: NotificationHandler(
+                                      navigatorKey: navigatorKey,
+                                      child: child!,
                                     ),
                                   ),
                                 ),
+                              ),
+                            ),
                           ),
+                        ),
+                      ),
                     ),
                   ),
                 ),
+              ),
+            ),
           ),
+        ),
+      ),
     );
   }
 }

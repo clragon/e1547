@@ -65,12 +65,11 @@ class TagService {
     } else {
       return page(
         limit: limit,
-        query:
-            {
-              'search[name_matches]': '$search*',
-              'search[category]': category,
-              'search[order]': 'count',
-            }.toQuery(),
+        query: {
+          'search[name_matches]': '$search*',
+          'search[category]': category,
+          'search[order]': 'count',
+        }.toQuery(),
         force: force,
       );
     }

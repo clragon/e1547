@@ -27,10 +27,9 @@ class MouseCursorRegion extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => MouseRegion(
-    cursor:
-        [onTap, onLongPress, onSecondaryTap].any((e) => e != null)
-            ? SystemMouseCursors.click
-            : MouseCursor.defer,
+    cursor: [onTap, onLongPress, onSecondaryTap].any((e) => e != null)
+        ? SystemMouseCursors.click
+        : MouseCursor.defer,
     hitTestBehavior: HitTestBehavior.deferToChild,
     child: GestureDetector(
       behavior: behavior,

@@ -79,15 +79,13 @@ class LogRecordExpandable extends StatelessWidget {
                             if (actions != null) ...actions!,
                             if (fullContent != null)
                               Builder(
-                                builder:
-                                    (context) => InkWell(
-                                      onTap:
-                                          ExpandableController.of(
-                                            context,
-                                            required: true,
-                                          )!.toggle,
-                                      child: ExpandableIcon(),
-                                    ),
+                                builder: (context) => InkWell(
+                                  onTap: ExpandableController.of(
+                                    context,
+                                    required: true,
+                                  )!.toggle,
+                                  child: ExpandableIcon(),
+                                ),
                               ),
                           ],
                         ),

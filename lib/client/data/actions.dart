@@ -24,10 +24,9 @@ Future<void> guardWithLogin({
         content: Text(error ?? 'You must be logged in to perform this action.'),
         action: SnackBarAction(
           label: 'Choose identity',
-          onPressed:
-              () => Navigator.of(context).push(
-                MaterialPageRoute(builder: (context) => const IdentitiesPage()),
-              ),
+          onPressed: () => Navigator.of(context).push(
+            MaterialPageRoute(builder: (context) => const IdentitiesPage()),
+          ),
         ),
       ),
     );

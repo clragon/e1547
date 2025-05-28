@@ -25,29 +25,26 @@ class _LogsPageState extends State<LogsPage> {
   }
 
   LogLoader liveLoader() => LogLoader(
-    load:
-        () => context.read<Logs>().stream().map(
-          (records) =>
-              records.reversed.map((e) => LogString.fromRecord(e)).toList(),
-        ),
+    load: () => context.read<Logs>().stream().map(
+      (records) =>
+          records.reversed.map((e) => LogString.fromRecord(e)).toList(),
+    ),
   );
 
   @override
   Widget build(BuildContext context) {
     return LogPage(
       loader: loader,
-      onShowAll:
-          () => Navigator.of(context).push(
-            MaterialPageRoute(
-              builder:
-                  (context) => LogFileList(
-                    onSelected: (loader) {
-                      setState(() => this.loader = loader);
-                      Navigator.of(context).pop();
-                    },
-                  ),
-            ),
+      onShowAll: () => Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => LogFileList(
+            onSelected: (loader) {
+              setState(() => this.loader = loader);
+              Navigator.of(context).pop();
+            },
           ),
+        ),
+      ),
     );
   }
 }
@@ -78,25 +75,21 @@ class _LogFileListState extends State<LogFileList> {
   }
 
   void load() {
-    files =
-        Directory(context.read<AppStorage>().temporaryFiles)
-            .list()
-            .where(
-              (e) =>
-                  FileSystemEntity.isFileSync(e.path) &&
-                  e.path.endsWith('.log'),
-            )
-            .cast<File>()
-            .map((e) => LogFileInfo.parse(e.path))
-            .toList();
+    files = Directory(context.read<AppStorage>().temporaryFiles)
+        .list()
+        .where(
+          (e) => FileSystemEntity.isFileSync(e.path) && e.path.endsWith('.log'),
+        )
+        .cast<File>()
+        .map((e) => LogFileInfo.parse(e.path))
+        .toList();
     setState(() {});
   }
 
   LogLoader liveLoader() => LogLoader(
-    load:
-        () => context.read<Logs>().stream().map(
-          (records) => records.map((e) => LogString.fromRecord(e)).toList(),
-        ),
+    load: () => context.read<Logs>().stream().map(
+      (records) => records.map((e) => LogString.fromRecord(e)).toList(),
+    ),
   );
 
   Stream<List<LogString>> loadFile(String path) {
@@ -130,11 +123,10 @@ class _LogFileListState extends State<LogFileList> {
       child: FutureBuilder(
         future: files,
         builder: (context, snapshot) {
-          List<LogFileInfo>? files =
-              snapshot.data
-                  ?.map((e) => LogFileInfo.parse(e.path))
-                  .sorted((a, b) => b.date.compareTo(a.date))
-                  .toList();
+          List<LogFileInfo>? files = snapshot.data
+              ?.map((e) => LogFileInfo.parse(e.path))
+              .sorted((a, b) => b.date.compareTo(a.date))
+              .toList();
           return SelectionLayout<LogFileInfo>(
             items: files,
             child: Scaffold(
@@ -193,8 +185,9 @@ class _LogFileListState extends State<LogFileList> {
                                     'Current\n',
                                     maxLines: 2,
                                     overflow: TextOverflow.ellipsis,
-                                    style:
-                                        Theme.of(context).textTheme.titleMedium,
+                                    style: Theme.of(
+                                      context,
+                                    ).textTheme.titleMedium,
                                   ),
                                 ),
                               ],
@@ -204,13 +197,12 @@ class _LogFileListState extends State<LogFileList> {
                         index--;
                         return LogFileTile(
                           file: files[index],
-                          onSelected:
-                              (file) => widget.onSelected(
-                                LogLoader(
-                                  date: file.date,
-                                  load: () => loadFile(file.path),
-                                ),
-                              ),
+                          onSelected: (file) => widget.onSelected(
+                            LogLoader(
+                              date: file.date,
+                              load: () => loadFile(file.path),
+                            ),
+                          ),
                         );
                       },
                     ),
@@ -290,11 +282,10 @@ class _LogPageState extends State<LogPage> {
   @override
   Widget build(BuildContext context) {
     return SubStream<List<LogString>>(
-      create:
-          () => widget.loader.load().map(
-            (records) =>
-                records.where((e) => levels.contains(e.level.value)).toList(),
-          ),
+      create: () => widget.loader.load().map(
+        (records) =>
+            records.where((e) => levels.contains(e.level.value)).toList(),
+      ),
       keys: [widget.loader, levels],
       builder: (context, snapshot) {
         List<LogString>? logs = snapshot.data;
@@ -331,37 +322,32 @@ class _LogPageState extends State<LogPage> {
                     );
                   }
                   return LimitedWidthLayout.builder(
-                    builder:
-                        (context) => ListView.builder(
-                          reverse: true,
-                          padding: LimitedWidthLayout.of(
-                            context,
-                          ).padding.add(defaultActionListPadding),
-                          itemCount: logs.length,
-                          itemBuilder:
-                              (context, index) =>
-                                  SelectionItemOverlay<LogString>(
-                                    item: logs[index],
-                                    padding: const EdgeInsets.all(4),
-                                    child: LogStringCard(item: logs[index]),
-                                  ),
-                        ),
+                    builder: (context) => ListView.builder(
+                      reverse: true,
+                      padding: LimitedWidthLayout.of(
+                        context,
+                      ).padding.add(defaultActionListPadding),
+                      itemCount: logs.length,
+                      itemBuilder: (context, index) =>
+                          SelectionItemOverlay<LogString>(
+                            item: logs[index],
+                            padding: const EdgeInsets.all(4),
+                            child: LogStringCard(item: logs[index]),
+                          ),
+                    ),
                   );
                 },
               ),
-              floatingActionButton:
-                  (logs?.isNotEmpty ?? false)
-                      ? FloatingActionButton(
-                        onPressed:
-                            () => Share.asFile(
-                              context,
-                              logs!.map((e) => e.toString()).join('\n'),
-                              name:
-                                  '${logFileDateFormat.format(DateTime.now())}.log',
-                            ),
-                        child: const Icon(Icons.file_download),
-                      )
-                      : null,
+              floatingActionButton: (logs?.isNotEmpty ?? false)
+                  ? FloatingActionButton(
+                      onPressed: () => Share.asFile(
+                        context,
+                        logs!.map((e) => e.toString()).join('\n'),
+                        name: '${logFileDateFormat.format(DateTime.now())}.log',
+                      ),
+                      child: const Icon(Icons.file_download),
+                    )
+                  : null,
               endDrawer: LogRecordDrawer(
                 levels: levels,
                 onChanged: (value) => setState(() => levels = value),

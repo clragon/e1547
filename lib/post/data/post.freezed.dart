@@ -12,7 +12,8 @@ part of 'post.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
+  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
+);
 
 Post _$PostFromJson(Map<String, dynamic> json) {
   return _Post.fromJson(json);
@@ -58,30 +59,31 @@ abstract class $PostCopyWith<$Res> {
   factory $PostCopyWith(Post value, $Res Function(Post) then) =
       _$PostCopyWithImpl<$Res, Post>;
   @useResult
-  $Res call(
-      {int id,
-      String? file,
-      String? sample,
-      String? preview,
-      int width,
-      int height,
-      String ext,
-      int size,
-      Map<String, String?>? variants,
-      Map<String, List<String>> tags,
-      int uploaderId,
-      DateTime createdAt,
-      DateTime? updatedAt,
-      VoteInfo vote,
-      bool isDeleted,
-      Rating rating,
-      int favCount,
-      bool isFavorited,
-      int commentCount,
-      String description,
-      List<String> sources,
-      List<int>? pools,
-      Relationships relationships});
+  $Res call({
+    int id,
+    String? file,
+    String? sample,
+    String? preview,
+    int width,
+    int height,
+    String ext,
+    int size,
+    Map<String, String?>? variants,
+    Map<String, List<String>> tags,
+    int uploaderId,
+    DateTime createdAt,
+    DateTime? updatedAt,
+    VoteInfo vote,
+    bool isDeleted,
+    Rating rating,
+    int favCount,
+    bool isFavorited,
+    int commentCount,
+    String description,
+    List<String> sources,
+    List<int>? pools,
+    Relationships relationships,
+  });
 
   $RelationshipsCopyWith<$Res> get relationships;
 }
@@ -125,100 +127,103 @@ class _$PostCopyWithImpl<$Res, $Val extends Post>
     Object? pools = freezed,
     Object? relationships = null,
   }) {
-    return _then(_value.copyWith(
-      id: null == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as int,
-      file: freezed == file
-          ? _value.file
-          : file // ignore: cast_nullable_to_non_nullable
-              as String?,
-      sample: freezed == sample
-          ? _value.sample
-          : sample // ignore: cast_nullable_to_non_nullable
-              as String?,
-      preview: freezed == preview
-          ? _value.preview
-          : preview // ignore: cast_nullable_to_non_nullable
-              as String?,
-      width: null == width
-          ? _value.width
-          : width // ignore: cast_nullable_to_non_nullable
-              as int,
-      height: null == height
-          ? _value.height
-          : height // ignore: cast_nullable_to_non_nullable
-              as int,
-      ext: null == ext
-          ? _value.ext
-          : ext // ignore: cast_nullable_to_non_nullable
-              as String,
-      size: null == size
-          ? _value.size
-          : size // ignore: cast_nullable_to_non_nullable
-              as int,
-      variants: freezed == variants
-          ? _value.variants
-          : variants // ignore: cast_nullable_to_non_nullable
-              as Map<String, String?>?,
-      tags: null == tags
-          ? _value.tags
-          : tags // ignore: cast_nullable_to_non_nullable
-              as Map<String, List<String>>,
-      uploaderId: null == uploaderId
-          ? _value.uploaderId
-          : uploaderId // ignore: cast_nullable_to_non_nullable
-              as int,
-      createdAt: null == createdAt
-          ? _value.createdAt
-          : createdAt // ignore: cast_nullable_to_non_nullable
-              as DateTime,
-      updatedAt: freezed == updatedAt
-          ? _value.updatedAt
-          : updatedAt // ignore: cast_nullable_to_non_nullable
-              as DateTime?,
-      vote: null == vote
-          ? _value.vote
-          : vote // ignore: cast_nullable_to_non_nullable
-              as VoteInfo,
-      isDeleted: null == isDeleted
-          ? _value.isDeleted
-          : isDeleted // ignore: cast_nullable_to_non_nullable
-              as bool,
-      rating: null == rating
-          ? _value.rating
-          : rating // ignore: cast_nullable_to_non_nullable
-              as Rating,
-      favCount: null == favCount
-          ? _value.favCount
-          : favCount // ignore: cast_nullable_to_non_nullable
-              as int,
-      isFavorited: null == isFavorited
-          ? _value.isFavorited
-          : isFavorited // ignore: cast_nullable_to_non_nullable
-              as bool,
-      commentCount: null == commentCount
-          ? _value.commentCount
-          : commentCount // ignore: cast_nullable_to_non_nullable
-              as int,
-      description: null == description
-          ? _value.description
-          : description // ignore: cast_nullable_to_non_nullable
-              as String,
-      sources: null == sources
-          ? _value.sources
-          : sources // ignore: cast_nullable_to_non_nullable
-              as List<String>,
-      pools: freezed == pools
-          ? _value.pools
-          : pools // ignore: cast_nullable_to_non_nullable
-              as List<int>?,
-      relationships: null == relationships
-          ? _value.relationships
-          : relationships // ignore: cast_nullable_to_non_nullable
-              as Relationships,
-    ) as $Val);
+    return _then(
+      _value.copyWith(
+            id: null == id
+                ? _value.id
+                : id // ignore: cast_nullable_to_non_nullable
+                      as int,
+            file: freezed == file
+                ? _value.file
+                : file // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            sample: freezed == sample
+                ? _value.sample
+                : sample // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            preview: freezed == preview
+                ? _value.preview
+                : preview // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            width: null == width
+                ? _value.width
+                : width // ignore: cast_nullable_to_non_nullable
+                      as int,
+            height: null == height
+                ? _value.height
+                : height // ignore: cast_nullable_to_non_nullable
+                      as int,
+            ext: null == ext
+                ? _value.ext
+                : ext // ignore: cast_nullable_to_non_nullable
+                      as String,
+            size: null == size
+                ? _value.size
+                : size // ignore: cast_nullable_to_non_nullable
+                      as int,
+            variants: freezed == variants
+                ? _value.variants
+                : variants // ignore: cast_nullable_to_non_nullable
+                      as Map<String, String?>?,
+            tags: null == tags
+                ? _value.tags
+                : tags // ignore: cast_nullable_to_non_nullable
+                      as Map<String, List<String>>,
+            uploaderId: null == uploaderId
+                ? _value.uploaderId
+                : uploaderId // ignore: cast_nullable_to_non_nullable
+                      as int,
+            createdAt: null == createdAt
+                ? _value.createdAt
+                : createdAt // ignore: cast_nullable_to_non_nullable
+                      as DateTime,
+            updatedAt: freezed == updatedAt
+                ? _value.updatedAt
+                : updatedAt // ignore: cast_nullable_to_non_nullable
+                      as DateTime?,
+            vote: null == vote
+                ? _value.vote
+                : vote // ignore: cast_nullable_to_non_nullable
+                      as VoteInfo,
+            isDeleted: null == isDeleted
+                ? _value.isDeleted
+                : isDeleted // ignore: cast_nullable_to_non_nullable
+                      as bool,
+            rating: null == rating
+                ? _value.rating
+                : rating // ignore: cast_nullable_to_non_nullable
+                      as Rating,
+            favCount: null == favCount
+                ? _value.favCount
+                : favCount // ignore: cast_nullable_to_non_nullable
+                      as int,
+            isFavorited: null == isFavorited
+                ? _value.isFavorited
+                : isFavorited // ignore: cast_nullable_to_non_nullable
+                      as bool,
+            commentCount: null == commentCount
+                ? _value.commentCount
+                : commentCount // ignore: cast_nullable_to_non_nullable
+                      as int,
+            description: null == description
+                ? _value.description
+                : description // ignore: cast_nullable_to_non_nullable
+                      as String,
+            sources: null == sources
+                ? _value.sources
+                : sources // ignore: cast_nullable_to_non_nullable
+                      as List<String>,
+            pools: freezed == pools
+                ? _value.pools
+                : pools // ignore: cast_nullable_to_non_nullable
+                      as List<int>?,
+            relationships: null == relationships
+                ? _value.relationships
+                : relationships // ignore: cast_nullable_to_non_nullable
+                      as Relationships,
+          )
+          as $Val,
+    );
   }
 
   /// Create a copy of Post
@@ -235,34 +240,36 @@ class _$PostCopyWithImpl<$Res, $Val extends Post>
 /// @nodoc
 abstract class _$$PostImplCopyWith<$Res> implements $PostCopyWith<$Res> {
   factory _$$PostImplCopyWith(
-          _$PostImpl value, $Res Function(_$PostImpl) then) =
-      __$$PostImplCopyWithImpl<$Res>;
+    _$PostImpl value,
+    $Res Function(_$PostImpl) then,
+  ) = __$$PostImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call(
-      {int id,
-      String? file,
-      String? sample,
-      String? preview,
-      int width,
-      int height,
-      String ext,
-      int size,
-      Map<String, String?>? variants,
-      Map<String, List<String>> tags,
-      int uploaderId,
-      DateTime createdAt,
-      DateTime? updatedAt,
-      VoteInfo vote,
-      bool isDeleted,
-      Rating rating,
-      int favCount,
-      bool isFavorited,
-      int commentCount,
-      String description,
-      List<String> sources,
-      List<int>? pools,
-      Relationships relationships});
+  $Res call({
+    int id,
+    String? file,
+    String? sample,
+    String? preview,
+    int width,
+    int height,
+    String ext,
+    int size,
+    Map<String, String?>? variants,
+    Map<String, List<String>> tags,
+    int uploaderId,
+    DateTime createdAt,
+    DateTime? updatedAt,
+    VoteInfo vote,
+    bool isDeleted,
+    Rating rating,
+    int favCount,
+    bool isFavorited,
+    int commentCount,
+    String description,
+    List<String> sources,
+    List<int>? pools,
+    Relationships relationships,
+  });
 
   @override
   $RelationshipsCopyWith<$Res> get relationships;
@@ -273,7 +280,7 @@ class __$$PostImplCopyWithImpl<$Res>
     extends _$PostCopyWithImpl<$Res, _$PostImpl>
     implements _$$PostImplCopyWith<$Res> {
   __$$PostImplCopyWithImpl(_$PostImpl _value, $Res Function(_$PostImpl) _then)
-      : super(_value, _then);
+    : super(_value, _then);
 
   /// Create a copy of Post
   /// with the given fields replaced by the non-null parameter values.
@@ -304,134 +311,136 @@ class __$$PostImplCopyWithImpl<$Res>
     Object? pools = freezed,
     Object? relationships = null,
   }) {
-    return _then(_$PostImpl(
-      id: null == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as int,
-      file: freezed == file
-          ? _value.file
-          : file // ignore: cast_nullable_to_non_nullable
-              as String?,
-      sample: freezed == sample
-          ? _value.sample
-          : sample // ignore: cast_nullable_to_non_nullable
-              as String?,
-      preview: freezed == preview
-          ? _value.preview
-          : preview // ignore: cast_nullable_to_non_nullable
-              as String?,
-      width: null == width
-          ? _value.width
-          : width // ignore: cast_nullable_to_non_nullable
-              as int,
-      height: null == height
-          ? _value.height
-          : height // ignore: cast_nullable_to_non_nullable
-              as int,
-      ext: null == ext
-          ? _value.ext
-          : ext // ignore: cast_nullable_to_non_nullable
-              as String,
-      size: null == size
-          ? _value.size
-          : size // ignore: cast_nullable_to_non_nullable
-              as int,
-      variants: freezed == variants
-          ? _value._variants
-          : variants // ignore: cast_nullable_to_non_nullable
-              as Map<String, String?>?,
-      tags: null == tags
-          ? _value._tags
-          : tags // ignore: cast_nullable_to_non_nullable
-              as Map<String, List<String>>,
-      uploaderId: null == uploaderId
-          ? _value.uploaderId
-          : uploaderId // ignore: cast_nullable_to_non_nullable
-              as int,
-      createdAt: null == createdAt
-          ? _value.createdAt
-          : createdAt // ignore: cast_nullable_to_non_nullable
-              as DateTime,
-      updatedAt: freezed == updatedAt
-          ? _value.updatedAt
-          : updatedAt // ignore: cast_nullable_to_non_nullable
-              as DateTime?,
-      vote: null == vote
-          ? _value.vote
-          : vote // ignore: cast_nullable_to_non_nullable
-              as VoteInfo,
-      isDeleted: null == isDeleted
-          ? _value.isDeleted
-          : isDeleted // ignore: cast_nullable_to_non_nullable
-              as bool,
-      rating: null == rating
-          ? _value.rating
-          : rating // ignore: cast_nullable_to_non_nullable
-              as Rating,
-      favCount: null == favCount
-          ? _value.favCount
-          : favCount // ignore: cast_nullable_to_non_nullable
-              as int,
-      isFavorited: null == isFavorited
-          ? _value.isFavorited
-          : isFavorited // ignore: cast_nullable_to_non_nullable
-              as bool,
-      commentCount: null == commentCount
-          ? _value.commentCount
-          : commentCount // ignore: cast_nullable_to_non_nullable
-              as int,
-      description: null == description
-          ? _value.description
-          : description // ignore: cast_nullable_to_non_nullable
-              as String,
-      sources: null == sources
-          ? _value._sources
-          : sources // ignore: cast_nullable_to_non_nullable
-              as List<String>,
-      pools: freezed == pools
-          ? _value._pools
-          : pools // ignore: cast_nullable_to_non_nullable
-              as List<int>?,
-      relationships: null == relationships
-          ? _value.relationships
-          : relationships // ignore: cast_nullable_to_non_nullable
-              as Relationships,
-    ));
+    return _then(
+      _$PostImpl(
+        id: null == id
+            ? _value.id
+            : id // ignore: cast_nullable_to_non_nullable
+                  as int,
+        file: freezed == file
+            ? _value.file
+            : file // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        sample: freezed == sample
+            ? _value.sample
+            : sample // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        preview: freezed == preview
+            ? _value.preview
+            : preview // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        width: null == width
+            ? _value.width
+            : width // ignore: cast_nullable_to_non_nullable
+                  as int,
+        height: null == height
+            ? _value.height
+            : height // ignore: cast_nullable_to_non_nullable
+                  as int,
+        ext: null == ext
+            ? _value.ext
+            : ext // ignore: cast_nullable_to_non_nullable
+                  as String,
+        size: null == size
+            ? _value.size
+            : size // ignore: cast_nullable_to_non_nullable
+                  as int,
+        variants: freezed == variants
+            ? _value._variants
+            : variants // ignore: cast_nullable_to_non_nullable
+                  as Map<String, String?>?,
+        tags: null == tags
+            ? _value._tags
+            : tags // ignore: cast_nullable_to_non_nullable
+                  as Map<String, List<String>>,
+        uploaderId: null == uploaderId
+            ? _value.uploaderId
+            : uploaderId // ignore: cast_nullable_to_non_nullable
+                  as int,
+        createdAt: null == createdAt
+            ? _value.createdAt
+            : createdAt // ignore: cast_nullable_to_non_nullable
+                  as DateTime,
+        updatedAt: freezed == updatedAt
+            ? _value.updatedAt
+            : updatedAt // ignore: cast_nullable_to_non_nullable
+                  as DateTime?,
+        vote: null == vote
+            ? _value.vote
+            : vote // ignore: cast_nullable_to_non_nullable
+                  as VoteInfo,
+        isDeleted: null == isDeleted
+            ? _value.isDeleted
+            : isDeleted // ignore: cast_nullable_to_non_nullable
+                  as bool,
+        rating: null == rating
+            ? _value.rating
+            : rating // ignore: cast_nullable_to_non_nullable
+                  as Rating,
+        favCount: null == favCount
+            ? _value.favCount
+            : favCount // ignore: cast_nullable_to_non_nullable
+                  as int,
+        isFavorited: null == isFavorited
+            ? _value.isFavorited
+            : isFavorited // ignore: cast_nullable_to_non_nullable
+                  as bool,
+        commentCount: null == commentCount
+            ? _value.commentCount
+            : commentCount // ignore: cast_nullable_to_non_nullable
+                  as int,
+        description: null == description
+            ? _value.description
+            : description // ignore: cast_nullable_to_non_nullable
+                  as String,
+        sources: null == sources
+            ? _value._sources
+            : sources // ignore: cast_nullable_to_non_nullable
+                  as List<String>,
+        pools: freezed == pools
+            ? _value._pools
+            : pools // ignore: cast_nullable_to_non_nullable
+                  as List<int>?,
+        relationships: null == relationships
+            ? _value.relationships
+            : relationships // ignore: cast_nullable_to_non_nullable
+                  as Relationships,
+      ),
+    );
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$PostImpl implements _Post {
-  const _$PostImpl(
-      {required this.id,
-      required this.file,
-      required this.sample,
-      required this.preview,
-      required this.width,
-      required this.height,
-      required this.ext,
-      required this.size,
-      required final Map<String, String?>? variants,
-      required final Map<String, List<String>> tags,
-      required this.uploaderId,
-      required this.createdAt,
-      required this.updatedAt,
-      required this.vote,
-      required this.isDeleted,
-      required this.rating,
-      required this.favCount,
-      required this.isFavorited,
-      required this.commentCount,
-      required this.description,
-      required final List<String> sources,
-      required final List<int>? pools,
-      required this.relationships})
-      : _variants = variants,
-        _tags = tags,
-        _sources = sources,
-        _pools = pools;
+  const _$PostImpl({
+    required this.id,
+    required this.file,
+    required this.sample,
+    required this.preview,
+    required this.width,
+    required this.height,
+    required this.ext,
+    required this.size,
+    required final Map<String, String?>? variants,
+    required final Map<String, List<String>> tags,
+    required this.uploaderId,
+    required this.createdAt,
+    required this.updatedAt,
+    required this.vote,
+    required this.isDeleted,
+    required this.rating,
+    required this.favCount,
+    required this.isFavorited,
+    required this.commentCount,
+    required this.description,
+    required final List<String> sources,
+    required final List<int>? pools,
+    required this.relationships,
+  }) : _variants = variants,
+       _tags = tags,
+       _sources = sources,
+       _pools = pools;
 
   factory _$PostImpl.fromJson(Map<String, dynamic> json) =>
       _$$PostImplFromJson(json);
@@ -558,31 +567,31 @@ class _$PostImpl implements _Post {
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hashAll([
-        runtimeType,
-        id,
-        file,
-        sample,
-        preview,
-        width,
-        height,
-        ext,
-        size,
-        const DeepCollectionEquality().hash(_variants),
-        const DeepCollectionEquality().hash(_tags),
-        uploaderId,
-        createdAt,
-        updatedAt,
-        vote,
-        isDeleted,
-        rating,
-        favCount,
-        isFavorited,
-        commentCount,
-        description,
-        const DeepCollectionEquality().hash(_sources),
-        const DeepCollectionEquality().hash(_pools),
-        relationships
-      ]);
+    runtimeType,
+    id,
+    file,
+    sample,
+    preview,
+    width,
+    height,
+    ext,
+    size,
+    const DeepCollectionEquality().hash(_variants),
+    const DeepCollectionEquality().hash(_tags),
+    uploaderId,
+    createdAt,
+    updatedAt,
+    vote,
+    isDeleted,
+    rating,
+    favCount,
+    isFavorited,
+    commentCount,
+    description,
+    const DeepCollectionEquality().hash(_sources),
+    const DeepCollectionEquality().hash(_pools),
+    relationships,
+  ]);
 
   /// Create a copy of Post
   /// with the given fields replaced by the non-null parameter values.
@@ -594,37 +603,36 @@ class _$PostImpl implements _Post {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$PostImplToJson(
-      this,
-    );
+    return _$$PostImplToJson(this);
   }
 }
 
 abstract class _Post implements Post {
-  const factory _Post(
-      {required final int id,
-      required final String? file,
-      required final String? sample,
-      required final String? preview,
-      required final int width,
-      required final int height,
-      required final String ext,
-      required final int size,
-      required final Map<String, String?>? variants,
-      required final Map<String, List<String>> tags,
-      required final int uploaderId,
-      required final DateTime createdAt,
-      required final DateTime? updatedAt,
-      required final VoteInfo vote,
-      required final bool isDeleted,
-      required final Rating rating,
-      required final int favCount,
-      required final bool isFavorited,
-      required final int commentCount,
-      required final String description,
-      required final List<String> sources,
-      required final List<int>? pools,
-      required final Relationships relationships}) = _$PostImpl;
+  const factory _Post({
+    required final int id,
+    required final String? file,
+    required final String? sample,
+    required final String? preview,
+    required final int width,
+    required final int height,
+    required final String ext,
+    required final int size,
+    required final Map<String, String?>? variants,
+    required final Map<String, List<String>> tags,
+    required final int uploaderId,
+    required final DateTime createdAt,
+    required final DateTime? updatedAt,
+    required final VoteInfo vote,
+    required final bool isDeleted,
+    required final Rating rating,
+    required final int favCount,
+    required final bool isFavorited,
+    required final int commentCount,
+    required final String description,
+    required final List<String> sources,
+    required final List<int>? pools,
+    required final Relationships relationships,
+  }) = _$PostImpl;
 
   factory _Post.fromJson(Map<String, dynamic> json) = _$PostImpl.fromJson;
 
@@ -707,14 +715,16 @@ mixin _$Relationships {
 /// @nodoc
 abstract class $RelationshipsCopyWith<$Res> {
   factory $RelationshipsCopyWith(
-          Relationships value, $Res Function(Relationships) then) =
-      _$RelationshipsCopyWithImpl<$Res, Relationships>;
+    Relationships value,
+    $Res Function(Relationships) then,
+  ) = _$RelationshipsCopyWithImpl<$Res, Relationships>;
   @useResult
-  $Res call(
-      {int? parentId,
-      bool hasChildren,
-      bool? hasActiveChildren,
-      List<int> children});
+  $Res call({
+    int? parentId,
+    bool hasChildren,
+    bool? hasActiveChildren,
+    List<int> children,
+  });
 }
 
 /// @nodoc
@@ -737,24 +747,27 @@ class _$RelationshipsCopyWithImpl<$Res, $Val extends Relationships>
     Object? hasActiveChildren = freezed,
     Object? children = null,
   }) {
-    return _then(_value.copyWith(
-      parentId: freezed == parentId
-          ? _value.parentId
-          : parentId // ignore: cast_nullable_to_non_nullable
-              as int?,
-      hasChildren: null == hasChildren
-          ? _value.hasChildren
-          : hasChildren // ignore: cast_nullable_to_non_nullable
-              as bool,
-      hasActiveChildren: freezed == hasActiveChildren
-          ? _value.hasActiveChildren
-          : hasActiveChildren // ignore: cast_nullable_to_non_nullable
-              as bool?,
-      children: null == children
-          ? _value.children
-          : children // ignore: cast_nullable_to_non_nullable
-              as List<int>,
-    ) as $Val);
+    return _then(
+      _value.copyWith(
+            parentId: freezed == parentId
+                ? _value.parentId
+                : parentId // ignore: cast_nullable_to_non_nullable
+                      as int?,
+            hasChildren: null == hasChildren
+                ? _value.hasChildren
+                : hasChildren // ignore: cast_nullable_to_non_nullable
+                      as bool,
+            hasActiveChildren: freezed == hasActiveChildren
+                ? _value.hasActiveChildren
+                : hasActiveChildren // ignore: cast_nullable_to_non_nullable
+                      as bool?,
+            children: null == children
+                ? _value.children
+                : children // ignore: cast_nullable_to_non_nullable
+                      as List<int>,
+          )
+          as $Val,
+    );
   }
 }
 
@@ -762,15 +775,17 @@ class _$RelationshipsCopyWithImpl<$Res, $Val extends Relationships>
 abstract class _$$RelationshipsImplCopyWith<$Res>
     implements $RelationshipsCopyWith<$Res> {
   factory _$$RelationshipsImplCopyWith(
-          _$RelationshipsImpl value, $Res Function(_$RelationshipsImpl) then) =
-      __$$RelationshipsImplCopyWithImpl<$Res>;
+    _$RelationshipsImpl value,
+    $Res Function(_$RelationshipsImpl) then,
+  ) = __$$RelationshipsImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call(
-      {int? parentId,
-      bool hasChildren,
-      bool? hasActiveChildren,
-      List<int> children});
+  $Res call({
+    int? parentId,
+    bool hasChildren,
+    bool? hasActiveChildren,
+    List<int> children,
+  });
 }
 
 /// @nodoc
@@ -778,8 +793,9 @@ class __$$RelationshipsImplCopyWithImpl<$Res>
     extends _$RelationshipsCopyWithImpl<$Res, _$RelationshipsImpl>
     implements _$$RelationshipsImplCopyWith<$Res> {
   __$$RelationshipsImplCopyWithImpl(
-      _$RelationshipsImpl _value, $Res Function(_$RelationshipsImpl) _then)
-      : super(_value, _then);
+    _$RelationshipsImpl _value,
+    $Res Function(_$RelationshipsImpl) _then,
+  ) : super(_value, _then);
 
   /// Create a copy of Relationships
   /// with the given fields replaced by the non-null parameter values.
@@ -791,36 +807,38 @@ class __$$RelationshipsImplCopyWithImpl<$Res>
     Object? hasActiveChildren = freezed,
     Object? children = null,
   }) {
-    return _then(_$RelationshipsImpl(
-      parentId: freezed == parentId
-          ? _value.parentId
-          : parentId // ignore: cast_nullable_to_non_nullable
-              as int?,
-      hasChildren: null == hasChildren
-          ? _value.hasChildren
-          : hasChildren // ignore: cast_nullable_to_non_nullable
-              as bool,
-      hasActiveChildren: freezed == hasActiveChildren
-          ? _value.hasActiveChildren
-          : hasActiveChildren // ignore: cast_nullable_to_non_nullable
-              as bool?,
-      children: null == children
-          ? _value._children
-          : children // ignore: cast_nullable_to_non_nullable
-              as List<int>,
-    ));
+    return _then(
+      _$RelationshipsImpl(
+        parentId: freezed == parentId
+            ? _value.parentId
+            : parentId // ignore: cast_nullable_to_non_nullable
+                  as int?,
+        hasChildren: null == hasChildren
+            ? _value.hasChildren
+            : hasChildren // ignore: cast_nullable_to_non_nullable
+                  as bool,
+        hasActiveChildren: freezed == hasActiveChildren
+            ? _value.hasActiveChildren
+            : hasActiveChildren // ignore: cast_nullable_to_non_nullable
+                  as bool?,
+        children: null == children
+            ? _value._children
+            : children // ignore: cast_nullable_to_non_nullable
+                  as List<int>,
+      ),
+    );
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$RelationshipsImpl implements _Relationships {
-  const _$RelationshipsImpl(
-      {required this.parentId,
-      required this.hasChildren,
-      required this.hasActiveChildren,
-      required final List<int> children})
-      : _children = children;
+  const _$RelationshipsImpl({
+    required this.parentId,
+    required this.hasChildren,
+    required this.hasActiveChildren,
+    required final List<int> children,
+  }) : _children = children;
 
   factory _$RelationshipsImpl.fromJson(Map<String, dynamic> json) =>
       _$$RelationshipsImplFromJson(json);
@@ -860,8 +878,13 @@ class _$RelationshipsImpl implements _Relationships {
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, parentId, hasChildren,
-      hasActiveChildren, const DeepCollectionEquality().hash(_children));
+  int get hashCode => Object.hash(
+    runtimeType,
+    parentId,
+    hasChildren,
+    hasActiveChildren,
+    const DeepCollectionEquality().hash(_children),
+  );
 
   /// Create a copy of Relationships
   /// with the given fields replaced by the non-null parameter values.
@@ -873,18 +896,17 @@ class _$RelationshipsImpl implements _Relationships {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$RelationshipsImplToJson(
-      this,
-    );
+    return _$$RelationshipsImplToJson(this);
   }
 }
 
 abstract class _Relationships implements Relationships {
-  const factory _Relationships(
-      {required final int? parentId,
-      required final bool hasChildren,
-      required final bool? hasActiveChildren,
-      required final List<int> children}) = _$RelationshipsImpl;
+  const factory _Relationships({
+    required final int? parentId,
+    required final bool hasChildren,
+    required final bool? hasActiveChildren,
+    required final List<int> children,
+  }) = _$RelationshipsImpl;
 
   factory _Relationships.fromJson(Map<String, dynamic> json) =
       _$RelationshipsImpl.fromJson;

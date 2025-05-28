@@ -40,16 +40,14 @@ class ArtistDisplay extends StatelessWidget {
                 ),
                 InkWell(
                   borderRadius: BorderRadius.circular(4),
-                  onTap:
-                      () => Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder:
-                              (context) => UserLoadingPage(
-                                post.uploaderId.toString(),
-                                initalPage: UserPageSection.uploads,
-                              ),
-                        ),
+                  onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => UserLoadingPage(
+                        post.uploaderId.toString(),
+                        initalPage: UserPageSection.uploads,
                       ),
+                    ),
+                  ),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 4),
                     child: Row(

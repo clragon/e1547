@@ -21,65 +21,58 @@ class _PoolPageState extends State<PoolPage> {
   @override
   Widget build(BuildContext context) {
     return PostProvider.builder(
-      create:
-          (context, client) => PoolPostController(
-            client: client,
-            id: widget.pool.id,
-            orderByOldest: widget.orderByOldest ?? true,
-          ),
+      create: (context, client) => PoolPostController(
+        client: client,
+        id: widget.pool.id,
+        orderByOldest: widget.orderByOldest ?? true,
+      ),
       child: Consumer<PostController>(
-        builder:
-            (context, controller, child) => ControllerHistoryConnector(
-              controller: controller,
-              addToHistory: (context, client, data) {
-                client.histories.addPool(
-                  pool: widget.pool,
-                  posts: controller.items,
-                );
-              },
-              child: PostsPage(
-                controller: controller,
-                displayType: readerMode ? PostDisplayType.comic : null,
-                appBar: DefaultAppBar(
-                  title: Text(tagToName(widget.pool.name)),
-                  actions: [
-                    IconButton(
-                      icon: const Icon(Icons.info_outline),
-                      tooltip: 'Info',
-                      onPressed:
-                          () => showPoolPrompt(
-                            context: context,
-                            pool: widget.pool,
-                          ),
-                    ),
-                    const ContextDrawerButton(),
-                  ],
+        builder: (context, controller, child) => ControllerHistoryConnector(
+          controller: controller,
+          addToHistory: (context, client, data) {
+            client.histories.addPool(
+              pool: widget.pool,
+              posts: controller.items,
+            );
+          },
+          child: PostsPage(
+            controller: controller,
+            displayType: readerMode ? PostDisplayType.comic : null,
+            appBar: DefaultAppBar(
+              title: Text(tagToName(widget.pool.name)),
+              actions: [
+                IconButton(
+                  icon: const Icon(Icons.info_outline),
+                  tooltip: 'Info',
+                  onPressed: () =>
+                      showPoolPrompt(context: context, pool: widget.pool),
                 ),
-                drawerActions: [
-                  Builder(
-                    builder:
-                        (context) => PoolReaderSwitch(
-                          readerMode: readerMode,
-                          onChange: (value) {
-                            setState(() => readerMode = value);
-                            Scaffold.of(context).closeEndDrawer();
-                          },
-                        ),
-                  ),
-                  AnimatedBuilder(
-                    animation: controller,
-                    builder:
-                        (context, child) => PoolOrderSwitch(
-                          oldestFirst: controller.orderPools,
-                          onChange: (value) {
-                            controller.orderPools = value;
-                            Scaffold.of(context).closeEndDrawer();
-                          },
-                        ),
-                  ),
-                ],
-              ),
+                const ContextDrawerButton(),
+              ],
             ),
+            drawerActions: [
+              Builder(
+                builder: (context) => PoolReaderSwitch(
+                  readerMode: readerMode,
+                  onChange: (value) {
+                    setState(() => readerMode = value);
+                    Scaffold.of(context).closeEndDrawer();
+                  },
+                ),
+              ),
+              AnimatedBuilder(
+                animation: controller,
+                builder: (context, child) => PoolOrderSwitch(
+                  oldestFirst: controller.orderPools,
+                  onChange: (value) {
+                    controller.orderPools = value;
+                    Scaffold.of(context).closeEndDrawer();
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

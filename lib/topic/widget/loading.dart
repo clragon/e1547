@@ -21,9 +21,8 @@ class _TopicLoadingPageState extends State<TopicLoadingPage> {
   Widget build(BuildContext context) {
     return FutureLoadingPage<Topic>(
       future: topic,
-      builder:
-          (context, value) =>
-              RepliesPage(topic: value, orderByOldest: widget.orderByOldest),
+      builder: (context, value) =>
+          RepliesPage(topic: value, orderByOldest: widget.orderByOldest),
       title: Text('Topic #${widget.id}'),
       onError: const Text('Failed to load topic'),
       onEmpty: const Text('Topic not found'),

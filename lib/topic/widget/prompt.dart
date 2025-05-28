@@ -20,11 +20,10 @@ Future<void> showTopicPrompt({
 void showTopicSheet({required BuildContext context, required Topic topic}) {
   showSlidingBottomSheet(
     context,
-    builder:
-        (context) => defaultSlidingSheetDialog(
-          context,
-          (context, sheetState) => TopicSheet(topic: topic),
-        ),
+    builder: (context) => defaultSlidingSheetDialog(
+      context,
+      (context, sheetState) => TopicSheet(topic: topic),
+    ),
   );
 }
 
@@ -56,11 +55,10 @@ class TopicSheet extends StatelessWidget {
                 ),
                 ActionButton(
                   icon: const Icon(Icons.share),
-                  onTap:
-                      () async => Share.text(
-                        context,
-                        context.read<Client>().withHost(topic.link),
-                      ),
+                  onTap: () async => Share.text(
+                    context,
+                    context.read<Client>().withHost(topic.link),
+                  ),
                   label: const Text('Share'),
                 ),
               ],
@@ -175,11 +173,10 @@ class TopicDialog extends StatelessWidget {
                 ),
                 ActionButton(
                   icon: const Icon(Icons.share),
-                  onTap:
-                      () async => Share.text(
-                        context,
-                        context.read<Client>().withHost(topic.link),
-                      ),
+                  onTap: () async => Share.text(
+                    context,
+                    context.read<Client>().withHost(topic.link),
+                  ),
                   label: const Text('Share'),
                 ),
               ],

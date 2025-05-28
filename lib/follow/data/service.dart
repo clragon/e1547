@@ -91,17 +91,20 @@ class FollowService with Disposable {
     String? title,
     FollowType? type,
   }) => repository.transaction(() async {
-    await ((repository.update(repository.followsTable))
-      ..where((tbl) => tbl.id.equals(id))).write(
+    await ((repository.update(
+      repository.followsTable,
+    ))..where((tbl) => tbl.id.equals(id))).write(
       FollowCompanion(
-        title:
-            title != null ? Value(title.nullWhenEmpty) : const Value.absent(),
+        title: title != null
+            ? Value(title.nullWhenEmpty)
+            : const Value.absent(),
         type: type != null ? Value(type) : const Value.absent(),
       ),
     );
     if (tags?.nullWhenEmpty != null) {
-      await ((repository.update(repository.followsTable))
-        ..where((tbl) => tbl.id.equals(id))).write(
+      await ((repository.update(
+        repository.followsTable,
+      ))..where((tbl) => tbl.id.equals(id))).write(
         FollowCompanion(
           tags: Value(tags!),
           updated: const Value(null),
@@ -154,21 +157,19 @@ class FollowService with Disposable {
     Pool? pool,
     bool? seen,
   }) =>
-      ((repository.update(repository.followsTable))
-        ..where((tbl) => tbl.id.equals(id))).write(
+      ((repository.update(
+        repository.followsTable,
+      ))..where((tbl) => tbl.id.equals(id))).write(
         FollowCompanion(
-          latest:
-              posts?.isNotEmpty ?? false
-                  ? Value(posts!.first.id)
-                  : const Value.absent(),
-          thumbnail:
-              posts?.isNotEmpty ?? false
-                  ? Value(posts!.first.sample)
-                  : const Value.absent(),
-          title:
-              pool?.name != null
-                  ? Value(tagToName(pool!.name))
-                  : const Value.absent(),
+          latest: posts?.isNotEmpty ?? false
+              ? Value(posts!.first.id)
+              : const Value.absent(),
+          thumbnail: posts?.isNotEmpty ?? false
+              ? Value(posts!.first.sample)
+              : const Value.absent(),
+          title: pool?.name != null
+              ? Value(tagToName(pool!.name))
+              : const Value.absent(),
           unseen: seen ?? true ? const Value(0) : const Value.absent(),
         ),
       );
@@ -205,12 +206,11 @@ extension type FollowsQuery._(QueryMap self) implements QueryMap {
 
   String? get tags => self['search[tags]'];
   String? get title => self['search[title]'];
-  List<FollowType>? get type =>
-      self['search[type]']
-          ?.split(',')
-          .map((e) => FollowType.values.asNameMap()[e])
-          .whereType<FollowType>()
-          .toList();
+  List<FollowType>? get type => self['search[type]']
+      ?.split(',')
+      .map((e) => FollowType.values.asNameMap()[e])
+      .whereType<FollowType>()
+      .toList();
   // TODO: implement this in Disk
   bool? get hasUnseen =>
       bool.tryParse(self['search[has_unseen]'] ?? '', caseSensitive: false);

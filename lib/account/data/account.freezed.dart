@@ -12,7 +12,8 @@ part of 'account.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
+  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
+);
 
 Account _$AccountFromJson(Map<String, dynamic> json) {
   return _Account.fromJson(json);
@@ -40,12 +41,13 @@ abstract class $AccountCopyWith<$Res> {
   factory $AccountCopyWith(Account value, $Res Function(Account) then) =
       _$AccountCopyWithImpl<$Res, Account>;
   @useResult
-  $Res call(
-      {int id,
-      String name,
-      int? avatarId,
-      String? blacklistedTags,
-      int? perPage});
+  $Res call({
+    int id,
+    String name,
+    int? avatarId,
+    String? blacklistedTags,
+    int? perPage,
+  });
 }
 
 /// @nodoc
@@ -69,44 +71,49 @@ class _$AccountCopyWithImpl<$Res, $Val extends Account>
     Object? blacklistedTags = freezed,
     Object? perPage = freezed,
   }) {
-    return _then(_value.copyWith(
-      id: null == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as int,
-      name: null == name
-          ? _value.name
-          : name // ignore: cast_nullable_to_non_nullable
-              as String,
-      avatarId: freezed == avatarId
-          ? _value.avatarId
-          : avatarId // ignore: cast_nullable_to_non_nullable
-              as int?,
-      blacklistedTags: freezed == blacklistedTags
-          ? _value.blacklistedTags
-          : blacklistedTags // ignore: cast_nullable_to_non_nullable
-              as String?,
-      perPage: freezed == perPage
-          ? _value.perPage
-          : perPage // ignore: cast_nullable_to_non_nullable
-              as int?,
-    ) as $Val);
+    return _then(
+      _value.copyWith(
+            id: null == id
+                ? _value.id
+                : id // ignore: cast_nullable_to_non_nullable
+                      as int,
+            name: null == name
+                ? _value.name
+                : name // ignore: cast_nullable_to_non_nullable
+                      as String,
+            avatarId: freezed == avatarId
+                ? _value.avatarId
+                : avatarId // ignore: cast_nullable_to_non_nullable
+                      as int?,
+            blacklistedTags: freezed == blacklistedTags
+                ? _value.blacklistedTags
+                : blacklistedTags // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            perPage: freezed == perPage
+                ? _value.perPage
+                : perPage // ignore: cast_nullable_to_non_nullable
+                      as int?,
+          )
+          as $Val,
+    );
   }
 }
 
 /// @nodoc
 abstract class _$$AccountImplCopyWith<$Res> implements $AccountCopyWith<$Res> {
   factory _$$AccountImplCopyWith(
-          _$AccountImpl value, $Res Function(_$AccountImpl) then) =
-      __$$AccountImplCopyWithImpl<$Res>;
+    _$AccountImpl value,
+    $Res Function(_$AccountImpl) then,
+  ) = __$$AccountImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call(
-      {int id,
-      String name,
-      int? avatarId,
-      String? blacklistedTags,
-      int? perPage});
+  $Res call({
+    int id,
+    String name,
+    int? avatarId,
+    String? blacklistedTags,
+    int? perPage,
+  });
 }
 
 /// @nodoc
@@ -114,8 +121,9 @@ class __$$AccountImplCopyWithImpl<$Res>
     extends _$AccountCopyWithImpl<$Res, _$AccountImpl>
     implements _$$AccountImplCopyWith<$Res> {
   __$$AccountImplCopyWithImpl(
-      _$AccountImpl _value, $Res Function(_$AccountImpl) _then)
-      : super(_value, _then);
+    _$AccountImpl _value,
+    $Res Function(_$AccountImpl) _then,
+  ) : super(_value, _then);
 
   /// Create a copy of Account
   /// with the given fields replaced by the non-null parameter values.
@@ -128,40 +136,43 @@ class __$$AccountImplCopyWithImpl<$Res>
     Object? blacklistedTags = freezed,
     Object? perPage = freezed,
   }) {
-    return _then(_$AccountImpl(
-      id: null == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as int,
-      name: null == name
-          ? _value.name
-          : name // ignore: cast_nullable_to_non_nullable
-              as String,
-      avatarId: freezed == avatarId
-          ? _value.avatarId
-          : avatarId // ignore: cast_nullable_to_non_nullable
-              as int?,
-      blacklistedTags: freezed == blacklistedTags
-          ? _value.blacklistedTags
-          : blacklistedTags // ignore: cast_nullable_to_non_nullable
-              as String?,
-      perPage: freezed == perPage
-          ? _value.perPage
-          : perPage // ignore: cast_nullable_to_non_nullable
-              as int?,
-    ));
+    return _then(
+      _$AccountImpl(
+        id: null == id
+            ? _value.id
+            : id // ignore: cast_nullable_to_non_nullable
+                  as int,
+        name: null == name
+            ? _value.name
+            : name // ignore: cast_nullable_to_non_nullable
+                  as String,
+        avatarId: freezed == avatarId
+            ? _value.avatarId
+            : avatarId // ignore: cast_nullable_to_non_nullable
+                  as int?,
+        blacklistedTags: freezed == blacklistedTags
+            ? _value.blacklistedTags
+            : blacklistedTags // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        perPage: freezed == perPage
+            ? _value.perPage
+            : perPage // ignore: cast_nullable_to_non_nullable
+                  as int?,
+      ),
+    );
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$AccountImpl implements _Account {
-  const _$AccountImpl(
-      {required this.id,
-      required this.name,
-      required this.avatarId,
-      required this.blacklistedTags,
-      required this.perPage});
+  const _$AccountImpl({
+    required this.id,
+    required this.name,
+    required this.avatarId,
+    required this.blacklistedTags,
+    required this.perPage,
+  });
 
   factory _$AccountImpl.fromJson(Map<String, dynamic> json) =>
       _$$AccountImplFromJson(json);
@@ -211,19 +222,18 @@ class _$AccountImpl implements _Account {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$AccountImplToJson(
-      this,
-    );
+    return _$$AccountImplToJson(this);
   }
 }
 
 abstract class _Account implements Account {
-  const factory _Account(
-      {required final int id,
-      required final String name,
-      required final int? avatarId,
-      required final String? blacklistedTags,
-      required final int? perPage}) = _$AccountImpl;
+  const factory _Account({
+    required final int id,
+    required final String name,
+    required final int? avatarId,
+    required final String? blacklistedTags,
+    required final int? perPage,
+  }) = _$AccountImpl;
 
   factory _Account.fromJson(Map<String, dynamic> json) = _$AccountImpl.fromJson;
 

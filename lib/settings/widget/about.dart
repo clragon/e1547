@@ -52,36 +52,35 @@ class _AboutPageState extends State<AboutPage> {
           }
         },
         builder: (context, child) => LimitedWidthLayout(child: child),
-        child:
-            (context) => ListView(
-              padding: LimitedWidthLayout.of(context).padding,
-              children: [
-                const SizedBox(height: 100),
-                const DevOptionEnabler(child: AboutLogo()),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 32),
-                  child: Card(
-                    child: Column(
-                      children: [
-                        AboutVersion(newVersions: versions),
-                        const AboutLinks(),
-                      ],
-                    ),
-                  ),
+        child: (context) => ListView(
+          padding: LimitedWidthLayout.of(context).padding,
+          children: [
+            const SizedBox(height: 100),
+            const DevOptionEnabler(child: AboutLogo()),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 32),
+              child: Card(
+                child: Column(
+                  children: [
+                    AboutVersion(newVersions: versions),
+                    const AboutLinks(),
+                  ],
                 ),
-                const SizedBox(height: 30),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 32),
-                  child: Card(
-                    child: AboutDonations(
-                      bundledDonors: bundledDonors,
-                      donors: donors,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-              ],
+              ),
             ),
+            const SizedBox(height: 30),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 32),
+              child: Card(
+                child: AboutDonations(
+                  bundledDonors: bundledDonors,
+                  donors: donors,
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+          ],
+        ),
       ),
     );
   }
@@ -231,11 +230,10 @@ class AboutVersion extends StatelessWidget {
         } else {
           message =
               'A newer version is available: ${snapshot.data!.first.version}';
-          onTap =
-              () => showDialog(
-                context: context,
-                builder: (context) => changesDialog(snapshot.data!),
-              );
+          onTap = () => showDialog(
+            context: context,
+            builder: (context) => changesDialog(snapshot.data!),
+          );
           icon = const FaIcon(FontAwesomeIcons.download);
         }
 
@@ -337,10 +335,9 @@ class AboutLinks extends StatelessWidget {
         linkListTile(
           leading: const FaIcon(FontAwesomeIcons.googlePlay),
           title: const Text('Playstore'),
-          link:
-              Platform.isAndroid
-                  ? 'https://play.google.com/store/apps/details?id='
-                  : 'https://play.google.com/store/search?q=',
+          link: Platform.isAndroid
+              ? 'https://play.google.com/store/apps/details?id='
+              : 'https://play.google.com/store/search?q=',
           extra: AppInfo.instance.packageName,
         ),
       ],
@@ -358,60 +355,57 @@ class AboutDonations extends StatelessWidget {
   Widget build(BuildContext context) {
     return FutureBuilder(
       future: bundledDonors,
-      builder:
-          (context, assetDonations) => FutureBuilder(
-            future: donors,
-            builder: (context, githubDonations) {
-              List<Donor>? donors;
+      builder: (context, assetDonations) => FutureBuilder(
+        future: donors,
+        builder: (context, githubDonations) {
+          List<Donor>? donors;
 
-              if (githubDonations.hasData) {
-                donors = githubDonations.data;
-              } else if (assetDonations.hasData) {
-                donors = assetDonations.data;
-              }
+          if (githubDonations.hasData) {
+            donors = githubDonations.data;
+          } else if (assetDonations.hasData) {
+            donors = assetDonations.data;
+          }
 
-              if (githubDonations.hasError && assetDonations.hasError) {
-                return const IconMessage(
-                  icon: Icon(Icons.warning_amber),
-                  title: Text('Failed to fetch donors'),
-                );
-              }
+          if (githubDonations.hasError && assetDonations.hasError) {
+            return const IconMessage(
+              icon: Icon(Icons.warning_amber),
+              title: Text('Failed to fetch donors'),
+            );
+          }
 
-              if (donors?.isEmpty ?? false) {
-                return const SizedBox();
-              }
+          if (donors?.isEmpty ?? false) {
+            return const SizedBox();
+          }
 
-              return Column(
-                children: [
-                  const ListTile(
-                    title: Text('Donors'),
-                    leading: FaIcon(FontAwesomeIcons.handHoldingHeart),
-                    subtitle: Text(
-                      'Thanks for helping me keep up development!',
-                    ),
+          return Column(
+            children: [
+              const ListTile(
+                title: Text('Donors'),
+                leading: FaIcon(FontAwesomeIcons.handHoldingHeart),
+                subtitle: Text('Thanks for helping me keep up development!'),
+              ),
+              const Divider(),
+              const SizedBox(height: 8),
+              if (donors == null ||
+                  (bundledDonors == null && this.donors == null))
+                const Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(8),
+                    child: CircularProgressIndicator(),
                   ),
-                  const Divider(),
-                  const SizedBox(height: 8),
-                  if (donors == null ||
-                      (bundledDonors == null && this.donors == null))
-                    const Center(
-                      child: Padding(
-                        padding: EdgeInsets.all(8),
-                        child: CircularProgressIndicator(),
-                      ),
-                    )
-                  else if (donors.isEmpty)
-                    // I dont like whining about no donors
-                    const ListTile(
-                      title: Text('No donors yet'),
-                      leading: FaIcon(FontAwesomeIcons.heartCrack),
-                    )
-                  else
-                    Donors(donors: donors),
-                ],
-              );
-            },
-          ),
+                )
+              else if (donors.isEmpty)
+                // I dont like whining about no donors
+                const ListTile(
+                  title: Text('No donors yet'),
+                  leading: FaIcon(FontAwesomeIcons.heartCrack),
+                )
+              else
+                Donors(donors: donors),
+            ],
+          );
+        },
+      ),
     );
   }
 }
@@ -422,10 +416,8 @@ class DrawerUpdateIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SubFuture<List<AppVersion>>(
-      create:
-          () =>
-              context.read<AppInfoClient?>()?.getNewVersions() ??
-              Future.value([]),
+      create: () =>
+          context.read<AppInfoClient?>()?.getNewVersions() ?? Future.value([]),
       builder: (context, snapshot) {
         if (snapshot.hasData && snapshot.data!.isNotEmpty) {
           return Stack(

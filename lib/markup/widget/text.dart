@@ -171,10 +171,9 @@ class DTextBody extends StatelessWidget {
       ),
       style: TextStyle(
         color: hidden ? Colors.transparent : null,
-        backgroundColor:
-            hidden
-                ? Theme.of(context).textTheme.bodyMedium!.color!.withAlpha(255)
-                : Theme.of(context).textTheme.bodyMedium!.color!.withAlpha(26),
+        backgroundColor: hidden
+            ? Theme.of(context).textTheme.bodyMedium!.color!.withAlpha(255)
+            : Theme.of(context).textTheme.bodyMedium!.color!.withAlpha(26),
       ),
     );
   }
@@ -288,17 +287,15 @@ class DTextBody extends StatelessWidget {
         ),
       ),
       DTextList() => TextSpan(
-        children:
-            element.items
-                .map(
-                  (e) => [
-                    if (element.items.indexOf(e) != 0)
-                      const TextSpan(text: '\n'),
-                    _buildSpan(context, e),
-                  ],
-                )
-                .flattened
-                .toList(),
+        children: element.items
+            .map(
+              (e) => [
+                if (element.items.indexOf(e) != 0) const TextSpan(text: '\n'),
+                _buildSpan(context, e),
+              ],
+            )
+            .flattened
+            .toList(),
       ),
       DTextBullet() => TextSpan(
         children: [
@@ -326,29 +323,26 @@ class DTextBody extends StatelessWidget {
       DTextTagLink() => _buildLink(
         context: context,
         name: DTextContent((element.name ?? element.tag).replaceAll('\n', ' ')),
-        link:
-            Uri(
-              path: '/posts',
-              queryParameters: {
-                'tags':
-                    element.tag
-                        .replaceAll(' ', '_')
-                        .replaceAll('\n', ' ')
-                        .toLowerCase(),
-              },
-            ).toString(),
+        link: Uri(
+          path: '/posts',
+          queryParameters: {
+            'tags': element.tag
+                .replaceAll(' ', '_')
+                .replaceAll('\n', ' ')
+                .toLowerCase(),
+          },
+        ).toString(),
         local: true,
       ),
       DTextTagSearchLink() => _buildLink(
         context: context,
         name: DTextContent(element.tags.replaceAll('\n', ' ')),
-        link:
-            Uri(
-              path: '/posts',
-              queryParameters: {
-                'tags': element.tags.replaceAll('\n', ' ').toLowerCase(),
-              },
-            ).toString(),
+        link: Uri(
+          path: '/posts',
+          queryParameters: {
+            'tags': element.tags.replaceAll('\n', ' ').toLowerCase(),
+          },
+        ).toString(),
         local: true,
       ),
     };
@@ -360,14 +354,13 @@ class DTextBody extends StatelessWidget {
       style: style ?? DefaultTextStyle.of(context).style,
       child: Expandables(
         child: SpoilerProvider(
-          builder:
-              (context, child) => Text.rich(
-                _buildSpan(context, content),
-                maxLines: maxLines,
-                overflow: overflow,
-                textAlign: textAlign,
-                softWrap: softWrap,
-              ),
+          builder: (context, child) => Text.rich(
+            _buildSpan(context, content),
+            maxLines: maxLines,
+            overflow: overflow,
+            textAlign: textAlign,
+            softWrap: softWrap,
+          ),
         ),
       ),
     );

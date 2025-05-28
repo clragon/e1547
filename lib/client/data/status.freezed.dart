@@ -12,7 +12,8 @@ part of 'status.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
+  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
+);
 
 ClientSyncStatus _$ClientSyncStatusFromJson(Map<String, dynamic> json) {
   return _ClientSyncStatus.fromJson(json);
@@ -35,8 +36,9 @@ mixin _$ClientSyncStatus {
 /// @nodoc
 abstract class $ClientSyncStatusCopyWith<$Res> {
   factory $ClientSyncStatusCopyWith(
-          ClientSyncStatus value, $Res Function(ClientSyncStatus) then) =
-      _$ClientSyncStatusCopyWithImpl<$Res, ClientSyncStatus>;
+    ClientSyncStatus value,
+    $Res Function(ClientSyncStatus) then,
+  ) = _$ClientSyncStatusCopyWithImpl<$Res, ClientSyncStatus>;
   @useResult
   $Res call({DenyListSyncStatus? denyList});
 }
@@ -55,24 +57,26 @@ class _$ClientSyncStatusCopyWithImpl<$Res, $Val extends ClientSyncStatus>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({
-    Object? denyList = freezed,
-  }) {
-    return _then(_value.copyWith(
-      denyList: freezed == denyList
-          ? _value.denyList
-          : denyList // ignore: cast_nullable_to_non_nullable
-              as DenyListSyncStatus?,
-    ) as $Val);
+  $Res call({Object? denyList = freezed}) {
+    return _then(
+      _value.copyWith(
+            denyList: freezed == denyList
+                ? _value.denyList
+                : denyList // ignore: cast_nullable_to_non_nullable
+                      as DenyListSyncStatus?,
+          )
+          as $Val,
+    );
   }
 }
 
 /// @nodoc
 abstract class _$$ClientSyncStatusImplCopyWith<$Res>
     implements $ClientSyncStatusCopyWith<$Res> {
-  factory _$$ClientSyncStatusImplCopyWith(_$ClientSyncStatusImpl value,
-          $Res Function(_$ClientSyncStatusImpl) then) =
-      __$$ClientSyncStatusImplCopyWithImpl<$Res>;
+  factory _$$ClientSyncStatusImplCopyWith(
+    _$ClientSyncStatusImpl value,
+    $Res Function(_$ClientSyncStatusImpl) then,
+  ) = __$$ClientSyncStatusImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({DenyListSyncStatus? denyList});
@@ -82,23 +86,24 @@ abstract class _$$ClientSyncStatusImplCopyWith<$Res>
 class __$$ClientSyncStatusImplCopyWithImpl<$Res>
     extends _$ClientSyncStatusCopyWithImpl<$Res, _$ClientSyncStatusImpl>
     implements _$$ClientSyncStatusImplCopyWith<$Res> {
-  __$$ClientSyncStatusImplCopyWithImpl(_$ClientSyncStatusImpl _value,
-      $Res Function(_$ClientSyncStatusImpl) _then)
-      : super(_value, _then);
+  __$$ClientSyncStatusImplCopyWithImpl(
+    _$ClientSyncStatusImpl _value,
+    $Res Function(_$ClientSyncStatusImpl) _then,
+  ) : super(_value, _then);
 
   /// Create a copy of ClientSyncStatus
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({
-    Object? denyList = freezed,
-  }) {
-    return _then(_$ClientSyncStatusImpl(
-      denyList: freezed == denyList
-          ? _value.denyList
-          : denyList // ignore: cast_nullable_to_non_nullable
-              as DenyListSyncStatus?,
-    ));
+  $Res call({Object? denyList = freezed}) {
+    return _then(
+      _$ClientSyncStatusImpl(
+        denyList: freezed == denyList
+            ? _value.denyList
+            : denyList // ignore: cast_nullable_to_non_nullable
+                  as DenyListSyncStatus?,
+      ),
+    );
   }
 }
 
@@ -138,13 +143,13 @@ class _$ClientSyncStatusImpl implements _ClientSyncStatus {
   @pragma('vm:prefer-inline')
   _$$ClientSyncStatusImplCopyWith<_$ClientSyncStatusImpl> get copyWith =>
       __$$ClientSyncStatusImplCopyWithImpl<_$ClientSyncStatusImpl>(
-          this, _$identity);
+        this,
+        _$identity,
+      );
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$ClientSyncStatusImplToJson(
-      this,
-    );
+    return _$$ClientSyncStatusImplToJson(this);
   }
 }
 

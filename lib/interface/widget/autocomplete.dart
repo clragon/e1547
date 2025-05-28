@@ -47,20 +47,19 @@ class AutocompleteTextField<T> extends StatelessWidget {
       direction: direction,
       hideOnEmpty: true,
       hideOnSelect: false,
-      builder:
-          (context, controller, focusNode) => TextField(
-            controller: controller,
-            autofocus: true,
-            focusNode: focusNode,
-            inputFormatters: inputFormatters,
-            decoration:
-                decoration?.copyWith(labelText: labelText) ??
-                InputDecoration(labelText: labelText),
-            onSubmitted: submit,
-            textInputAction: textInputAction ?? TextInputAction.search,
-            readOnly: readOnly,
-            enableIMEPersonalizedLearning: !private,
-          ),
+      builder: (context, controller, focusNode) => TextField(
+        controller: controller,
+        autofocus: true,
+        focusNode: focusNode,
+        inputFormatters: inputFormatters,
+        decoration:
+            decoration?.copyWith(labelText: labelText) ??
+            InputDecoration(labelText: labelText),
+        onSubmitted: submit,
+        textInputAction: textInputAction ?? TextInputAction.search,
+        readOnly: readOnly,
+        enableIMEPersonalizedLearning: !private,
+      ),
       decorationBuilder: (context, child) {
         Widget result = Card(
           margin: EdgeInsets.zero,
@@ -76,23 +75,21 @@ class AutocompleteTextField<T> extends StatelessWidget {
         }
         return result;
       },
-      loadingBuilder:
-          (context) => const ListTile(
-            title: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [SizedCircularProgressIndicator(size: 24)],
-            ),
+      loadingBuilder: (context) => const ListTile(
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [SizedCircularProgressIndicator(size: 24)],
+        ),
+      ),
+      errorBuilder: (context, error) => const Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          IconMessage(
+            icon: Icon(Icons.error),
+            title: Text('Failed to load suggestions'),
           ),
-      errorBuilder:
-          (context, error) => const Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              IconMessage(
-                icon: Icon(Icons.error),
-                title: Text('Failed to load suggestions'),
-              ),
-            ],
-          ),
+        ],
+      ),
       onSelected: onSelected,
       itemBuilder: itemBuilder,
       suggestionsCallback: suggestionsCallback,
@@ -134,8 +131,11 @@ class AutocompleteCutout extends ShapeBorder {
           ),
         )
         .transform(
-          (Matrix4.diagonal3Values(1, -1, 1)
-            ..translate(0.0, -size.height - offset)).storage,
+          (Matrix4.diagonal3Values(
+            1,
+            -1,
+            1,
+          )..translate(0.0, -size.height - offset)).storage,
         );
   }
 

@@ -7,18 +7,18 @@ part of 'wiki.dart';
 // **************************************************************************
 
 _$WikiImpl _$$WikiImplFromJson(Map<String, dynamic> json) => _$WikiImpl(
-      id: (json['id'] as num).toInt(),
-      title: json['title'] as String,
-      body: json['body'] as String,
-      createdAt: DateTime.parse(json['created_at'] as String),
-      updatedAt: json['updated_at'] == null
-          ? null
-          : DateTime.parse(json['updated_at'] as String),
-      otherNames: (json['other_names'] as List<dynamic>?)
-          ?.map((e) => e as String)
-          .toList(),
-      isLocked: json['is_locked'] as bool?,
-    );
+  id: (json['id'] as num).toInt(),
+  title: json['title'] as String,
+  body: json['body'] as String,
+  createdAt: DateTime.parse(json['created_at'] as String),
+  updatedAt: json['updated_at'] == null
+      ? null
+      : DateTime.parse(json['updated_at'] as String),
+  otherNames: (json['other_names'] as List<dynamic>?)
+      ?.map((e) => e as String)
+      .toList(),
+  isLocked: json['is_locked'] as bool?,
+);
 
 Map<String, dynamic> _$$WikiImplToJson(_$WikiImpl instance) =>
     <String, dynamic>{

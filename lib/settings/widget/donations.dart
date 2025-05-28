@@ -65,10 +65,9 @@ class Donors extends StatelessWidget {
             selected: username != null && summary.handles['e621'] == username,
             leading: CircleAvatar(
               backgroundColor: Colors.transparent,
-              backgroundImage:
-                  summary.avatar != null
-                      ? CachedNetworkImageProvider(summary.avatar!)
-                      : null,
+              backgroundImage: summary.avatar != null
+                  ? CachedNetworkImageProvider(summary.avatar!)
+                  : null,
               child: summary.avatar == null ? const Icon(Icons.person) : null,
             ),
             title: Text(summary.name),

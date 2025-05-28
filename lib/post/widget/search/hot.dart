@@ -11,8 +11,8 @@ class HotPage extends StatelessWidget {
       child: PostProvider.builder(
         create: (context, client) => HotPostController(client: client),
         child: Consumer<PostController>(
-          builder:
-              (context, controller, child) => PostsControllerHistoryConnector(
+          builder: (context, controller, child) =>
+              PostsControllerHistoryConnector(
                 controller: controller,
                 child: PostsPage(
                   appBar: const DefaultAppBar(

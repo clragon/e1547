@@ -50,19 +50,18 @@ class RatingDisplay extends StatelessWidget {
         ListTile(
           title: Text(rating.title),
           leading: rating.icon,
-          onTap:
-              canEdit
-                  ? () => showRatingDialog(
-                    context: context,
-                    onSelected: (value) {
-                      PostEditingController controller =
-                          context.read<PostEditingController>();
-                      controller.value = controller.value!.copyWith(
-                        rating: value,
-                      );
-                    },
-                  )
-                  : null,
+          onTap: canEdit
+              ? () => showRatingDialog(
+                  context: context,
+                  onSelected: (value) {
+                    PostEditingController controller = context
+                        .read<PostEditingController>();
+                    controller.value = controller.value!.copyWith(
+                      rating: value,
+                    );
+                  },
+                )
+              : null,
         ),
         const Divider(),
       ],
@@ -76,22 +75,20 @@ Future<Rating?> showRatingDialog({
 }) async {
   return showDialog<Rating>(
     context: context,
-    builder:
-        (context) => SimpleDialog(
-          title: const Text('Rating'),
-          children:
-              Rating.values
-                  .map(
-                    (rating) => ListTile(
-                      title: Text(rating.title),
-                      leading: rating.icon,
-                      onTap: () {
-                        onSelected?.call(rating);
-                        Navigator.of(context).pop(rating);
-                      },
-                    ),
-                  )
-                  .toList(),
-        ),
+    builder: (context) => SimpleDialog(
+      title: const Text('Rating'),
+      children: Rating.values
+          .map(
+            (rating) => ListTile(
+              title: Text(rating.title),
+              leading: rating.icon,
+              onTap: () {
+                onSelected?.call(rating);
+                Navigator.of(context).pop(rating);
+              },
+            ),
+          )
+          .toList(),
+    ),
   );
 }

@@ -48,8 +48,8 @@ class TopicController extends PageClientDataController<Topic> {
 class TopicProvider extends SubChangeNotifierProvider<Client, TopicController> {
   TopicProvider({QueryMap? query, super.child, super.builder})
     : super(
-        create:
-            (context, client) => TopicController(client: client, query: query),
+        create: (context, client) =>
+            TopicController(client: client, query: query),
         keys: (context) => [query],
       );
 }

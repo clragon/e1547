@@ -7,18 +7,18 @@ part of 'follow.dart';
 // **************************************************************************
 
 _$FollowImpl _$$FollowImplFromJson(Map<String, dynamic> json) => _$FollowImpl(
-      id: (json['id'] as num).toInt(),
-      tags: json['tags'] as String,
-      title: json['title'] as String?,
-      alias: json['alias'] as String?,
-      type: $enumDecode(_$FollowTypeEnumMap, json['type']),
-      latest: (json['latest'] as num?)?.toInt(),
-      unseen: (json['unseen'] as num?)?.toInt(),
-      thumbnail: json['thumbnail'] as String?,
-      updated: json['updated'] == null
-          ? null
-          : DateTime.parse(json['updated'] as String),
-    );
+  id: (json['id'] as num).toInt(),
+  tags: json['tags'] as String,
+  title: json['title'] as String?,
+  alias: json['alias'] as String?,
+  type: $enumDecode(_$FollowTypeEnumMap, json['type']),
+  latest: (json['latest'] as num?)?.toInt(),
+  unseen: (json['unseen'] as num?)?.toInt(),
+  thumbnail: json['thumbnail'] as String?,
+  updated: json['updated'] == null
+      ? null
+      : DateTime.parse(json['updated'] as String),
+);
 
 Map<String, dynamic> _$$FollowImplToJson(_$FollowImpl instance) =>
     <String, dynamic>{
@@ -44,7 +44,8 @@ _$FollowRequestImpl _$$FollowRequestImplFromJson(Map<String, dynamic> json) =>
       tags: json['tags'] as String,
       title: json['title'] as String?,
       alias: json['alias'] as String?,
-      type: $enumDecodeNullable(_$FollowTypeEnumMap, json['type']) ??
+      type:
+          $enumDecodeNullable(_$FollowTypeEnumMap, json['type']) ??
           FollowType.update,
     );
 

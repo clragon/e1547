@@ -47,11 +47,10 @@ extension TextEditingSelectionMovement on TextEditingController {
   void setFocusToStart() =>
       selection = const TextSelection(baseOffset: 0, extentOffset: 0);
 
-  void setFocusToEnd() =>
-      selection = TextSelection(
-        baseOffset: text.length,
-        extentOffset: text.length,
-      );
+  void setFocusToEnd() => selection = TextSelection(
+    baseOffset: text.length,
+    extentOffset: text.length,
+  );
 }
 
 extension StringEllipsing on String {

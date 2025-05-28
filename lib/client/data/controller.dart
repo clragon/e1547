@@ -121,14 +121,15 @@ mixin StreamableClientDataController<KeyType, ItemType>
     _streams.add(result.stream);
 
     _subscription?.cancel();
-    _subscription = CombineLatestStream<List<ItemType>, List<ItemType>>(
-      _streams,
-      (items) => items.expand((e) => e).toList(),
-    ).listen(
-      _onItemUpdate,
-      onError: (e) => error = e,
-      onDone: () => _subscription?.cancel(),
-    );
+    _subscription =
+        CombineLatestStream<List<ItemType>, List<ItemType>>(
+          _streams,
+          (items) => items.expand((e) => e).toList(),
+        ).listen(
+          _onItemUpdate,
+          onError: (e) => error = e,
+          onDone: () => _subscription?.cancel(),
+        );
 
     return result;
   }

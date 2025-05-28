@@ -121,13 +121,12 @@ class _LinkOverlayState extends State<LinkOverlay>
         child: Material(
           color: Theme.of(context).cardColor,
           borderRadius: const BorderRadius.only(topRight: Radius.circular(4)),
-          child:
-              _currentLink != null
-                  ? Padding(
-                    padding: const EdgeInsets.all(4),
-                    child: Text(_currentLink!),
-                  )
-                  : Container(),
+          child: _currentLink != null
+              ? Padding(
+                  padding: const EdgeInsets.all(4),
+                  child: Text(_currentLink!),
+                )
+              : Container(),
         ),
       ),
     );

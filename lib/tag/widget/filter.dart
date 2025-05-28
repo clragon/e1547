@@ -6,13 +6,13 @@ import 'package:flutter_sub/flutter_sub.dart';
 Widget? mergeSuffixIcons(InputDecoration? decoration, Widget? icon) {
   return decoration?.suffixIcon != null
       ? Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (icon != null) icon,
-          const SizedBox(width: 8),
-          decoration!.suffixIcon!,
-        ],
-      )
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (icon != null) icon,
+            const SizedBox(width: 8),
+            decoration!.suffixIcon!,
+          ],
+        )
       : icon;
 }
 
@@ -24,8 +24,8 @@ class FilterTagTheme extends InheritedTheme {
   static FilterTagThemeData of(BuildContext context) => maybeOf(context)!;
 
   static FilterTagThemeData? maybeOf(BuildContext context) {
-    final FilterTagTheme? result =
-        context.dependOnInheritedWidgetOfExactType<FilterTagTheme>();
+    final FilterTagTheme? result = context
+        .dependOnInheritedWidgetOfExactType<FilterTagTheme>();
     return result?.data;
   }
 
@@ -61,10 +61,9 @@ class WrapperFilterConfig extends BuilderFilterConfig {
              state: FilterConfigState(
                tags: unwrap(state.tags),
                onChanged: (value) => state.onChanged(wrap(value)),
-               onSubmit:
-                   state.onSubmit != null
-                       ? (value) => state.onSubmit!(wrap(value))
-                       : null,
+               onSubmit: state.onSubmit != null
+                   ? (value) => state.onSubmit!(wrap(value))
+                   : null,
                submitIcon: state.submitIcon,
              ),
              filters: filters,
@@ -80,9 +79,8 @@ class WrapperFilterConfig extends BuilderFilterConfig {
 class PrimaryFilterConfig extends BuilderFilterConfig {
   PrimaryFilterConfig({required this.filter, this.filters = const []})
     : super(
-        builder:
-            (context, state) =>
-                PrimaryFilter(filter: filter, filters: filters, state: state),
+        builder: (context, state) =>
+            PrimaryFilter(filter: filter, filters: filters, state: state),
       );
 
   final FilterTag filter;
@@ -97,12 +95,11 @@ class NestedFilterTag extends BuilderFilterTag {
     super.name,
     required this.filters,
   }) : super(
-         builder:
-             (context, state) => FilterList(
-               tags: decode(state.tags[tag] ?? ''),
-               onChanged: (value) => state.onChanged(encode(value)),
-               filters: filters,
-             ),
+         builder: (context, state) => FilterList(
+           tags: decode(state.tags[tag] ?? ''),
+           onChanged: (value) => state.onChanged(encode(value)),
+           filters: filters,
+         ),
        );
 
   final List<FilterConfig> filters;
@@ -231,10 +228,9 @@ class PrimaryFilter extends StatelessWidget {
                       primary: true,
                       decoration: theme.decoration.copyWith(
                         border: const UnderlineInputBorder(),
-                        prefixIcon:
-                            hasChildren
-                                ? ExpandableButton(child: ExpandableIcon())
-                                : null,
+                        prefixIcon: hasChildren
+                            ? ExpandableButton(child: ExpandableIcon())
+                            : null,
                         suffixIcon: submitIcon,
                       ),
                       focusNode: focusNode,
@@ -327,8 +323,9 @@ class _TextFilterState extends State<TextFilter> {
       controller: _controller,
       onChanged: (value) => state.onChanged(value.isNotEmpty ? value : null),
       onFieldSubmitted: theme.primary ? state.onSubmit : null,
-      textInputAction:
-          theme.primary && state.onSubmit != null ? TextInputAction.done : null,
+      textInputAction: theme.primary && state.onSubmit != null
+          ? TextInputAction.done
+          : null,
     );
   }
 }
@@ -342,24 +339,18 @@ class NumberRangeFilter extends StatelessWidget {
   Widget build(BuildContext context) {
     FilterTagThemeData theme = FilterTagTheme.of(context);
     return InkWell(
-      onTap:
-          () => showDialog(
-            context: context,
-            builder:
-                (context) => RangeDialog(
-                  title:
-                      state.filter.name != null
-                          ? Text(state.filter.name!)
-                          : null,
-                  value:
-                      state.value != null
-                          ? NumberRange.tryParse(state.value!)
-                          : state.filter.initial,
-                  division: 10,
-                  max: 100,
-                  onSubmit: (value) => state.onChanged(value?.toString()),
-                ),
-          ),
+      onTap: () => showDialog(
+        context: context,
+        builder: (context) => RangeDialog(
+          title: state.filter.name != null ? Text(state.filter.name!) : null,
+          value: state.value != null
+              ? NumberRange.tryParse(state.value!)
+              : state.filter.initial,
+          division: 10,
+          max: 100,
+          onSubmit: (value) => state.onChanged(value?.toString()),
+        ),
+      ),
       child: ExcludeFocus(
         child: IgnorePointer(
           child: TextFormField(
@@ -443,10 +434,9 @@ class ToggleFilter extends StatelessWidget {
         }
       },
       label: state.filter.name,
-      title:
-          state.filter.description != null
-              ? Text(state.filter.description!)
-              : null,
+      title: state.filter.description != null
+          ? Text(state.filter.description!)
+          : null,
       decoration: theme.decoration,
     );
   }

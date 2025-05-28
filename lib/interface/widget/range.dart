@@ -370,113 +370,102 @@ class _RangeDialogState extends State<RangeDialog> {
       title: widget.title,
       content: AnimatedBuilder(
         animation: controller,
-        builder:
-            (context, child) => Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 20),
-                  child: Column(
-                    children: [
-                      TextField(
-                        keyboardType: const TextInputType.numberWithOptions(
-                          decimal: true,
-                        ),
-                        style: Theme.of(context).textTheme.displaySmall,
-                        textAlign: TextAlign.center,
-                        decoration: InputDecoration(
-                          border: InputBorder.none,
-                          errorText: errorMessage,
-                        ),
-                        controller: controller,
-                        onChanged:
-                            (value) => setState(() {
-                              errorMessage = null;
-                              mode = getCurrentMode();
-                            }),
-                        onSubmitted: submit,
-                        inputFormatters: [
-                          NumberRangeInputFormatter(
-                            min: widget.min,
-                            max:
-                                (widget.enforceMax ?? true) ? widget.max : null,
-                          ),
-                        ],
+        builder: (context, child) => Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(bottom: 20),
+              child: Column(
+                children: [
+                  TextField(
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
+                    style: Theme.of(context).textTheme.displaySmall,
+                    textAlign: TextAlign.center,
+                    decoration: InputDecoration(
+                      border: InputBorder.none,
+                      errorText: errorMessage,
+                    ),
+                    controller: controller,
+                    onChanged: (value) => setState(() {
+                      errorMessage = null;
+                      mode = getCurrentMode();
+                    }),
+                    onSubmitted: submit,
+                    inputFormatters: [
+                      NumberRangeInputFormatter(
+                        min: widget.min,
+                        max: (widget.enforceMax ?? true) ? widget.max : null,
                       ),
                     ],
                   ),
-                ),
-                Row(
-                  children: [
-                    if (widget.canChangeMode ?? true)
-                      DropdownButton<RangeDialogMode>(
-                        value: mode,
-                        underline: const SizedBox(),
-                        icon: const SizedBox(),
-                        items: [
-                          DropdownMenuItem(
-                            value: RangeDialogMode.exact,
-                            child: _buildComparisonIcon(
-                              FontAwesomeIcons.equals,
-                            ),
-                          ),
-                          DropdownMenuItem(
-                            value: RangeDialogMode.smallerOrEqual,
-                            child: _buildComparisonIcon(
-                              FontAwesomeIcons.lessThanEqual,
-                            ),
-                          ),
-                          DropdownMenuItem(
-                            value: RangeDialogMode.greaterOrEqual,
-                            child: _buildComparisonIcon(
-                              FontAwesomeIcons.greaterThanEqual,
-                            ),
-                          ),
-                          DropdownMenuItem(
-                            value: RangeDialogMode.fixedRange,
-                            child: _buildComparisonIcon(
-                              FontAwesomeIcons.leftRight,
-                            ),
-                          ),
-                        ],
-                        onChanged: (newMode) {
-                          if (newMode != null) {
-                            setState(() {
-                              mode = newMode;
-                              controller.text = getTextValue();
-                            });
-                          }
-                        },
+                ],
+              ),
+            ),
+            Row(
+              children: [
+                if (widget.canChangeMode ?? true)
+                  DropdownButton<RangeDialogMode>(
+                    value: mode,
+                    underline: const SizedBox(),
+                    icon: const SizedBox(),
+                    items: [
+                      DropdownMenuItem(
+                        value: RangeDialogMode.exact,
+                        child: _buildComparisonIcon(FontAwesomeIcons.equals),
                       ),
-                    Expanded(
-                      child:
-                          mode == RangeDialogMode.fixedRange
-                              ? RangeSlider(
-                                values: RangeValues(
-                                  getSliderValue(),
-                                  getSliderEndValue(),
-                                ),
-                                min: widget.min,
-                                max: widget.max,
-                                divisions: widget.division,
-                                onChanged:
-                                    (values) => setTextByValue(
-                                      values.start,
-                                      values.end,
-                                    ),
-                              )
-                              : Slider(
-                                value: getSliderValue(),
-                                min: widget.min,
-                                max: widget.max,
-                                divisions: widget.division,
-                                onChanged: (value) => setTextByValue(value),
-                              ),
-                    ),
-                  ],
+                      DropdownMenuItem(
+                        value: RangeDialogMode.smallerOrEqual,
+                        child: _buildComparisonIcon(
+                          FontAwesomeIcons.lessThanEqual,
+                        ),
+                      ),
+                      DropdownMenuItem(
+                        value: RangeDialogMode.greaterOrEqual,
+                        child: _buildComparisonIcon(
+                          FontAwesomeIcons.greaterThanEqual,
+                        ),
+                      ),
+                      DropdownMenuItem(
+                        value: RangeDialogMode.fixedRange,
+                        child: _buildComparisonIcon(FontAwesomeIcons.leftRight),
+                      ),
+                    ],
+                    onChanged: (newMode) {
+                      if (newMode != null) {
+                        setState(() {
+                          mode = newMode;
+                          controller.text = getTextValue();
+                        });
+                      }
+                    },
+                  ),
+                Expanded(
+                  child: mode == RangeDialogMode.fixedRange
+                      ? RangeSlider(
+                          values: RangeValues(
+                            getSliderValue(),
+                            getSliderEndValue(),
+                          ),
+                          min: widget.min,
+                          max: widget.max,
+                          divisions: widget.division,
+                          onChanged: (values) =>
+                              setTextByValue(values.start, values.end),
+                        )
+                      : Slider(
+                          value: getSliderValue(),
+                          min: widget.min,
+                          max: widget.max,
+                          divisions: widget.division,
+                          onChanged: (value) => setTextByValue(value),
+                        ),
                 ),
               ],
             ),
+          ],
+        ),
       ),
       actions: [
         TextButton(

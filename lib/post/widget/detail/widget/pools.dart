@@ -22,12 +22,9 @@ class PoolDisplay extends StatelessWidget {
               leading: const Icon(Icons.group),
               title: Text(id.toString()),
               trailing: const Icon(Icons.arrow_right),
-              onTap:
-                  () => Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => PoolLoadingPage(id),
-                    ),
-                  ),
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => PoolLoadingPage(id)),
+              ),
             ),
           ),
           const Divider(),

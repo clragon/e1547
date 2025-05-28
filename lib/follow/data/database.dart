@@ -20,20 +20,18 @@ class FollowsTable extends Table {
 
 @DataClassName('FollowIdentity')
 class FollowsIdentitiesTable extends Table {
-  IntColumn get identity =>
-      integer().references(
-        IdentitiesTable,
-        #id,
-        onDelete: KeyAction.noAction,
-        onUpdate: KeyAction.noAction,
-      )();
-  IntColumn get follow =>
-      integer().references(
-        FollowsTable,
-        #id,
-        onDelete: KeyAction.cascade,
-        onUpdate: KeyAction.cascade,
-      )();
+  IntColumn get identity => integer().references(
+    IdentitiesTable,
+    #id,
+    onDelete: KeyAction.noAction,
+    onUpdate: KeyAction.noAction,
+  )();
+  IntColumn get follow => integer().references(
+    FollowsTable,
+    #id,
+    onDelete: KeyAction.cascade,
+    onUpdate: KeyAction.cascade,
+  )();
 
   @override
   Set<Column> get primaryKey => {identity, follow};
@@ -44,9 +42,9 @@ class FollowRepository extends DatabaseAccessor<GeneratedDatabase>
     with $FollowRepositoryMixin {
   FollowRepository({required GeneratedDatabase database}) : super(database);
 
-  StreamFuture<Follow> get(int id) =>
-      (select(followsTable)
-        ..where((tbl) => tbl.id.equals(id))).watchSingle().future;
+  StreamFuture<Follow> get(int id) => (select(
+    followsTable,
+  )..where((tbl) => tbl.id.equals(id))).watchSingle().future;
 
   StreamFuture<Follow?> getByTags(String tags, int identity) =>
       (select(followsTable)
@@ -56,13 +54,12 @@ class FollowRepository extends DatabaseAccessor<GeneratedDatabase>
           .future;
 
   Expression<bool> _identityQuery($FollowsTableTable tbl, int? identity) {
-    final subQuery =
-        followsIdentitiesTable.selectOnly()
-          ..addColumns([followsIdentitiesTable.follow])
-          ..where(
-            Variable(identity).isNull() |
-                followsIdentitiesTable.identity.equalsNullable(identity),
-          );
+    final subQuery = followsIdentitiesTable.selectOnly()
+      ..addColumns([followsIdentitiesTable.follow])
+      ..where(
+        Variable(identity).isNull() |
+            followsIdentitiesTable.identity.equalsNullable(identity),
+      );
 
     return tbl.id.isInQuery(subQuery);
   }
@@ -76,16 +73,15 @@ class FollowRepository extends DatabaseAccessor<GeneratedDatabase>
     List<FollowType>? types,
     bool? hasUnseen,
   }) {
-    final selectable =
-        select(followsTable)
-          ..orderBy([
-            (t) => OrderingTerm(expression: t.latest, mode: OrderingMode.desc),
-            (t) => OrderingTerm(
-              expression: coalesce([t.title, t.tags]),
-              mode: OrderingMode.desc,
-            ),
-          ])
-          ..where((tbl) => _identityQuery(tbl, identity));
+    final selectable = select(followsTable)
+      ..orderBy([
+        (t) => OrderingTerm(expression: t.latest, mode: OrderingMode.desc),
+        (t) => OrderingTerm(
+          expression: coalesce([t.title, t.tags]),
+          mode: OrderingMode.desc,
+        ),
+      ])
+      ..where((tbl) => _identityQuery(tbl, identity));
     if (tagRegex != null) {
       selectable.where(
         (tbl) => tbl.tags.regexp(tagRegex, caseSensitive: false),
@@ -142,15 +138,14 @@ class FollowRepository extends DatabaseAccessor<GeneratedDatabase>
     String? titleRegex,
     List<FollowType>? types,
     bool? hasUnseen,
-  }) =>
-      _querySelect(
-        limit: limit,
-        identity: identity,
-        tagRegex: tagRegex,
-        titleRegex: titleRegex,
-        types: types,
-        hasUnseen: hasUnseen,
-      ).watch().future;
+  }) => _querySelect(
+    limit: limit,
+    identity: identity,
+    tagRegex: tagRegex,
+    titleRegex: titleRegex,
+    types: types,
+    hasUnseen: hasUnseen,
+  ).watch().future;
 
   StreamFuture<int> length({int? identity}) {
     final Expression<int> count = followsTable.id.count();
@@ -170,22 +165,27 @@ class FollowRepository extends DatabaseAccessor<GeneratedDatabase>
     int? identity,
   }) =>
       (_querySelect(types: types, identity: identity)..where(
-        (tbl) =>
-            (tbl.updated.isSmallerThanValue(DateTime.now().subtract(minAge))) |
-            tbl.updated.isNull(),
-      )).watch().future;
+            (tbl) =>
+                (tbl.updated.isSmallerThanValue(
+                  DateTime.now().subtract(minAge),
+                )) |
+                tbl.updated.isNull(),
+          ))
+          .watch()
+          .future;
 
   StreamFuture<List<Follow>> fresh({List<FollowType>? types, int? identity}) =>
-      (_querySelect(types: types, identity: identity)
-        ..where((tbl) => tbl.updated.isNull())).watch().future;
+      (_querySelect(
+        types: types,
+        identity: identity,
+      )..where((tbl) => tbl.updated.isNull())).watch().future;
 
   Future<void> add(FollowRequest item, int identity) async {
     Follow follow;
-    Follow? existing =
-        await _querySelect(
-          identity: identity,
-          tagRegex: r'^' + RegExp.escape(item.tags) + r'$',
-        ).getSingleOrNull();
+    Follow? existing = await _querySelect(
+      identity: identity,
+      tagRegex: r'^' + RegExp.escape(item.tags) + r'$',
+    ).getSingleOrNull();
     if (existing != null) {
       follow = existing.copyWith(
         title: item.title,
@@ -219,9 +219,9 @@ class FollowRepository extends DatabaseAccessor<GeneratedDatabase>
             ..where((tbl) => (tbl.unseen.isBiggerThanValue(0))))
           .write(const FollowCompanion(unseen: Value(0)));
 
-  Future<void> replace(Follow item) =>
-      ((update(followsTable))
-        ..where((tbl) => tbl.id.equals(item.id))).write(item.toInsertable());
+  Future<void> replace(Follow item) => ((update(
+    followsTable,
+  ))..where((tbl) => tbl.id.equals(item.id))).write(item.toInsertable());
 
   Future<void> remove(int id) =>
       (delete(followsTable)..where((tbl) => tbl.id.equals(id))).go();

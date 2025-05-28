@@ -36,15 +36,14 @@ class PostReportImage extends StatelessWidget {
               isLoading: isLoading,
               child: PostImageOverlay(
                 post: post,
-                builder:
-                    (context) => Hero(
-                      tag: post.link,
-                      child: PostImageWidget(
-                        post: post,
-                        size: PostImageSize.sample,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
+                builder: (context) => Hero(
+                  tag: post.link,
+                  child: PostImageWidget(
+                    post: post,
+                    size: PostImageSize.sample,
+                    fit: BoxFit.cover,
+                  ),
+                ),
               ),
             ),
           ),
@@ -126,73 +125,67 @@ class _PostReportScreenState extends State<PostReportScreen> {
             leading: const CloseButton(),
           ),
           floatingActionButton: Builder(
-            builder:
-                (context) => FloatingActionButton(
-                  onPressed: isLoading ? null : () => _sendReport(context),
-                  child: const Icon(Icons.check),
-                ),
+            builder: (context) => FloatingActionButton(
+              onPressed: isLoading ? null : () => _sendReport(context),
+              child: const Icon(Icons.check),
+            ),
           ),
           body: LimitedWidthLayout(
             child: LayoutBuilder(
-              builder:
-                  (context, constraints) => ListView(
-                    controller: scrollController,
-                    padding: LimitedWidthLayout.of(
-                      context,
-                    ).padding.add(defaultFormScreenPadding),
-                    children: [
-                      PostReportImage(
-                        post: widget.post,
-                        height: constraints.maxHeight,
-                        isLoading: isLoading,
+              builder: (context, constraints) => ListView(
+                controller: scrollController,
+                padding: LimitedWidthLayout.of(
+                  context,
+                ).padding.add(defaultFormScreenPadding),
+                children: [
+                  PostReportImage(
+                    post: widget.post,
+                    height: constraints.maxHeight,
+                    isLoading: isLoading,
+                  ),
+                  ReportFormHeader(
+                    title: const Text('Report'),
+                    icon: IconButton(
+                      onPressed: () => showTagSearchPrompt(
+                        context: context,
+                        tag: 'e621:report_post',
                       ),
-                      ReportFormHeader(
-                        title: const Text('Report'),
-                        icon: IconButton(
-                          onPressed:
-                              () => showTagSearchPrompt(
-                                context: context,
-                                tag: 'e621:report_post',
-                              ),
-                          icon: const Icon(Icons.info_outline),
-                        ),
+                      icon: const Icon(Icons.info_outline),
+                    ),
+                  ),
+                  ReportFormDropdown<PostReportType?>(
+                    type: type,
+                    types: {for (final e in PostReportType.values) e: e.title},
+                    onChanged: (value) => setState(() => type = value),
+                    isLoading: isLoading,
+                  ),
+                  CrossFade.builder(
+                    showChild: type != null,
+                    builder: (context) => Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 6,
                       ),
-                      ReportFormDropdown<PostReportType?>(
-                        type: type,
-                        types: {
-                          for (final e in PostReportType.values) e: e.title,
-                        },
-                        onChanged: (value) => setState(() => type = value),
-                        isLoading: isLoading,
-                      ),
-                      CrossFade.builder(
-                        showChild: type != null,
-                        builder:
-                            (context) => Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 24,
-                                vertical: 6,
-                              ),
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    child: Card(
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(16),
-                                        child: DText(type!.body),
-                                      ),
-                                    ),
-                                  ),
-                                ],
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Card(
+                              child: Padding(
+                                padding: const EdgeInsets.all(16),
+                                child: DText(type!.body),
                               ),
                             ),
+                          ),
+                        ],
                       ),
-                      ReportFormReason(
-                        controller: reasonController,
-                        isLoading: isLoading,
-                      ),
-                    ],
+                    ),
                   ),
+                  ReportFormReason(
+                    controller: reasonController,
+                    isLoading: isLoading,
+                  ),
+                ],
+              ),
             ),
           ),
         ),

@@ -156,12 +156,11 @@ class PostInfoBar extends StatelessWidget {
                             post.vote.score >= 0
                                 ? Icons.arrow_upward
                                 : Icons.arrow_downward,
-                            color:
-                                {
-                                  VoteStatus.upvoted: Colors.deepOrange,
-                                  VoteStatus.downvoted: Colors.blue,
-                                  VoteStatus.unknown: null,
-                                }[post.vote.status],
+                            color: {
+                              VoteStatus.upvoted: Colors.deepOrange,
+                              VoteStatus.downvoted: Colors.blue,
+                              VoteStatus.unknown: null,
+                            }[post.vote.status],
                           ),
                         ),
                       ],
@@ -215,20 +214,18 @@ void defaultPushPostDetail(BuildContext context, Post post) {
   int? cacheSize = context.read<ImageCacheSize>().size;
   Navigator.of(context).push(
     MaterialPageRoute(
-      builder:
-          (context) => ImageCacheSizeProvider(
-            size: cacheSize,
-            child:
-                controller != null
-                    ? PostsRouteConnector(
-                      controller: controller,
-                      child: PostDetailGallery(
-                        controller: controller,
-                        initialPage: controller.items!.indexOf(post),
-                      ),
-                    )
-                    : PostDetail(post: post),
-          ),
+      builder: (context) => ImageCacheSizeProvider(
+        size: cacheSize,
+        child: controller != null
+            ? PostsRouteConnector(
+                controller: controller,
+                child: PostDetailGallery(
+                  controller: controller,
+                  initialPage: controller.items!.indexOf(post),
+                ),
+              )
+            : PostDetail(post: post),
+      ),
     ),
   );
 }
@@ -246,9 +243,8 @@ class PostTile extends StatelessWidget {
       onTap: onTap ?? () => defaultPushPostDetail(context, post),
       bottomBar: ValueListenableBuilder<bool>(
         valueListenable: context.watch<Settings>().showPostInfo,
-        builder:
-            (context, value, child) =>
-                value ? PostInfoBar(post: post) : const SizedBox(),
+        builder: (context, value, child) =>
+            value ? PostInfoBar(post: post) : const SizedBox(),
       ),
     );
   }
@@ -265,10 +261,9 @@ class PostComicTile extends StatelessWidget {
       aspectRatio: post.width / post.height,
       child: PostImageTile(
         post: post,
-        size:
-            post.type == PostType.video
-                ? PostImageSize.sample
-                : PostImageSize.file,
+        size: post.type == PostType.video
+            ? PostImageSize.sample
+            : PostImageSize.file,
         withLowRes: true,
         showProgress: false,
         onTap: () => defaultPushPostDetail(context, post),
@@ -295,13 +290,11 @@ class PostFeedTile extends StatelessWidget {
               children: [
                 IconButton(
                   icon: const Icon(Icons.comment),
-                  onPressed:
-                      () => Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder:
-                              (context) => PostCommentsPage(postId: post.id),
-                        ),
-                      ),
+                  onPressed: () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => PostCommentsPage(postId: post.id),
+                    ),
+                  ),
                 ),
                 const SizedBox(width: 12),
                 Text(post.commentCount.toString()),
@@ -370,11 +363,10 @@ class PostFeedTile extends StatelessWidget {
             ),
             IconButton(
               icon: const Icon(Icons.share),
-              onPressed:
-                  () => Share.text(
-                    context,
-                    context.read<Client>().withHost(post.link),
-                  ),
+              onPressed: () => Share.text(
+                context,
+                context.read<Client>().withHost(post.link),
+              ),
             ),
           ],
         ),
@@ -386,20 +378,19 @@ class PostFeedTile extends StatelessWidget {
         icon: Icon(Icons.more_vert, color: dimTextColor(context)),
         iconSize: 18,
         onSelected: (value) => value(),
-        itemBuilder:
-            (context) => [
-              if (post.file != null)
-                PopupMenuTile(
-                  value: () => postDownloadingNotification(context, {post}),
-                  title: 'Download',
-                  icon: Icons.file_download,
-                ),
-              PopupMenuTile(
-                value: () => launch(context.read<Client>().withHost(post.link)),
-                title: 'Browse',
-                icon: Icons.open_in_browser,
-              ),
-            ],
+        itemBuilder: (context) => [
+          if (post.file != null)
+            PopupMenuTile(
+              value: () => postDownloadingNotification(context, {post}),
+              title: 'Download',
+              icon: Icons.file_download,
+            ),
+          PopupMenuTile(
+            value: () => launch(context.read<Client>().withHost(post.link)),
+            title: 'Browse',
+            icon: Icons.open_in_browser,
+          ),
+        ],
       );
     }
 
@@ -414,23 +405,21 @@ class PostFeedTile extends StatelessWidget {
               PostController? controller = context.read<PostController?>();
               Navigator.of(context).push(
                 MaterialPageRoute(
-                  builder:
-                      (context) => PostVideoRoute(
-                        post: post,
-                        child: ImageCacheSizeProvider(
-                          size: cacheSize,
-                          child:
-                              controller != null
-                                  ? ChangeNotifierProvider.value(
-                                    value: controller,
-                                    child: PostsRouteConnector(
-                                      controller: controller,
-                                      child: PostFullscreen(post: post),
-                                    ),
-                                  )
-                                  : PostFullscreen(post: post),
-                        ),
-                      ),
+                  builder: (context) => PostVideoRoute(
+                    post: post,
+                    child: ImageCacheSizeProvider(
+                      size: cacheSize,
+                      child: controller != null
+                          ? ChangeNotifierProvider.value(
+                              value: controller,
+                              child: PostsRouteConnector(
+                                controller: controller,
+                                child: PostFullscreen(post: post),
+                              ),
+                            )
+                          : PostFullscreen(post: post),
+                    ),
+                  ),
                 ),
               );
             },
@@ -457,12 +446,11 @@ class PostFeedTile extends StatelessWidget {
                         child: TimedText(
                           created: post.createdAt,
                           child: DefaultTextStyle(
-                            style: Theme.of(
-                              context,
-                            ).textTheme.bodyMedium!.copyWith(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            ),
+                            style: Theme.of(context).textTheme.bodyMedium!
+                                .copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
                             child: ArtistName(post: post),
                           ),
                         ),

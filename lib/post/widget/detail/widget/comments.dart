@@ -18,12 +18,11 @@ class CommentDisplay extends StatelessWidget {
           children: [
             Expanded(
               child: OutlinedButton(
-                onPressed:
-                    () => Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => PostCommentsPage(postId: post.id),
-                      ),
-                    ),
+                onPressed: () => Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => PostCommentsPage(postId: post.id),
+                  ),
+                ),
                 style: ButtonStyle(
                   foregroundColor: WidgetStateProperty.all(
                     Theme.of(context).textTheme.bodyMedium!.color,
@@ -56,108 +55,94 @@ class SliverPostCommentSection extends StatelessWidget {
     return CommentProvider(
       postId: post.id,
       child: Consumer<CommentController>(
-        builder:
-            (context, controller, child) => SliverMainAxisGroup(
-              slivers: [
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Column(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 4,
-                            vertical: 2,
+        builder: (context, controller, child) => SliverMainAxisGroup(
+          slivers: [
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 4,
+                        vertical: 2,
+                      ),
+                      child: Row(
+                        children: [
+                          const Expanded(
+                            child: Text(
+                              'Comments',
+                              style: TextStyle(fontSize: 16),
+                            ),
                           ),
-                          child: Row(
-                            children: [
-                              const Expanded(
-                                child: Text(
-                                  'Comments',
-                                  style: TextStyle(fontSize: 16),
-                                ),
+                          PopupMenuButton<VoidCallback>(
+                            icon: const Icon(Icons.more_vert),
+                            onSelected: (value) => value(),
+                            itemBuilder: (context) => [
+                              PopupMenuTile(
+                                title: 'Refresh',
+                                icon: Icons.refresh,
+                                value: () => controller.refresh(force: true),
                               ),
-                              PopupMenuButton<VoidCallback>(
-                                icon: const Icon(Icons.more_vert),
-                                onSelected: (value) => value(),
-                                itemBuilder:
-                                    (context) => [
-                                      PopupMenuTile(
-                                        title: 'Refresh',
-                                        icon: Icons.refresh,
-                                        value:
-                                            () =>
-                                                controller.refresh(force: true),
-                                      ),
-                                      PopupMenuTile(
-                                        icon: Icons.sort,
-                                        title:
-                                            controller.orderByOldest
-                                                ? 'Newest first'
-                                                : 'Oldest first',
-                                        value:
-                                            () =>
-                                                controller.orderByOldest =
-                                                    !controller.orderByOldest,
-                                      ),
-                                      PopupMenuTile(
-                                        title: 'Comment',
-                                        icon: Icons.comment,
-                                        value:
-                                            () => guardWithLogin(
-                                              context: context,
-                                              callback: () async {
-                                                PostController postsController =
-                                                    context
-                                                        .read<PostController>();
-                                                bool success =
-                                                    await writeComment(
-                                                      context: context,
-                                                      postId: post.id,
-                                                    );
-                                                if (success) {
-                                                  postsController.replacePost(
-                                                    post.copyWith(
-                                                      commentCount:
-                                                          post.commentCount + 1,
-                                                    ),
-                                                  );
-                                                  controller.refresh(
-                                                    force: true,
-                                                  );
-                                                }
-                                              },
-                                              error:
-                                                  'You must be logged in to comment!',
-                                            ),
-                                      ),
-                                    ],
+                              PopupMenuTile(
+                                icon: Icons.sort,
+                                title: controller.orderByOldest
+                                    ? 'Newest first'
+                                    : 'Oldest first',
+                                value: () => controller.orderByOldest =
+                                    !controller.orderByOldest,
+                              ),
+                              PopupMenuTile(
+                                title: 'Comment',
+                                icon: Icons.comment,
+                                value: () => guardWithLogin(
+                                  context: context,
+                                  callback: () async {
+                                    PostController postsController = context
+                                        .read<PostController>();
+                                    bool success = await writeComment(
+                                      context: context,
+                                      postId: post.id,
+                                    );
+                                    if (success) {
+                                      postsController.replacePost(
+                                        post.copyWith(
+                                          commentCount: post.commentCount + 1,
+                                        ),
+                                      );
+                                      controller.refresh(force: true);
+                                    }
+                                  },
+                                  error: 'You must be logged in to comment!',
+                                ),
                               ),
                             ],
                           ),
-                        ),
-                        const SizedBox(height: 16),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
+                    const SizedBox(height: 16),
+                  ],
                 ),
-                SliverPadding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                  ).add(const EdgeInsets.only(bottom: 30)),
-                  sliver: PagedSliverList<int, Comment>(
-                    pagingController: controller.paging,
-                    builderDelegate: defaultPagedChildBuilderDelegate(
-                      pagingController: controller.paging,
-                      itemBuilder:
-                          (context, item, index) => CommentTile(comment: item),
-                      onEmpty: const Text('No comments'),
-                      onError: const Text('Failed to load comments'),
-                    ),
-                  ),
-                ),
-              ],
+              ),
             ),
+            SliverPadding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 12,
+              ).add(const EdgeInsets.only(bottom: 30)),
+              sliver: PagedSliverList<int, Comment>(
+                pagingController: controller.paging,
+                builderDelegate: defaultPagedChildBuilderDelegate(
+                  pagingController: controller.paging,
+                  itemBuilder: (context, item, index) =>
+                      CommentTile(comment: item),
+                  onEmpty: const Text('No comments'),
+                  onError: const Text('Failed to load comments'),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

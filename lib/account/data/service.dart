@@ -55,14 +55,12 @@ class AccountService {
     Account result = await dio
         .get(
           '/users/${identity.username}.json',
-          options:
-              ClientCacheConfig(
-                maxAge: const Duration(hours: 1),
-                policy:
-                    (force ?? false)
-                        ? CachePolicy.refresh
-                        : CachePolicy.request,
-              ).toOptions(),
+          options: ClientCacheConfig(
+            maxAge: const Duration(hours: 1),
+            policy: (force ?? false)
+                ? CachePolicy.refresh
+                : CachePolicy.request,
+          ).toOptions(),
           cancelToken: cancelToken,
         )
         .then((response) => E621Account.fromJson(response.data));

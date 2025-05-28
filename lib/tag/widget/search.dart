@@ -22,22 +22,20 @@ class SearchPromptFloatingActionButton extends StatelessWidget {
     bool isDesktop = Theme.of(context).isDesktop;
     return SubValue<PromptActionController>(
       create: () => PromptActionController(),
-      builder:
-          (context, actionController) => PromptFloatingActionButton(
+      builder: (context, actionController) => PromptFloatingActionButton(
+        controller: actionController,
+        builder: (context) => Material(
+          child: PromptFilterList(
+            tags: tags,
+            onChanged: onChanged,
+            onSubmit: onSubmit,
+            submitIcon: isDesktop ? const Icon(Icons.search) : null,
+            filters: filters,
             controller: actionController,
-            builder:
-                (context) => Material(
-                  child: PromptFilterList(
-                    tags: tags,
-                    onChanged: onChanged,
-                    onSubmit: onSubmit,
-                    submitIcon: isDesktop ? const Icon(Icons.search) : null,
-                    filters: filters,
-                    controller: actionController,
-                  ),
-                ),
-            icon: const Icon(Icons.search),
           ),
+        ),
+        icon: const Icon(Icons.search),
+      ),
     );
   }
 }
@@ -98,8 +96,8 @@ class _PromptFilterListState extends State<PromptFilterList> {
       child: FilterList(
         tags: tags,
         onChanged: onChanged,
-        onSubmit:
-            (value) => widget.controller?.action?.call() ?? onSubmit(value),
+        onSubmit: (value) =>
+            widget.controller?.action?.call() ?? onSubmit(value),
         submitIcon: widget.submitIcon,
         filters: widget.filters,
       ),

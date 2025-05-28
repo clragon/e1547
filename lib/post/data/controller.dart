@@ -100,15 +100,14 @@ class PostProvider extends SubChangeNotifierProvider<Client, PostController> {
     super.child,
     super.builder,
   }) : super(
-         create:
-             (context, client) => PostController(
-               client: client,
-               query: query,
-               orderPools: orderPools,
-               denying: denying,
-               canSearch: canSearch,
-               filterMode: filterMode,
-             ),
+         create: (context, client) => PostController(
+           client: client,
+           query: query,
+           orderPools: orderPools,
+           denying: denying,
+           canSearch: canSearch,
+           filterMode: filterMode,
+         ),
        );
 
   // ignore: use_key_in_widget_constructors
@@ -127,11 +126,10 @@ class SinglePostProvider extends PostProvider {
     super.child,
     super.builder,
   }) : super.builder(
-         create:
-             (context, client) => SinglePostController(
-               id: id,
-               client: client,
-               filterMode: filterMode,
-             ),
+         create: (context, client) => SinglePostController(
+           id: id,
+           client: client,
+           filterMode: filterMode,
+         ),
        );
 }
