@@ -39,7 +39,7 @@ Options forceOptions(bool? force) {
 class ClientCacheConfig extends CacheOptions {
   ClientCacheConfig({
     super.policy,
-    super.hitCacheOnErrorExcept,
+    super.hitCacheOnErrorCodes,
     super.keyBuilder,
     this.pageParam,
     this.maxAge,
@@ -58,7 +58,7 @@ class ClientCacheConfig extends CacheOptions {
   final String? pageParam;
 
   static ClientCacheConfig? fromExtra(RequestOptions request) {
-    final CacheOptions? config = CacheOptions.fromExtra(request);
+    final CacheOptions? config = request.getCacheOptions();
     if (config != null && config is ClientCacheConfig) {
       return config;
     }
@@ -69,27 +69,26 @@ class ClientCacheConfig extends CacheOptions {
   @override
   ClientCacheConfig copyWith({
     CachePolicy? policy,
-    Nullable<List<int>>? hitCacheOnErrorExcept,
+    List<int>? hitCacheOnErrorCodes,
+    bool? hitCacheOnNetworkFailure,
     CacheKeyBuilder? keyBuilder,
-    Nullable<String>? pageParam,
-    Nullable<Duration>? maxAge,
-    Nullable<Duration>? maxStale,
+    String? pageParam,
+    Duration? maxAge,
+    Duration? maxStale,
     CachePriority? priority,
     CacheStore? store,
-    Nullable<CacheCipher>? cipher,
+    CacheCipher? cipher,
     bool? allowPostMethod,
   }) => ClientCacheConfig(
     policy: policy ?? this.policy,
-    hitCacheOnErrorExcept: hitCacheOnErrorExcept != null
-        ? hitCacheOnErrorExcept.value
-        : this.hitCacheOnErrorExcept,
+    hitCacheOnErrorCodes: hitCacheOnErrorCodes ?? this.hitCacheOnErrorCodes,
     keyBuilder: keyBuilder ?? this.keyBuilder,
-    pageParam: pageParam != null ? pageParam.value : this.pageParam,
-    maxAge: maxAge != null ? maxAge.value : this.maxAge,
-    maxStale: maxStale != null ? maxStale.value : this.maxStale,
+    pageParam: pageParam ?? this.pageParam,
+    maxAge: maxAge ?? this.maxAge,
+    maxStale: maxStale ?? this.maxStale,
     priority: priority ?? this.priority,
     store: store ?? this.store,
-    cipher: cipher != null ? cipher.value : this.cipher,
+    cipher: cipher ?? this.cipher,
     allowPostMethod: allowPostMethod ?? this.allowPostMethod,
   );
 }

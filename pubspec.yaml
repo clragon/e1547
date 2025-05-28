@@ -51,8 +51,8 @@ dependencies:
   collection: ^1.19.0
   deep_pick: ^1.0.0
   dio: ^5.8.0+1
-  dio_cache_interceptor: ^3.5.1
-  dio_cache_interceptor_db_store: ^6.0.0
+  dio_cache_interceptor: ^4.0.3
+  http_cache_drift_store: ^7.0.0
   drift: ^2.25.1
   external_path: ^2.0.1
   filesize: ^2.0.1

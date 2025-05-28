@@ -309,18 +309,10 @@ packages:
     dependency: "direct main"
     description:
       name: dio_cache_interceptor
-      sha256: "1346705a2057c265014d7696e3e2318b560bfb00b484dac7f9b01e2ceaebb07d"
+      sha256: c1cbf8be886b3e077165dda50a1b3bb299b8a72694af94d065b4d2ac0fee67d7
       url: "https://pub.dev"
     source: hosted
-    version: "3.5.1"
-  dio_cache_interceptor_db_store:
-    dependency: "direct main"
-    description:
-      name: dio_cache_interceptor_db_store
-      sha256: "2c17538d7c00f62ee74941e497b31187d91d256b63507106ad79f8fcd797a775"
-      url: "https://pub.dev"
-    source: hosted
-    version: "6.0.0"
+    version: "4.0.3"
   dio_web_adapter:
     dependency: transitive
     description:
@@ -717,6 +709,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.4.0"
+  http_cache_core:
+    dependency: transitive
+    description:
+      name: http_cache_core
+      sha256: b0accfa821e73085b5252dd42a6908d19ea0c29badd46db3668af6f8e510cfe1
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.1"
+  http_cache_drift_store:
+    dependency: "direct main"
+    description:
+      name: http_cache_drift_store
+      sha256: "369497975bb21b62410da601907e94bdf748bf9d0f189e14449ebf0592748ddb"
+      url: "https://pub.dev"
+    source: hosted
+    version: "7.0.0"
   http_multi_server:
     dependency: transitive
     description:

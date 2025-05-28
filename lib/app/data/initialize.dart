@@ -1,10 +1,10 @@
 import 'dart:io';
 
-import 'package:dio_cache_interceptor_db_store/dio_cache_interceptor_db_store.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 import 'package:e1547/app/app.dart';
 import 'package:e1547/logs/logs.dart';
 import 'package:flutter/widgets.dart';
+import 'package:http_cache_drift_store/http_cache_drift_store.dart';
 import 'package:notified_preferences/notified_preferences.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
@@ -105,7 +105,7 @@ Future<AppStorage> initializeAppStorage({bool cache = true}) async {
   return AppStorage(
     preferences: await SharedPreferences.getInstance(),
     temporaryFiles: temporaryFiles,
-    httpCache: cache ? DbCacheStore(databasePath: temporaryFiles) : null,
+    httpCache: cache ? DriftCacheStore(databasePath: temporaryFiles) : null,
     sqlite: AppDatabase(
       driftDatabase(
         name: 'app',
