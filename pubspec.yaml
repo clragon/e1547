@@ -91,7 +91,7 @@ dependency_overrides:
   infinite_scroll_pagination:
     git:
       url: https://github.com/EdsonBueno/infinite_scroll_pagination.git
-      ref: b25e96d
+      ref: 4f65157
   workmanager:
     git:
       url: https://github.com/fluttercommunity/flutter_workmanager.git

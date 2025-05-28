@@ -36,28 +36,32 @@ class TopicsPage extends StatelessWidget {
                 children: [TopicTagEditingTile(controller: controller)],
               ),
               controller: controller,
-              child: PagedListView(
-                primary: true,
-                padding: defaultListPadding,
-                pagingController: controller.paging,
-                builderDelegate: defaultPagedChildBuilderDelegate<Topic>(
-                  pagingController: controller.paging,
-                  itemBuilder: (context, item, index) => TopicTile(
-                    topic: item,
-                    onPressed: () => Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => RepliesPage(topic: item),
+              child: ListenableBuilder(
+                listenable: controller,
+                builder: (context, _) => PagedListView(
+                  primary: true,
+                  padding: defaultListPadding,
+                  state: controller.state,
+                  fetchNextPage: controller.getNextPage,
+                  builderDelegate: defaultPagedChildBuilderDelegate<Topic>(
+                    onRetry: controller.getNextPage,
+                    itemBuilder: (context, item, index) => TopicTile(
+                      topic: item,
+                      onPressed: () => Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => RepliesPage(topic: item),
+                        ),
+                      ),
+                      onCountPressed: () => Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              RepliesPage(topic: item, orderByOldest: false),
+                        ),
                       ),
                     ),
-                    onCountPressed: () => Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            RepliesPage(topic: item, orderByOldest: false),
-                      ),
-                    ),
+                    onEmpty: const Text('No topics'),
+                    onError: const Text('Failed to load topics'),
                   ),
-                  onEmpty: const Text('No topics'),
-                  onError: const Text('Failed to load topics'),
                 ),
               ),
             ),

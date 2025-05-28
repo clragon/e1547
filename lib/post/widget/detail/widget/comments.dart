@@ -130,14 +130,18 @@ class SliverPostCommentSection extends StatelessWidget {
               padding: const EdgeInsets.symmetric(
                 horizontal: 12,
               ).add(const EdgeInsets.only(bottom: 30)),
-              sliver: PagedSliverList<int, Comment>(
-                pagingController: controller.paging,
-                builderDelegate: defaultPagedChildBuilderDelegate(
-                  pagingController: controller.paging,
-                  itemBuilder: (context, item, index) =>
-                      CommentTile(comment: item),
-                  onEmpty: const Text('No comments'),
-                  onError: const Text('Failed to load comments'),
+              sliver: ListenableBuilder(
+                listenable: controller,
+                builder: (context, _) => PagedSliverList<int, Comment>(
+                  state: controller.state,
+                  fetchNextPage: controller.getNextPage,
+                  builderDelegate: defaultPagedChildBuilderDelegate(
+                    onRetry: controller.getNextPage,
+                    itemBuilder: (context, item, index) =>
+                        CommentTile(comment: item),
+                    onEmpty: const Text('No comments'),
+                    onError: const Text('Failed to load comments'),
+                  ),
                 ),
               ),
             ),

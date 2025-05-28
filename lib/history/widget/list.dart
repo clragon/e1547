@@ -6,7 +6,8 @@ class PagedGroupedListView<PageKeyType, ItemType, SortType>
     extends BoxScrollView {
   const PagedGroupedListView({
     super.key,
-    required this.pagingController,
+    required this.state,
+    required this.fetchNextPage,
     required this.builderDelegate,
     this.shrinkWrapFirstPageIndicators = false,
     required this.groupBy,
@@ -32,8 +33,11 @@ class PagedGroupedListView<PageKeyType, ItemType, SortType>
     super.clipBehavior,
   });
 
-  /// Matches [PagedLayoutBuilder.pagingController].
-  final PagingController<PageKeyType, ItemType> pagingController;
+  /// Matches [PagedLayoutBuilder.state].
+  final PagingState<PageKeyType, ItemType> state;
+
+  /// Matches [PagedLayoutBuilder.fetchNextPage].
+  final NextPageCallback fetchNextPage;
 
   /// Matches [PagedLayoutBuilder.builderDelegate].
   final PagedChildBuilderDelegate<ItemType> builderDelegate;
@@ -68,7 +72,8 @@ class PagedGroupedListView<PageKeyType, ItemType, SortType>
   @override
   Widget buildChildLayout(BuildContext context) {
     return PagedSliverGroupedListView(
-      pagingController: pagingController,
+      state: state,
+      fetchNextPage: fetchNextPage,
       builderDelegate: builderDelegate,
       shrinkWrapFirstPageIndicators: shrinkWrapFirstPageIndicators,
       groupBy: groupBy,
@@ -87,7 +92,8 @@ class PagedSliverGroupedListView<PageKeyType, ItemType, SortType>
     extends StatelessWidget {
   const PagedSliverGroupedListView({
     super.key,
-    required this.pagingController,
+    required this.state,
+    required this.fetchNextPage,
     required this.builderDelegate,
     this.shrinkWrapFirstPageIndicators = false,
     required this.groupBy,
@@ -100,8 +106,11 @@ class PagedSliverGroupedListView<PageKeyType, ItemType, SortType>
     this.separator = const SizedBox.shrink(),
   });
 
-  /// Matches [PagedLayoutBuilder.pagingController].
-  final PagingController<PageKeyType, ItemType> pagingController;
+  /// Matches [PagedLayoutBuilder.state].
+  final PagingState<PageKeyType, ItemType> state;
+
+  /// Matches [PagedLayoutBuilder.fetchNextPage].
+  final NextPageCallback fetchNextPage;
 
   /// Matches [PagedLayoutBuilder.builderDelegate].
   final PagedChildBuilderDelegate<ItemType> builderDelegate;
@@ -143,7 +152,7 @@ class PagedSliverGroupedListView<PageKeyType, ItemType, SortType>
       slivers: [
         SliverGroupedListView<ItemType, SortType>(
           key: key,
-          elements: pagingController.itemList!,
+          elements: state.items!,
           groupBy: groupBy,
           groupComparator: groupComparator,
           groupSeparatorBuilder: groupSeparatorBuilder,
@@ -162,7 +171,8 @@ class PagedSliverGroupedListView<PageKeyType, ItemType, SortType>
 
     return PagedLayoutBuilder<PageKeyType, ItemType>(
       layoutProtocol: PagedLayoutProtocol.sliver,
-      pagingController: pagingController,
+      state: state,
+      fetchNextPage: fetchNextPage,
       builderDelegate: builderDelegate,
       shrinkWrapFirstPageIndicators: shrinkWrapFirstPageIndicators,
       completedListingBuilder:

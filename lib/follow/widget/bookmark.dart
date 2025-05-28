@@ -46,19 +46,24 @@ class FollowsBookmarkPage extends StatelessWidget {
                   ),
                   builder: (context, child) =>
                       LimitedWidthLayout(child: TileLayout(child: child)),
-                  child: (context) => PagedAlignedGridView<int, Follow>.count(
-                    pagingController: controller.paging,
-                    primary: true,
-                    padding: defaultActionListPadding,
-                    addAutomaticKeepAlives: false,
-                    builderDelegate: defaultPagedChildBuilderDelegate(
-                      pagingController: controller.paging,
-                      itemBuilder: (context, item, index) =>
-                          FollowTile(follow: item),
-                      onEmpty: const Text('No bookmarks'),
-                      onError: const Text('Failed to load bookmarks'),
-                    ),
-                    crossAxisCount: TileLayout.of(context).crossAxisCount,
+                  child: (context) => ListenableBuilder(
+                    listenable: controller,
+                    builder: (context, _) =>
+                        PagedAlignedGridView<int, Follow>.count(
+                          primary: true,
+                          padding: defaultActionListPadding,
+                          addAutomaticKeepAlives: false,
+                          state: controller.state,
+                          fetchNextPage: controller.getNextPage,
+                          builderDelegate: defaultPagedChildBuilderDelegate(
+                            onRetry: controller.getNextPage,
+                            itemBuilder: (context, item, index) =>
+                                FollowTile(follow: item),
+                            onEmpty: const Text('No bookmarks'),
+                            onError: const Text('Failed to load bookmarks'),
+                          ),
+                          crossAxisCount: TileLayout.of(context).crossAxisCount,
+                        ),
                   ),
                 ),
               ),

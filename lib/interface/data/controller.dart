@@ -17,6 +17,7 @@ abstract class DataController<KeyType, ItemType> with ChangeNotifier {
 
   /// List with all items loaded so far.
   List<ItemType>? get rawItems => _rawItems;
+
   set rawItems(List<ItemType>? value) {
     if (value == _rawItems) return;
     _rawItems = value;
@@ -40,6 +41,7 @@ abstract class DataController<KeyType, ItemType> with ChangeNotifier {
 
   /// The current error, if any.
   Object? get error => _error;
+
   set error(Object? value) {
     if (value == _error) return;
     _error = value;
@@ -54,11 +56,6 @@ abstract class DataController<KeyType, ItemType> with ChangeNotifier {
 
   /// Whether this controller has been disposed.
   bool _disposed = false;
-
-  /// The proxy paging controller for this controller.
-  late final PagingController<KeyType, ItemType> paging = ProxyPagingController(
-    this,
-  );
 
   /// Retrieves the next page of items.
   @protected
@@ -203,7 +200,6 @@ abstract class DataController<KeyType, ItemType> with ChangeNotifier {
 
   @override
   void dispose() {
-    paging.dispose();
     _disposed = true;
     super.dispose();
   }
@@ -263,4 +259,15 @@ extension DataControllerItemManipulation<KeyType, ItemType>
       throw StateError('$runtimeType doesn\'t own this ${item.runtimeType}');
     }
   }
+}
+
+extension DataControllerPaging<KeyType, ItemType>
+    on DataController<KeyType, ItemType> {
+  PagingState<KeyType, ItemType> get state => PagingState(
+    pages: items != null ? [items!] : null,
+    keys: items != null ? [firstPageKey] : null,
+    error: error,
+    hasNextPage: nextPageKey != null,
+    isLoading: _fetching,
+  );
 }

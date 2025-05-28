@@ -57,15 +57,25 @@ class RepliesPage extends StatelessWidget {
                 ),
               ],
             ),
-            child: PagedListView(
-              primary: true,
-              padding: defaultActionListPadding,
-              pagingController: controller.paging,
-              builderDelegate: defaultPagedChildBuilderDelegate<Reply>(
-                pagingController: controller.paging,
-                itemBuilder: (context, item, index) => ReplyTile(reply: item),
-                onEmpty: const Text('No replies'),
-                onError: const Text('Failed to load replies'),
+            child: ListenableBuilder(
+              listenable: controller,
+              builder: (context, _) => PagedListView(
+                primary: true,
+                padding: defaultActionListPadding,
+                state: controller.state,
+                fetchNextPage: controller.getNextPage,
+                builderDelegate: defaultPagedChildBuilderDelegate<Reply>(
+                  onRetry: controller.getNextPage,
+                  itemBuilder: (context, item, index) => ReplyTile(reply: item),
+                  onEmpty: const IconMessage(
+                    icon: Icon(Icons.clear),
+                    title: Text('No replies'),
+                  ),
+                  onError: const IconMessage(
+                    icon: Icon(Icons.warning_amber_outlined),
+                    title: Text('Failed to load replies'),
+                  ),
+                ),
               ),
             ),
           ),

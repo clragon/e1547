@@ -96,24 +96,31 @@ class HistoriesPage extends StatelessWidget {
             ),
             controller: controller,
             builder: (context, child) => LimitedWidthLayout(child: child),
-            child: (context) => PagedGroupedListView<int, History, DateTime>(
-              padding: defaultActionListPadding.add(
-                LimitedWidthLayout.of(context).padding,
-              ),
-              pagingController: controller.paging,
-              order: GroupedListOrder.DESC,
-              controller: PrimaryScrollController.of(context),
-              groupBy: (element) => DateUtils.dateOnly(element.visitedAt),
-              groupHeaderBuilder: (element) => ListTileHeader(
-                title: DateFormatting.named(element.visitedAt),
-              ),
-              itemComparator: (a, b) => a.visitedAt.compareTo(b.visitedAt),
-              builderDelegate: defaultPagedChildBuilderDelegate<History>(
-                pagingController: controller.paging,
-                onEmpty: const Text('Your history is empty'),
-                onError: const Text('Failed to load history'),
-                itemBuilder: (context, item, index) => HistoryTile(entry: item),
-              ),
+            child: (context) => ListenableBuilder(
+              listenable: controller,
+              builder: (context, _) =>
+                  PagedGroupedListView<int, History, DateTime>(
+                    padding: defaultActionListPadding.add(
+                      LimitedWidthLayout.of(context).padding,
+                    ),
+                    state: controller.state,
+                    fetchNextPage: controller.getNextPage,
+                    order: GroupedListOrder.DESC,
+                    controller: PrimaryScrollController.of(context),
+                    groupBy: (element) => DateUtils.dateOnly(element.visitedAt),
+                    groupHeaderBuilder: (element) => ListTileHeader(
+                      title: DateFormatting.named(element.visitedAt),
+                    ),
+                    itemComparator: (a, b) =>
+                        a.visitedAt.compareTo(b.visitedAt),
+                    builderDelegate: defaultPagedChildBuilderDelegate<History>(
+                      onRetry: controller.getNextPage,
+                      onEmpty: const Text('Your history is empty'),
+                      onError: const Text('Failed to load history'),
+                      itemBuilder: (context, item, index) =>
+                          HistoryTile(entry: item),
+                    ),
+                  ),
             ),
           ),
         ),

@@ -30,48 +30,52 @@ class PostDetailGallery extends StatelessWidget {
         child: Consumer<PostController>(
           builder: (context, controller, child) => GalleryButtons(
             controller: pageController,
-            child: PagedPageView(
-              pageController: pageController,
-              pagingController: controller.paging,
-              builderDelegate: defaultPagedChildBuilderDelegate<Post>(
-                pagingController: controller.paging,
-                pageBuilder: (context, child) => Scaffold(
-                  appBar: const TransparentAppBar(child: DefaultAppBar()),
-                  body: child,
-                ),
-                onEmpty: const Text('No posts'),
-                onError: const Text('Failed to load posts'),
-                itemBuilder: (context, item, index) => SubScrollController(
-                  builder: (context, scrollController) =>
-                      PrimaryScrollController(
-                        controller: scrollController,
-                        child: PostDetail(
-                          post: item,
-                          onTapImage: () => Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => PostsRouteConnector(
-                                controller: controller,
-                                child: PostFullscreenGallery(
+            child: ListenableBuilder(
+              listenable: controller,
+              builder: (context, _) => PagedPageView(
+                pageController: pageController,
+                state: controller.state,
+                fetchNextPage: controller.getNextPage,
+                builderDelegate: defaultPagedChildBuilderDelegate<Post>(
+                  onRetry: controller.getNextPage,
+                  pageBuilder: (context, child) => Scaffold(
+                    appBar: const TransparentAppBar(child: DefaultAppBar()),
+                    body: child,
+                  ),
+                  onEmpty: const Text('No posts'),
+                  onError: const Text('Failed to load posts'),
+                  itemBuilder: (context, item, index) => SubScrollController(
+                    builder: (context, scrollController) =>
+                        PrimaryScrollController(
+                          controller: scrollController,
+                          child: PostDetail(
+                            post: item,
+                            onTapImage: () => Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => PostsRouteConnector(
                                   controller: controller,
-                                  initialPage: index,
-                                  onPageChanged: pageController.jumpToPage,
+                                  child: PostFullscreenGallery(
+                                    controller: controller,
+                                    initialPage: index,
+                                    onPageChanged: pageController.jumpToPage,
+                                  ),
                                 ),
                               ),
                             ),
                           ),
                         ),
-                      ),
+                  ),
                 ),
+                onPageChanged: (index) {
+                  onPageChanged?.call(index);
+                  preloadPostImages(
+                    context: context,
+                    index: index,
+                    posts: controller.items!,
+                    size: PostImageSize.sample,
+                  );
+                },
               ),
-              onPageChanged: (index) {
-                onPageChanged?.call(index);
-                preloadPostImages(
-                  context: context,
-                  index: index,
-                  posts: controller.items!,
-                  size: PostImageSize.sample,
-                );
-              },
             ),
           ),
         ),
