@@ -327,7 +327,7 @@ extension E621Post on Post {
 
         return {
           '${file('width').asIntOrThrow()}x${file('height').asIntOrThrow()}':
-              alternates('original', 'url').asStringOrThrow(),
+              ?alternates('original', 'url').asStringOrNull(),
           ...Map.fromEntries(
             alternates('samples').asMapOrEmpty().entries.map(
               (e) => MapEntry(
