@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:e1547/app/app.dart';
@@ -6,9 +7,7 @@ import 'package:e1547/follow/follow.dart';
 import 'package:e1547/identity/identity.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/logs/logs.dart';
-import 'package:e1547/post/post.dart';
 import 'package:e1547/settings/settings.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sub/flutter_sub.dart';
 import 'package:local_auth/local_auth.dart';
@@ -217,12 +216,11 @@ class SettingsPage extends StatelessWidget {
                         : null,
                     leading: const Icon(Icons.folder),
                     onTap: () async {
-                      String? result = await FilePicker.platform
-                          .getDirectoryPath(
-                            dialogTitle: 'Choose a download folder',
-                            initialDirectory: await getDefaultDownloadPath(),
-                          );
+                      String? result = await FileDownloader.pickDirectory(
+                        initial: value,
+                      );
                       if (result != null) {
+                        unawaited(FileDownloader.forgetDirectory(value));
                         settings.downloadPath.value = result;
                       }
                     },

@@ -1007,7 +1007,7 @@ packages:
     source: hosted
     version: "1.16.0"
   mime:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: mime
       sha256: "41a20518f0cb1256669420fdba0cd90d21561e560ac240f26ef8322e45bb7ed6"
@@ -1334,6 +1334,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.28.0"
+  saf_stream:
+    dependency: "direct main"
+    description:
+      name: saf_stream
+      sha256: f48b9f134d0cd1047a0f58539e967400f3a15846482911a2d892b1851385ce27
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.11.2"
+  saf_util:
+    dependency: "direct main"
+    description:
+      name: saf_util
+      sha256: b18e57677fc704918b2a67d7b5aa1c9c61dc5f3f2e7e70480576db77d18bec4a
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.10.0"
   safe_local_storage:
     dependency: transitive
     description:

@@ -64,6 +64,7 @@ dependencies:
   json_annotation: ^4.9.0
   logging: ^1.2.0
   meta: ^1.15.0
+  mime: ^2.0.0
   mutex: ^3.0.1
   notified_preferences: ^2.0.0
   package_info_plus: ^8.2.1
@@ -86,6 +87,8 @@ dependencies:
   workmanager: ^0.5.2
   drift_flutter: ^0.2.4
   media_scanner: ^2.2.0
+  saf_stream: ^0.11.2
+  saf_util: ^0.10.0
 
 dependency_overrides:
   infinite_scroll_pagination:

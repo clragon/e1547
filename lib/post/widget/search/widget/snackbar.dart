@@ -25,7 +25,7 @@ Future<void> postDownloadingNotification(
           cache: cache,
         );
         return true;
-      } on PostDownloadException catch (exception, stacktrace) {
+      } on FileDownloadException catch (exception, stacktrace) {
         logger.severe('Failed to download post', exception, stacktrace);
         return false;
       }

@@ -2,6 +2,7 @@ export 'action.dart';
 export 'controller.dart';
 export 'desktop.dart';
 export 'dio.dart';
+export 'download.dart';
 export 'export.dart';
 export 'hosts.dart';
 export 'listenable.dart';
