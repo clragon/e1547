@@ -96,8 +96,10 @@ class PostService {
       page: page,
       query: {
         ...?query,
-        'tags': (TagMap(query?['tags'])..['order'] = 'rank'),
-      }.toQuery(),
+        'tags': (TagMap.parse(
+          query?['tags'] ?? '',
+        )..['order'] = 'rank').toString(),
+      },
       limit: limit,
       force: force,
       cancelToken: cancelToken,
@@ -278,7 +280,7 @@ class PostService {
         page: page,
         query: {
           ...?query,
-          'tags': (TagMap(tags)..['fav'] = identity.username).toString(),
+          'tags': (TagMap.parse(tags)..['fav'] = identity.username).toString(),
         },
         ordered: false,
         force: force,

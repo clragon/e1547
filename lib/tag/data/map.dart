@@ -1,95 +1,190 @@
 import 'dart:collection';
 
 import 'package:collection/collection.dart';
-import 'package:e1547/interface/interface.dart';
-import 'package:e1547/tag/tag.dart';
+import 'package:flutter/widgets.dart';
 
-class TagMap extends MapBase<String, String> implements Map<String, String> {
-  TagMap(String? tags) : _node = TagNode.parse(tags);
-
-  TagMap.from(Map<String, String> map)
-    : _node = TagGroup(
-        children: map.entries.map((entry) {
-          final MapEntry(:key, :value) = entry;
-          final isGroup = RegExp(r'^\$\d+$').hasMatch(key);
-          return isGroup ? TagNode.parse(value) : TagNode.parse('$key:$value');
-        }).toList(),
-      );
-
-  TagNode _node;
-  TagNode get node => _node;
-
-  Iterable<MapEntry<String, TagNode>> _entries(TagNode node) sync* {
-    int groupIndex = 0;
-    for (final child in node.children) {
-      yield switch (child) {
-        TagAtom atom => MapEntry(atom.name, atom),
-        TagGroup group => MapEntry('\$${groupIndex++}', group),
-      };
-    }
+/// A collection string tags.
+///
+/// Entries are comprised of a name and an optional value.
+/// Entries with values are sorted before entries without values.
+/// Entries that have no value will return an empty string when accessed.
+///
+/// A key may be present multiple times with different values.
+/// When accessing a key, the first value is returned.
+/// To access all values of a key, use [toMapAll].
+class TagMap extends MapBase<String, String> {
+  /// Creates a tag map.
+  /// Optionally, a map can be provided to copy values from.
+  factory TagMap([Map<String, Object?>? other]) {
+    return TagMap.fromIterable(other?.entries ?? []);
   }
 
-  TagNode _assemble(Iterable<MapEntry<String, TagNode>> entries) =>
-      TagGroup(children: entries.map((e) => e.value).toList());
+  /// Creates a tag map internally.
+  ///
+  /// Entries are stored in a [SplayTreeSet] of [TagValue]s to ensure order.
+  TagMap._() : _entries = SplayTreeSet<TagValue>();
+
+  /// Creates a tag map from an iterable of entries.
+  factory TagMap.fromIterable(Iterable<MapEntry<String, Object?>> other) {
+    TagMap result = TagMap._();
+    for (final entry in other) {
+      result._entries.add(TagValue(entry.key, entry.value?.toString()));
+    }
+    return result;
+  }
+
+  /// Creates a tag map from a string.
+  ///
+  /// Input is expected to be in the format `name:value name2`.
+  factory TagMap.parse(String tags) {
+    TagMap result = TagMap();
+    result._entries.addAll(
+      tags.trim().split(' ').where((e) => e.isNotEmpty).map(TagValue.parse),
+    );
+    return result;
+  }
+
+  /// Creates a query map from a decoded JSON map.
+  ///
+  /// The JSON map is expected to be in the format:
+  /// ```json
+  /// {
+  ///  "name": "value",
+  ///  "name2": ["value1", "value2"],
+  /// }
+  /// ```
+  factory TagMap.fromJson(Map<String, dynamic> json) {
+    List<MapEntry<String, String>> entries = [];
+    for (final entry in json.entries) {
+      if (entry.value is String) {
+        entries.add(MapEntry(entry.key, entry.value));
+      } else if (entry.value is List) {
+        for (final value in entry.value) {
+          if (value is! String) {
+            throw FormatException(
+              'Expected a string or list of strings, got ${value.runtimeType}',
+              json,
+            );
+          }
+          entries.add(MapEntry(entry.key, value));
+        }
+      }
+    }
+    return TagMap.fromIterable(entries);
+  }
+
+  Map<String, dynamic> toJson() {
+    Map<String, dynamic> result = {};
+    for (final tag in _entries) {
+      if (result.containsKey(tag.name)) {
+        if (result[tag.name] is String) {
+          result[tag.name] = [result[tag.name], tag.value];
+        } else {
+          result[tag.name].add(tag.value);
+        }
+      } else {
+        result[tag.name] = tag.value;
+      }
+    }
+    return result;
+  }
+
+  final Set<TagValue> _entries;
+
+  List<String> get tags => _entries.map((tag) => tag.toString()).toList();
 
   @override
-  String? operator [](Object? key) => switch (_entries(
-    _node,
-  ).firstWhereOrNull((e) => e.key == key.toString())?.value) {
-    TagAtom atom => atom.value,
-    TagGroup group => group.toString(),
-    null => null,
-  };
+  String? operator [](Object? key) =>
+      _entries.firstWhereOrNull((tag) => tag.name == key)?.value;
 
   @override
   void operator []=(String key, String? value) {
-    final isGroup = RegExp(r'^\$\d+$').hasMatch(key);
-    final map = _entries(_node).toMap();
-
-    if (value == null) {
-      map.remove(key);
-    } else {
-      map[key] = isGroup ? TagNode.parse(value) : TagAtom(key, value);
-    }
-
-    _node = _assemble(map.entries);
+    remove(key);
+    _entries.add(TagValue(key, value));
   }
 
-  @override
-  void clear() => _node = const TagGroup(children: []);
-
-  @override
-  Iterable<String> get keys => _entries(_node).map((e) => e.key);
-
-  void add(String tag) {
-    final atom = TagAtom.parse(tag);
-    final map = _entries(_node).toMap();
-    map[atom.name] = atom;
-    _node = _assemble(map.entries);
-  }
+  void add(String key, [String? value]) => this[key] = value;
 
   @override
   String? remove(Object? key) {
-    final map = _entries(_node).toMap();
-    final removed = map.remove(key.toString());
-    _node = _assemble(map.entries);
-    return switch (removed) {
-      TagAtom atom => atom.value,
-      TagGroup group => group.toString(),
-      null => null,
-    };
+    for (final tag in _entries) {
+      if (tag.name == key) {
+        _entries.remove(tag);
+        return tag.value;
+      }
+    }
+    return null;
   }
 
   @override
-  String toString() => _node.toString();
+  void clear() => _entries.clear();
+
+  @override
+  Iterable<MapEntry<String, String>> get entries =>
+      _entries.map((tag) => MapEntry(tag.name, tag.value));
+
+  @override
+  Iterable<String> get keys => _entries.map((tag) => tag.name);
+
+  @override
+  Iterable<String> get values => _entries.map((tag) => tag.value);
+
+  @override
+  String toString() => _entries.map((tag) => tag.toString()).join(' ');
+
+  /// Returns a new tag map with the same values.
+  Map<String, String?> toMap() => TagMap(this);
+
+  /// Returns a new tag map with all values.
+  Map<String, List<String>> toMapAll() {
+    Map<String, List<String>> result = {};
+    for (final tag in _entries) {
+      if (result.containsKey(tag.name)) {
+        result[tag.name]!.add(tag.value);
+      } else {
+        result[tag.name] = [tag.value];
+      }
+    }
+    return result;
+  }
 }
 
-extension on TagAtom {
-  String get name {
-    final buffer = StringBuffer();
-    if (optional) buffer.write('~');
-    if (negated) buffer.write('-');
-    buffer.write(key);
-    return buffer.toString();
+/// Represents a tag with a name and an optional value.
+///
+/// Can be parsed from a string in the format `name:value`.
+@immutable
+class TagValue implements Comparable<TagValue> {
+  const TagValue(this.name, [String? value]) : value = value ?? '';
+
+  factory TagValue.parse(String tag) {
+    List<String> result = tag.split(':');
+    String? value;
+    if (result.length > 1) {
+      value = result.sublist(1).join(':');
+    }
+    return TagValue(result[0], value);
+  }
+
+  final String name;
+  final String value;
+
+  @override
+  String toString() => value.isEmpty ? name : '$name:$value';
+
+  @override
+  bool operator ==(Object other) =>
+      other is TagValue && name == other.name && value == other.value;
+
+  @override
+  int get hashCode => Object.hash(name, value);
+
+  /// Compares this value to another value.
+  @override
+  int compareTo(TagValue other) {
+    if (value.isEmpty && other.value.isNotEmpty) return 1;
+    if (value.isNotEmpty && other.value.isEmpty) return -1;
+    if (name != other.name) return name.compareTo(other.name);
+    if (value.isEmpty && other.value.isEmpty) return 0;
+    return value.compareTo(other.value);
   }
 }

@@ -99,9 +99,7 @@ class TagSearchInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<String> tags = TagNode.parse(
-      tag,
-    ).atoms.map((e) => e.toString()).toSet().toList();
+    List<String> tags = TagMap.parse(tag).toString().split(' ');
 
     if (tags.length > 1) {
       return SingleChildScrollView(
