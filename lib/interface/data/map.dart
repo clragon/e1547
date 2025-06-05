@@ -1,3 +1,5 @@
+import 'package:collection/collection.dart';
+
 typedef QueryMap = Map<String, String>;
 
 extension QueryMapping on Map<String, dynamic> {
@@ -5,11 +7,11 @@ extension QueryMapping on Map<String, dynamic> {
   ///
   /// Null values are omitted.
   /// All other values are converted to strings.
-  QueryMap toQuery() => Map.fromEntries(
-    entries
-        .where((entry) => entry.value != null)
-        .map((entry) => MapEntry(entry.key, _stringify(entry.value))),
-  );
+  QueryMap toQuery() => entries
+      .where((entry) => entry.value != null)
+      .map((entry) => MapEntry(entry.key, _stringify(entry.value)))
+      .sorted((a, b) => a.key.compareTo(b.key))
+      .toMap();
 
   String _stringify(Object? value) => switch (value) {
     List e => e.map(_stringify).join(','),

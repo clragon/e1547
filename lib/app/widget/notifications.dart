@@ -110,7 +110,7 @@ class _NotificationHandlerState extends State<NotificationHandler> {
           widget.navigatorKey.currentState!.push(
             MaterialPageRoute(
               builder: (context) => PostsSearchPage(
-                query: TagMap(notification!.query!),
+                query: notification!.query!,
                 orderPoolsByOldest: false,
                 readerMode: poolRegex().hasMatch(
                   notification.query!['tags'] ?? '',

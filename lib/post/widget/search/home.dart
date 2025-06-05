@@ -2,7 +2,6 @@ import 'package:e1547/client/client.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/settings/settings.dart';
-import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sub/flutter_sub.dart';
 
@@ -18,7 +17,7 @@ class _HomePageState extends State<HomePage> with RouterDrawerEntryWidget {
   Widget build(BuildContext context) {
     Client client = context.watch<Client>();
     return PostProvider(
-      query: TagMap({'tags': client.traits.value.homeTags}),
+      query: {'tags': client.traits.value.homeTags},
       child: Consumer<PostController>(
         builder: (context, controller, child) =>
             PostsControllerHistoryConnector(

@@ -1,4 +1,3 @@
-import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
 
 final List<String> wikiMetaTags = List.unmodifiable([
@@ -6,8 +5,6 @@ final List<String> wikiMetaTags = List.unmodifiable([
   'e621:',
   'howto:',
 ]);
-
-String sortTags(String tags) => TagMap.parse(tags).toString();
 
 /// Removes prefixes from tags.
 String tagToRaw(String tags) => tags
@@ -25,7 +22,6 @@ String tagToTitle(String tags) => tagToName(tagToRaw(tags));
 
 bool tagIsSingle(String tags) => !(tags.contains(' ') || tags.contains(':'));
 
-// TODO: Move this to E621Client, then make a client for this
 enum TagCategory {
   general,
   species,

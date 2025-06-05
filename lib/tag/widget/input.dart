@@ -52,7 +52,6 @@ class TagInput extends StatelessWidget {
       create: TextEditingController.new,
       builder: (context, controller) => SubValue(
         create: () {
-          controller.text = sortTags(controller.text);
           if (controller.text.isNotEmpty) {
             controller.text += ' ';
           }
@@ -61,7 +60,7 @@ class TagInput extends StatelessWidget {
         keys: [controller],
         builder: (context, controller) => AutocompleteTextField<Tag>(
           controller: controller,
-          submit: (result) => submit(sortTags(result)),
+          submit: submit,
           direction: direction,
           readOnly: readOnly,
           labelText: labelText,
@@ -78,9 +77,13 @@ class TagInput extends StatelessWidget {
             int selection = findTag(tags, controller.selection.extent.offset);
             String tag = tags[selection];
             String operator = tag[0];
-            if (!['-', '~'].contains(operator)) operator = '';
+            if (['-', '~'].contains(operator)) {
+              tags[selection] = tag.substring(1);
+            } else {
+              operator = '';
+            }
             tags[selection] = operator + suggestion.name;
-            controller.text = '${TagMap.parse(tags.join(' '))} ';
+            controller.text = '${tags.join(' ')} ';
             controller.setFocusToEnd();
           },
           itemBuilder: (context, value) => Row(

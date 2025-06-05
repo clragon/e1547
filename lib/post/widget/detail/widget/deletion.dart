@@ -3,7 +3,6 @@ import 'package:e1547/flag/flag.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/markup/markup.dart';
 import 'package:e1547/post/post.dart';
-import 'package:e1547/tag/data/map.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sub/flutter_sub.dart';
 
@@ -19,11 +18,11 @@ class DeletionDisplay extends StatelessWidget {
       create: () async {
         List<PostFlag> flags = await context.read<Client>().flags.list(
           limit: 1,
-          query: TagMap({
+          query: {
             'type': 'deletion',
             'search[post_id]': post.id,
             'search[is_resolved]': 'false',
-          }),
+          }.toQuery(),
         );
         return flags.first;
       },

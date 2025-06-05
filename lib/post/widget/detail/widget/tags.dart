@@ -116,7 +116,7 @@ bool onPostTagsEdit(
         client.tags.page(
           page: 1,
           limit: 1,
-          query: TagMap({'search[name_matches]': tag}),
+          query: {'search[name_matches]': tag},
         ),
         const Duration(milliseconds: 200),
       );

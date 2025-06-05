@@ -11,7 +11,7 @@ class FlagService {
   Future<List<PostFlag>> list({
     int? page,
     int? limit,
-    Map<String, dynamic>? query,
+    QueryMap? query,
     bool? force,
     CancelToken? cancelToken,
   }) => dio

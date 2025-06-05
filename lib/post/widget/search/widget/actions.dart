@@ -184,7 +184,7 @@ class RemoveTagAction extends StatelessWidget {
       label: const Text('Remove'),
       onTap: () {
         Navigator.of(context).maybePop();
-        TagMap result = TagMap(controller.query);
+        QueryMap result = Map.from(controller.query);
         result['tags'] = (TagMap.parse(
           result['tags'] ?? '',
         )..remove(tag)).toString();
@@ -207,7 +207,7 @@ class AddTagAction extends StatelessWidget {
       label: const Text('Add'),
       onTap: () {
         Navigator.of(context).maybePop();
-        TagMap result = TagMap(controller.query);
+        QueryMap result = Map.from(controller.query);
         result['tags'] = (TagMap.parse(
           result['tags'] ?? '',
         )..add(tag)).toString();

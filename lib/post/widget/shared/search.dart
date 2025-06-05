@@ -54,7 +54,7 @@ class EditTagPrompt extends StatelessWidget {
       constraints: BoxConstraints(minWidth: isDesktop ? 600 : 0),
       child: Material(
         child: PromptFilterList(
-          tags: TagMap({'tags': tag}),
+          tags: {'tags': tag}.toQuery(),
           onSubmit: (value) => onSubmit(value['tags']!),
           submitIcon: isDesktop ? const Icon(Icons.add) : null,
           filters: [
