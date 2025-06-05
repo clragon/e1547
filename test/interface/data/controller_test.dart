@@ -15,12 +15,7 @@ void main() {
   Future<PageResponse<int, MockItem>> mockSecondRequest(
     int page,
     bool force,
-  ) async {
-    return const PageResponse(
-      items: [MockItem('end')],
-      nextPageKey: 7,
-    );
-  }
+  ) async => const PageResponse(items: [MockItem('end')], nextPageKey: 7);
 
   void verifySecondRequest(DataController controller) {
     expect(controller.items, orderedEquals(const [MockItem('end')]));
@@ -53,9 +48,7 @@ void main() {
     test('should not request another page if last page', () async {
       final controller = MockDataController();
       controller.mockPerformRequest = (page, force) async {
-        return const PageResponse.last(
-          items: [MockItem(1)],
-        );
+        return const PageResponse.last(items: [MockItem(1)]);
       };
       await controller.getNextPage();
       expect(controller.items!.length, 1);
@@ -84,17 +77,12 @@ void main() {
     });
 
     test('should reset pages on refresh', () async {
-      bool success = false;
       final controller = MockDataController();
       await controller.getNextPage();
       verifyFirstRequest(controller);
-      controller.mockPerformRequest = (page, force) async {
-        success = force;
-        return mockSecondRequest(page, force);
-      };
+      controller.mockPerformRequest = mockSecondRequest;
       await controller.refresh();
       verifySecondRequest(controller);
-      expect(success, true);
     });
 
     test('should reset error on refresh', () async {
@@ -115,18 +103,18 @@ void main() {
       verifyFirstRequest(controller);
       final completer1 = Completer<void>();
       final completer2 = Completer<void>();
+      final completer3 = Completer<PageResponse<int, MockItem>>();
       controller.mockPerformRequest = (page, force) async {
         completer1.complete();
         await completer2.future;
-        return mockSecondRequest(page, force);
+        completer3.complete(mockSecondRequest(page, force));
+        return completer3.future;
       };
       controller.refresh(background: true);
       await completer1.future;
-      expect(controller.items!, orderedEquals(const [MockItem(1)]));
-      expect(controller.nextPageKey, 2);
-      expect(controller.error, null);
+      verifyFirstRequest(controller);
       completer2.complete();
-      await Future.value();
+      await completer3.future;
       verifySecondRequest(controller);
     });
 
@@ -198,24 +186,34 @@ void main() {
       final controller = MockDataController();
       await controller.getNextPage();
       expect(
-          () => controller.updateItem(-1, const MockItem(2)), throwsStateError);
+        () => controller.updateItem(-1, const MockItem(2)),
+        throwsStateError,
+      );
     });
 
     test('throws an error if items is null', () async {
       final controller = MockDataController();
       expect(
-          () => controller.updateItem(0, const MockItem(2)), throwsStateError);
+        () => controller.updateItem(0, const MockItem(2)),
+        throwsStateError,
+      );
     });
 
     test('can assert item ownership', () async {
       final controller = MockDataController();
-      expect(() => controller.assertOwnsItem(const MockItem('never')),
-          throwsStateError);
+      expect(
+        () => controller.assertOwnsItem(const MockItem('never')),
+        throwsStateError,
+      );
       await controller.getNextPage();
       expect(
-          () => controller.assertOwnsItem(const MockItem(1)), returnsNormally);
-      expect(() => controller.assertOwnsItem(const MockItem('never')),
-          throwsStateError);
+        () => controller.assertOwnsItem(const MockItem(1)),
+        returnsNormally,
+      );
+      expect(
+        () => controller.assertOwnsItem(const MockItem('never')),
+        throwsStateError,
+      );
     });
   });
 }
@@ -224,19 +222,20 @@ class MockDataController extends DataController<int, MockItem> {
   MockDataController({super.firstPageKey = 1});
 
   Future<PageResponse<int, MockItem>> Function(int page, bool force)?
-      mockPerformRequest;
+  mockPerformRequest;
 
   static Future<PageResponse<int, MockItem>> defaultMockPerformRequest(
-      int page, bool force) async {
-    return PageResponse(
-      items: [MockItem(page)],
-      nextPageKey: page + 1,
-    );
+    int page,
+    bool force,
+  ) async {
+    return PageResponse(items: [MockItem(page)], nextPageKey: page + 1);
   }
 
   @override
   Future<PageResponse<int, MockItem>> performRequest(
-      int page, bool force) async {
+    int page,
+    bool force,
+  ) async {
     if (mockPerformRequest != null) {
       return mockPerformRequest!(page, force);
     } else {

@@ -101,7 +101,7 @@ class MockPageClientDataController extends PageClientDataController<MockItem> {
   Future<List<MockItem>> Function(int page, bool force)? mockFetch;
 
   static Future<List<MockItem>> Function(int page, bool force)
-      defaultMockFetch = (page, force) async => [MockItem(page)];
+  defaultMockFetch = (page, force) async => [MockItem(page)];
 
   @override
   Future<void> evictCache() => super.evictCache();
