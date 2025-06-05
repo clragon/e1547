@@ -6,7 +6,7 @@ class TagGrammarDefinition extends GrammarDefinition<TagNode> {
   Parser<TagNode> start() => ref0(root).end();
 
   Parser<TagNode> root() =>
-      ref0(tagNode).starSeparated(whitespace().plus()).map((separated) {
+      ref0(tagNode).starSeparated(whitespace().plus()).trim().map((separated) {
         final nodes = separated.elements;
         if (nodes.isEmpty) return const TagGroup(children: []);
         if (nodes.length == 1) return nodes[0];

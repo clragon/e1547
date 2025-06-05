@@ -185,9 +185,7 @@ class RemoveTagAction extends StatelessWidget {
       onTap: () {
         Navigator.of(context).maybePop();
         QueryMap result = Map.from(controller.query);
-        result['tags'] = (TagMap.parse(
-          result['tags'] ?? '',
-        )..remove(tag)).toString();
+        result['tags'] = (TagMap(result['tags'])..remove(tag)).toString();
         controller.query = result;
       },
     );
@@ -208,9 +206,7 @@ class AddTagAction extends StatelessWidget {
       onTap: () {
         Navigator.of(context).maybePop();
         QueryMap result = Map.from(controller.query);
-        result['tags'] = (TagMap.parse(
-          result['tags'] ?? '',
-        )..add(tag)).toString();
+        result['tags'] = (TagMap(result['tags'])..add(tag)).toString();
         controller.query = result;
       },
     );
@@ -235,9 +231,7 @@ class SubtractTagAction extends StatelessWidget {
       onTap: () {
         Navigator.of(context).maybePop();
         QueryMap result = Map.from(controller.query);
-        result['tags'] = (TagMap.parse(
-          result['tags'] ?? '',
-        )..add('-$tag')).toString();
+        result['tags'] = (TagMap(result['tags'])..add('-$tag')).toString();
         controller.query = result;
       },
     );
@@ -263,9 +257,7 @@ class TagSearchActions extends StatelessWidget {
           return const SizedBox.shrink();
         }
 
-        bool isSearched = TagMap.parse(
-          controller.query['tags'] ?? '',
-        ).containsKey(tag);
+        bool isSearched = TagMap(controller.query['tags']).containsKey(tag);
 
         if (isSearched) {
           return RemoveTagAction(controller: controller, tag: tag);

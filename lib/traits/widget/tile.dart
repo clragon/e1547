@@ -24,9 +24,10 @@ class DenylistTile extends StatelessWidget {
             children: [
               Expanded(
                 child: Wrap(
-                  children: TagMap.parse(
-                    tag,
-                  ).tags.map(DenyListTagCard.new).toList(),
+                  children: TagNode.parse(tag).atoms
+                      .map((e) => e.toString())
+                      .map(DenyListTagCard.new)
+                      .toList(),
                 ),
               ),
               Column(

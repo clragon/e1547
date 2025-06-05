@@ -1,8 +1,3 @@
-/// TODO: Make this easier to use
-/// Currently, this provides fine parsing, however, manipulation of tags throughout the app should
-/// be handled by some unified interface. Right now, this is too unwieldy to use to fill that role.
-library;
-
 import 'package:collection/collection.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:meta/meta.dart';
@@ -53,7 +48,8 @@ sealed class TagNode implements Comparable<TagNode> {
 }
 
 final class TagAtom extends TagNode {
-  const TagAtom(this.key, this.value, {super.negated, super.optional});
+  const TagAtom(this.key, String? value, {super.negated, super.optional})
+    : value = value == '' ? null : value;
 
   factory TagAtom.parse(String tag) {
     final node = TagNode.parse(tag);
@@ -112,7 +108,7 @@ final class TagAtom extends TagNode {
 
     buffer.write(key);
 
-    if (value != null) {
+    if (value != null && value!.isNotEmpty) {
       buffer.write(':');
       final needsQuotes = value!.contains(' ');
       if (needsQuotes) buffer.write('"');
@@ -187,96 +183,8 @@ extension _TagJoining on Iterable<TagNode> {
 }
 
 extension TagNodeOperations on TagNode {
-  /// Returns true if the tag exists at the top level.
-  bool contains(TagNode tag) {
-    if (this == tag) return true;
-    if (this is TagGroup) {
-      return (this as TagGroup).children.contains(tag);
-    }
-    return false;
-  }
-
-  /// Adds a tag to a group or creates a group with self and the tag.
-  @useResult
-  TagNode add(TagNode tag) => switch (this) {
-    final TagGroup group => group.copyWith(children: [...group.children, tag]),
-    final TagAtom atom => TagGroup(children: [atom, tag]),
+  List<TagNode> get children => switch (this) {
+    final TagGroup group => group.children,
+    final TagAtom atom => [atom],
   };
-
-  /// Removes the given tag from top-level children if found.
-  @useResult
-  TagNode remove(TagNode tag) => switch (this) {
-    final TagAtom atom => atom == tag ? const TagGroup(children: []) : this,
-    final TagGroup group => group.copyWith(
-      children: group.children.where((c) => c != tag).toList(),
-    ),
-  };
-
-  /// Removes a tag by its key from the top-level children if found.
-  @useResult
-  TagNode removeKey(String key) => switch (this) {
-    final TagAtom atom => atom.key == key ? const TagGroup(children: []) : this,
-    final TagGroup group => group.copyWith(
-      children: group.children
-          .where(
-            (node) => switch (node) {
-              TagAtom() when node.key != key => true,
-              _ => false,
-            },
-          )
-          .toList(),
-    ),
-  };
-
-  /// Finds the value of a tag by its key at the top level.
-  String findValue(String key) =>
-      switch (this) {
-        final TagAtom atom => atom.key == key ? atom.value : null,
-        final TagGroup group =>
-          group.children
-              .map(
-                (node) => switch (node) {
-                  TagAtom() when node.key == key => node.value,
-                  _ => null,
-                },
-              )
-              .firstWhereOrNull((value) => value?.isNotEmpty ?? false),
-      } ??
-      '';
-
-  /// Replaces the value of a tag by its key if it exists, or adds it if not.
-  @useResult
-  TagNode replaceValue(String key, String? newValue) => switch (this) {
-    final TagAtom atom =>
-      atom.key == key
-          ? atom.copyWith(value: newValue)
-          : add(TagAtom(key, newValue)),
-    final TagGroup group =>
-      group.contains(TagAtom(key, newValue))
-          ? group.copyWith(
-              children: group.children
-                  .map(
-                    (node) => switch (node) {
-                      TagAtom() when node.key == key => node.copyWith(
-                        value: newValue,
-                      ),
-                      _ => node,
-                    },
-                  )
-                  .toList(),
-            )
-          : group.add(TagAtom(key, newValue)),
-  };
-
-  @useResult
-  TagNode operator +(TagNode other) => add(other);
-  @useResult
-  TagNode operator -(TagNode other) => remove(other);
-  @useResult
-  TagNode operator <<(TagAtom tag) => replaceValue(tag.key, tag.value);
-}
-
-extension TagAtomOperations on TagAtom {
-  @useResult
-  TagNode operator >>(TagNode tag) => tag.replaceValue(key, value);
 }

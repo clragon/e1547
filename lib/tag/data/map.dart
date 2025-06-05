@@ -1,120 +1,95 @@
 import 'dart:collection';
 
 import 'package:collection/collection.dart';
+import 'package:e1547/interface/interface.dart';
 import 'package:e1547/tag/tag.dart';
-import 'package:meta/meta.dart';
 
-/// Tiny utility class for quickly manipulating the top level of a tag string.
-///
-/// Note for any operation, tags inside a nested group will be entirely ignored.
-/// However, the full structure is preserved when converting back to a string.
 class TagMap extends MapBase<String, String> implements Map<String, String> {
   TagMap(String? tags) : _node = TagNode.parse(tags);
+
+  TagMap.from(Map<String, String> map)
+    : _node = TagGroup(
+        children: map.entries.map((entry) {
+          final MapEntry(:key, :value) = entry;
+          final isGroup = RegExp(r'^\$\d+$').hasMatch(key);
+          return isGroup ? TagNode.parse(value) : TagNode.parse('$key:$value');
+        }).toList(),
+      );
 
   TagNode _node;
   TagNode get node => _node;
 
-  @override
-  String? operator [](Object? key) => node.findValue(key.toString());
+  Iterable<MapEntry<String, TagNode>> _entries(TagNode node) sync* {
+    int groupIndex = 0;
+    for (final child in node.children) {
+      yield switch (child) {
+        TagAtom atom => MapEntry(atom.name, atom),
+        TagGroup group => MapEntry('\$${groupIndex++}', group),
+      };
+    }
+  }
+
+  TagNode _assemble(Iterable<MapEntry<String, TagNode>> entries) =>
+      TagGroup(children: entries.map((e) => e.value).toList());
 
   @override
-  void operator []=(String key, String? value) =>
-      _node = node.replaceValue(key, value ?? '');
+  String? operator [](Object? key) => switch (_entries(
+    _node,
+  ).firstWhereOrNull((e) => e.key == key.toString())?.value) {
+    TagAtom atom => atom.value,
+    TagGroup group => group.toString(),
+    null => null,
+  };
+
+  @override
+  void operator []=(String key, String? value) {
+    final isGroup = RegExp(r'^\$\d+$').hasMatch(key);
+    final map = _entries(_node).toMap();
+
+    if (value == null) {
+      map.remove(key);
+    } else {
+      map[key] = isGroup ? TagNode.parse(value) : TagAtom(key, value);
+    }
+
+    _node = _assemble(map.entries);
+  }
 
   @override
   void clear() => _node = const TagGroup(children: []);
 
   @override
-  Iterable<String> get keys => switch (node) {
-    final TagAtom atom => [atom.key],
-    final TagGroup group => group.children.whereType<TagAtom>().map(
-      (atom) => atom.key,
-    ),
-  };
+  Iterable<String> get keys => _entries(_node).map((e) => e.key);
+
+  void add(String tag) {
+    final atom = TagAtom.parse(tag);
+    final map = _entries(_node).toMap();
+    map[atom.name] = atom;
+    _node = _assemble(map.entries);
+  }
 
   @override
   String? remove(Object? key) {
-    TagAtom? target = switch (node) {
-      final TagAtom atom => atom.key == key ? atom : null,
-      final TagGroup group =>
-        group.children.firstWhereOrNull((c) => c is TagAtom && c.key == key)
-            as TagAtom?,
+    final map = _entries(_node).toMap();
+    final removed = map.remove(key.toString());
+    _node = _assemble(map.entries);
+    return switch (removed) {
+      TagAtom atom => atom.value,
+      TagGroup group => group.toString(),
+      null => null,
     };
-
-    if (target == null) return null;
-
-    _node = node.remove(target);
-    return target.value;
   }
 
   @override
   String toString() => _node.toString();
 }
 
-extension _TagNodeOperations on TagNode {
-  /// Returns true if the tag exists at the top level.
-  bool contains(TagNode tag) {
-    if (this == tag) return true;
-    if (this is TagGroup) {
-      return (this as TagGroup).children.contains(tag);
-    }
-    return false;
+extension on TagAtom {
+  String get name {
+    final buffer = StringBuffer();
+    if (optional) buffer.write('~');
+    if (negated) buffer.write('-');
+    buffer.write(key);
+    return buffer.toString();
   }
-
-  /// Adds a tag to a group or creates a group with self and the tag.
-  @useResult
-  TagNode add(TagNode tag) => switch (this) {
-    final TagGroup group => group.copyWith(children: [...group.children, tag]),
-    final TagAtom atom => TagGroup(children: [atom, tag]),
-  };
-
-  /// Removes the given tag from top-level children if found.
-  @useResult
-  // ignore: unused_element
-  TagNode remove(TagNode tag) => switch (this) {
-    final TagAtom atom => atom == tag ? const TagGroup(children: []) : this,
-    final TagGroup group => group.copyWith(
-      children: group.children.where((c) => c != tag).toList(),
-    ),
-  };
-
-  /// Finds the value of a tag by its key at the top level.
-  String findValue(String key) =>
-      switch (this) {
-        final TagAtom atom => atom.key == key ? atom.value : null,
-        final TagGroup group =>
-          group.children
-              .map(
-                (node) => switch (node) {
-                  TagAtom() when node.key == key => node.value,
-                  _ => null,
-                },
-              )
-              .firstWhereOrNull((value) => value?.isNotEmpty ?? false),
-      } ??
-      '';
-
-  /// Replaces the value of a tag by its key if it exists, or adds it if not.
-  @useResult
-  TagNode replaceValue(String key, String? newValue) => switch (this) {
-    final TagAtom atom =>
-      atom.key == key
-          ? atom.copyWith(value: newValue)
-          : add(TagAtom(key, newValue)),
-    final TagGroup group =>
-      group.contains(TagAtom(key, newValue))
-          ? group.copyWith(
-              children: group.children
-                  .map(
-                    (node) => switch (node) {
-                      TagAtom() when node.key == key => node.copyWith(
-                        value: newValue,
-                      ),
-                      _ => node,
-                    },
-                  )
-                  .toList(),
-            )
-          : group.add(TagAtom(key, newValue)),
-  };
 }
