@@ -5,12 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:share_plus/share_plus.dart' as plus;
+import 'package:share_plus/share_plus.dart';
 
 abstract final class Share {
   static Future<void> text(BuildContext context, String text) async {
     if (Platform.isAndroid || Platform.isIOS) {
-      await plus.Share.share(text);
+      await SharePlus.instance.share(ShareParams(text: text));
     } else {
       await clipboard(context, text);
     }
@@ -29,16 +29,16 @@ abstract final class Share {
         ),
       );
       await file.writeAsString(text);
-      await plus.Share.shareXFiles([plus.XFile(file.path)]);
+      await SharePlus.instance.share(ShareParams(files: [XFile(file.path)]));
     } else {
       return clipboard(context, text);
     }
   }
 
   static Future<void> file(BuildContext context, String path) async {
-    plus.XFile file = plus.XFile(path);
+    XFile file = XFile(path);
     if (Platform.isAndroid || Platform.isIOS) {
-      await plus.Share.shareXFiles([file]);
+      await SharePlus.instance.share(ShareParams(files: [file]));
     } else {
       String content = await file.readAsString();
       if (!context.mounted) return;
