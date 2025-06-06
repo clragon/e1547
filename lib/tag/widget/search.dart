@@ -71,6 +71,7 @@ class _PromptFilterListState extends State<PromptFilterList> {
   }
 
   void onSubmit(QueryMap tags) {
+    setState(() => this.tags = tags);
     onChanged(tags);
     widget.onSubmit?.call(tags);
   }
@@ -128,23 +129,25 @@ class SubTextValue extends StatefulWidget {
 }
 
 class _SubTextValueState extends State<SubTextValue> {
-  late TextEditingController controller = TextEditingController(
-    text: widget.value,
-  );
+  late final controller = TextEditingController(text: widget.value);
+
   bool controllerUpdate = false;
   bool valueUpdate = false;
   bool isUpdating = false;
+  String? _lastSentValue;
 
   void updateController() {
-    if (controllerUpdate) return;
-    controllerUpdate = true;
-    processUpdate();
+    if (!controllerUpdate) {
+      controllerUpdate = true;
+      processUpdate();
+    }
   }
 
   void updateValue() {
-    if (valueUpdate) return;
-    valueUpdate = true;
-    processUpdate();
+    if (!valueUpdate) {
+      valueUpdate = true;
+      processUpdate();
+    }
   }
 
   void processUpdate() {
@@ -152,23 +155,62 @@ class _SubTextValueState extends State<SubTextValue> {
     isUpdating = true;
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      String controllerText = controller.text;
-      String value = widget.value ?? '';
-      if (controllerUpdate) {
-        SubTextValueShouldUpdate? shouldUpdate = widget.shouldUpdate;
-        shouldUpdate ??= (a, b) => a != b;
-        if (shouldUpdate(controllerText, value)) {
-          if (controllerText != controller.text) return;
-          controller.text = value;
-        }
-      } else if (valueUpdate) {
-        widget.onChanged?.call(controllerText);
-      }
+      if (controllerUpdate) _applyIncomingValue();
+      if (valueUpdate) _sendOutgoingValue();
 
       controllerUpdate = false;
       valueUpdate = false;
       isUpdating = false;
     });
+  }
+
+  void _applyIncomingValue() {
+    final incoming = widget.value ?? '';
+    final local = controller.text;
+
+    if (_lastSentValue == incoming) {
+      _lastSentValue = null;
+      return;
+    }
+
+    final shouldUpdate = widget.shouldUpdate ?? (a, b) => a != b;
+    if (!shouldUpdate(local, incoming)) return;
+    if (local != controller.text) return;
+
+    final oldValue = controller.value;
+    controller.value = TextEditingValue(
+      text: incoming,
+      selection: _calculateNewSelection(oldValue, incoming),
+    );
+  }
+
+  void _sendOutgoingValue() {
+    final local = controller.text;
+    _lastSentValue = local;
+    widget.onChanged?.call(local);
+  }
+
+  TextSelection _calculateNewSelection(
+    TextEditingValue oldValue,
+    String newText,
+  ) {
+    final baseOffset = oldValue.selection.baseOffset;
+    final extentOffset = oldValue.selection.extentOffset;
+
+    if (baseOffset < 0 || extentOffset < 0) {
+      return TextSelection.collapsed(offset: newText.length);
+    }
+
+    return TextSelection(
+      baseOffset: baseOffset.clamp(0, newText.length),
+      extentOffset: extentOffset.clamp(0, newText.length),
+    );
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
   }
 
   @override
@@ -181,7 +223,7 @@ class _SubTextValueState extends State<SubTextValue> {
       keys: [widget.value],
       child: SubListener(
         listenable: controller,
-        listener: () => updateValue(),
+        listener: updateValue,
         builder: (context) => widget.builder(context, controller),
       ),
     );
