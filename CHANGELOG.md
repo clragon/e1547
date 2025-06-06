@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Added
+- support for tag group searches
+- blacklist comments support
+
+### Fixed
+- iOS background process crash
+- downloads on some android devices
+- some posts not displaying
+
 ## [20.1.1+97] - 2025-05-19
 ### Fixed
 - Downloading and showing images in the photo gallery on Android
@@ -898,6 +908,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Fixed
 - API client bindings
 
+[Unreleased]: https://github.com/clragon/e1547/compare/20.1.1+97...HEAD
 [20.1.1+97]: https://github.com/clragon/e1547/compare/20.1.0+96...20.1.1+97
 [20.1.0+96]: https://github.com/clragon/e1547/compare/20.0.0+95...20.1.0+96
 [20.0.0+95]: https://github.com/clragon/e1547/compare/19.1.0+94...20.0.0+95
