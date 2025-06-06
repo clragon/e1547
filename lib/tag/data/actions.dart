@@ -1,3 +1,4 @@
+import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
 
 final List<String> wikiMetaTags = List.unmodifiable([
@@ -7,20 +8,16 @@ final List<String> wikiMetaTags = List.unmodifiable([
 ]);
 
 /// Removes prefixes from tags.
-String tagToRaw(String tags) => tags
-    .trim()
-    .split(' ')
-    .map((tag) => tag.replaceAllMapped(RegExp(r'^[-~]'), (_) => ''))
-    .join(' ');
+String tagToRaw(String tags) => TagMap(
+  tags,
+).tags.map((e) => e.replaceFirst(RegExp(r'^[-~]'), '')).join(' ');
 
 /// Removes underscored from tags, adds commas.
 String tagToName(String tags) =>
-    tags.trim().split(' ').join(', ').replaceAll('_', ' ');
+    TagMap(tags).tags.map((e) => e.replaceAll('_', ' ')).join(', ');
 
 /// Removes underscores and prefixes from tags
 String tagToTitle(String tags) => tagToName(tagToRaw(tags));
-
-bool tagIsSingle(String tags) => !(tags.contains(' ') || tags.contains(':'));
 
 enum TagCategory {
   general,
