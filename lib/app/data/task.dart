@@ -41,11 +41,10 @@ Future<void> registerFollowBackgroundTask(List<Follow> follows) async {
   }
   if (Platform.isIOS) {
     _logger.fine('Registered iOS one-off task');
-    Workmanager().registerOneOffTask(
+    Workmanager().registerProcessingTask(
       followsBackgroundTaskKey,
       followsBackgroundTaskKey,
       initialDelay: const Duration(hours: 1),
-      existingWorkPolicy: ExistingWorkPolicy.replace,
       constraints: Constraints(networkType: NetworkType.connected),
     );
   } else if (Platform.isAndroid) {
