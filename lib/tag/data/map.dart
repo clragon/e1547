@@ -13,9 +13,22 @@ import 'package:flutter/widgets.dart';
 /// When accessing a key, the first value is returned.
 /// To access all values of a key, use [toMapAll].
 class TagMap extends MapBase<String, String> {
+  /// Creates a tag map from a string.
+  ///
+  /// Input is expected to be in the format `name:value name2`.
+  factory TagMap([String? tags]) {
+    TagMap result = TagMap.from();
+    if (tags != null) {
+      result._entries.addAll(
+        tags.trim().split(' ').where((e) => e.isNotEmpty).map(TagValue.parse),
+      );
+    }
+    return result;
+  }
+
   /// Creates a tag map.
   /// Optionally, a map can be provided to copy values from.
-  factory TagMap([Map<String, Object?>? other]) {
+  factory TagMap.from([Map<String, Object?>? other]) {
     return TagMap.fromIterable(other?.entries ?? []);
   }
 
@@ -30,17 +43,6 @@ class TagMap extends MapBase<String, String> {
     for (final entry in other) {
       result._entries.add(TagValue(entry.key, entry.value?.toString()));
     }
-    return result;
-  }
-
-  /// Creates a tag map from a string.
-  ///
-  /// Input is expected to be in the format `name:value name2`.
-  factory TagMap.parse(String tags) {
-    TagMap result = TagMap();
-    result._entries.addAll(
-      tags.trim().split(' ').where((e) => e.isNotEmpty).map(TagValue.parse),
-    );
     return result;
   }
 
@@ -133,7 +135,7 @@ class TagMap extends MapBase<String, String> {
   String toString() => _entries.map((tag) => tag.toString()).join(' ');
 
   /// Returns a new tag map with the same values.
-  Map<String, String?> toMap() => TagMap(this);
+  Map<String, String?> toMap() => TagMap.from(this);
 
   /// Returns a new tag map with all values.
   Map<String, List<String>> toMapAll() {
