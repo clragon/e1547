@@ -1,5 +1,4 @@
 import 'package:e1547/app/app.dart';
-import 'package:e1547/client/client.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:flutter/foundation.dart';
 import 'package:notified_preferences/notified_preferences.dart';
@@ -9,13 +8,6 @@ class Settings extends NotifiedSettings {
 
   static Future<Settings> getInstance() async =>
       Settings(await SharedPreferences.getInstance());
-
-  @Deprecated('Credentials are now stored in the identity database')
-  late final ValueNotifier<Credentials?> credentials = createJsonSetting(
-    key: 'credentials',
-    initialValue: null,
-    fromJson: Credentials.fromJson,
-  );
 
   late final ValueNotifier<int> identity = createSetting(
     key: 'identity',
