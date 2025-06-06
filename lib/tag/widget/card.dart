@@ -88,6 +88,8 @@ class DenyListTagCard extends StatelessWidget {
         return Colors.green[300];
       case '~':
         return Colors.orange[300];
+      case '#':
+        return Colors.blue[300];
       default:
         return Colors.red[300];
     }

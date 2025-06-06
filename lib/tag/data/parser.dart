@@ -4,11 +4,16 @@ import 'package:petitparser/petitparser.dart';
 
 class TagMapParserDefinition extends GrammarDefinition<List<TagNode>> {
   @override
-  Parser<List<TagNode>> start() =>
-      ref0(node).starSeparated(whitespace().plus()).map((e) => e.elements);
+  Parser<List<TagNode>> start() => ref0(
+    node,
+  ).starSeparated(whitespace().plus()).map((e) => e.elements).trim();
 
-  Parser<TagNode> node() =>
-      [ref0(group), ref0(tagWithValue), ref0(tagRaw)].toChoiceParser();
+  Parser<TagNode> node() => [
+    ref0(comment),
+    ref0(group),
+    ref0(tagWithValue),
+    ref0(tagRaw),
+  ].toChoiceParser();
 
   Parser<TagGroup> group() => (
     ref0(prefix).optional(),
@@ -60,4 +65,9 @@ class TagMapParserDefinition extends GrammarDefinition<List<TagNode>> {
     ].toChoiceParser().starLazy(char('"')).map((list) => list.join()),
     char('"'),
   ).toSequenceParser().map((rec) => rec.$2);
+
+  Parser<TagComment> comment() => (
+    char('#'),
+    any().star().flatten(),
+  ).toSequenceParser().map((rec) => TagComment(rec.$2));
 }

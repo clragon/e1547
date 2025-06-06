@@ -90,3 +90,32 @@ final class TagGroup extends TagNode {
     return name.compareTo(other.name);
   }
 }
+
+@immutable
+final class TagComment extends TagNode {
+  const TagComment(this.comment);
+
+  final String comment;
+
+  @override
+  String get name => '#$comment';
+
+  @override
+  String get value => '';
+
+  @override
+  String toString() => name;
+
+  @override
+  bool operator ==(Object other) =>
+      other is TagComment && comment == other.comment;
+
+  @override
+  int get hashCode => comment.hashCode;
+
+  @override
+  int compareTo(TagNode other) {
+    if (other is! TagComment) return -1;
+    return comment.compareTo(other.comment);
+  }
+}
