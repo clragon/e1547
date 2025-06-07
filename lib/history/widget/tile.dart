@@ -124,7 +124,6 @@ class HistoryTile extends StatelessWidget {
                         padding: const EdgeInsets.only(top: 8),
                         child: Text(entry.getName(context)),
                       ),
-                      showTitle: false,
                     ),
                   ],
                 ),

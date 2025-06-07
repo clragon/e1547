@@ -14,75 +14,85 @@ class ImageGrid extends StatelessWidget {
     required int length,
     required int crossAxisCount,
   }) {
-    int column = (index + 1) % crossAxisCount;
-    bool firstRow = index < crossAxisCount;
-    bool lastRow = index >= length - crossAxisCount;
+    const radius = Radius.circular(4);
+    const none = Radius.zero;
 
-    BorderRadius radius = BorderRadius.zero;
+    final column = index % crossAxisCount;
+    final row = index ~/ crossAxisCount;
+    final lastRow = (length - 1) ~/ crossAxisCount;
+    final lastColumn = (length - 1) % crossAxisCount;
 
-    if (column != 0) {
-      radius = radius.copyWith(
-        topRight: Radius.circular(firstRow ? 0 : 4),
-        bottomRight: Radius.circular(lastRow ? 0 : 4),
-      );
-    }
-    if (column != 1) {
-      radius = radius.copyWith(
-        topLeft: Radius.circular(firstRow ? 0 : 4),
-        bottomLeft: Radius.circular(lastRow ? 0 : 4),
-      );
-    }
+    final isFirstRow = row == 0;
+    final isLastRow = row == lastRow;
 
-    return radius;
+    final isTopLeft = isFirstRow && column == 0;
+    final isTopRight =
+        isFirstRow && (column == crossAxisCount - 1 || index == length - 1);
+    final isBottomLeft = isLastRow && column == 0;
+    final isBottomRight = isLastRow && column == lastColumn;
+
+    return BorderRadius.only(
+      topLeft: isTopLeft
+          ? radius
+          : column != 0 && !isFirstRow
+          ? radius
+          : none,
+      topRight: isTopRight
+          ? radius
+          : column != crossAxisCount - 1 && !isFirstRow
+          ? radius
+          : none,
+      bottomLeft: isBottomLeft
+          ? radius
+          : column != 0 && !isLastRow
+          ? radius
+          : none,
+      bottomRight: isBottomRight
+          ? radius
+          : column != crossAxisCount - 1 && !isLastRow
+          ? radius
+          : none,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        int count = images?.length.clamp(1, 4) ?? 1;
-        if (count != 1) {
-          count = (count / 2).round() * 2;
-        }
-        return ScrollConfiguration(
-          behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
-          child: GridView.builder(
-            shrinkWrap: true,
-            primary: false,
-            physics: const NeverScrollableScrollPhysics(),
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: count.clamp(1, 2),
-              mainAxisExtent: count > 2
-                  ? constraints.maxHeight * 0.5
-                  : constraints.maxHeight,
-              mainAxisSpacing: 6,
-              crossAxisSpacing: 6,
+    final urls = images?.take(4).toList() ?? [];
+    final rowCount = urls.length > 2 ? 2 : 1;
+    final perRow = (urls.length / rowCount).ceil();
+
+    return Column(
+      children: [
+        for (int row = 0; row < rowCount; row++) ...[
+          Expanded(
+            child: Row(
+              children: [
+                for (int col = 0; col < perRow; col++)
+                  if (row * perRow + col < urls.length) ...[
+                    Expanded(
+                      child: ClipRRect(
+                        borderRadius: getGridBorderRadius(
+                          index: row * perRow + col,
+                          length: urls.length,
+                          crossAxisCount: perRow,
+                        ),
+                        child: CachedNetworkImage(
+                          imageUrl: urls[row * perRow + col],
+                          errorWidget: defaultErrorBuilder,
+                          fit: BoxFit.cover,
+                          cacheManager: context.read<BaseCacheManager>(),
+                        ),
+                      ),
+                    ),
+                    if (col < perRow - 1) const SizedBox(width: 6),
+                  ] else
+                    const Spacer(),
+              ],
             ),
-            itemCount: count,
-            itemBuilder: (context, index) {
-              if (images != null && index < images!.length) {
-                return ClipRRect(
-                  borderRadius: getGridBorderRadius(
-                    index: index,
-                    length: images!.length.clamp(0, 4),
-                    crossAxisCount: 2,
-                  ),
-                  child: CachedNetworkImage(
-                    imageUrl: images![index],
-                    errorWidget: defaultErrorBuilder,
-                    fit: BoxFit.cover,
-                    cacheManager: context.read<BaseCacheManager>(),
-                  ),
-                );
-              } else {
-                return const Center(
-                  child: Icon(Icons.image_not_supported_outlined),
-                );
-              }
-            },
           ),
-        );
-      },
+          if (row < rowCount - 1) const SizedBox(height: 6),
+        ],
+      ],
     );
   }
 }
@@ -94,93 +104,39 @@ class ImageTile extends StatelessWidget {
     required this.title,
     this.subtitle,
     this.description,
-    this.leading,
-    this.trailing,
-    this.onTap,
-    this.onLongPress,
-    this.hero,
-    this.showTitle,
   });
 
   final Widget title;
   final Widget? subtitle;
   final Widget? description;
-  final Widget? leading;
-  final Widget? trailing;
   final List<String>? images;
-  final VoidCallback? onTap;
-  final VoidCallback? onLongPress;
-  final String? hero;
-  final bool? showTitle;
 
   @override
   Widget build(BuildContext context) {
-    final bool centerTitle = images?.isEmpty ?? true;
-    return Material(
-      type: MaterialType.transparency,
-      clipBehavior: Clip.antiAlias,
-      borderRadius: const BorderRadius.all(Radius.circular(4)),
-      child: InkWell(
-        onTap: onTap,
-        onLongPress: onLongPress,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Flexible(
-              child: Stack(
-                fit: StackFit.passthrough,
-                children: [
-                  LimitedBox(
-                    maxHeight: images?.isNotEmpty ?? true ? 300 : 150,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        if (centerTitle)
-                          Expanded(
-                            child: Card(
-                              child: Padding(
-                                padding: const EdgeInsets.all(16),
-                                child: Center(
-                                  child: DefaultTextStyle(
-                                    style: Theme.of(
-                                      context,
-                                    ).textTheme.titleLarge!,
-                                    textAlign: TextAlign.center,
-                                    child: title,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          )
-                        else
-                          Expanded(
-                            child: hero != null
-                                ? Hero(
-                                    tag: hero!,
-                                    child: ImageGrid(images: images),
-                                  )
-                                : ImageGrid(images: images),
-                          ),
-                      ],
+    final bool hasImages = images?.isNotEmpty ?? false;
+    return SizedBox(
+      height: hasImages ? 300 : 150,
+      child: hasImages
+          ? ImageGrid(images: images)
+          : Padding(
+              padding: const EdgeInsets.all(4),
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surfaceContainerLow,
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Center(
+                    child: DefaultTextStyle(
+                      style: Theme.of(context).textTheme.titleLarge!,
+                      textAlign: TextAlign.center,
+                      child: title,
                     ),
                   ),
-                  const Positioned.fill(
-                    child: Material(type: MaterialType.transparency),
-                  ),
-                ],
+                ),
               ),
             ),
-            if ((!centerTitle && (showTitle ?? true)) ||
-                subtitle != null ||
-                trailing != null)
-              ListTile(
-                title: !centerTitle ? title : null,
-                subtitle: subtitle,
-                trailing: trailing,
-              ),
-          ],
-        ),
-      ),
     );
   }
 }
