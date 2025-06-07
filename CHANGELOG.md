@@ -13,6 +13,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - iOS background process crash
 - downloads on some android devices
 - some posts not displaying
+- clearing image cache
 
 ## [20.1.1+97] - 2025-05-19
 ### Fixed
