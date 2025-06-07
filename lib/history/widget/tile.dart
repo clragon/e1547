@@ -1,9 +1,9 @@
 import 'package:e1547/app/app.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/history/history.dart';
+import 'package:e1547/history/widget/image.dart';
 import 'package:e1547/interface/interface.dart';
 import 'package:e1547/markup/markup.dart';
-import 'package:e1547/settings/settings.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
 
@@ -118,12 +118,36 @@ class HistoryTile extends StatelessWidget {
                       )
                     else
                       const SizedBox(height: 8),
-                    ImageTile(
-                      images: entry.thumbnails,
-                      title: Padding(
-                        padding: const EdgeInsets.only(top: 8),
-                        child: Text(entry.getName(context)),
-                      ),
+                    SizedBox(
+                      height: entry.thumbnails.isNotEmpty ? 300 : 150,
+                      child: entry.thumbnails.isNotEmpty
+                          ? HistoryImageGrid(images: entry.thumbnails)
+                          : Padding(
+                              padding: const EdgeInsets.all(4),
+                              child: DecoratedBox(
+                                decoration: BoxDecoration(
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.surfaceContainerLow,
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(16),
+                                  child: Center(
+                                    child: DefaultTextStyle(
+                                      style: Theme.of(
+                                        context,
+                                      ).textTheme.titleLarge!,
+                                      textAlign: TextAlign.center,
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(top: 8),
+                                        child: Text(entry.getName(context)),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
                     ),
                   ],
                 ),

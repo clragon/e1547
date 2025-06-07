@@ -4,8 +4,8 @@ import 'package:e1547/post/post.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
-class ImageGrid extends StatelessWidget {
-  const ImageGrid({super.key, this.images});
+class HistoryImageGrid extends StatelessWidget {
+  const HistoryImageGrid({super.key, this.images});
 
   final List<String>? images;
 
@@ -93,50 +93,6 @@ class ImageGrid extends StatelessWidget {
           if (row < rowCount - 1) const SizedBox(height: 6),
         ],
       ],
-    );
-  }
-}
-
-class ImageTile extends StatelessWidget {
-  const ImageTile({
-    super.key,
-    required this.images,
-    required this.title,
-    this.subtitle,
-    this.description,
-  });
-
-  final Widget title;
-  final Widget? subtitle;
-  final Widget? description;
-  final List<String>? images;
-
-  @override
-  Widget build(BuildContext context) {
-    final bool hasImages = images?.isNotEmpty ?? false;
-    return SizedBox(
-      height: hasImages ? 300 : 150,
-      child: hasImages
-          ? ImageGrid(images: images)
-          : Padding(
-              padding: const EdgeInsets.all(4),
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surfaceContainerLow,
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Center(
-                    child: DefaultTextStyle(
-                      style: Theme.of(context).textTheme.titleLarge!,
-                      textAlign: TextAlign.center,
-                      child: title,
-                    ),
-                  ),
-                ),
-              ),
-            ),
     );
   }
 }
