@@ -4,10 +4,10 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Version to bump'
+        description: "Version to bump"
         required: true
         type: choice
-        default: 'none'
+        default: "none"
         options:
           - none
           - major
@@ -16,7 +16,7 @@ on:
           - pre
           - release
       release_title:
-        description: 'Release title'
+        description: "Release title"
         type: string
         required: false
 
@@ -34,8 +34,8 @@ jobs:
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
-          distribution: 'adopt'
-          java-version: '17'
+          distribution: "adopt"
+          java-version: "17"
 
       - name: parse flutter version
         run: |
@@ -62,7 +62,7 @@ jobs:
         if: ${{ github.event.inputs.version != 'none' }}
         run: |
           dart pub global activate cider
-          cider bump ${{ env.VERSION_BUMP }} --bump-build 
+          cider bump ${{ env.VERSION_BUMP }} --bump-build
 
       - name: configure release keys
         env:
@@ -157,7 +157,7 @@ jobs:
       - name: setup ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '3.0'
+          ruby-version: "3.1"
           bundler-cache: true
 
       - name: parse flutter version
