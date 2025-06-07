@@ -402,5 +402,19 @@
         "platform": "ko-fi"
       }
     ]
+  },
+  {
+    "name": "Veca",
+    "handles": {
+      "ko-fi": "veca"
+    },
+    "donations": [
+      {
+        "amount": 10.0,
+        "currency": "USD",
+        "date": "2025-06-02T20:48:00",
+        "platform": "ko-fi"
+      }
+    ]
   }
 ]
