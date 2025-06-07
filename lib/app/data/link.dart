@@ -3,14 +3,12 @@ import 'dart:io';
 import 'package:e1547/pool/pool.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/reply/reply.dart';
-import 'package:e1547/settings/settings.dart';
 import 'package:e1547/topic/topic.dart';
 import 'package:e1547/user/user.dart';
 import 'package:e1547/wiki/wiki.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_custom_tabs/flutter_custom_tabs.dart' as tabs;
 import 'package:path_to_regexp/path_to_regexp.dart';
-import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart' as urls;
 
 Future<void> launch(String url) async {
@@ -175,59 +173,54 @@ class E621LinkParser extends BranchLinkParser {
 extension LinkOnTapExtension on LinkParser {
   VoidCallback? parseOnTap(BuildContext context, String link) {
     final Link? result = this.parse(link);
-    if (result != null) {
-      if (!context.read<Settings>().showBeta.value &&
-          [LinkType.topic, LinkType.reply].contains(result.type)) {
-        return null;
-      }
+    if (result == null) return null;
 
-      VoidCallback navWrapper(WidgetBuilder builder, [bool root = false]) {
-        return () {
-          if (root) {
-            Navigator.of(context).popUntil((route) => false);
-          }
-          Navigator.of(context).push(MaterialPageRoute(builder: builder));
-        };
-      }
+    VoidCallback navWrapper(WidgetBuilder builder, [bool root = false]) {
+      return () {
+        if (root) {
+          Navigator.of(context).popUntil((route) => false);
+        }
+        Navigator.of(context).push(MaterialPageRoute(builder: builder));
+      };
+    }
 
-      switch (result.type) {
-        case LinkType.post:
-          int? id = result.id as int?;
-          if (id != null) {
-            return navWrapper((context) => PostLoadingPage(id));
-          }
-          return navWrapper((context) => PostsSearchPage(query: result.query));
-        case LinkType.pool:
-          int? id = result.id as int?;
-          if (id != null) {
-            return navWrapper((context) => PoolLoadingPage(id));
-          }
-          return navWrapper((context) => PoolsPage(search: result.query), true);
-        case LinkType.user:
-          Object? id = result.id;
-          if (id != null) {
-            return navWrapper((context) => UserLoadingPage(id.toString()));
-          }
-          break;
-        case LinkType.wiki:
-          Object? id = result.id;
-          if (id != null) {
-            return navWrapper((context) => WikiLoadingPage(id.toString()));
-          }
-          break;
-        case LinkType.topic:
-          int? id = result.id as int?;
-          if (id != null) {
-            return navWrapper((context) => TopicLoadingPage(id));
-          }
-          return navWrapper((context) => TopicsPage(query: result.query), true);
-        case LinkType.reply:
-          int? id = result.id as int?;
-          if (id != null) {
-            return navWrapper((context) => ReplyLoadingPage(id));
-          }
-          return navWrapper((context) => TopicsPage(query: result.query), true);
-      }
+    switch (result.type) {
+      case LinkType.post:
+        int? id = result.id as int?;
+        if (id != null) {
+          return navWrapper((context) => PostLoadingPage(id));
+        }
+        return navWrapper((context) => PostsSearchPage(query: result.query));
+      case LinkType.pool:
+        int? id = result.id as int?;
+        if (id != null) {
+          return navWrapper((context) => PoolLoadingPage(id));
+        }
+        return navWrapper((context) => PoolsPage(search: result.query), true);
+      case LinkType.user:
+        Object? id = result.id;
+        if (id != null) {
+          return navWrapper((context) => UserLoadingPage(id.toString()));
+        }
+        break;
+      case LinkType.wiki:
+        Object? id = result.id;
+        if (id != null) {
+          return navWrapper((context) => WikiLoadingPage(id.toString()));
+        }
+        break;
+      case LinkType.topic:
+        int? id = result.id as int?;
+        if (id != null) {
+          return navWrapper((context) => TopicLoadingPage(id));
+        }
+        return navWrapper((context) => TopicsPage(query: result.query), true);
+      case LinkType.reply:
+        int? id = result.id as int?;
+        if (id != null) {
+          return navWrapper((context) => ReplyLoadingPage(id));
+        }
+        return navWrapper((context) => TopicsPage(query: result.query), true);
     }
     return null;
   }
