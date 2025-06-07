@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [20.2.0+98] - 2025-06-07
 ### Added
 - support for tag group searches
 - blacklist comments support
@@ -909,7 +909,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Fixed
 - API client bindings
 
-[Unreleased]: https://github.com/clragon/e1547/compare/20.1.1+97...HEAD
+[20.2.0+98]: https://github.com/clragon/e1547/compare/20.1.1+97...20.2.0+98
 [20.1.1+97]: https://github.com/clragon/e1547/compare/20.1.0+96...20.1.1+97
 [20.1.0+96]: https://github.com/clragon/e1547/compare/20.0.0+95...20.1.0+96
 [20.0.0+95]: https://github.com/clragon/e1547/compare/19.1.0+94...20.0.0+95

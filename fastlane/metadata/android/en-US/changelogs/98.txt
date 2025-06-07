@@ -1,0 +1,9 @@
+### Added
+- support for tag group searches
+- blacklist comments support
+
+### Fixed
+- iOS background process crash
+- downloads on some android devices
+- some posts not displaying
+- clearing image cache
