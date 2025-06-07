@@ -103,7 +103,7 @@ void registerFlutterErrorHandler(
 /// Initializes the storages used by the app with default production values.
 Future<AppStorage> initializeAppStorage({bool cache = true}) async {
   final String temporaryFiles = await getTemporaryAppDirectory();
-  await cleanupImageCache();
+  cleanupImageCache();
   return AppStorage(
     preferences: await SharedPreferences.getInstance(),
     temporaryFiles: temporaryFiles,
