@@ -100,13 +100,13 @@ class HistoriesPage extends StatelessWidget {
               listenable: controller,
               builder: (context, _) =>
                   PagedGroupedListView<int, History, DateTime>(
+                    primary: true,
                     padding: defaultActionListPadding.add(
                       LimitedWidthLayout.of(context).padding,
                     ),
                     state: controller.state,
                     fetchNextPage: controller.getNextPage,
                     order: GroupedListOrder.DESC,
-                    controller: PrimaryScrollController.of(context),
                     groupBy: (element) => DateUtils.dateOnly(element.visitedAt),
                     groupHeaderBuilder: (element) => ListTileHeader(
                       title: DateFormatting.named(element.visitedAt),
