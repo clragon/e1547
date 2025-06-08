@@ -67,7 +67,7 @@ class SourceDisplay extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
             child: sources.join('\n').trim().isNotEmpty
-                ? Wrap(
+                ? Column(
                     children: sources.map((e) => SourceCard(url: e)).toList(),
                   )
                 : Padding(
