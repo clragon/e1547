@@ -400,6 +400,12 @@
         "currency": "USD",
         "date": "2025-05-24T19:55:00",
         "platform": "ko-fi"
+      },
+      {
+        "amount": 25.0,
+        "currency": "USD",
+        "date": "2025-06-24T00:50:00",
+        "platform": "ko-fi"
       }
     ]
   },
