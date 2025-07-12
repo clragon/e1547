@@ -9,7 +9,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   VideoService.ensureInitialized();
   await initializeAppInfo();
-  Logs logs = await initializeLogger(path: await getTemporaryAppDirectory());
+  Logs logs = await initializeLogger();
   unawaited(initializeBackgroundTasks());
   AppStorage storage = await initializeAppStorage();
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);

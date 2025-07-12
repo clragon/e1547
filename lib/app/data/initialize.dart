@@ -30,11 +30,12 @@ Future<String> getTemporaryAppDirectory() => getTemporaryDirectory().then(
 
 /// Initializes the logger used by the app with default production values.
 Future<Logs> initializeLogger({
-  required String path,
+  String? path,
   String? postfix,
   List<LogPrinter>? printers,
 }) async {
   Logger.root.level = Level.ALL;
+  path ??= await getTemporaryAppDirectory();
 
   Logs logs = Logs();
   File logFile = createLogFile(path, postfix);
