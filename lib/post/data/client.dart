@@ -43,7 +43,7 @@ class PostClient {
     int? page,
     int? limit,
     CancelToken? cancelToken,
-  }) async =>
+  }) =>
       cache
           .stream(
             QueryKey([

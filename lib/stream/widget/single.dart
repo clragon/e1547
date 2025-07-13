@@ -18,7 +18,7 @@ class SubStreamFuture<T> extends SubValue<StreamFuture<T>> {
           builder: (context, future) => SubStream<T>(
             create: () => future.stream,
             initialData: future.stream is ValueStream<T>
-                ? (future.stream as ValueStream<T>).value
+                ? (future.stream as ValueStream<T>).valueOrNull
                 : null,
             keys: [future.stream], // this is stable.
             listener: listener,

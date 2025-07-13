@@ -1,8 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:context_plus/context_plus.dart';
 import 'package:e1547/client/client.dart';
-import 'package:e1547/post/post.dart';
-import 'package:e1547/query/query.dart';
+import 'package:e1547/stream/stream.dart';
 import 'package:flutter/material.dart';
 
 class PostDetailPage extends StatelessWidget {
@@ -22,11 +21,10 @@ class PostDetailPage extends StatelessWidget {
         forceMaterialTransparency: true,
       ),
       extendBodyBehindAppBar: true,
-      body: QueryBuilder<Post, dynamic>(
-        client.posts.getKey(id),
-        () => client.posts.get(id: id),
+      body: SubStreamFuture(
+        create: () => client.posts.get(id: id),
         builder: (context, state) {
-          if (state.isError) {
+          if (state.hasError) {
             return Center(child: Text('Error: ${state.error}'));
           }
 
