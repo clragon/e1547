@@ -18,6 +18,19 @@ class StreamFuture<T> extends DelegatingFuture<T> {
     }
   }
 
+  /// Creates a [StreamFuture] from a [future].
+  ///
+  /// If the [future] is already a [StreamFuture], it will be returned directly.
+  factory StreamFuture.from(FutureOr<T> future) {
+    if (future is StreamFuture<T>) {
+      return future;
+    } else if (future is Future<T>) {
+      return StreamFuture(future.asStream());
+    } else {
+      return StreamFuture.value(future);
+    }
+  }
+
   /// Creates a [StreamFuture] that completes with [value].
   ///
   /// Mirrors both `Stream.value` and `Future.value`.
@@ -53,6 +66,9 @@ class StreamFuture<T> extends DelegatingFuture<T> {
 
   StreamFuture<T2> map<T2>(T2 Function(T value) mapper) =>
       StreamFuture(stream.map(mapper));
+
+  @override
+  String toString() => 'StreamFuture<$T> from $_stream';
 }
 
 /// An extension on [Stream] to easily create a [StreamFuture].
@@ -62,11 +78,5 @@ extension StreamFutureExtension<T> on Stream<T> {
 
 /// An extension on [Future] to easily create a [StreamFuture].
 extension FutureStreamExtension<T> on Future<T> {
-  StreamFuture<T> get stream {
-    if (this is StreamFuture<T>) {
-      return this as StreamFuture<T>;
-    } else {
-      return StreamFuture(asStream());
-    }
-  }
+  StreamFuture<T> get stream => StreamFuture.from(this);
 }

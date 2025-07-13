@@ -48,6 +48,7 @@ class PagedValueCacheEntry<I, V> extends ValueCacheEntry<List<V>> {
     required this.toId,
   }) : super.raw() {
     this.value = value;
+    _setupQueue();
   }
 
   /// The cache of items that backs this page cache.
@@ -67,9 +68,6 @@ class PagedValueCacheEntry<I, V> extends ValueCacheEntry<List<V>> {
   @override
   List<V>? get value {
     _accessed = DateTime.now();
-    if (_maxAge != null && _accessed.difference(_created) > _maxAge!) {
-      return null;
-    }
     return _stream.valueOrNull;
   }
 
@@ -134,6 +132,24 @@ class PagedValueCacheEntry<I, V> extends ValueCacheEntry<List<V>> {
   @override
   bool get hasListeners => _stream.hasListener;
 
+  final StreamController<FutureOr<List<V>> Function()?> _fetchQueue =
+      StreamController();
+
+  void _setupQueue() {
+    _fetchQueue.stream.asyncMap((fetch) async {
+      if (fetch == null) return;
+
+      final hasValue = value != null;
+      if (hasValue && !stale) return;
+
+      try {
+        value = await fetch();
+      } on Object catch (e, st) {
+        _stream.addError(e, st);
+      }
+    }).listen(null);
+  }
+
   @override
   Stream<List<V>> stream({
     FutureOr<List<V>> Function()? fetch,
@@ -144,10 +160,6 @@ class PagedValueCacheEntry<I, V> extends ValueCacheEntry<List<V>> {
     late StreamSubscription<List<V>> subscription;
     controller = BehaviorSubject<List<V>>(
       onListen: () async {
-        if (fetch != null && value == null) {
-          value = await fetch();
-          this.maxAge = maxAge;
-        }
         subscription = _stream.listen(
           controller.add,
           onError: controller.addError,
@@ -156,10 +168,7 @@ class PagedValueCacheEntry<I, V> extends ValueCacheEntry<List<V>> {
             controller.close();
           },
         );
-      },
-      onCancel: () {
-        subscription.cancel();
-        controller.close();
+        _fetchQueue.add(fetch);
       },
     );
     return controller.stream;
@@ -169,5 +178,6 @@ class PagedValueCacheEntry<I, V> extends ValueCacheEntry<List<V>> {
   void dispose() {
     _subscription?.cancel();
     _stream.close();
+    _fetchQueue.close();
   }
 }

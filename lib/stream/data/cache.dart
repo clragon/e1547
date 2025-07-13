@@ -140,6 +140,19 @@ class ValueCache<K, V> extends MapBase<K, V> {
   void dispose() => clear();
 }
 
+/// The current status of a [ValueCacheEntry].
+///
+/// [idle] means the entry is not currently fetching or refetching. It may or may not have a value.
+/// [fetching] means the entry is currently fetching a value for the first time.
+/// [refetching] means the entry is currently fetching a value to update an existing value.
+/// [error] means the entry encountered an error while fetching or refetching a value.
+enum ValueCacheStatus {
+  idle,
+  fetching,
+  refetching,
+  error,
+}
+
 /// A class for storing values in a [ValueCache].
 ///
 /// Takes care of holding various metadata about the value.
@@ -154,10 +167,19 @@ abstract class ValueCacheEntry<V> implements Comparable<ValueCacheEntry<V>> {
   /// The value of this cache entry.
   ///
   /// Accessing or updating this value will update the last accessed time.
-  /// If the value is stale according to [maxAge], this will return null.
-  /// Updating the value will reset its created time.
+  /// The value is returned even if it is stale. Updating the value will reset its staleness.
   V? get value;
   set value(V? value);
+
+  /// The current status of this cache entry.
+  ///
+  /// Can be used to update the UI based on the current state of the entry.
+  // ValueCacheStatus get status;
+
+  /// A stream of status updates.
+  ///
+  /// Emits when the entry starts fetching, refetching, completes, or errors.
+  // Stream<ValueCacheStatus> get statusStream;
 
   /// The time this value was created.
   /// This is reset when the value is updated.
@@ -184,6 +206,7 @@ abstract class ValueCacheEntry<V> implements Comparable<ValueCacheEntry<V>> {
   /// If the value is updated, the new value will be emitted.
   ///
   /// If [value] is null, [fetch] will be called to populate it, if provided.
+  /// If [value] is stale, it will be emitted, then [fetch] will be called to update it, if provided.
   /// If [fetch] is called, [maxAge] will be used as the time to live for the value.
   Stream<V> stream({
     FutureOr<V> Function()? fetch,

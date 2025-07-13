@@ -7,16 +7,15 @@ class SingleValueCacheEntry<V> extends ValueCacheEntry<V> {
   /// Holds a [ValueCache] value.
   SingleValueCacheEntry(V? value)
       : _value = value,
-        super.raw();
+        super.raw() {
+    _setupQueue();
+  }
 
   V? _value;
 
   @override
   V? get value {
     _accessed = DateTime.now();
-    if (_maxAge != null && _accessed.difference(_created) > _maxAge!) {
-      return null;
-    }
     return _value;
   }
 
@@ -27,6 +26,7 @@ class SingleValueCacheEntry<V> extends ValueCacheEntry<V> {
     _created = _accessed;
     if (_value == value) return;
     _value = value;
+    _statusStream.add(ValueCacheStatus.idle);
     for (final stream in _streams) {
       stream.add(value);
     }
@@ -62,6 +62,38 @@ class SingleValueCacheEntry<V> extends ValueCacheEntry<V> {
   @override
   bool get hasListeners => _streams.any((e) => e.hasListener);
 
+  final BehaviorSubject<ValueCacheStatus> _statusStream =
+      BehaviorSubject.seeded(ValueCacheStatus.idle);
+
+  ValueCacheStatus get status => _statusStream.value;
+
+  Stream<ValueCacheStatus> get statusStream => _statusStream.stream;
+
+  final StreamController<FutureOr<V> Function()?> _fetchQueue =
+      StreamController();
+
+  void _setupQueue() {
+    _fetchQueue.stream.asyncMap((fetch) async {
+      if (fetch == null) return;
+
+      final hasValue = value != null;
+      if (hasValue && !stale) return;
+
+      _statusStream.add(
+          hasValue ? ValueCacheStatus.refetching : ValueCacheStatus.fetching);
+
+      try {
+        value = await fetch();
+        _statusStream.add(ValueCacheStatus.idle);
+      } on Object catch (e, st) {
+        _statusStream.add(ValueCacheStatus.error);
+        for (final stream in _streams) {
+          stream.addError(e, st);
+        }
+      }
+    }).listen(null);
+  }
+
   @override
   Stream<V> stream({
     FutureOr<V> Function()? fetch,
@@ -72,14 +104,7 @@ class SingleValueCacheEntry<V> extends ValueCacheEntry<V> {
     controller = BehaviorSubject<V>(
       onListen: () async {
         _streams.add(controller);
-        if (fetch != null && !controller.hasValue) {
-          value = await fetch();
-          this.maxAge = maxAge;
-        }
-      },
-      onCancel: () {
-        _streams.remove(controller);
-        controller.close();
+        _fetchQueue.add(fetch);
       },
     );
 
@@ -98,5 +123,7 @@ class SingleValueCacheEntry<V> extends ValueCacheEntry<V> {
       stream.close();
     }
     _streams.clear();
+    _statusStream.close();
+    _fetchQueue.close();
   }
 }
