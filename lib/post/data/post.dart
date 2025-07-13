@@ -52,52 +52,68 @@ abstract class Relationships with _$Relationships {
 
 extension E621Post on Post {
   static Post fromJson(dynamic json) => pick(json).letOrThrow(
-        (pick) => Post(
-          id: pick('id').asIntOrThrow(),
-          file: pick('file').letOrThrow((pick) => pick('url').asStringOrNull()),
-          sample:
-              pick('sample').letOrThrow((pick) => pick('url').asStringOrNull()),
-          preview: pick('preview')
-              .letOrThrow((pick) => pick('url').asStringOrNull()),
+        (post) => Post(
+          id: post('id').asIntOrThrow(),
+          file: post('file').letOrThrow((file) => file('url').asStringOrNull()),
+          sample: post(
+            'sample',
+          ).letOrThrow((sample) => sample('url').asStringOrNull()),
+          preview: post(
+            'preview',
+          ).letOrThrow((preview) => preview('url').asStringOrNull()),
           width:
-              pick('file').letOrThrow((pick) => pick('width').asIntOrThrow()),
+              post('file').letOrThrow((file) => file('width').asIntOrThrow()),
           height:
-              pick('file').letOrThrow((pick) => pick('height').asIntOrThrow()),
-          ext: pick('file').letOrThrow((pick) => pick('ext').asStringOrThrow()),
-          size: pick('file').letOrThrow((pick) => pick('size').asIntOrThrow()),
-          variants: pick('sample').letOrThrow(
-            (pick) => pick('alternates').asMapOrNull()?.map(
-                  (key, value) => MapEntry(
-                    '${value['width']}x${value['height']}',
-                    List.from(value['urls']).whereType<String>().firstOrNull,
-                  ),
-                ),
-          ),
-          tags: pick('tags').letOrThrow(
+              post('file').letOrThrow((file) => file('height').asIntOrThrow()),
+          ext: post('file').letOrThrow((file) => file('ext').asStringOrThrow()),
+          size: post('file').letOrThrow((file) => file('size').asIntOrThrow()),
+          variants: post('sample', 'alternates').letOrNull((alternates) {
+            if (alternates.asMapOrNull()?.isEmpty ?? true) return null;
+            return {
+              '${alternates('original', 'width').asIntOrThrow()}x${alternates('original', 'height').asIntOrThrow()}':
+                  alternates('original', 'url').asStringOrNull(),
+              ...alternates(
+                'samples',
+              ).asMapOrEmpty().values.fold<Map<String, String?>>({}, (acc, e) {
+                final w = pick(e, 'width').asIntOrNull();
+                final h = pick(e, 'height').asIntOrNull();
+                final url = pick(e, 'url').asStringOrNull();
+                if (w != null && h != null && url != null) {
+                  acc['${w}x$h'] = url;
+                }
+                return acc;
+              }),
+            };
+          }),
+          tags: post('tags').letOrThrow(
             (pick) => pick.asMapOrThrow<String, List<dynamic>>().map(
                   (key, value) => MapEntry(key, List.from(value)),
                 ),
           ),
-          uploaderId: pick('uploader_id').asIntOrThrow(),
-          createdAt: pick('created_at').asDateTimeOrThrow(),
-          updatedAt: pick('updated_at').asDateTimeOrNull(),
+          uploaderId: post('uploader_id').asIntOrThrow(),
+          createdAt: post('created_at').asDateTimeOrThrow(),
+          updatedAt: post('updated_at').asDateTimeOrNull(),
           vote: VoteInfo(
-            score: pick('score')
+            score: post('score')
                 .letOrThrow((pick) => pick('total').asIntOrThrow()),
           ),
-          isDeleted: pick('flags')
-              .letOrThrow((pick) => pick('deleted').asBoolOrThrow()),
-          rating: pick('rating').letOrThrow(
-              (pick) => Rating.values.asNameMap()[pick.asString()]!),
-          favCount: pick('fav_count').asIntOrThrow(),
-          isFavorited: pick('is_favorited').asBoolOrThrow(),
-          commentCount: pick('comment_count').asIntOrThrow(),
-          description: pick('description').asStringOrThrow(),
+          isDeleted: post(
+            'flags',
+          ).letOrThrow((pick) => pick('deleted').asBoolOrThrow()),
+          rating: post(
+            'rating',
+          ).letOrThrow((pick) => Rating.values.asNameMap()[pick.asString()]!),
+          favCount: post('fav_count').asIntOrThrow(),
+          isFavorited: post('is_favorited').asBoolOrThrow(),
+          commentCount: post('comment_count').asIntOrThrow(),
+          description: post('description').asStringOrThrow(),
           sources:
-              pick('sources').asListOrThrow((pick) => pick.asStringOrThrow()),
-          pools: pick('pools').asListOrThrow((pick) => pick.asIntOrThrow()),
-          relationships: pick('relationships').letOrThrow((pick) =>
-              Relationships.fromJson(pick.asMapOrThrow<String, dynamic>())),
+              post('sources').asListOrThrow((pick) => pick.asStringOrThrow()),
+          pools: post('pools').asListOrThrow((pick) => pick.asIntOrThrow()),
+          relationships: post('relationships').letOrThrow(
+            (pick) =>
+                Relationships.fromJson(pick.asMapOrThrow<String, dynamic>()),
+          ),
         ),
       );
 }
