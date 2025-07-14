@@ -5,31 +5,35 @@ import 'package:e1547/stream/stream.dart';
 import 'package:flutter/material.dart';
 
 class PostDetailPage extends StatelessWidget {
-  const PostDetailPage({
-    super.key,
-    required this.id,
-  });
+  const PostDetailPage({super.key, required this.id});
 
   final int id;
 
   @override
   Widget build(BuildContext context) {
     final client = ClientRef.of(context);
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Post'),
-        forceMaterialTransparency: true,
-      ),
-      extendBodyBehindAppBar: true,
-      body: SubStreamFuture(
-        create: () => client.posts.get(id: id),
-        builder: (context, state) {
-          if (state.hasError) {
-            return Center(child: Text('Error: ${state.error}'));
-          }
+    return SubStreamFuture(
+      create: () => client.posts.get(id: id),
+      builder: (context, state) {
+        if (state.hasError) {
+          return Scaffold(
+            appBar: AppBar(
+              title: const Text('Post'),
+              forceMaterialTransparency: true,
+            ),
+            extendBodyBehindAppBar: true,
+            body: Center(child: Text('Error: ${state.error}')),
+          );
+        }
 
-          if (state.data case final post?) {
-            return SingleChildScrollView(
+        if (state.data case final post?) {
+          return Scaffold(
+            appBar: AppBar(
+              title: const Text('Post'),
+              forceMaterialTransparency: true,
+            ),
+            extendBodyBehindAppBar: true,
+            body: SingleChildScrollView(
               child: Column(
                 children: [
                   Center(
@@ -45,12 +49,31 @@ class PostDetailPage extends StatelessWidget {
                   ),
                 ],
               ),
-            );
-          }
+            ),
+            floatingActionButton: FloatingActionButton(
+              child: post.isFavorited
+                  ? const Icon(Icons.favorite, color: Colors.red)
+                  : const Icon(Icons.favorite),
+              onPressed: () {
+                if (post.isFavorited) {
+                  client.posts.removeFavorite(id);
+                } else {
+                  client.posts.addFavorite(id);
+                }
+              },
+            ),
+          );
+        }
 
-          return const Center(child: CircularProgressIndicator());
-        },
-      ),
+        return Scaffold(
+          appBar: AppBar(
+            title: const Text('Post'),
+            forceMaterialTransparency: true,
+          ),
+          extendBodyBehindAppBar: true,
+          body: const Center(child: CircularProgressIndicator()),
+        );
+      },
     );
   }
 }

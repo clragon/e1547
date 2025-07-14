@@ -57,9 +57,7 @@ class PostImageTile extends StatelessWidget {
           if (onTap != null)
             Material(
               type: MaterialType.transparency,
-              child: InkWell(
-                onTap: onTap,
-              ),
+              child: InkWell(onTap: onTap),
             ),
         ],
       ),
@@ -77,19 +75,13 @@ class PostImageTag extends StatelessWidget {
     if (post.ext == 'gif') {
       return const ColoredBox(
         color: Colors.black12,
-        child: Icon(
-          Icons.gif,
-          color: Colors.white,
-        ),
+        child: Icon(Icons.gif, color: Colors.white),
       );
     }
     if (post.type == PostType.video) {
       return const ColoredBox(
         color: Colors.black12,
-        child: Icon(
-          Icons.play_arrow,
-          color: Colors.white,
-        ),
+        child: Icon(Icons.play_arrow, color: Colors.white),
       );
     }
     return const SizedBox.shrink();
@@ -205,19 +197,13 @@ class PostInfoBar extends StatelessWidget {
 }
 
 void defaultPushPostDetail(BuildContext context, int id) {
-  Navigator.of(context).push(
-    MaterialPageRoute(
-      builder: (context) => PostDetailPage(id: id),
-    ),
-  );
+  Navigator.of(
+    context,
+  ).push(MaterialPageRoute(builder: (context) => PostDetailPage(id: id)));
 }
 
 class PostTile extends StatelessWidget {
-  const PostTile({
-    super.key,
-    required this.post,
-    this.onTap,
-  });
+  const PostTile({super.key, required this.post, this.onTap});
 
   final Post post;
   final VoidCallback? onTap;

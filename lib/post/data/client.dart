@@ -47,6 +47,18 @@ class PostClient {
           )
           .future;
 
+  Future<void> addFavorite(int postId) => cache.items.optimistic(
+    postId,
+    (post) => post.copyWith(isFavorited: true),
+    () => dio.post('/favorites.json', queryParameters: {'post_id': postId}),
+  );
+
+  Future<void> removeFavorite(int postId) => cache.items.optimistic(
+    postId,
+    (post) => post.copyWith(isFavorited: false),
+    () => dio.delete('/favorites/$postId.json'),
+  );
+
   void dispose() {
     cache.dispose();
   }

@@ -8,10 +8,7 @@ import 'package:flutter/foundation.dart';
 
 /// An LRU and TTL Cache where entries with active listeners are kept indefinitely.
 class ValueCache<K, V> extends MapBase<K, V> {
-  ValueCache({
-    this.size = 1000,
-    this.maxAge,
-  });
+  ValueCache({this.size = 1000, this.maxAge});
 
   /// The amount of children with no active listeners that remain in the cache.
   ///
@@ -44,10 +41,10 @@ class ValueCache<K, V> extends MapBase<K, V> {
 
   @override
   void operator []=(K key, V value) => _cache.update(
-        key,
-        (entry) => entry..value = value,
-        ifAbsent: () => _create(value),
-      );
+    key,
+    (entry) => entry..value = value,
+    ifAbsent: () => _create(value),
+  );
 
   /// Returns a stream for the value corresponding to [key].
   /// If the value is updated, the new value will be emitted.
@@ -56,16 +53,9 @@ class ValueCache<K, V> extends MapBase<K, V> {
   /// Once the stream listener is removed, the value may be removed by the LRU / TTL evicting strategy.
   ///
   /// Also see [ValueCacheEntry.stream].
-  Stream<V> stream(
-    K key, {
-    FutureOr<V> Function()? fetch,
-    Duration? maxAge,
-  }) {
+  Stream<V> stream(K key, {FutureOr<V> Function()? fetch, Duration? maxAge}) {
     _cache.putIfAbsent(key, () => _create(null));
-    return _cache[key]!.stream(
-      fetch: fetch,
-      maxAge: maxAge ?? this.maxAge,
-    );
+    return _cache[key]!.stream(fetch: fetch, maxAge: maxAge ?? this.maxAge);
   }
 
   /// Optimistically updates a value.
@@ -73,17 +63,18 @@ class ValueCache<K, V> extends MapBase<K, V> {
   /// [update] must therefore not modify the value, but return a copy.
   ///
   /// Will not add the value if it is not already present.
-  Future<void> optimistic(
+  Future<R> optimistic<R>(
     K key,
     V Function(V value) update,
-    FutureOr<void> Function() callback,
+    FutureOr<R> Function() callback,
   ) async {
     V? old = this[key];
     try {
       if (old != null) {
         this[key] = update(old);
       }
-      await callback();
+      final result = await callback();
+      return result;
     } on Exception {
       if (old != null) {
         this[key] = old;
@@ -96,8 +87,9 @@ class ValueCache<K, V> extends MapBase<K, V> {
   ///
   /// Checks against both [size] and [maxAge].
   void _trim() {
-    List<MapEntry<K, ValueCacheEntry<V>>> orphaned =
-        _cache.entries.whereNot((e) => e.value.hasListeners).toList();
+    List<MapEntry<K, ValueCacheEntry<V>>> orphaned = _cache.entries
+        .whereNot((e) => e.value.hasListeners)
+        .toList();
     orphaned.sortBy((e) => e.value);
     List<MapEntry<K, ValueCacheEntry<V>>> removing = [];
     int? size = this.size;
@@ -146,12 +138,7 @@ class ValueCache<K, V> extends MapBase<K, V> {
 /// [fetching] means the entry is currently fetching a value for the first time.
 /// [refetching] means the entry is currently fetching a value to update an existing value.
 /// [error] means the entry encountered an error while fetching or refetching a value.
-enum ValueCacheStatus {
-  idle,
-  fetching,
-  refetching,
-  error,
-}
+enum ValueCacheStatus { idle, fetching, refetching, error }
 
 /// A class for storing values in a [ValueCache].
 ///
@@ -208,10 +195,7 @@ abstract class ValueCacheEntry<V> implements Comparable<ValueCacheEntry<V>> {
   /// If [value] is null, [fetch] will be called to populate it, if provided.
   /// If [value] is stale, it will be emitted, then [fetch] will be called to update it, if provided.
   /// If [fetch] is called, [maxAge] will be used as the time to live for the value.
-  Stream<V> stream({
-    FutureOr<V> Function()? fetch,
-    Duration? maxAge,
-  });
+  Stream<V> stream({FutureOr<V> Function()? fetch, Duration? maxAge});
 
   /// Frees all resources associated with this cache entry.
   /// All streams will be closed and the value will be removed.

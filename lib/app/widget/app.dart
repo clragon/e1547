@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:context_plus/context_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:e1547/app/data/init.dart';
@@ -25,7 +27,14 @@ class App extends StatelessWidget {
               dio: Dio(
                 BaseOptions(
                   baseUrl: 'https://e621.net',
-                  headers: {'User-Agent': 'e1547/from-rubbble (binaryfloof)'},
+                  headers: {
+                    HttpHeaders.userAgentHeader:
+                        'e1547/from-rubbble (binaryfloof)',
+                    /*
+                    HttpHeaders.authorizationHeader:
+                        'Basic ${base64Encode(utf8.encode('a:b'))}',
+                        */
+                  },
                 ),
               ),
             ),

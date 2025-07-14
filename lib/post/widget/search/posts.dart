@@ -26,20 +26,41 @@ class PostsPage extends StatelessWidget {
                   builder: (context) => PostDetailPage(id: post.id),
                 ),
               ),
-              child: Hero(
-                tag: 'post-${post.id}',
-                child: Card(
-                  child: post.sample != null
-                      ? CachedNetworkImage(
-                          imageUrl: post.sample!,
-                          fit: BoxFit.cover,
-                        )
-                      : Icon(
-                          Icons.image_not_supported,
-                          size: 60,
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+              child: Stack(
+                fit: StackFit.passthrough,
+                children: [
+                  Hero(
+                    tag: 'post-${post.id}',
+                    child: Card(
+                      child: post.sample != null
+                          ? CachedNetworkImage(
+                              imageUrl: post.sample!,
+                              fit: BoxFit.cover,
+                            )
+                          : Icon(
+                              Icons.image_not_supported,
+                              size: 60,
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurfaceVariant,
+                            ),
+                    ),
+                  ),
+                  if (post.isFavorited)
+                    Positioned(
+                      bottom: 0,
+                      right: 0,
+                      child: Container(
+                        padding: const EdgeInsets.all(8),
+                        color: Colors.black54,
+                        child: const Icon(
+                          Icons.favorite,
+                          color: Colors.red,
+                          size: 24,
                         ),
-                ),
+                      ),
+                    ),
+                ],
               ),
             ),
             firstPageErrorIndicatorBuilder: (context) => Center(
