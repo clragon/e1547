@@ -9,16 +9,16 @@ enum AppTheme {
   system;
 
   ThemeData get data => switch (this) {
-        light => ThemeData.light().prepare(),
-        dark => ThemeData.dark().map((theme) => theme).prepare(),
-        amoled => ThemeData.dark().prepare(),
-        blue => ThemeData.dark().prepare(),
-        AppTheme.system => switch (
-              WidgetsBinding.instance.platformDispatcher.platformBrightness) {
-            Brightness.light => AppTheme.light.data,
-            Brightness.dark => AppTheme.dark.data,
-          },
-      };
+    light => ThemeData.light().prepare(),
+    dark => ThemeData.dark().map((theme) => theme).prepare(),
+    amoled => ThemeData.dark().prepare(),
+    blue => ThemeData.dark().prepare(),
+    AppTheme.system =>
+      switch (WidgetsBinding.instance.platformDispatcher.platformBrightness) {
+        Brightness.light => AppTheme.light.data,
+        Brightness.dark => AppTheme.dark.data,
+      },
+  };
 }
 
 extension ColorBrightnessExtension on Color {
@@ -59,8 +59,9 @@ ColorScheme generateColorScheme({
     error: error,
     onError: brightness == Brightness.dark ? Colors.black : Colors.white,
     errorContainer: error.shiftBrightness(shift(0.2)),
-    onErrorContainer:
-        brightness == Brightness.dark ? Colors.white : Colors.black,
+    onErrorContainer: brightness == Brightness.dark
+        ? Colors.white
+        : Colors.black,
     surface: surface,
     onSurface: text,
     surfaceDim: surface.shiftBrightness(shift(0.05)),
@@ -86,20 +87,7 @@ extension on ThemeData {
   ThemeData map(ThemeData Function(ThemeData theme) call) => call(this);
 
   ThemeData prepare() => copyWith(
-        pageTransitionsTheme: const PageTransitionsTheme(
-          builders: {
-            TargetPlatform.android: ZoomPageTransitionsBuilder(),
-            TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
-            TargetPlatform.macOS: CupertinoPageTransitionsBuilder(),
-            TargetPlatform.windows: ZoomPageTransitionsBuilder(),
-            TargetPlatform.linux: ZoomPageTransitionsBuilder(),
-          },
-        ),
-        appBarTheme: appBarTheme.copyWith(
-          surfaceTintColor: Colors.transparent,
-        ),
-        extensions: [
-          const AnimationTheme(),
-        ],
-      );
+    appBarTheme: appBarTheme.copyWith(surfaceTintColor: Colors.transparent),
+    extensions: [const AnimationTheme()],
+  );
 }

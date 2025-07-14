@@ -1,26 +1,11 @@
-import 'package:e1547/query/query.dart';
 import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
-
-extension PagingStateQuery<PageKeyType, ItemType>
-    on UseInfiniteQueryResult<List<ItemType>, dynamic, PageKeyType> {
-  PagingState<PageKeyType, ItemType> get paging =>
-      PagingState<PageKeyType, ItemType>(
-        keys: data?.pageParams,
-        pages: data?.pages,
-        error: error,
-        hasNextPage: hasNextPage,
-        isLoading: isLoading,
-      );
-}
 
 extension FilterPagingStateExtension<PageKeyType, ItemType>
     on PagingState<PageKeyType, ItemType> {
   PagingState<PageKeyType, ItemType> filter(BuildContext context) {
     // TODO: apply blacklist here?
-    return copyWith(
-      pages: pages?.deduplicate(),
-    );
+    return copyWith(pages: pages?.deduplicate());
   }
 }
 

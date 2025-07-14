@@ -4,7 +4,6 @@ import 'package:e1547/shared/shared.dart';
 import 'package:e1547/theme/theme.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_sub/flutter_sub.dart';
 
 /// Root widget to initialize all objects necessary for the app to function.
 /// Shows a loading screen while initializing and a failure screen if initialization fails.
@@ -29,35 +28,29 @@ class AppLoadingScreen<T> extends StatelessWidget {
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return MaterialApp(
+            key: const Key('loading'),
             theme: AppTheme.system.data,
             home: Builder(
               builder: (context) => Scaffold(
                 body: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const AppIcon(
-                        radius: 64,
-                      ),
-                      if (snapshot.error != null) ...[
-                        const SizedBox(height: 16),
-                        const Text(
-                          'Failed to initialize',
-                          style: TextStyle(
-                            color: Colors.red,
-                          ),
-                        ),
-                        if (kDebugMode) ...[
-                          const SizedBox(height: 8),
-                          Text(
-                            snapshot.error.toString(),
-                            style: const TextStyle(
-                              color: Colors.red,
-                            ),
-                          ),
+                  child: DefaultTextStyle.merge(
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.error,
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const AppIcon(radius: 64),
+                        if (snapshot.error != null) ...[
+                          const SizedBox(height: 16),
+                          const Text('Failed to initialize'),
+                          if (kDebugMode) ...[
+                            const SizedBox(height: 8),
+                            Text(snapshot.error.toString()),
+                          ],
                         ],
-                      ]
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -65,10 +58,7 @@ class AppLoadingScreen<T> extends StatelessWidget {
           );
         }
 
-        return builder(
-          context,
-          snapshot.data as T,
-        );
+        return builder(context, snapshot.data as T);
       },
     );
   }
