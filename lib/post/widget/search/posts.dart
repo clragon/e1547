@@ -30,7 +30,7 @@ class PostsPage extends StatelessWidget {
                 fit: StackFit.passthrough,
                 children: [
                   Hero(
-                    tag: 'post-${post.id}',
+                    tag: post.link,
                     child: Card(
                       child: post.sample != null
                           ? CachedNetworkImage(
