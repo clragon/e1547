@@ -422,5 +422,19 @@
         "platform": "ko-fi"
       }
     ]
+  },
+  {
+    "name": "THED4NIEL",
+    "handles": {
+      "ko-fi": "THED4NIEL"
+    },
+    "donations": [
+      {
+        "amount": 50.0,
+        "currency": "USD",
+        "date": "2025-07-30T12:48:00",
+        "platform": "ko-fi"
+      }
+    ]
   }
 ]
