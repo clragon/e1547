@@ -52,6 +52,15 @@ You can also find the app on the Google PlayStore:
     <img src="https://github.com/steverichey/google-play-badge-svg/blob/master/img/en_get.svg" width="30%"/>
 </a>
 
+### Certificate Fingerprints
+
+To verify the authenticity of downloaded APK files, you can check the signing certificate fingerprints:
+
+- **SHA1:** `8B:4B:8C:D7:FF:D6:04:DB:36:69:1B:D2:1A:BD:0E:54:0A:95:C8:28`
+- **SHA256:** `8D:32:4E:43:4B:97:5A:A3:38:A7:A9:C7:F3:07:7E:1F:C0:DB:F1:30:3E:C5:D9:B9:63:4F:E8:3E:9D:DB:63:80`
+
+via a tool like [AppVerifier](https://github.com/soupslurpr/AppVerifier).
+
 ## Installation
 
 ### Installing on Android
