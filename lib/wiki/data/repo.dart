@@ -3,7 +3,7 @@ import 'package:e1547/shared/shared.dart';
 import 'package:e1547/wiki/wiki.dart';
 
 class WikiRepo {
-  WikiRepo({required this.client, required this.persona});
+  WikiRepo({required this.persona, required this.client});
 
   final WikiClient client;
   final Persona persona;

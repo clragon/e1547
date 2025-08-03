@@ -3,7 +3,7 @@ import 'package:e1547/shared/shared.dart';
 import 'package:e1547/user/user.dart';
 
 class UserRepo {
-  UserRepo({required this.client, required this.persona});
+  UserRepo({required this.persona, required this.client});
 
   final UserClient client;
   final Persona persona;

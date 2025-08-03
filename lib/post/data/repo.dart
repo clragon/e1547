@@ -8,9 +8,9 @@ import 'package:e1547/tag/tag.dart';
 
 class PostRepo {
   PostRepo({
+    required this.persona,
     required this.client,
     required this.favorites,
-    required this.persona,
   });
 
   final PostClient client;

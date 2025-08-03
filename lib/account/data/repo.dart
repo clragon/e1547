@@ -6,9 +6,9 @@ import 'package:e1547/traits/traits.dart';
 
 class AccountRepo {
   AccountRepo({
+    required this.persona,
     required this.client,
     required this.postClient,
-    required this.persona,
   });
 
   final AccountClient client;

@@ -3,7 +3,7 @@ import 'package:e1547/shared/shared.dart';
 import 'package:e1547/topic/topic.dart';
 
 class TopicRepo {
-  TopicRepo({required this.client, required this.persona});
+  TopicRepo({required this.persona, required this.client});
 
   final TopicClient client;
   final Persona persona;

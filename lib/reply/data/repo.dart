@@ -3,7 +3,7 @@ import 'package:e1547/reply/reply.dart';
 import 'package:e1547/shared/shared.dart';
 
 class ReplyRepo {
-  ReplyRepo({required this.client, required this.persona});
+  ReplyRepo({required this.persona, required this.client});
 
   final ReplyClient client;
   final Persona persona;

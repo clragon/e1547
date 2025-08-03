@@ -3,7 +3,7 @@ import 'package:e1547/pool/pool.dart';
 import 'package:e1547/shared/shared.dart';
 
 class PoolRepo {
-  PoolRepo({required this.client, required this.persona});
+  PoolRepo({required this.persona, required this.client});
 
   final PoolClient client;
   final Persona persona;

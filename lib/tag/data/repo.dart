@@ -3,7 +3,7 @@ import 'package:e1547/shared/shared.dart';
 import 'package:e1547/tag/tag.dart';
 
 class TagRepo {
-  TagRepo({required this.client, required this.persona});
+  TagRepo({required this.persona, required this.client});
 
   final TagClient client;
   final Persona persona;

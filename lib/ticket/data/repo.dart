@@ -2,7 +2,7 @@ import 'package:e1547/shared/shared.dart';
 import 'package:e1547/ticket/ticket.dart';
 
 class TicketRepo {
-  TicketRepo({required this.client, required this.persona});
+  TicketRepo({required this.persona, required this.client});
 
   final TicketClient client;
   final Persona persona;

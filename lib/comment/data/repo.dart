@@ -3,7 +3,7 @@ import 'package:e1547/comment/comment.dart';
 import 'package:e1547/shared/shared.dart';
 
 class CommentRepo {
-  CommentRepo({required this.client, required this.persona});
+  CommentRepo({required this.persona, required this.client});
 
   final CommentClient client;
   final Persona persona;

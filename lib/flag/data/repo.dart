@@ -3,7 +3,7 @@ import 'package:e1547/flag/flag.dart';
 import 'package:e1547/shared/shared.dart';
 
 class FlagRepo {
-  FlagRepo({required this.client, required this.persona});
+  FlagRepo({required this.persona, required this.client});
 
   final FlagClient client;
   final Persona persona;

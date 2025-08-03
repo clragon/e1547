@@ -4,7 +4,7 @@ import 'package:e1547/post/post.dart';
 import 'package:e1547/shared/shared.dart';
 
 class FavoriteRepo {
-  FavoriteRepo({required this.client, required this.persona});
+  FavoriteRepo({required this.persona, required this.client});
 
   final FavoriteClient client;
   final Persona persona;

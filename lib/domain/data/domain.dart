@@ -47,39 +47,39 @@ class Domain {
   late final TicketClient _ticketClient = TicketClient(dio: dio);
 
   late final AccountRepo account = AccountRepo(
+    persona: persona,
     client: _accountClient,
     postClient: _postsClient,
-    persona: persona,
   );
   late final PostRepo posts = PostRepo(
+    persona: persona,
     client: _postsClient,
     favorites: _favoriteClient,
-    persona: persona,
   );
   late final FavoriteRepo favorites = FavoriteRepo(
+    persona: persona,
     client: _favoriteClient,
-    persona: persona,
   );
-  late final PoolRepo pools = PoolRepo(client: _poolClient, persona: persona);
-  late final UserRepo users = UserRepo(client: _userClient, persona: persona);
+  late final PoolRepo pools = PoolRepo(persona: persona, client: _poolClient);
+  late final UserRepo users = UserRepo(persona: persona, client: _userClient);
   late final CommentRepo comments = CommentRepo(
+    persona: persona,
     client: _commentClient,
-    persona: persona,
   );
-  late final TagRepo tags = TagRepo(client: _tagClient, persona: persona);
-  late final FlagRepo flags = FlagRepo(client: _flagClient, persona: persona);
-  late final WikiRepo wikis = WikiRepo(client: _wikiClient, persona: persona);
+  late final TagRepo tags = TagRepo(persona: persona, client: _tagClient);
+  late final FlagRepo flags = FlagRepo(persona: persona, client: _flagClient);
+  late final WikiRepo wikis = WikiRepo(persona: persona, client: _wikiClient);
   late final TopicRepo topics = TopicRepo(
-    client: _topicClient,
     persona: persona,
+    client: _topicClient,
   );
   late final ReplyRepo replies = ReplyRepo(
-    client: _replyClient,
     persona: persona,
+    client: _replyClient,
   );
   late final TicketRepo tickets = TicketRepo(
-    client: _ticketClient,
     persona: persona,
+    client: _ticketClient,
   );
 
   void dispose() {
