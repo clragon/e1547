@@ -13,8 +13,4 @@ class PostRepo {
 
   Future<List<Post>> page({int? page, int? limit, CancelToken? cancelToken}) =>
       client.page(page: page, limit: limit, cancelToken: cancelToken);
-
-  Future<void> addFavorite(int postId) => client.addFavorite(postId);
-
-  Future<void> removeFavorite(int postId) => client.removeFavorite(postId);
 }

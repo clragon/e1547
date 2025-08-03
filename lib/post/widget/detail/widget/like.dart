@@ -94,7 +94,7 @@ class FavoriteButton extends StatelessWidget {
           ScaffoldMessengerState messenger = ScaffoldMessenger.of(context);
           if (isLiked) {
             try {
-              await client.posts.removeFavorite(post.id);
+              await client.favorites.remove(post.id);
               messenger.showSnackBar(
                 SnackBar(
                   duration: const Duration(seconds: 1),
@@ -114,7 +114,7 @@ class FavoriteButton extends StatelessWidget {
             return false;
           } else {
             try {
-              await client.posts.addFavorite(post.id);
+              await client.favorites.add(post.id);
               /*
               if (upvote) {
                 controller.vote(

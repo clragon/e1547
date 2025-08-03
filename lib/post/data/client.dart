@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:e1547/post/post.dart';
+import 'package:e1547/shared/shared.dart';
 import 'package:e1547/stream/stream.dart';
 
 class PostClient {
@@ -14,7 +15,7 @@ class PostClient {
             id,
             fetch: () => dio
                 .get('/posts/$id.json', cancelToken: cancelToken)
-                .then(_unwrapPostsResponse)
+                .then(unwrapResponse('post'))
                 .then((response) => E621Post.fromJson(response.data)),
           )
           .future;
@@ -31,40 +32,11 @@ class PostClient {
                   queryParameters: {'page': page, 'limit': limit},
                   cancelToken: cancelToken,
                 )
-                .then(_unwrapPostsResponse)
+                .then(unwrapResponse('posts'))
                 .then(
                   (response) =>
                       response.data.map<Post>(E621Post.fromJson).toList(),
                 ),
           )
           .future;
-
-  Future<void> addFavorite(int postId) => cache.items.optimistic(
-    postId,
-    (post) => post.copyWith(isFavorited: true),
-    () => dio.post('/favorites.json', queryParameters: {'post_id': postId}),
-  );
-
-  Future<void> removeFavorite(int postId) => cache.items.optimistic(
-    postId,
-    (post) => post.copyWith(isFavorited: false),
-    () => dio.delete('/favorites/$postId.json'),
-  );
-
-  /// Unfucks the e621 API JSON response for Posts.
-  /// For reasons incomprehensible to mere mortals, this singular endpoint
-  /// will always wrap the response in an object containing nothing but a single key.
-  /// Either `posts` or `post` depending on the endpoint used.
-  /// This is completely useless behaviour, and we don't want to deal with it later down the line.
-  ///
-  /// This code is intentionally crude, as we don't want to waste performance on this.
-  Response _unwrapPostsResponse(Response response) {
-    if (response.data is Map<String, dynamic>) {
-      final inner = response.data['posts'] ?? response.data['post'];
-      if (inner != null) {
-        response.data = inner;
-      }
-    }
-    return response;
-  }
 }

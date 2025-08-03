@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:e1547/account/account.dart';
 import 'package:e1547/comment/comment.dart';
 import 'package:e1547/domain/data/client_cache.dart';
+import 'package:e1547/favorite/favorite.dart';
 import 'package:e1547/flag/flag.dart';
 import 'package:e1547/pool/pool.dart';
 import 'package:e1547/post/post.dart';
@@ -22,6 +23,10 @@ class Domain {
 
   late final AccountClient _accountClient = AccountClient(dio: dio);
   late final PostClient _postsClient = PostClient(dio: dio, cache: cache.posts);
+  late final FavoriteClient _favoriteClient = FavoriteClient(
+    dio: dio,
+    postCache: cache.posts,
+  );
   late final PoolClient _poolClient = PoolClient(dio: dio);
   late final UserClient _userClient = UserClient(dio: dio);
   late final CommentClient _commentClient = CommentClient(
@@ -47,6 +52,10 @@ class Domain {
     persona: persona,
   );
   late final PostRepo posts = PostRepo(client: _postsClient, persona: persona);
+  late final FavoriteRepo favorites = FavoriteRepo(
+    client: _favoriteClient,
+    persona: persona,
+  );
   late final PoolRepo pools = PoolRepo(client: _poolClient, persona: persona);
   late final UserRepo users = UserRepo(client: _userClient, persona: persona);
   late final CommentRepo comments = CommentRepo(
@@ -74,6 +83,7 @@ class Domain {
     for (final client in [
       _accountClient,
       _postsClient,
+      _favoriteClient,
       _poolClient,
       _userClient,
       _commentClient,
