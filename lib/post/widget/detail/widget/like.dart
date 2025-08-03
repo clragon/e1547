@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:e1547/domain/domain.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/shared/shared.dart';
@@ -10,9 +12,32 @@ class LikeDisplay extends StatelessWidget {
 
   final Post post;
 
+  Future<bool> vote(
+    BuildContext context, {
+    required bool upvote,
+    required bool isLiked,
+  }) async {
+    final domain = DomainRef.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+
+    try {
+      await domain.posts.vote(id: post.id, upvote: upvote, replace: !isLiked);
+      return !isLiked;
+    } on Exception {
+      messenger.showSnackBar(
+        SnackBar(
+          duration: const Duration(seconds: 1),
+          content: Text(
+            'Failed to ${!isLiked ? "upvote" : "downvote"} Post #${post.id}',
+          ),
+        ),
+      );
+      return isLiked;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final messenger = ScaffoldMessenger.of(context);
     final canVote = DomainRef.of(context).hasLogin;
 
     return Column(
@@ -24,26 +49,10 @@ class LikeDisplay extends StatelessWidget {
               status: post.vote.status,
               score: post.vote.score,
               onUpvote: canVote
-                  ? (isLiked) async {
-                      messenger.showSnackBar(
-                        SnackBar(
-                          duration: const Duration(seconds: 1),
-                          content: Text('Failed to upvote Post #${post.id}'),
-                        ),
-                      );
-                      return !isLiked;
-                    }
+                  ? (isLiked) => vote(context, upvote: true, isLiked: isLiked)
                   : null,
               onDownvote: canVote
-                  ? (isLiked) async {
-                      messenger.showSnackBar(
-                        SnackBar(
-                          duration: const Duration(seconds: 1),
-                          content: Text('Failed to downvote Post #${post.id}'),
-                        ),
-                      );
-                      return !isLiked;
-                    }
+                  ? (isLiked) => vote(context, upvote: false, isLiked: isLiked)
                   : null,
             ),
             Row(
@@ -75,7 +84,7 @@ class FavoriteButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final client = DomainRef.of(context);
+    final domain = DomainRef.of(context);
 
     return InkResponse(
       onTap: () {},
@@ -92,9 +101,21 @@ class FavoriteButton extends StatelessWidget {
         ),
         onTap: (isLiked) async {
           ScaffoldMessengerState messenger = ScaffoldMessenger.of(context);
+          const alsoVote = 1 != 1; // TODO: fetch from settings
           if (isLiked) {
             try {
-              await client.favorites.remove(post.id);
+              await domain.favorites.remove(post.id);
+              if (alsoVote && post.vote.status == VoteStatus.upvoted) {
+                domain.posts
+                    .vote(
+                      id: post.id,
+                      upvote: true,
+                      replace: false, // unvote
+                    )
+                    .ignore();
+              }
+              return false;
+            } on Exception {
               messenger.showSnackBar(
                 SnackBar(
                   duration: const Duration(seconds: 1),
@@ -103,27 +124,17 @@ class FavoriteButton extends StatelessWidget {
                   ),
                 ),
               );
-            } on Exception {
-              messenger.showSnackBar(
-                SnackBar(
-                  duration: const Duration(seconds: 1),
-                  content: Text('Failed to add Post #${post.id} to favorites'),
-                ),
-              );
+              return true;
             }
-            return false;
           } else {
             try {
-              await client.favorites.add(post.id);
-              /*
-              if (upvote) {
-                controller.vote(
-                  post: controller.postById(post.id)!,
-                  upvote: true,
-                  replace: true,
-                );
+              await domain.favorites.add(post.id);
+              if (alsoVote) {
+                domain.posts
+                    .vote(id: post.id, upvote: true, replace: true)
+                    .ignore();
               }
-              */
+              return true;
             } on Exception {
               messenger.showSnackBar(
                 SnackBar(
@@ -131,8 +142,8 @@ class FavoriteButton extends StatelessWidget {
                   content: Text('Failed to add Post #${post.id} to favorites'),
                 ),
               );
+              return false;
             }
-            return true;
           }
         },
       ),

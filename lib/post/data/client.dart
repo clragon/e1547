@@ -45,4 +45,17 @@ class PostClient {
         )
         .future;
   }
+
+  Future<void> vote({
+    required int id,
+    required bool upvote,
+    required bool replace,
+  }) => cache.items.optimistic(
+    id,
+    (post) => post.copyWith(vote: post.vote.withVote(upvote, replace)),
+    () => dio.post(
+      '/posts/$id/votes.json',
+      queryParameters: {'score': upvote ? 1 : -1, 'no_unvote': replace},
+    ),
+  );
 }
