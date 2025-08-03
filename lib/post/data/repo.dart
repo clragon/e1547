@@ -32,19 +32,41 @@ class PostRepo {
     QueryMap? query,
     bool? force,
     CancelToken? cancelToken,
-  }) {
-    Future<List<Post>> result;
+  }) =>
+      (_getRedirectPage(
+                page: page,
+                limit: limit,
+                query: query,
+                force: force,
+                cancelToken: cancelToken,
+              ) ??
+              client.page(
+                page: page,
+                limit: limit,
+                query: query,
+                force: force,
+                cancelToken: cancelToken,
+              ))
+          .map(_filter);
 
-    if (_shouldUseFavorites(query)) {
-      result = _favorites.page(
-        page: page,
-        limit: limit,
-        query: query,
-        force: force,
-        cancelToken: cancelToken,
-      );
-    } else {
-      result = client.page(
+  Future<List<Post>>? _getRedirectPage({
+    int? page,
+    int? limit,
+    QueryMap? query,
+    bool? force,
+    CancelToken? cancelToken,
+  }) {
+    final tags = TagMap(query?['tags']);
+    final order = tags['order'] ?? '';
+    final single = tags.length == 1 || (tags.length == 2 && order.isNotEmpty);
+
+    if (!single) return null;
+
+    // Checks for fictional order keys that indicate redirect behavior.
+    bool specialOrder(String value) => order.isEmpty || order == value;
+
+    if (tags['fav'] == persona.identity.username && specialOrder('fav')) {
+      return _favorites.page(
         page: page,
         limit: limit,
         query: query,
@@ -53,15 +75,19 @@ class PostRepo {
       );
     }
 
-    return result.map(_filter);
-  }
+    final poolId = int.tryParse(tags['pool'] ?? '');
 
-  /// Determines if the request should use the favorites API instead of the regular posts API.
-  bool _shouldUseFavorites(QueryMap? query) {
-    final username = persona.identity.username;
-    final tags = TagMap(query?['tags']).tags;
-    if (username == null || tags.isEmpty || tags.length > 1) return false;
-    return tags.first == 'fav:$username';
+    if (poolId != null) {
+      return byPool(
+        id: poolId,
+        page: page,
+        orderByOldest: specialOrder('pool'),
+        force: force,
+        cancelToken: cancelToken,
+      );
+    }
+
+    return null;
   }
 
   /// Filters out "broken" posts.
