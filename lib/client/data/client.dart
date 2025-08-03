@@ -1,18 +1,29 @@
 import 'package:dio/dio.dart';
+import 'package:e1547/account/account.dart';
+import 'package:e1547/identity/identity.dart';
 import 'package:e1547/post/post.dart';
+import 'package:e1547/traits/traits.dart';
+import 'package:flutter/material.dart';
 
 class Client {
-  Client({
-    required this.dio,
-  }) : posts = PostClient(dio: dio);
+  Client({required this.dio, required this.identity, required this.traits});
 
   final Dio dio;
+  final Identity identity;
+  final ValueNotifier<Traits> traits;
 
-  final PostClient posts;
+  late final AccountClient account = AccountClient(
+    dio: dio,
+    identity: identity,
+    traits: traits,
+    postClient: posts,
+  );
+
+  late final PostClient posts = PostClient(dio: dio);
 
   void dispose() {
     dio.close();
-    for (final client in [posts]) {
+    for (final client in [account, posts]) {
       try {
         (client as dynamic).dispose();
         // ignore: avoid_catching_errors

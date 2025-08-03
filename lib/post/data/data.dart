@@ -1,4 +1,5 @@
 export 'client.dart';
+export 'fake.dart';
 export 'image.dart';
 export 'json.dart';
 export 'link.dart';
