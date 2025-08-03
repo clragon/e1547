@@ -1,5 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:e1547/client/client.dart';
+import 'package:e1547/domain/domain.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/shared/shared.dart';
 import 'package:e1547/stream/stream.dart';
@@ -13,7 +13,7 @@ class PostsPage extends StatelessWidget {
     return SubStreamPageController(
       initialPageKey: 1,
       getNextPageKey: (state) => state.nextIntPageKey,
-      fetchPage: (pageKey) => ClientRef.of(context).posts.page(page: pageKey),
+      fetchPage: (pageKey) => DomainRef.of(context).posts.page(page: pageKey),
       builder: (context, state, fetchNextPage) => Scaffold(
         appBar: AppBar(title: const Text('Posts')),
         body: PagedGridView(

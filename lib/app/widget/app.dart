@@ -4,7 +4,7 @@ import 'package:context_plus/context_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:e1547/app/data/init.dart';
 import 'package:e1547/app/widget/loading.dart';
-import 'package:e1547/client/client.dart';
+import 'package:e1547/domain/domain.dart';
 import 'package:e1547/identity/data/identity.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/settings/data/data.dart';
@@ -23,23 +23,25 @@ class App extends StatelessWidget {
         builder: (context, initData) {
           final settings = SettingsRef.bindValue(context, initData.settings);
 
-          ClientRef.bind(
+          DomainRef.bind(
             context,
-            () => Client(
-              identity: const Identity(
-                id: 1,
-                host: 'https://e621.net',
-                username: 'test',
-                headers: {},
-              ),
-              traits: ValueNotifier(
-                const Traits(
+            () => Domain(
+              persona: (
+                identity: const Identity(
                   id: 1,
-                  userId: null,
-                  denylist: [],
-                  homeTags: '',
-                  avatar: '',
-                  perPage: null,
+                  host: 'https://e621.net',
+                  username: 'test',
+                  headers: {},
+                ),
+                traits: ValueNotifier(
+                  const Traits(
+                    id: 1,
+                    userId: null,
+                    denylist: [],
+                    homeTags: '',
+                    avatar: '',
+                    perPage: null,
+                  ),
                 ),
               ),
               dio: Dio(

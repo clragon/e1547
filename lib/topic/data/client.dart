@@ -5,14 +5,10 @@ import 'package:e1547/stream/stream.dart';
 import 'package:e1547/topic/topic.dart';
 
 class TopicClient {
-  TopicClient({required this.dio});
+  TopicClient({required this.dio, required this.cache});
 
   final Dio dio;
-  final PagedValueCache<QueryKey, int, Topic> cache = PagedValueCache(
-    toId: (topic) => topic.id,
-    size: null,
-    maxAge: const Duration(minutes: 5),
-  );
+  final PagedValueCache<QueryKey, int, Topic> cache;
 
   Future<Topic> get({required int id, bool? force, CancelToken? cancelToken}) =>
       cache.items
@@ -49,10 +45,6 @@ class TopicClient {
               }),
         )
         .future;
-  }
-
-  void dispose() {
-    cache.dispose();
   }
 }
 

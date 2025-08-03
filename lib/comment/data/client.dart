@@ -6,14 +6,10 @@ import 'package:e1547/stream/stream.dart';
 import 'package:e1547/vote/vote.dart';
 
 class CommentClient {
-  CommentClient({required this.dio});
+  CommentClient({required this.dio, required this.cache});
 
   final Dio dio;
-  final PagedValueCache<QueryKey, int, Comment> cache = PagedValueCache(
-    toId: (comment) => comment.id,
-    size: null,
-    maxAge: const Duration(minutes: 5),
-  );
+  final PagedValueCache<QueryKey, int, Comment> cache;
 
   Future<Comment> get({
     required int id,
@@ -120,10 +116,6 @@ class CommentClient {
       queryParameters: {'score': upvote ? 1 : -1, 'no_unvote': replace},
     ),
   );
-
-  void dispose() {
-    cache.dispose();
-  }
 }
 
 extension E621Comment on Comment {

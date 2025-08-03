@@ -5,4 +5,5 @@ export 'json.dart';
 export 'link.dart';
 export 'post.dart';
 export 'rating.dart';
+export 'repo.dart';
 export 'type.dart';

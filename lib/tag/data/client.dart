@@ -5,14 +5,10 @@ import 'package:e1547/stream/stream.dart';
 import 'package:e1547/tag/tag.dart';
 
 class TagClient {
-  TagClient({required this.dio});
+  TagClient({required this.dio, required this.cache});
 
   final Dio dio;
-  final PagedValueCache<QueryKey, int, Tag> cache = PagedValueCache(
-    toId: (tag) => tag.id,
-    size: null,
-    maxAge: const Duration(minutes: 5),
-  );
+  final PagedValueCache<QueryKey, int, Tag> cache;
 
   Future<List<Tag>> page({
     int? page,
@@ -110,10 +106,6 @@ class TagClient {
             .map((e) => e['consequent_name'])
             .firstOrNull;
       });
-
-  void dispose() {
-    cache.dispose();
-  }
 }
 
 extension E621Tag on Tag {

@@ -3,14 +3,10 @@ import 'package:e1547/post/post.dart';
 import 'package:e1547/stream/stream.dart';
 
 class PostClient {
-  PostClient({required this.dio});
+  PostClient({required this.dio, required this.cache});
 
   final Dio dio;
-  final PagedValueCache<QueryKey, int, Post> cache = PagedValueCache(
-    toId: (post) => post.id,
-    size: null,
-    maxAge: const Duration(minutes: 5),
-  );
+  final PagedValueCache<QueryKey, int, Post> cache;
 
   Future<Post> get({required int id, bool? force, CancelToken? cancelToken}) =>
       cache.items
@@ -54,10 +50,6 @@ class PostClient {
     (post) => post.copyWith(isFavorited: false),
     () => dio.delete('/favorites/$postId.json'),
   );
-
-  void dispose() {
-    cache.dispose();
-  }
 
   /// Unfucks the e621 API JSON response for Posts.
   /// For reasons incomprehensible to mere mortals, this singular endpoint
