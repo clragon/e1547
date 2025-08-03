@@ -53,12 +53,12 @@ class StreamFuture<T> extends DelegatingFuture<T> {
   }
 
   StreamFuture._(Stream<T> stream)
-      : assert(
-          stream.isBroadcast,
-          'StreamFuture can only be created from a broadcast stream.',
-        ),
-        _stream = stream,
-        super(stream.first);
+    : assert(
+        stream.isBroadcast,
+        'StreamFuture can only be created from a broadcast stream.',
+      ),
+      _stream = stream,
+      super(stream.first);
 
   final Stream<T> _stream;
 
@@ -79,4 +79,6 @@ extension StreamFutureExtension<T> on Stream<T> {
 /// An extension on [Future] to easily create a [StreamFuture].
 extension FutureStreamExtension<T> on Future<T> {
   StreamFuture<T> get stream => StreamFuture.from(this);
+
+  Stream<T> get streamed => stream.stream;
 }
