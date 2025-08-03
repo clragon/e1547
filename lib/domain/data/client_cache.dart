@@ -54,12 +54,16 @@ class ClientCache {
   final PagedValueCache<QueryKey, int, Reply> replies;
 
   void dispose() {
-    posts.dispose();
-    comments.dispose();
-    tags.dispose();
-    flags.dispose();
-    topics.dispose();
-    wikis.dispose();
-    replies.dispose();
+    for (final cache in [
+      posts,
+      comments,
+      tags,
+      flags,
+      topics,
+      wikis,
+      replies,
+    ]) {
+      cache.dispose();
+    }
   }
 }
