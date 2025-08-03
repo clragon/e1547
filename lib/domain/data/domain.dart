@@ -55,6 +55,7 @@ class Domain {
     persona: persona,
     client: _postsClient,
     favorites: _favoriteClient,
+    pools: _poolClient,
   );
   late final FavoriteRepo favorites = FavoriteRepo(
     persona: persona,
