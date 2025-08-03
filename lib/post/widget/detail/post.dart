@@ -1,8 +1,7 @@
 import 'dart:math';
 
 import 'package:context_plus/context_plus.dart';
-import 'package:e1547/client/client.dart';
-import 'package:e1547/post/data/fake.dart';
+import 'package:e1547/domain/domain.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/stream/stream.dart';
 import 'package:flutter/material.dart';
@@ -14,7 +13,7 @@ class PostDetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final client = ClientRef.of(context);
+    final client = DomainRef.of(context);
 
     return SubStreamFuture(
       create: () => client.posts.get(id: id),

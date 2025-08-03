@@ -5,14 +5,10 @@ import 'package:e1547/stream/stream.dart';
 import 'package:e1547/wiki/wiki.dart';
 
 class WikiClient {
-  WikiClient({required this.dio});
+  WikiClient({required this.dio, required this.cache});
 
   final Dio dio;
-  final PagedValueCache<QueryKey, int, Wiki> cache = PagedValueCache(
-    toId: (wiki) => wiki.id,
-    size: null,
-    maxAge: const Duration(minutes: 5),
-  );
+  final PagedValueCache<QueryKey, int, Wiki> cache;
 
   Future<Wiki> get({
     required String id,
@@ -52,10 +48,6 @@ class WikiClient {
               }),
         )
         .future;
-  }
-
-  void dispose() {
-    cache.dispose();
   }
 }
 

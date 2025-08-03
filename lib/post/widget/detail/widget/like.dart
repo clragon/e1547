@@ -1,4 +1,4 @@
-import 'package:e1547/client/client.dart';
+import 'package:e1547/domain/domain.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/shared/shared.dart';
 import 'package:e1547/vote/vote.dart';
@@ -75,7 +75,7 @@ class FavoriteButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final client = ClientRef.of(context);
+    final client = DomainRef.of(context);
 
     return InkResponse(
       onTap: () {},

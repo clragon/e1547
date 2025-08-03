@@ -6,14 +6,10 @@ import 'package:e1547/shared/shared.dart';
 import 'package:e1547/stream/stream.dart';
 
 class ReplyClient {
-  ReplyClient({required this.dio});
+  ReplyClient({required this.dio, required this.cache});
 
   final Dio dio;
-  final PagedValueCache<QueryKey, int, Reply> cache = PagedValueCache(
-    toId: (reply) => reply.id,
-    size: null,
-    maxAge: const Duration(minutes: 5),
-  );
+  final PagedValueCache<QueryKey, int, Reply> cache;
 
   Future<Reply> get({required int id, bool? force, CancelToken? cancelToken}) =>
       cache.items
@@ -71,10 +67,6 @@ class ReplyClient {
     force: force,
     cancelToken: cancelToken,
   );
-
-  void dispose() {
-    cache.dispose();
-  }
 }
 
 extension E621Reply on Reply {

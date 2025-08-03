@@ -5,14 +5,10 @@ import 'package:e1547/shared/shared.dart';
 import 'package:e1547/stream/stream.dart';
 
 class FlagClient {
-  FlagClient({required this.dio});
+  FlagClient({required this.dio, required this.cache});
 
   final Dio dio;
-  final PagedValueCache<QueryKey, int, PostFlag> cache = PagedValueCache(
-    toId: (flag) => flag.id,
-    size: null,
-    maxAge: const Duration(minutes: 5),
-  );
+  final PagedValueCache<QueryKey, int, PostFlag> cache;
 
   Future<List<PostFlag>> list({
     int? page,
@@ -49,10 +45,6 @@ class FlagClient {
       if (flag == 'inferior' && parent != null) 'post_flag[parent_id]': parent,
     },
   );
-
-  void dispose() {
-    cache.dispose();
-  }
 }
 
 extension E621PostFlag on PostFlag {
