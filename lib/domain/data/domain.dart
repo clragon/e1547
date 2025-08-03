@@ -51,7 +51,11 @@ class Domain {
     postClient: _postsClient,
     persona: persona,
   );
-  late final PostRepo posts = PostRepo(client: _postsClient, persona: persona);
+  late final PostRepo posts = PostRepo(
+    client: _postsClient,
+    favorites: _favoriteClient,
+    persona: persona,
+  );
   late final FavoriteRepo favorites = FavoriteRepo(
     client: _favoriteClient,
     persona: persona,

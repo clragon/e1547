@@ -20,23 +20,29 @@ class PostClient {
           )
           .future;
 
-  Future<List<Post>> page({int? page, int? limit, CancelToken? cancelToken}) =>
-      cache
-          .stream(
-            QueryKey([
-              {'page': page, 'limit': limit},
-            ]),
-            fetch: () => dio
-                .get(
-                  '/posts.json',
-                  queryParameters: {'page': page, 'limit': limit},
-                  cancelToken: cancelToken,
-                )
-                .then(unwrapResponse('posts'))
-                .then(
-                  (response) =>
-                      response.data.map<Post>(E621Post.fromJson).toList(),
-                ),
-          )
-          .future;
+  Future<List<Post>> page({
+    int? page,
+    int? limit,
+    QueryMap? query,
+    bool? force,
+    CancelToken? cancelToken,
+  }) {
+    final queryMap = {'page': page, 'limit': limit, ...?query}.toQuery();
+    return cache
+        .stream(
+          QueryKey([queryMap]),
+          fetch: () => dio
+              .get(
+                '/posts.json',
+                queryParameters: queryMap,
+                cancelToken: cancelToken,
+              )
+              .then(unwrapResponse('posts'))
+              .then(
+                (response) =>
+                    response.data.map<Post>(E621Post.fromJson).toList(),
+              ),
+        )
+        .future;
+  }
 }

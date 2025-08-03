@@ -15,7 +15,7 @@ class FavoriteRepo {
     QueryMap? query,
     bool? force,
     CancelToken? cancelToken,
-  }) => client.favorites(
+  }) => client.page(
     page: page,
     limit: limit,
     query: query,

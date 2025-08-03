@@ -9,7 +9,7 @@ class FavoriteClient {
   final Dio dio;
   final PagedValueCache<QueryKey, int, Post> postCache;
 
-  Future<List<Post>> favorites({
+  Future<List<Post>> page({
     int? page,
     int? limit,
     QueryMap? query,
@@ -18,7 +18,12 @@ class FavoriteClient {
   }) => dio
       .get(
         '/favorites.json',
-        queryParameters: {'page': page, 'limit': limit, ...?query},
+        queryParameters: {
+          'page': page,
+          'limit': limit,
+          // may not contain tags, or we get redirected to a html page
+          ...?(query?..remove('tags')),
+        },
         cancelToken: cancelToken,
       )
       .then(unwrapResponse('posts'))
