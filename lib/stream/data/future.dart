@@ -73,12 +73,20 @@ class StreamFuture<T> extends DelegatingFuture<T> {
 
 /// An extension on [Stream] to easily create a [StreamFuture].
 extension StreamFutureExtension<T> on Stream<T> {
+  /// Wraps this [Stream] into a [StreamFuture].
   StreamFuture<T> get future => StreamFuture(this);
 }
 
 /// An extension on [Future] to easily create a [StreamFuture].
 extension FutureStreamExtension<T> on Future<T> {
+  /// Converts or unwraps this [Future] into a [StreamFuture].
   StreamFuture<T> get stream => StreamFuture.from(this);
 
+  /// Accesses the underlying stream of this [Future].
+  /// If this is not a [StreamFuture], it will create one.
   Stream<T> get streamed => stream.stream;
+
+  /// Maps the value of this [Future] using the provided [mapper].
+  /// This is similar to `then`, but preserves the underlying stream.
+  Future<T> map(T Function(T value) mapper) => stream.map(mapper);
 }
