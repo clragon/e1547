@@ -13,7 +13,7 @@ class LikeDisplay extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final messenger = ScaffoldMessenger.of(context);
-    const canVote = 1 == 1; // client.hasLogin;
+    final canVote = DomainRef.of(context).hasLogin;
 
     return Column(
       children: [
