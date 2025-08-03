@@ -5,8 +5,8 @@ import 'package:e1547/shared/shared.dart';
 class PoolRepo {
   PoolRepo({required this.persona, required this.client});
 
-  final PoolClient client;
   final Persona persona;
+  final PoolClient client;
 
   Future<Pool> get({required int id, bool? force, CancelToken? cancelToken}) =>
       client.get(id: id, force: force, cancelToken: cancelToken);

@@ -6,8 +6,8 @@ import 'package:e1547/shared/shared.dart';
 class FavoriteRepo {
   FavoriteRepo({required this.persona, required this.client});
 
-  final FavoriteClient client;
   final Persona persona;
+  final FavoriteClient client;
 
   Future<List<Post>> favorites({
     int? page,

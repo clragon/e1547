@@ -12,20 +12,19 @@ import 'package:e1547/tag/tag.dart';
 class PostRepo {
   PostRepo({
     required this.persona,
-    required PostClient client,
+    required this.client,
     required FavoriteClient favorites,
     required PoolClient pools,
   }) : _pools = pools,
-       _favorites = favorites,
-       _client = client;
+       _favorites = favorites;
 
   final Persona persona;
-  final PostClient _client;
+  final PostClient client;
   final FavoriteClient _favorites;
   final PoolClient _pools;
 
   Future<Post> get({required int id, bool? force, CancelToken? cancelToken}) =>
-      _client.get(id: id, force: force, cancelToken: cancelToken);
+      client.get(id: id, force: force, cancelToken: cancelToken);
 
   Future<List<Post>> page({
     int? page,
@@ -45,7 +44,7 @@ class PostRepo {
         cancelToken: cancelToken,
       );
     } else {
-      result = _client.page(
+      result = client.page(
         page: page,
         limit: limit,
         query: query,

@@ -5,8 +5,8 @@ import 'package:e1547/shared/shared.dart';
 class FlagRepo {
   FlagRepo({required this.persona, required this.client});
 
-  final FlagClient client;
   final Persona persona;
+  final FlagClient client;
 
   Future<List<PostFlag>> list({
     int? page,

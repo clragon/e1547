@@ -5,8 +5,8 @@ import 'package:e1547/wiki/wiki.dart';
 class WikiRepo {
   WikiRepo({required this.persona, required this.client});
 
-  final WikiClient client;
   final Persona persona;
+  final WikiClient client;
 
   Future<Wiki> get({
     required String id,

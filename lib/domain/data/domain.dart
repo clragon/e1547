@@ -49,7 +49,7 @@ class Domain {
   late final AccountRepo account = AccountRepo(
     persona: persona,
     client: _accountClient,
-    postClient: _postsClient,
+    posts: _postsClient,
   );
   late final PostRepo posts = PostRepo(
     persona: persona,

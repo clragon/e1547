@@ -5,8 +5,8 @@ import 'package:e1547/shared/shared.dart';
 class CommentRepo {
   CommentRepo({required this.persona, required this.client});
 
-  final CommentClient client;
   final Persona persona;
+  final CommentClient client;
 
   Future<Comment> get({
     required int id,

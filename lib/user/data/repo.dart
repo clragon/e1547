@@ -5,8 +5,8 @@ import 'package:e1547/user/user.dart';
 class UserRepo {
   UserRepo({required this.persona, required this.client});
 
-  final UserClient client;
   final Persona persona;
+  final UserClient client;
 
   Future<User> get({required int id, bool? force, CancelToken? cancelToken}) =>
       client.get(id: id, force: force, cancelToken: cancelToken);

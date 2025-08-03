@@ -5,8 +5,8 @@ import 'package:e1547/tag/tag.dart';
 class TagRepo {
   TagRepo({required this.persona, required this.client});
 
-  final TagClient client;
   final Persona persona;
+  final TagClient client;
 
   Future<List<Tag>> page({
     int? page,

@@ -5,8 +5,8 @@ import 'package:e1547/topic/topic.dart';
 class TopicRepo {
   TopicRepo({required this.persona, required this.client});
 
-  final TopicClient client;
   final Persona persona;
+  final TopicClient client;
 
   Future<Topic> get({required int id, bool? force, CancelToken? cancelToken}) =>
       client.get(id: id, force: force, cancelToken: cancelToken);

@@ -8,12 +8,12 @@ class AccountRepo {
   AccountRepo({
     required this.persona,
     required this.client,
-    required this.postClient,
-  });
+    required PostClient posts,
+  }) : _posts = posts;
 
-  final AccountClient client;
-  final PostClient postClient;
   final Persona persona;
+  final AccountClient client;
+  final PostClient _posts;
 
   Future<void> available() => client.available();
 
@@ -29,7 +29,7 @@ class AccountRepo {
 
     Post? avatar;
     if (account.avatarId != null) {
-      avatar = await postClient.get(
+      avatar = await _posts.get(
         id: account.avatarId!,
         force: force,
         cancelToken: cancelToken,

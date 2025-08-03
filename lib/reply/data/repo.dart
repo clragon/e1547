@@ -5,8 +5,8 @@ import 'package:e1547/shared/shared.dart';
 class ReplyRepo {
   ReplyRepo({required this.persona, required this.client});
 
-  final ReplyClient client;
   final Persona persona;
+  final ReplyClient client;
 
   Future<Reply> get({required int id, bool? force, CancelToken? cancelToken}) =>
       client.get(id: id, force: force, cancelToken: cancelToken);
