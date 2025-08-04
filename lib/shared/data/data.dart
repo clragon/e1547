@@ -5,4 +5,5 @@ export 'package.dart';
 export 'pagination.dart';
 export 'persona.dart';
 export 'rails.dart';
+export 'sql.dart';
 export 'text.dart';
