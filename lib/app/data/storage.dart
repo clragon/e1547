@@ -1,7 +1,7 @@
 import 'package:drift/drift.dart';
+import 'package:e1547/domain/domain.dart';
 import 'package:e1547/identity/data/client.dart';
 import 'package:e1547/traits/traits.dart';
-import 'package:http_cache_drift_store/http_cache_drift_store.dart';
 import 'package:notified_preferences/notified_preferences.dart';
 
 // ignore: always_use_package_imports
@@ -26,17 +26,17 @@ class AppStorage {
   const AppStorage({
     required this.preferences,
     required this.temporaryFiles,
-    required this.httpCache,
+    required this.clientCache,
     required this.sqlite,
   });
 
   final SharedPreferences preferences;
   final String temporaryFiles;
-  final DriftCacheStore? httpCache;
+  final ClientCache clientCache;
   final AppDatabase sqlite;
 
   Future<void> close() async {
-    await httpCache?.close();
+    clientCache.dispose();
     await sqlite.close();
   }
 }
