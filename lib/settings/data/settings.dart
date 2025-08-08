@@ -11,6 +11,7 @@ abstract class Settings with _$Settings {
   const factory Settings({
     required AppTheme theme,
     required bool showPostInfoBar,
+    int? identity,
   }) = _Settings;
 
   factory Settings.fromJson(Map<String, dynamic> json) =>
@@ -20,20 +21,26 @@ abstract class Settings with _$Settings {
 extension SharedPrefsSettings on Settings {
   static const String _themeKey = 'theme';
   static const String _showPostInfoBarKey = 'show_post_info_bar';
+  static const String _identityKey = 'identity';
 
   static Settings read(SharedPreferences prefs) => Settings(
-        theme: PreferenceAdapter.readSetting<AppTheme>(
-          prefs: prefs,
-          key: _themeKey,
-          initialValue: AppTheme.dark,
-          read: PreferenceAdapter.enumReader(AppTheme.values),
-        ),
-        showPostInfoBar: PreferenceAdapter.readSetting<bool>(
-          prefs: prefs,
-          key: _showPostInfoBarKey,
-          initialValue: false,
-        ),
-      );
+    theme: PreferenceAdapter.readSetting<AppTheme>(
+      prefs: prefs,
+      key: _themeKey,
+      initialValue: AppTheme.dark,
+      read: PreferenceAdapter.enumReader(AppTheme.values),
+    ),
+    showPostInfoBar: PreferenceAdapter.readSetting<bool>(
+      prefs: prefs,
+      key: _showPostInfoBarKey,
+      initialValue: false,
+    ),
+    identity: PreferenceAdapter.readSetting<int?>(
+      prefs: prefs,
+      key: _identityKey,
+      initialValue: null,
+    ),
+  );
 
   void write(SharedPreferences prefs) {
     PreferenceAdapter.enumWriter(prefs, _themeKey, theme);
@@ -41,6 +48,11 @@ extension SharedPrefsSettings on Settings {
       prefs: prefs,
       key: _showPostInfoBarKey,
       value: showPostInfoBar,
+    );
+    PreferenceAdapter.writeSetting(
+      prefs: prefs,
+      key: _identityKey,
+      value: identity,
     );
   }
 }

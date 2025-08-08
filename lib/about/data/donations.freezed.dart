@@ -1,5 +1,5 @@
-// coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
+// coverage:ignore-file
 // ignore_for_file: type=lint
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
@@ -9,461 +9,304 @@ part of 'donations.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// dart format off
 T _$identity<T>(T value) => value;
-
-final _privateConstructorUsedError = UnsupportedError(
-  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
-);
-
-Donor _$DonorFromJson(Map<String, dynamic> json) {
-  return _Donor.fromJson(json);
-}
 
 /// @nodoc
 mixin _$Donor {
-  String get name => throw _privateConstructorUsedError;
-  String? get avatar => throw _privateConstructorUsedError;
-  Map<String, String> get handles => throw _privateConstructorUsedError;
-  List<Donation> get donations => throw _privateConstructorUsedError;
+
+ String get name; String? get avatar; Map<String, String> get handles; List<Donation> get donations;
+/// Create a copy of Donor
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$DonorCopyWith<Donor> get copyWith => _$DonorCopyWithImpl<Donor>(this as Donor, _$identity);
 
   /// Serializes this Donor to a JSON map.
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+  Map<String, dynamic> toJson();
 
-  /// Create a copy of Donor
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  $DonorCopyWith<Donor> get copyWith => throw _privateConstructorUsedError;
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Donor&&(identical(other.name, name) || other.name == name)&&(identical(other.avatar, avatar) || other.avatar == avatar)&&const DeepCollectionEquality().equals(other.handles, handles)&&const DeepCollectionEquality().equals(other.donations, donations));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,name,avatar,const DeepCollectionEquality().hash(handles),const DeepCollectionEquality().hash(donations));
+
+@override
+String toString() {
+  return 'Donor(name: $name, avatar: $avatar, handles: $handles, donations: $donations)';
+}
+
+
 }
 
 /// @nodoc
-abstract class $DonorCopyWith<$Res> {
-  factory $DonorCopyWith(Donor value, $Res Function(Donor) then) =
-      _$DonorCopyWithImpl<$Res, Donor>;
-  @useResult
-  $Res call({
-    String name,
-    String? avatar,
-    Map<String, String> handles,
-    List<Donation> donations,
-  });
-}
+abstract mixin class $DonorCopyWith<$Res>  {
+  factory $DonorCopyWith(Donor value, $Res Function(Donor) _then) = _$DonorCopyWithImpl;
+@useResult
+$Res call({
+ String name, String? avatar, Map<String, String> handles, List<Donation> donations
+});
 
+
+
+
+}
 /// @nodoc
-class _$DonorCopyWithImpl<$Res, $Val extends Donor>
+class _$DonorCopyWithImpl<$Res>
     implements $DonorCopyWith<$Res> {
-  _$DonorCopyWithImpl(this._value, this._then);
+  _$DonorCopyWithImpl(this._self, this._then);
 
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
+  final Donor _self;
+  final $Res Function(Donor) _then;
 
-  /// Create a copy of Donor
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? name = null,
-    Object? avatar = freezed,
-    Object? handles = null,
-    Object? donations = null,
-  }) {
-    return _then(
-      _value.copyWith(
-            name: null == name
-                ? _value.name
-                : name // ignore: cast_nullable_to_non_nullable
-                      as String,
-            avatar: freezed == avatar
-                ? _value.avatar
-                : avatar // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            handles: null == handles
-                ? _value.handles
-                : handles // ignore: cast_nullable_to_non_nullable
-                      as Map<String, String>,
-            donations: null == donations
-                ? _value.donations
-                : donations // ignore: cast_nullable_to_non_nullable
-                      as List<Donation>,
-          )
-          as $Val,
-    );
-  }
+/// Create a copy of Donor
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? name = null,Object? avatar = freezed,Object? handles = null,Object? donations = null,}) {
+  return _then(_self.copyWith(
+name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String,avatar: freezed == avatar ? _self.avatar : avatar // ignore: cast_nullable_to_non_nullable
+as String?,handles: null == handles ? _self.handles : handles // ignore: cast_nullable_to_non_nullable
+as Map<String, String>,donations: null == donations ? _self.donations : donations // ignore: cast_nullable_to_non_nullable
+as List<Donation>,
+  ));
 }
 
-/// @nodoc
-abstract class _$$DonorImplCopyWith<$Res> implements $DonorCopyWith<$Res> {
-  factory _$$DonorImplCopyWith(
-    _$DonorImpl value,
-    $Res Function(_$DonorImpl) then,
-  ) = __$$DonorImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({
-    String name,
-    String? avatar,
-    Map<String, String> handles,
-    List<Donation> donations,
-  });
 }
 
-/// @nodoc
-class __$$DonorImplCopyWithImpl<$Res>
-    extends _$DonorCopyWithImpl<$Res, _$DonorImpl>
-    implements _$$DonorImplCopyWith<$Res> {
-  __$$DonorImplCopyWithImpl(
-    _$DonorImpl _value,
-    $Res Function(_$DonorImpl) _then,
-  ) : super(_value, _then);
 
-  /// Create a copy of Donor
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? name = null,
-    Object? avatar = freezed,
-    Object? handles = null,
-    Object? donations = null,
-  }) {
-    return _then(
-      _$DonorImpl(
-        name: null == name
-            ? _value.name
-            : name // ignore: cast_nullable_to_non_nullable
-                  as String,
-        avatar: freezed == avatar
-            ? _value.avatar
-            : avatar // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        handles: null == handles
-            ? _value._handles
-            : handles // ignore: cast_nullable_to_non_nullable
-                  as Map<String, String>,
-        donations: null == donations
-            ? _value._donations
-            : donations // ignore: cast_nullable_to_non_nullable
-                  as List<Donation>,
-      ),
-    );
-  }
-}
 
 /// @nodoc
 @JsonSerializable()
-class _$DonorImpl implements _Donor {
-  const _$DonorImpl({
-    required this.name,
-    this.avatar,
-    required final Map<String, String> handles,
-    required final List<Donation> donations,
-  }) : _handles = handles,
-       _donations = donations;
 
-  factory _$DonorImpl.fromJson(Map<String, dynamic> json) =>
-      _$$DonorImplFromJson(json);
+class _Donor implements Donor {
+  const _Donor({required this.name, this.avatar, required final  Map<String, String> handles, required final  List<Donation> donations}): _handles = handles,_donations = donations;
+  factory _Donor.fromJson(Map<String, dynamic> json) => _$DonorFromJson(json);
 
-  @override
-  final String name;
-  @override
-  final String? avatar;
-  final Map<String, String> _handles;
-  @override
-  Map<String, String> get handles {
-    if (_handles is EqualUnmodifiableMapView) return _handles;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableMapView(_handles);
-  }
-
-  final List<Donation> _donations;
-  @override
-  List<Donation> get donations {
-    if (_donations is EqualUnmodifiableListView) return _donations;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_donations);
-  }
-
-  @override
-  String toString() {
-    return 'Donor(name: $name, avatar: $avatar, handles: $handles, donations: $donations)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$DonorImpl &&
-            (identical(other.name, name) || other.name == name) &&
-            (identical(other.avatar, avatar) || other.avatar == avatar) &&
-            const DeepCollectionEquality().equals(other._handles, _handles) &&
-            const DeepCollectionEquality().equals(
-              other._donations,
-              _donations,
-            ));
-  }
-
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  int get hashCode => Object.hash(
-    runtimeType,
-    name,
-    avatar,
-    const DeepCollectionEquality().hash(_handles),
-    const DeepCollectionEquality().hash(_donations),
-  );
-
-  /// Create a copy of Donor
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$DonorImplCopyWith<_$DonorImpl> get copyWith =>
-      __$$DonorImplCopyWithImpl<_$DonorImpl>(this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$DonorImplToJson(this);
-  }
+@override final  String name;
+@override final  String? avatar;
+ final  Map<String, String> _handles;
+@override Map<String, String> get handles {
+  if (_handles is EqualUnmodifiableMapView) return _handles;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableMapView(_handles);
 }
 
-abstract class _Donor implements Donor {
-  const factory _Donor({
-    required final String name,
-    final String? avatar,
-    required final Map<String, String> handles,
-    required final List<Donation> donations,
-  }) = _$DonorImpl;
-
-  factory _Donor.fromJson(Map<String, dynamic> json) = _$DonorImpl.fromJson;
-
-  @override
-  String get name;
-  @override
-  String? get avatar;
-  @override
-  Map<String, String> get handles;
-  @override
-  List<Donation> get donations;
-
-  /// Create a copy of Donor
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$DonorImplCopyWith<_$DonorImpl> get copyWith =>
-      throw _privateConstructorUsedError;
+ final  List<Donation> _donations;
+@override List<Donation> get donations {
+  if (_donations is EqualUnmodifiableListView) return _donations;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_donations);
 }
 
-Donation _$DonationFromJson(Map<String, dynamic> json) {
-  return _Donation.fromJson(json);
+
+/// Create a copy of Donor
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$DonorCopyWith<_Donor> get copyWith => __$DonorCopyWithImpl<_Donor>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$DonorToJson(this, );
 }
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Donor&&(identical(other.name, name) || other.name == name)&&(identical(other.avatar, avatar) || other.avatar == avatar)&&const DeepCollectionEquality().equals(other._handles, _handles)&&const DeepCollectionEquality().equals(other._donations, _donations));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,name,avatar,const DeepCollectionEquality().hash(_handles),const DeepCollectionEquality().hash(_donations));
+
+@override
+String toString() {
+  return 'Donor(name: $name, avatar: $avatar, handles: $handles, donations: $donations)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$DonorCopyWith<$Res> implements $DonorCopyWith<$Res> {
+  factory _$DonorCopyWith(_Donor value, $Res Function(_Donor) _then) = __$DonorCopyWithImpl;
+@override @useResult
+$Res call({
+ String name, String? avatar, Map<String, String> handles, List<Donation> donations
+});
+
+
+
+
+}
+/// @nodoc
+class __$DonorCopyWithImpl<$Res>
+    implements _$DonorCopyWith<$Res> {
+  __$DonorCopyWithImpl(this._self, this._then);
+
+  final _Donor _self;
+  final $Res Function(_Donor) _then;
+
+/// Create a copy of Donor
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? name = null,Object? avatar = freezed,Object? handles = null,Object? donations = null,}) {
+  return _then(_Donor(
+name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String,avatar: freezed == avatar ? _self.avatar : avatar // ignore: cast_nullable_to_non_nullable
+as String?,handles: null == handles ? _self._handles : handles // ignore: cast_nullable_to_non_nullable
+as Map<String, String>,donations: null == donations ? _self._donations : donations // ignore: cast_nullable_to_non_nullable
+as List<Donation>,
+  ));
+}
+
+
+}
+
 
 /// @nodoc
 mixin _$Donation {
-  double get amount => throw _privateConstructorUsedError;
-  String get currency => throw _privateConstructorUsedError;
-  DateTime get date => throw _privateConstructorUsedError;
-  String get platform => throw _privateConstructorUsedError;
+
+ double get amount; String get currency; DateTime get date; String get platform;
+/// Create a copy of Donation
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$DonationCopyWith<Donation> get copyWith => _$DonationCopyWithImpl<Donation>(this as Donation, _$identity);
 
   /// Serializes this Donation to a JSON map.
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+  Map<String, dynamic> toJson();
 
-  /// Create a copy of Donation
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  $DonationCopyWith<Donation> get copyWith =>
-      throw _privateConstructorUsedError;
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Donation&&(identical(other.amount, amount) || other.amount == amount)&&(identical(other.currency, currency) || other.currency == currency)&&(identical(other.date, date) || other.date == date)&&(identical(other.platform, platform) || other.platform == platform));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,amount,currency,date,platform);
+
+@override
+String toString() {
+  return 'Donation(amount: $amount, currency: $currency, date: $date, platform: $platform)';
+}
+
+
 }
 
 /// @nodoc
-abstract class $DonationCopyWith<$Res> {
-  factory $DonationCopyWith(Donation value, $Res Function(Donation) then) =
-      _$DonationCopyWithImpl<$Res, Donation>;
-  @useResult
-  $Res call({double amount, String currency, DateTime date, String platform});
-}
+abstract mixin class $DonationCopyWith<$Res>  {
+  factory $DonationCopyWith(Donation value, $Res Function(Donation) _then) = _$DonationCopyWithImpl;
+@useResult
+$Res call({
+ double amount, String currency, DateTime date, String platform
+});
 
+
+
+
+}
 /// @nodoc
-class _$DonationCopyWithImpl<$Res, $Val extends Donation>
+class _$DonationCopyWithImpl<$Res>
     implements $DonationCopyWith<$Res> {
-  _$DonationCopyWithImpl(this._value, this._then);
+  _$DonationCopyWithImpl(this._self, this._then);
 
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
+  final Donation _self;
+  final $Res Function(Donation) _then;
 
-  /// Create a copy of Donation
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? amount = null,
-    Object? currency = null,
-    Object? date = null,
-    Object? platform = null,
-  }) {
-    return _then(
-      _value.copyWith(
-            amount: null == amount
-                ? _value.amount
-                : amount // ignore: cast_nullable_to_non_nullable
-                      as double,
-            currency: null == currency
-                ? _value.currency
-                : currency // ignore: cast_nullable_to_non_nullable
-                      as String,
-            date: null == date
-                ? _value.date
-                : date // ignore: cast_nullable_to_non_nullable
-                      as DateTime,
-            platform: null == platform
-                ? _value.platform
-                : platform // ignore: cast_nullable_to_non_nullable
-                      as String,
-          )
-          as $Val,
-    );
-  }
+/// Create a copy of Donation
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? amount = null,Object? currency = null,Object? date = null,Object? platform = null,}) {
+  return _then(_self.copyWith(
+amount: null == amount ? _self.amount : amount // ignore: cast_nullable_to_non_nullable
+as double,currency: null == currency ? _self.currency : currency // ignore: cast_nullable_to_non_nullable
+as String,date: null == date ? _self.date : date // ignore: cast_nullable_to_non_nullable
+as DateTime,platform: null == platform ? _self.platform : platform // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
 }
 
-/// @nodoc
-abstract class _$$DonationImplCopyWith<$Res>
-    implements $DonationCopyWith<$Res> {
-  factory _$$DonationImplCopyWith(
-    _$DonationImpl value,
-    $Res Function(_$DonationImpl) then,
-  ) = __$$DonationImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({double amount, String currency, DateTime date, String platform});
 }
 
-/// @nodoc
-class __$$DonationImplCopyWithImpl<$Res>
-    extends _$DonationCopyWithImpl<$Res, _$DonationImpl>
-    implements _$$DonationImplCopyWith<$Res> {
-  __$$DonationImplCopyWithImpl(
-    _$DonationImpl _value,
-    $Res Function(_$DonationImpl) _then,
-  ) : super(_value, _then);
 
-  /// Create a copy of Donation
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? amount = null,
-    Object? currency = null,
-    Object? date = null,
-    Object? platform = null,
-  }) {
-    return _then(
-      _$DonationImpl(
-        amount: null == amount
-            ? _value.amount
-            : amount // ignore: cast_nullable_to_non_nullable
-                  as double,
-        currency: null == currency
-            ? _value.currency
-            : currency // ignore: cast_nullable_to_non_nullable
-                  as String,
-        date: null == date
-            ? _value.date
-            : date // ignore: cast_nullable_to_non_nullable
-                  as DateTime,
-        platform: null == platform
-            ? _value.platform
-            : platform // ignore: cast_nullable_to_non_nullable
-                  as String,
-      ),
-    );
-  }
-}
 
 /// @nodoc
 @JsonSerializable()
-class _$DonationImpl implements _Donation {
-  const _$DonationImpl({
-    required this.amount,
-    required this.currency,
-    required this.date,
-    required this.platform,
-  });
 
-  factory _$DonationImpl.fromJson(Map<String, dynamic> json) =>
-      _$$DonationImplFromJson(json);
+class _Donation implements Donation {
+  const _Donation({required this.amount, required this.currency, required this.date, required this.platform});
+  factory _Donation.fromJson(Map<String, dynamic> json) => _$DonationFromJson(json);
 
-  @override
-  final double amount;
-  @override
-  final String currency;
-  @override
-  final DateTime date;
-  @override
-  final String platform;
+@override final  double amount;
+@override final  String currency;
+@override final  DateTime date;
+@override final  String platform;
 
-  @override
-  String toString() {
-    return 'Donation(amount: $amount, currency: $currency, date: $date, platform: $platform)';
-  }
+/// Create a copy of Donation
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$DonationCopyWith<_Donation> get copyWith => __$DonationCopyWithImpl<_Donation>(this, _$identity);
 
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$DonationImpl &&
-            (identical(other.amount, amount) || other.amount == amount) &&
-            (identical(other.currency, currency) ||
-                other.currency == currency) &&
-            (identical(other.date, date) || other.date == date) &&
-            (identical(other.platform, platform) ||
-                other.platform == platform));
-  }
-
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  int get hashCode =>
-      Object.hash(runtimeType, amount, currency, date, platform);
-
-  /// Create a copy of Donation
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$DonationImplCopyWith<_$DonationImpl> get copyWith =>
-      __$$DonationImplCopyWithImpl<_$DonationImpl>(this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$DonationImplToJson(this);
-  }
+@override
+Map<String, dynamic> toJson() {
+  return _$DonationToJson(this, );
 }
 
-abstract class _Donation implements Donation {
-  const factory _Donation({
-    required final double amount,
-    required final String currency,
-    required final DateTime date,
-    required final String platform,
-  }) = _$DonationImpl;
-
-  factory _Donation.fromJson(Map<String, dynamic> json) =
-      _$DonationImpl.fromJson;
-
-  @override
-  double get amount;
-  @override
-  String get currency;
-  @override
-  DateTime get date;
-  @override
-  String get platform;
-
-  /// Create a copy of Donation
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$DonationImplCopyWith<_$DonationImpl> get copyWith =>
-      throw _privateConstructorUsedError;
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Donation&&(identical(other.amount, amount) || other.amount == amount)&&(identical(other.currency, currency) || other.currency == currency)&&(identical(other.date, date) || other.date == date)&&(identical(other.platform, platform) || other.platform == platform));
 }
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,amount,currency,date,platform);
+
+@override
+String toString() {
+  return 'Donation(amount: $amount, currency: $currency, date: $date, platform: $platform)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$DonationCopyWith<$Res> implements $DonationCopyWith<$Res> {
+  factory _$DonationCopyWith(_Donation value, $Res Function(_Donation) _then) = __$DonationCopyWithImpl;
+@override @useResult
+$Res call({
+ double amount, String currency, DateTime date, String platform
+});
+
+
+
+
+}
+/// @nodoc
+class __$DonationCopyWithImpl<$Res>
+    implements _$DonationCopyWith<$Res> {
+  __$DonationCopyWithImpl(this._self, this._then);
+
+  final _Donation _self;
+  final $Res Function(_Donation) _then;
+
+/// Create a copy of Donation
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? amount = null,Object? currency = null,Object? date = null,Object? platform = null,}) {
+  return _then(_Donation(
+amount: null == amount ? _self.amount : amount // ignore: cast_nullable_to_non_nullable
+as double,currency: null == currency ? _self.currency : currency // ignore: cast_nullable_to_non_nullable
+as String,date: null == date ? _self.date : date // ignore: cast_nullable_to_non_nullable
+as DateTime,platform: null == platform ? _self.platform : platform // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
+
+// dart format on
