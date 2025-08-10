@@ -343,7 +343,7 @@ class _LogPageState extends State<LogPage> {
                       onPressed: () => Share.asFile(
                         context,
                         logs!.map((e) => e.toString()).join('\n'),
-                        name: '${logFileDateFormat.format(DateTime.now())}.log',
+                        '${logFileDateFormat.format(DateTime.now())}.log',
                       ),
                       child: const Icon(Icons.file_download),
                     )

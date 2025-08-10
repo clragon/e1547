@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:e1547/logs/logs.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:path/path.dart';
@@ -18,20 +18,30 @@ abstract final class Share {
 
   static Future<void> asFile(
     BuildContext context,
-    String text, {
-    String? name,
-  }) async {
+    String text,
+    String name,
+  ) async {
     if (Platform.isAndroid || Platform.isIOS) {
       File file = File(
-        join(
-          await getTemporaryDirectory().then((e) => e.path),
-          name ?? '${logFileDateFormat.format(DateTime.now())}.txt',
-        ),
+        join(await getTemporaryDirectory().then((e) => e.path), name),
       );
       await file.writeAsString(text);
       await SharePlus.instance.share(ShareParams(files: [XFile(file.path)]));
     } else {
-      return clipboard(context, text);
+      final messenger = ScaffoldMessenger.of(context);
+      String? outputFile = await FilePicker.platform.saveFile(
+        dialogTitle: 'Save file',
+        fileName: name,
+      );
+      if (outputFile == null) return;
+
+      await File(outputFile).writeAsString(text);
+      messenger.showSnackBar(
+        SnackBar(
+          duration: const Duration(seconds: 1),
+          content: Text('File saved as ${basename(outputFile)}'),
+        ),
+      );
     }
   }
 
@@ -40,9 +50,23 @@ abstract final class Share {
     if (Platform.isAndroid || Platform.isIOS) {
       await SharePlus.instance.share(ShareParams(files: [file]));
     } else {
+      final messenger = ScaffoldMessenger.of(context);
       String content = await file.readAsString();
       if (!context.mounted) return;
-      return clipboard(context, content);
+
+      String? outputFile = await FilePicker.platform.saveFile(
+        dialogTitle: 'Save file',
+        fileName: basename(path),
+      );
+      if (outputFile == null) return;
+
+      await File(outputFile).writeAsString(content);
+      messenger.showSnackBar(
+        SnackBar(
+          duration: const Duration(seconds: 1),
+          content: Text('File saved as ${basename(outputFile)}'),
+        ),
+      );
     }
   }
 
