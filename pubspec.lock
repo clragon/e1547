@@ -768,12 +768,11 @@ packages:
   infinite_scroll_pagination:
     dependency: "direct main"
     description:
-      path: "."
-      ref: "4f65157"
-      resolved-ref: "4f651579668a0ec9e5358a45a640c49e865f8673"
-      url: "https://github.com/EdsonBueno/infinite_scroll_pagination.git"
-    source: git
-    version: "5.0.0"
+      name: infinite_scroll_pagination
+      sha256: "9b8f95362928a1de835658835194b435c40f2bfc386f6545c1fd706203df0cd4"
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.1.0"
   intl:
     dependency: "direct main"
     description:
