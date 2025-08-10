@@ -1,7 +1,7 @@
 import 'package:e1547/client/client.dart';
 import 'package:e1547/comment/comment.dart';
-import 'package:e1547/interface/interface.dart';
 import 'package:e1547/markup/markup.dart';
+import 'package:e1547/shared/shared.dart';
 import 'package:flutter/material.dart';
 
 Future<bool> replyComment({

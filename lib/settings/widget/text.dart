@@ -1,5 +1,5 @@
-import 'package:e1547/interface/interface.dart';
 import 'package:e1547/settings/settings.dart';
+import 'package:e1547/shared/shared.dart';
 import 'package:flutter/material.dart';
 
 class PrivateTextFields extends StatelessWidget {

@@ -1,8 +1,8 @@
 import 'package:deep_pick/deep_pick.dart';
 import 'package:dio/dio.dart';
 import 'package:e1547/comment/comment.dart';
-import 'package:e1547/interface/interface.dart';
 import 'package:e1547/reply/reply.dart';
+import 'package:e1547/shared/shared.dart';
 
 class ReplyService {
   ReplyService({required this.dio});

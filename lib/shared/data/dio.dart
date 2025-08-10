@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
-import 'package:e1547/interface/interface.dart';
+import 'package:e1547/shared/shared.dart';
 
 export 'package:dio/dio.dart' show CancelToken;
 export 'package:dio_cache_interceptor/dio_cache_interceptor.dart';

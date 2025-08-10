@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:e1547/interface/data/controller.dart';
+import 'package:e1547/shared/data/controller.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../test/mock_item.dart';

@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:e1547/interface/interface.dart';
+import 'package:e1547/shared/shared.dart';
 import 'package:flutter/foundation.dart';
 
 export 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';

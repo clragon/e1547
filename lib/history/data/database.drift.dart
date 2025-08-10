@@ -7,7 +7,7 @@ import 'package:drift/internal/modular.dart' as i3;
 import 'package:e1547/identity/data/database.drift.dart' as i4;
 import 'package:e1547/history/data/history.dart' as i5;
 import 'package:e1547/history/data/database.dart' as i6;
-import 'package:e1547/interface/data/sql.dart' as i7;
+import 'package:e1547/shared/data/sql.dart' as i7;
 
 typedef $$HistoriesTableTableCreateCompanionBuilder =
     i2.HistoryCompanion Function({

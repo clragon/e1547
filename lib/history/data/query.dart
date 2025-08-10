@@ -1,5 +1,5 @@
 import 'package:e1547/history/history.dart';
-import 'package:e1547/interface/interface.dart';
+import 'package:e1547/shared/shared.dart';
 import 'package:intl/intl.dart';
 
 // TODO: we need something like this for other services too

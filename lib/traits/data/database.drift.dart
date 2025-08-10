@@ -7,7 +7,7 @@ import 'package:drift/internal/modular.dart' as i3;
 import 'package:e1547/traits/data/database.drift.dart' as i4;
 import 'package:e1547/traits/data/traits.dart' as i5;
 import 'package:e1547/traits/data/database.dart' as i6;
-import 'package:e1547/interface/data/sql.dart' as i7;
+import 'package:e1547/shared/data/sql.dart' as i7;
 
 typedef $$TraitsTableTableCreateCompanionBuilder =
     i4.TraitsCompanion Function({

@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:drift/drift.dart';
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/identity/data/database.dart';
-import 'package:e1547/interface/interface.dart';
+import 'package:e1547/shared/shared.dart';
 
 @UseRowClass(Follow, generateInsertable: true)
 class FollowsTable extends Table {
