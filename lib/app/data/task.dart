@@ -54,7 +54,7 @@ Future<void> registerFollowBackgroundTask(List<Follow> follows) async {
       followsBackgroundTaskKey,
       initialDelay: const Duration(hours: 1),
       frequency: const Duration(hours: 1),
-      existingWorkPolicy: ExistingWorkPolicy.update,
+      existingWorkPolicy: ExistingPeriodicWorkPolicy.update,
       constraints: Constraints(networkType: NetworkType.connected),
     );
   }
