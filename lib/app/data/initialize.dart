@@ -37,17 +37,14 @@ Future<Logs> initializeLogger({
   Logger.root.level = Level.ALL;
   path ??= await getTemporaryAppDirectory();
 
-  Logs logs = Logs();
-  File logFile = createLogFile(path, postfix);
+  final logFile = createLogFile(path, postfix);
+  final logs = Logs([
+    ...?printers,
+    FileLogPrinter(logFile),
+    ConsoleLogPrinter(),
+  ]);
 
-  printers ??= [];
-  printers.add(logs);
-  printers.add(FileLogPrinter(logFile));
-  printers.add(const ConsoleLogPrinter());
-
-  for (final printer in printers) {
-    printer.connect(Logger.root.onRecord);
-  }
+  logs.connect(Logger.root.onRecord);
 
   registerFlutterErrorHandler(
     (error, trace) => Logger('Flutter').log(Level.SHOUT, error, error, trace),

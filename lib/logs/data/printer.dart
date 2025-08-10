@@ -8,24 +8,40 @@ import 'package:flutter/foundation.dart';
 export 'package:logging/logging.dart';
 
 abstract class LogPrinter {
-  const LogPrinter();
+  LogPrinter();
+
+  final List<StreamSubscription<LogRecord>> _subscriptions = [];
 
   /// Called when a log record is added.
   void onLog(LogRecord record);
 
   /// Called when the printer is no longer needed.
-  void close() {}
+  void close() {
+    for (final subscription in _subscriptions) {
+      subscription.cancel();
+    }
+  }
 
   /// Connects this printer to a stream of log records.
-  void connect(Stream<LogRecord> stream) => stream.listen(onLog, onDone: close);
+  void connect(Stream<LogRecord> stream) {
+    late StreamSubscription<LogRecord> subscription;
+    subscription = stream.listen(
+      onLog,
+      onDone: () => _subscriptions.remove(subscription),
+    );
+    _subscriptions.add(subscription);
+  }
 }
 
 /// Holds application logs
 class Logs extends LogPrinter {
+  Logs([this.printers = const []]);
+
   /// All log records that have been emitted
   List<LogRecord> get records => List.unmodifiable(_records);
 
   final List<LogRecord> _records = [];
+  final List<LogPrinter> printers;
 
   final StreamController<List<LogRecord>> _stream =
       StreamController.broadcast();
@@ -52,15 +68,27 @@ class Logs extends LogPrinter {
     return stream.distinct(const DeepCollectionEquality().equals);
   }
 
+  static const int _maxRecords = 500;
+
+  void _truncate() {
+    if (_records.length > _maxRecords) {
+      _records.removeRange(0, _records.length - _maxRecords);
+    }
+  }
+
   @override
   void onLog(LogRecord record) {
     _records.add(record);
     _stream.add(records);
+    _truncate();
   }
 
   @override
-  void close() {
-    _stream.close();
+  void connect(Stream<LogRecord> stream) {
+    super.connect(stream);
+    for (final printer in printers) {
+      printer.connect(stream);
+    }
   }
 }
 
@@ -88,7 +116,7 @@ class FileLogPrinter extends LogPrinter {
 }
 
 class ConsoleLogPrinter extends LogPrinter {
-  const ConsoleLogPrinter();
+  ConsoleLogPrinter();
 
   String getColor(Level level) {
     switch (level) {

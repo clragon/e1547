@@ -173,7 +173,7 @@ class _LogFileListState extends State<LogFileList> {
                                 Expanded(
                                   child: Center(
                                     child: Icon(
-                                      Icons.note_add,
+                                      Icons.videocam,
                                       size: 38,
                                       color: dimTextColor(context),
                                     ),
@@ -182,7 +182,7 @@ class _LogFileListState extends State<LogFileList> {
                                 Padding(
                                   padding: const EdgeInsets.all(16),
                                   child: Text(
-                                    'Current\n',
+                                    'Live\n',
                                     maxLines: 2,
                                     overflow: TextOverflow.ellipsis,
                                     style: Theme.of(
