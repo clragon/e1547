@@ -1,6 +1,8 @@
 import 'dart:io';
 
-import 'package:e1547/app/data/initialize.dart';
+import 'package:drift/drift.dart' show driftRuntimeOptions;
+import 'package:drift_flutter/drift_flutter.dart';
+import 'package:e1547/app/app.dart';
 import 'package:e1547/app/widget/initialize.dart';
 import 'package:e1547/logs/logs.dart';
 import 'package:e1547/shared/shared.dart';
@@ -189,7 +191,9 @@ class DatabaseImportTile extends StatelessWidget {
         allowedExtensions: ['db'],
       );
 
-      if (result?.files.single.path == null) return;
+      final path = result?.files.single.path;
+
+      if (path == null) return;
       if (!context.mounted) return;
 
       showDialog(
@@ -216,7 +220,28 @@ class DatabaseImportTile extends StatelessWidget {
         ),
       );
 
-      final importFile = File(result!.files.single.path!);
+      try {
+        driftRuntimeOptions.dontWarnAboutMultipleDatabases = true;
+        final importDb = AppDatabase(
+          driftDatabase(
+            name: 'import',
+            native: DriftNativeOptions(databasePath: () async => path),
+          ),
+        );
+        await importDb.customSelect('SELECT 1').get();
+        await importDb.close();
+      } on Exception catch (e) {
+        navigator.pop();
+        messenger.showSnackBar(
+          SnackBar(content: Text('Invalid database file: $e')),
+        );
+        _logger.warning('Database validation failed', e);
+        return;
+      } finally {
+        driftRuntimeOptions.dontWarnAboutMultipleDatabases = false;
+      }
+
+      final importFile = File(path);
       final dbPath = await getAppDatabasePath();
       final newDbPath = '$dbPath.new';
       await importFile.copy(newDbPath);
@@ -245,14 +270,14 @@ class DatabaseImportTile extends StatelessWidget {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),
-              child: const Text('Cancel'),
+              child: const Text('CANCEL'),
             ),
             TextButton(
               onPressed: () => Navigator.of(context).pop(true),
               style: TextButton.styleFrom(
                 foregroundColor: Theme.of(context).colorScheme.error,
               ),
-              child: const Text('Import'),
+              child: const Text('IMPORT'),
             ),
           ],
         ),
@@ -269,7 +294,7 @@ class DatabaseImportTile extends StatelessWidget {
       actions: [
         TextButton(
           onPressed: () => AppInit.of(context).reinitialize(),
-          child: const Text('Restart Now'),
+          child: const Text('RESTART NOW'),
         ),
       ],
     ),
