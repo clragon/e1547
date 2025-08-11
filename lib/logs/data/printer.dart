@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:collection/collection.dart';
 import 'package:e1547/logs/logs.dart';
 import 'package:flutter/foundation.dart';
+import 'package:rxdart/rxdart.dart';
 
 export 'package:logging/logging.dart';
 
@@ -98,21 +99,30 @@ class FileLogPrinter extends LogPrinter {
   }
 
   final File file;
-  final StreamController<LogRecord> _stream = StreamController();
+  final Duration flushInterval = const Duration(seconds: 5);
+  final StreamController<LogRecord> _stream = StreamController.broadcast();
+  IOSink? _sink;
 
   void _write() async {
-    IOSink sink = file.openWrite(mode: FileMode.append);
-    await for (final record in _stream.stream) {
-      sink.writeln(record.toFullString());
+    _sink = file.openWrite(mode: FileMode.append);
+    await for (final batch
+        in _stream.stream
+            .bufferTime(flushInterval)
+            .where((e) => e.isNotEmpty)) {
+      for (final r in batch) {
+        _sink!.writeln(r.toFullString());
+      }
+      await _sink!.flush();
     }
-    sink.close();
+    await _sink?.flush();
+    await _sink?.close();
   }
 
   @override
   void onLog(LogRecord record) => _stream.add(record);
 
   @override
-  void close() => _stream.close();
+  Future<void> close() => _stream.close();
 }
 
 class ConsoleLogPrinter extends LogPrinter {
