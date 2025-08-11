@@ -375,6 +375,15 @@ class SettingsPage extends StatelessWidget {
                     ),
                   ),
                 ),
+                ListTile(
+                  leading: const Icon(Icons.storage),
+                  title: const Text('Database'),
+                  onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const DatabaseManagementPage(),
+                    ),
+                  ),
+                ),
               ],
             ],
           ),

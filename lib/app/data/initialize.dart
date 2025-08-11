@@ -28,6 +28,9 @@ Future<String> getTemporaryAppDirectory() => getTemporaryDirectory().then(
   (dir) => join(dir.path, AppInfo.instance.appName),
 );
 
+Future<String> getAppDatabasePath() =>
+    getApplicationSupportDirectory().then((dir) => join(dir.path, 'app.db'));
+
 /// Initializes the logger used by the app with default production values.
 Future<Logs> initializeLogger({
   String? path,
@@ -102,6 +105,7 @@ void registerFlutterErrorHandler(
 Future<AppStorage> initializeAppStorage({bool cache = true}) async {
   final String temporaryFiles = await getTemporaryAppDirectory();
   cleanupImageCache();
+  await completeDbImport();
   return AppStorage(
     preferences: await SharedPreferences.getInstance(),
     temporaryFiles: temporaryFiles,
@@ -109,15 +113,32 @@ Future<AppStorage> initializeAppStorage({bool cache = true}) async {
     sqlite: AppDatabase(
       driftDatabase(
         name: 'app',
-        native: DriftNativeOptions(
+        native: const DriftNativeOptions(
           shareAcrossIsolates: true,
-          databasePath: () => getApplicationSupportDirectory().then(
-            (dir) => join(dir.path, 'app.db'),
-          ),
+          databasePath: getAppDatabasePath,
         ),
       ),
     ),
   );
+}
+
+Future<void> completeDbImport() async {
+  final dbPath = await getAppDatabasePath();
+  final newDbPath = '$dbPath.new';
+  final newDbFile = File(newDbPath);
+
+  if (newDbFile.existsSync()) {
+    final oldDbFile = File(dbPath);
+    try {
+      if (oldDbFile.existsSync()) {
+        await oldDbFile.delete();
+      }
+      await newDbFile.rename(dbPath);
+    } on Exception {
+      await newDbFile.copy(dbPath);
+      await newDbFile.delete();
+    }
+  }
 }
 
 /// Workaround for flutter_cache_manager not evicting files properly.
