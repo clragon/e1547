@@ -5,7 +5,7 @@ part 'status.freezed.dart';
 part 'status.g.dart';
 
 @freezed
-class ClientSyncStatus with _$ClientSyncStatus {
+abstract class ClientSyncStatus with _$ClientSyncStatus {
   const factory ClientSyncStatus({DenyListSyncStatus? denyList}) =
       _ClientSyncStatus;
 

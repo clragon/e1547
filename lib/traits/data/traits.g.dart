@@ -6,7 +6,7 @@ part of 'traits.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$TraitsImpl _$$TraitsImplFromJson(Map<String, dynamic> json) => _$TraitsImpl(
+_Traits _$TraitsFromJson(Map<String, dynamic> json) => _Traits(
   id: (json['id'] as num).toInt(),
   userId: (json['user_id'] as num?)?.toInt(),
   denylist: (json['denylist'] as List<dynamic>)
@@ -17,18 +17,17 @@ _$TraitsImpl _$$TraitsImplFromJson(Map<String, dynamic> json) => _$TraitsImpl(
   perPage: (json['per_page'] as num?)?.toInt(),
 );
 
-Map<String, dynamic> _$$TraitsImplToJson(_$TraitsImpl instance) =>
-    <String, dynamic>{
-      'id': instance.id,
-      'user_id': instance.userId,
-      'denylist': instance.denylist,
-      'home_tags': instance.homeTags,
-      'avatar': instance.avatar,
-      'per_page': instance.perPage,
-    };
+Map<String, dynamic> _$TraitsToJson(_Traits instance) => <String, dynamic>{
+  'id': instance.id,
+  'user_id': instance.userId,
+  'denylist': instance.denylist,
+  'home_tags': instance.homeTags,
+  'avatar': instance.avatar,
+  'per_page': instance.perPage,
+};
 
-_$TraitsRequestImpl _$$TraitsRequestImplFromJson(Map<String, dynamic> json) =>
-    _$TraitsRequestImpl(
+_TraitsRequest _$TraitsRequestFromJson(Map<String, dynamic> json) =>
+    _TraitsRequest(
       identity: (json['identity'] as num).toInt(),
       userId: (json['user_id'] as num?)?.toInt(),
       denylist:
@@ -41,7 +40,7 @@ _$TraitsRequestImpl _$$TraitsRequestImplFromJson(Map<String, dynamic> json) =>
       perPage: (json['per_page'] as num?)?.toInt(),
     );
 
-Map<String, dynamic> _$$TraitsRequestImplToJson(_$TraitsRequestImpl instance) =>
+Map<String, dynamic> _$TraitsRequestToJson(_TraitsRequest instance) =>
     <String, dynamic>{
       'identity': instance.identity,
       'user_id': instance.userId,

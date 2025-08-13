@@ -5,7 +5,7 @@ part 'post.freezed.dart';
 part 'post.g.dart';
 
 @freezed
-class Post with _$Post {
+abstract class Post with _$Post {
   const factory Post({
     required int id,
     required String? file,
@@ -38,7 +38,7 @@ class Post with _$Post {
 enum Rating { s, q, e }
 
 @freezed
-class Relationships with _$Relationships {
+abstract class Relationships with _$Relationships {
   const factory Relationships({
     required int? parentId,
     required bool hasChildren,

@@ -6,7 +6,7 @@ part of 'post.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$PostImpl _$$PostImplFromJson(Map<String, dynamic> json) => _$PostImpl(
+_Post _$PostFromJson(Map<String, dynamic> json) => _Post(
   id: (json['id'] as num).toInt(),
   file: json['file'] as String?,
   sample: json['sample'] as String?,
@@ -41,37 +41,36 @@ _$PostImpl _$$PostImplFromJson(Map<String, dynamic> json) => _$PostImpl(
   relationships: Relationships.fromJson(json['relationships']),
 );
 
-Map<String, dynamic> _$$PostImplToJson(_$PostImpl instance) =>
-    <String, dynamic>{
-      'id': instance.id,
-      'file': instance.file,
-      'sample': instance.sample,
-      'preview': instance.preview,
-      'width': instance.width,
-      'height': instance.height,
-      'ext': instance.ext,
-      'size': instance.size,
-      'variants': instance.variants,
-      'tags': instance.tags,
-      'uploader_id': instance.uploaderId,
-      'created_at': instance.createdAt.toIso8601String(),
-      'updated_at': instance.updatedAt?.toIso8601String(),
-      'vote': instance.vote,
-      'is_deleted': instance.isDeleted,
-      'rating': _$RatingEnumMap[instance.rating]!,
-      'fav_count': instance.favCount,
-      'is_favorited': instance.isFavorited,
-      'comment_count': instance.commentCount,
-      'description': instance.description,
-      'sources': instance.sources,
-      'pools': instance.pools,
-      'relationships': instance.relationships,
-    };
+Map<String, dynamic> _$PostToJson(_Post instance) => <String, dynamic>{
+  'id': instance.id,
+  'file': instance.file,
+  'sample': instance.sample,
+  'preview': instance.preview,
+  'width': instance.width,
+  'height': instance.height,
+  'ext': instance.ext,
+  'size': instance.size,
+  'variants': instance.variants,
+  'tags': instance.tags,
+  'uploader_id': instance.uploaderId,
+  'created_at': instance.createdAt.toIso8601String(),
+  'updated_at': instance.updatedAt?.toIso8601String(),
+  'vote': instance.vote,
+  'is_deleted': instance.isDeleted,
+  'rating': _$RatingEnumMap[instance.rating]!,
+  'fav_count': instance.favCount,
+  'is_favorited': instance.isFavorited,
+  'comment_count': instance.commentCount,
+  'description': instance.description,
+  'sources': instance.sources,
+  'pools': instance.pools,
+  'relationships': instance.relationships,
+};
 
 const _$RatingEnumMap = {Rating.s: 's', Rating.q: 'q', Rating.e: 'e'};
 
-_$RelationshipsImpl _$$RelationshipsImplFromJson(Map<String, dynamic> json) =>
-    _$RelationshipsImpl(
+_Relationships _$RelationshipsFromJson(Map<String, dynamic> json) =>
+    _Relationships(
       parentId: (json['parent_id'] as num?)?.toInt(),
       hasChildren: json['has_children'] as bool,
       hasActiveChildren: json['has_active_children'] as bool?,
@@ -80,7 +79,7 @@ _$RelationshipsImpl _$$RelationshipsImplFromJson(Map<String, dynamic> json) =>
           .toList(),
     );
 
-Map<String, dynamic> _$$RelationshipsImplToJson(_$RelationshipsImpl instance) =>
+Map<String, dynamic> _$RelationshipsToJson(_Relationships instance) =>
     <String, dynamic>{
       'parent_id': instance.parentId,
       'has_children': instance.hasChildren,

@@ -1,3 +1,4 @@
+// dart format width=80
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint
@@ -9,345 +10,163 @@ part of 'flag.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// dart format off
 T _$identity<T>(T value) => value;
-
-final _privateConstructorUsedError = UnsupportedError(
-  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
-);
-
-PostFlag _$PostFlagFromJson(Map<String, dynamic> json) {
-  return _PostFlag.fromJson(json);
-}
 
 /// @nodoc
 mixin _$PostFlag {
-  int get id => throw _privateConstructorUsedError;
-  DateTime get createdAt => throw _privateConstructorUsedError;
-  int get postId => throw _privateConstructorUsedError;
-  String get reason => throw _privateConstructorUsedError;
-  int get creatorId => throw _privateConstructorUsedError;
-  bool get isResolved => throw _privateConstructorUsedError;
-  DateTime get updatedAt => throw _privateConstructorUsedError;
-  bool get isDeletion => throw _privateConstructorUsedError;
-  PostFlagType get type => throw _privateConstructorUsedError;
+
+ int get id; DateTime get createdAt; int get postId; String get reason; int get creatorId; bool get isResolved; DateTime get updatedAt; bool get isDeletion; PostFlagType get type;
+/// Create a copy of PostFlag
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$PostFlagCopyWith<PostFlag> get copyWith => _$PostFlagCopyWithImpl<PostFlag>(this as PostFlag, _$identity);
 
   /// Serializes this PostFlag to a JSON map.
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+  Map<String, dynamic> toJson();
 
-  /// Create a copy of PostFlag
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  $PostFlagCopyWith<PostFlag> get copyWith =>
-      throw _privateConstructorUsedError;
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is PostFlag&&(identical(other.id, id) || other.id == id)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.postId, postId) || other.postId == postId)&&(identical(other.reason, reason) || other.reason == reason)&&(identical(other.creatorId, creatorId) || other.creatorId == creatorId)&&(identical(other.isResolved, isResolved) || other.isResolved == isResolved)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.isDeletion, isDeletion) || other.isDeletion == isDeletion)&&(identical(other.type, type) || other.type == type));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,id,createdAt,postId,reason,creatorId,isResolved,updatedAt,isDeletion,type);
+
+@override
+String toString() {
+  return 'PostFlag(id: $id, createdAt: $createdAt, postId: $postId, reason: $reason, creatorId: $creatorId, isResolved: $isResolved, updatedAt: $updatedAt, isDeletion: $isDeletion, type: $type)';
+}
+
+
 }
 
 /// @nodoc
-abstract class $PostFlagCopyWith<$Res> {
-  factory $PostFlagCopyWith(PostFlag value, $Res Function(PostFlag) then) =
-      _$PostFlagCopyWithImpl<$Res, PostFlag>;
-  @useResult
-  $Res call({
-    int id,
-    DateTime createdAt,
-    int postId,
-    String reason,
-    int creatorId,
-    bool isResolved,
-    DateTime updatedAt,
-    bool isDeletion,
-    PostFlagType type,
-  });
-}
+abstract mixin class $PostFlagCopyWith<$Res>  {
+  factory $PostFlagCopyWith(PostFlag value, $Res Function(PostFlag) _then) = _$PostFlagCopyWithImpl;
+@useResult
+$Res call({
+ int id, DateTime createdAt, int postId, String reason, int creatorId, bool isResolved, DateTime updatedAt, bool isDeletion, PostFlagType type
+});
 
+
+
+
+}
 /// @nodoc
-class _$PostFlagCopyWithImpl<$Res, $Val extends PostFlag>
+class _$PostFlagCopyWithImpl<$Res>
     implements $PostFlagCopyWith<$Res> {
-  _$PostFlagCopyWithImpl(this._value, this._then);
+  _$PostFlagCopyWithImpl(this._self, this._then);
 
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
+  final PostFlag _self;
+  final $Res Function(PostFlag) _then;
 
-  /// Create a copy of PostFlag
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? id = null,
-    Object? createdAt = null,
-    Object? postId = null,
-    Object? reason = null,
-    Object? creatorId = null,
-    Object? isResolved = null,
-    Object? updatedAt = null,
-    Object? isDeletion = null,
-    Object? type = null,
-  }) {
-    return _then(
-      _value.copyWith(
-            id: null == id
-                ? _value.id
-                : id // ignore: cast_nullable_to_non_nullable
-                      as int,
-            createdAt: null == createdAt
-                ? _value.createdAt
-                : createdAt // ignore: cast_nullable_to_non_nullable
-                      as DateTime,
-            postId: null == postId
-                ? _value.postId
-                : postId // ignore: cast_nullable_to_non_nullable
-                      as int,
-            reason: null == reason
-                ? _value.reason
-                : reason // ignore: cast_nullable_to_non_nullable
-                      as String,
-            creatorId: null == creatorId
-                ? _value.creatorId
-                : creatorId // ignore: cast_nullable_to_non_nullable
-                      as int,
-            isResolved: null == isResolved
-                ? _value.isResolved
-                : isResolved // ignore: cast_nullable_to_non_nullable
-                      as bool,
-            updatedAt: null == updatedAt
-                ? _value.updatedAt
-                : updatedAt // ignore: cast_nullable_to_non_nullable
-                      as DateTime,
-            isDeletion: null == isDeletion
-                ? _value.isDeletion
-                : isDeletion // ignore: cast_nullable_to_non_nullable
-                      as bool,
-            type: null == type
-                ? _value.type
-                : type // ignore: cast_nullable_to_non_nullable
-                      as PostFlagType,
-          )
-          as $Val,
-    );
-  }
+/// Create a copy of PostFlag
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? createdAt = null,Object? postId = null,Object? reason = null,Object? creatorId = null,Object? isResolved = null,Object? updatedAt = null,Object? isDeletion = null,Object? type = null,}) {
+  return _then(_self.copyWith(
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as int,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as DateTime,postId: null == postId ? _self.postId : postId // ignore: cast_nullable_to_non_nullable
+as int,reason: null == reason ? _self.reason : reason // ignore: cast_nullable_to_non_nullable
+as String,creatorId: null == creatorId ? _self.creatorId : creatorId // ignore: cast_nullable_to_non_nullable
+as int,isResolved: null == isResolved ? _self.isResolved : isResolved // ignore: cast_nullable_to_non_nullable
+as bool,updatedAt: null == updatedAt ? _self.updatedAt : updatedAt // ignore: cast_nullable_to_non_nullable
+as DateTime,isDeletion: null == isDeletion ? _self.isDeletion : isDeletion // ignore: cast_nullable_to_non_nullable
+as bool,type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
+as PostFlagType,
+  ));
 }
 
-/// @nodoc
-abstract class _$$PostFlagImplCopyWith<$Res>
-    implements $PostFlagCopyWith<$Res> {
-  factory _$$PostFlagImplCopyWith(
-    _$PostFlagImpl value,
-    $Res Function(_$PostFlagImpl) then,
-  ) = __$$PostFlagImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({
-    int id,
-    DateTime createdAt,
-    int postId,
-    String reason,
-    int creatorId,
-    bool isResolved,
-    DateTime updatedAt,
-    bool isDeletion,
-    PostFlagType type,
-  });
 }
 
-/// @nodoc
-class __$$PostFlagImplCopyWithImpl<$Res>
-    extends _$PostFlagCopyWithImpl<$Res, _$PostFlagImpl>
-    implements _$$PostFlagImplCopyWith<$Res> {
-  __$$PostFlagImplCopyWithImpl(
-    _$PostFlagImpl _value,
-    $Res Function(_$PostFlagImpl) _then,
-  ) : super(_value, _then);
-
-  /// Create a copy of PostFlag
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? id = null,
-    Object? createdAt = null,
-    Object? postId = null,
-    Object? reason = null,
-    Object? creatorId = null,
-    Object? isResolved = null,
-    Object? updatedAt = null,
-    Object? isDeletion = null,
-    Object? type = null,
-  }) {
-    return _then(
-      _$PostFlagImpl(
-        id: null == id
-            ? _value.id
-            : id // ignore: cast_nullable_to_non_nullable
-                  as int,
-        createdAt: null == createdAt
-            ? _value.createdAt
-            : createdAt // ignore: cast_nullable_to_non_nullable
-                  as DateTime,
-        postId: null == postId
-            ? _value.postId
-            : postId // ignore: cast_nullable_to_non_nullable
-                  as int,
-        reason: null == reason
-            ? _value.reason
-            : reason // ignore: cast_nullable_to_non_nullable
-                  as String,
-        creatorId: null == creatorId
-            ? _value.creatorId
-            : creatorId // ignore: cast_nullable_to_non_nullable
-                  as int,
-        isResolved: null == isResolved
-            ? _value.isResolved
-            : isResolved // ignore: cast_nullable_to_non_nullable
-                  as bool,
-        updatedAt: null == updatedAt
-            ? _value.updatedAt
-            : updatedAt // ignore: cast_nullable_to_non_nullable
-                  as DateTime,
-        isDeletion: null == isDeletion
-            ? _value.isDeletion
-            : isDeletion // ignore: cast_nullable_to_non_nullable
-                  as bool,
-        type: null == type
-            ? _value.type
-            : type // ignore: cast_nullable_to_non_nullable
-                  as PostFlagType,
-      ),
-    );
-  }
-}
 
 /// @nodoc
 @JsonSerializable()
-class _$PostFlagImpl implements _PostFlag {
-  const _$PostFlagImpl({
-    required this.id,
-    required this.createdAt,
-    required this.postId,
-    required this.reason,
-    required this.creatorId,
-    required this.isResolved,
-    required this.updatedAt,
-    required this.isDeletion,
-    required this.type,
-  });
 
-  factory _$PostFlagImpl.fromJson(Map<String, dynamic> json) =>
-      _$$PostFlagImplFromJson(json);
+class _PostFlag implements PostFlag {
+  const _PostFlag({required this.id, required this.createdAt, required this.postId, required this.reason, required this.creatorId, required this.isResolved, required this.updatedAt, required this.isDeletion, required this.type});
+  factory _PostFlag.fromJson(Map<String, dynamic> json) => _$PostFlagFromJson(json);
 
-  @override
-  final int id;
-  @override
-  final DateTime createdAt;
-  @override
-  final int postId;
-  @override
-  final String reason;
-  @override
-  final int creatorId;
-  @override
-  final bool isResolved;
-  @override
-  final DateTime updatedAt;
-  @override
-  final bool isDeletion;
-  @override
-  final PostFlagType type;
+@override final  int id;
+@override final  DateTime createdAt;
+@override final  int postId;
+@override final  String reason;
+@override final  int creatorId;
+@override final  bool isResolved;
+@override final  DateTime updatedAt;
+@override final  bool isDeletion;
+@override final  PostFlagType type;
 
-  @override
-  String toString() {
-    return 'PostFlag(id: $id, createdAt: $createdAt, postId: $postId, reason: $reason, creatorId: $creatorId, isResolved: $isResolved, updatedAt: $updatedAt, isDeletion: $isDeletion, type: $type)';
-  }
+/// Create a copy of PostFlag
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$PostFlagCopyWith<_PostFlag> get copyWith => __$PostFlagCopyWithImpl<_PostFlag>(this, _$identity);
 
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$PostFlagImpl &&
-            (identical(other.id, id) || other.id == id) &&
-            (identical(other.createdAt, createdAt) ||
-                other.createdAt == createdAt) &&
-            (identical(other.postId, postId) || other.postId == postId) &&
-            (identical(other.reason, reason) || other.reason == reason) &&
-            (identical(other.creatorId, creatorId) ||
-                other.creatorId == creatorId) &&
-            (identical(other.isResolved, isResolved) ||
-                other.isResolved == isResolved) &&
-            (identical(other.updatedAt, updatedAt) ||
-                other.updatedAt == updatedAt) &&
-            (identical(other.isDeletion, isDeletion) ||
-                other.isDeletion == isDeletion) &&
-            (identical(other.type, type) || other.type == type));
-  }
-
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  int get hashCode => Object.hash(
-    runtimeType,
-    id,
-    createdAt,
-    postId,
-    reason,
-    creatorId,
-    isResolved,
-    updatedAt,
-    isDeletion,
-    type,
-  );
-
-  /// Create a copy of PostFlag
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$PostFlagImplCopyWith<_$PostFlagImpl> get copyWith =>
-      __$$PostFlagImplCopyWithImpl<_$PostFlagImpl>(this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$PostFlagImplToJson(this);
-  }
+@override
+Map<String, dynamic> toJson() {
+  return _$PostFlagToJson(this, );
 }
 
-abstract class _PostFlag implements PostFlag {
-  const factory _PostFlag({
-    required final int id,
-    required final DateTime createdAt,
-    required final int postId,
-    required final String reason,
-    required final int creatorId,
-    required final bool isResolved,
-    required final DateTime updatedAt,
-    required final bool isDeletion,
-    required final PostFlagType type,
-  }) = _$PostFlagImpl;
-
-  factory _PostFlag.fromJson(Map<String, dynamic> json) =
-      _$PostFlagImpl.fromJson;
-
-  @override
-  int get id;
-  @override
-  DateTime get createdAt;
-  @override
-  int get postId;
-  @override
-  String get reason;
-  @override
-  int get creatorId;
-  @override
-  bool get isResolved;
-  @override
-  DateTime get updatedAt;
-  @override
-  bool get isDeletion;
-  @override
-  PostFlagType get type;
-
-  /// Create a copy of PostFlag
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$PostFlagImplCopyWith<_$PostFlagImpl> get copyWith =>
-      throw _privateConstructorUsedError;
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _PostFlag&&(identical(other.id, id) || other.id == id)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.postId, postId) || other.postId == postId)&&(identical(other.reason, reason) || other.reason == reason)&&(identical(other.creatorId, creatorId) || other.creatorId == creatorId)&&(identical(other.isResolved, isResolved) || other.isResolved == isResolved)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.isDeletion, isDeletion) || other.isDeletion == isDeletion)&&(identical(other.type, type) || other.type == type));
 }
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,id,createdAt,postId,reason,creatorId,isResolved,updatedAt,isDeletion,type);
+
+@override
+String toString() {
+  return 'PostFlag(id: $id, createdAt: $createdAt, postId: $postId, reason: $reason, creatorId: $creatorId, isResolved: $isResolved, updatedAt: $updatedAt, isDeletion: $isDeletion, type: $type)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$PostFlagCopyWith<$Res> implements $PostFlagCopyWith<$Res> {
+  factory _$PostFlagCopyWith(_PostFlag value, $Res Function(_PostFlag) _then) = __$PostFlagCopyWithImpl;
+@override @useResult
+$Res call({
+ int id, DateTime createdAt, int postId, String reason, int creatorId, bool isResolved, DateTime updatedAt, bool isDeletion, PostFlagType type
+});
+
+
+
+
+}
+/// @nodoc
+class __$PostFlagCopyWithImpl<$Res>
+    implements _$PostFlagCopyWith<$Res> {
+  __$PostFlagCopyWithImpl(this._self, this._then);
+
+  final _PostFlag _self;
+  final $Res Function(_PostFlag) _then;
+
+/// Create a copy of PostFlag
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? createdAt = null,Object? postId = null,Object? reason = null,Object? creatorId = null,Object? isResolved = null,Object? updatedAt = null,Object? isDeletion = null,Object? type = null,}) {
+  return _then(_PostFlag(
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as int,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as DateTime,postId: null == postId ? _self.postId : postId // ignore: cast_nullable_to_non_nullable
+as int,reason: null == reason ? _self.reason : reason // ignore: cast_nullable_to_non_nullable
+as String,creatorId: null == creatorId ? _self.creatorId : creatorId // ignore: cast_nullable_to_non_nullable
+as int,isResolved: null == isResolved ? _self.isResolved : isResolved // ignore: cast_nullable_to_non_nullable
+as bool,updatedAt: null == updatedAt ? _self.updatedAt : updatedAt // ignore: cast_nullable_to_non_nullable
+as DateTime,isDeletion: null == isDeletion ? _self.isDeletion : isDeletion // ignore: cast_nullable_to_non_nullable
+as bool,type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
+as PostFlagType,
+  ));
+}
+
+
+}
+
+// dart format on

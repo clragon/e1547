@@ -1,3 +1,4 @@
+// dart format width=80
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint
@@ -9,164 +10,139 @@ part of 'status.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// dart format off
 T _$identity<T>(T value) => value;
-
-final _privateConstructorUsedError = UnsupportedError(
-  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
-);
-
-ClientSyncStatus _$ClientSyncStatusFromJson(Map<String, dynamic> json) {
-  return _ClientSyncStatus.fromJson(json);
-}
 
 /// @nodoc
 mixin _$ClientSyncStatus {
-  DenyListSyncStatus? get denyList => throw _privateConstructorUsedError;
+
+ DenyListSyncStatus? get denyList;
+/// Create a copy of ClientSyncStatus
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$ClientSyncStatusCopyWith<ClientSyncStatus> get copyWith => _$ClientSyncStatusCopyWithImpl<ClientSyncStatus>(this as ClientSyncStatus, _$identity);
 
   /// Serializes this ClientSyncStatus to a JSON map.
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+  Map<String, dynamic> toJson();
 
-  /// Create a copy of ClientSyncStatus
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  $ClientSyncStatusCopyWith<ClientSyncStatus> get copyWith =>
-      throw _privateConstructorUsedError;
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ClientSyncStatus&&(identical(other.denyList, denyList) || other.denyList == denyList));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,denyList);
+
+@override
+String toString() {
+  return 'ClientSyncStatus(denyList: $denyList)';
+}
+
+
 }
 
 /// @nodoc
-abstract class $ClientSyncStatusCopyWith<$Res> {
-  factory $ClientSyncStatusCopyWith(
-    ClientSyncStatus value,
-    $Res Function(ClientSyncStatus) then,
-  ) = _$ClientSyncStatusCopyWithImpl<$Res, ClientSyncStatus>;
-  @useResult
-  $Res call({DenyListSyncStatus? denyList});
-}
+abstract mixin class $ClientSyncStatusCopyWith<$Res>  {
+  factory $ClientSyncStatusCopyWith(ClientSyncStatus value, $Res Function(ClientSyncStatus) _then) = _$ClientSyncStatusCopyWithImpl;
+@useResult
+$Res call({
+ DenyListSyncStatus? denyList
+});
 
+
+
+
+}
 /// @nodoc
-class _$ClientSyncStatusCopyWithImpl<$Res, $Val extends ClientSyncStatus>
+class _$ClientSyncStatusCopyWithImpl<$Res>
     implements $ClientSyncStatusCopyWith<$Res> {
-  _$ClientSyncStatusCopyWithImpl(this._value, this._then);
+  _$ClientSyncStatusCopyWithImpl(this._self, this._then);
 
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
+  final ClientSyncStatus _self;
+  final $Res Function(ClientSyncStatus) _then;
 
-  /// Create a copy of ClientSyncStatus
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({Object? denyList = freezed}) {
-    return _then(
-      _value.copyWith(
-            denyList: freezed == denyList
-                ? _value.denyList
-                : denyList // ignore: cast_nullable_to_non_nullable
-                      as DenyListSyncStatus?,
-          )
-          as $Val,
-    );
-  }
+/// Create a copy of ClientSyncStatus
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? denyList = freezed,}) {
+  return _then(_self.copyWith(
+denyList: freezed == denyList ? _self.denyList : denyList // ignore: cast_nullable_to_non_nullable
+as DenyListSyncStatus?,
+  ));
 }
 
-/// @nodoc
-abstract class _$$ClientSyncStatusImplCopyWith<$Res>
-    implements $ClientSyncStatusCopyWith<$Res> {
-  factory _$$ClientSyncStatusImplCopyWith(
-    _$ClientSyncStatusImpl value,
-    $Res Function(_$ClientSyncStatusImpl) then,
-  ) = __$$ClientSyncStatusImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({DenyListSyncStatus? denyList});
 }
 
-/// @nodoc
-class __$$ClientSyncStatusImplCopyWithImpl<$Res>
-    extends _$ClientSyncStatusCopyWithImpl<$Res, _$ClientSyncStatusImpl>
-    implements _$$ClientSyncStatusImplCopyWith<$Res> {
-  __$$ClientSyncStatusImplCopyWithImpl(
-    _$ClientSyncStatusImpl _value,
-    $Res Function(_$ClientSyncStatusImpl) _then,
-  ) : super(_value, _then);
-
-  /// Create a copy of ClientSyncStatus
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({Object? denyList = freezed}) {
-    return _then(
-      _$ClientSyncStatusImpl(
-        denyList: freezed == denyList
-            ? _value.denyList
-            : denyList // ignore: cast_nullable_to_non_nullable
-                  as DenyListSyncStatus?,
-      ),
-    );
-  }
-}
 
 /// @nodoc
 @JsonSerializable()
-class _$ClientSyncStatusImpl implements _ClientSyncStatus {
-  const _$ClientSyncStatusImpl({this.denyList});
 
-  factory _$ClientSyncStatusImpl.fromJson(Map<String, dynamic> json) =>
-      _$$ClientSyncStatusImplFromJson(json);
+class _ClientSyncStatus implements ClientSyncStatus {
+  const _ClientSyncStatus({this.denyList});
+  factory _ClientSyncStatus.fromJson(Map<String, dynamic> json) => _$ClientSyncStatusFromJson(json);
 
-  @override
-  final DenyListSyncStatus? denyList;
+@override final  DenyListSyncStatus? denyList;
 
-  @override
-  String toString() {
-    return 'ClientSyncStatus(denyList: $denyList)';
-  }
+/// Create a copy of ClientSyncStatus
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$ClientSyncStatusCopyWith<_ClientSyncStatus> get copyWith => __$ClientSyncStatusCopyWithImpl<_ClientSyncStatus>(this, _$identity);
 
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$ClientSyncStatusImpl &&
-            (identical(other.denyList, denyList) ||
-                other.denyList == denyList));
-  }
-
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  int get hashCode => Object.hash(runtimeType, denyList);
-
-  /// Create a copy of ClientSyncStatus
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$ClientSyncStatusImplCopyWith<_$ClientSyncStatusImpl> get copyWith =>
-      __$$ClientSyncStatusImplCopyWithImpl<_$ClientSyncStatusImpl>(
-        this,
-        _$identity,
-      );
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$ClientSyncStatusImplToJson(this);
-  }
+@override
+Map<String, dynamic> toJson() {
+  return _$ClientSyncStatusToJson(this, );
 }
 
-abstract class _ClientSyncStatus implements ClientSyncStatus {
-  const factory _ClientSyncStatus({final DenyListSyncStatus? denyList}) =
-      _$ClientSyncStatusImpl;
-
-  factory _ClientSyncStatus.fromJson(Map<String, dynamic> json) =
-      _$ClientSyncStatusImpl.fromJson;
-
-  @override
-  DenyListSyncStatus? get denyList;
-
-  /// Create a copy of ClientSyncStatus
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$ClientSyncStatusImplCopyWith<_$ClientSyncStatusImpl> get copyWith =>
-      throw _privateConstructorUsedError;
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ClientSyncStatus&&(identical(other.denyList, denyList) || other.denyList == denyList));
 }
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,denyList);
+
+@override
+String toString() {
+  return 'ClientSyncStatus(denyList: $denyList)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$ClientSyncStatusCopyWith<$Res> implements $ClientSyncStatusCopyWith<$Res> {
+  factory _$ClientSyncStatusCopyWith(_ClientSyncStatus value, $Res Function(_ClientSyncStatus) _then) = __$ClientSyncStatusCopyWithImpl;
+@override @useResult
+$Res call({
+ DenyListSyncStatus? denyList
+});
+
+
+
+
+}
+/// @nodoc
+class __$ClientSyncStatusCopyWithImpl<$Res>
+    implements _$ClientSyncStatusCopyWith<$Res> {
+  __$ClientSyncStatusCopyWithImpl(this._self, this._then);
+
+  final _ClientSyncStatus _self;
+  final $Res Function(_ClientSyncStatus) _then;
+
+/// Create a copy of ClientSyncStatus
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? denyList = freezed,}) {
+  return _then(_ClientSyncStatus(
+denyList: freezed == denyList ? _self.denyList : denyList // ignore: cast_nullable_to_non_nullable
+as DenyListSyncStatus?,
+  ));
+}
+
+
+}
+
+// dart format on

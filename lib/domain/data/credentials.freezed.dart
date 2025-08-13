@@ -1,3 +1,4 @@
+// dart format width=80
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint
@@ -9,185 +10,142 @@ part of 'credentials.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// dart format off
 T _$identity<T>(T value) => value;
-
-final _privateConstructorUsedError = UnsupportedError(
-  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
-);
-
-Credentials _$CredentialsFromJson(Map<String, dynamic> json) {
-  return _Credentials.fromJson(json);
-}
 
 /// @nodoc
 mixin _$Credentials {
-  String get username => throw _privateConstructorUsedError;
-  @JsonKey(name: 'apikey')
-  String get password => throw _privateConstructorUsedError;
+
+ String get username;@JsonKey(name: 'apikey') String get password;
+/// Create a copy of Credentials
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$CredentialsCopyWith<Credentials> get copyWith => _$CredentialsCopyWithImpl<Credentials>(this as Credentials, _$identity);
 
   /// Serializes this Credentials to a JSON map.
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+  Map<String, dynamic> toJson();
 
-  /// Create a copy of Credentials
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  $CredentialsCopyWith<Credentials> get copyWith =>
-      throw _privateConstructorUsedError;
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Credentials&&(identical(other.username, username) || other.username == username)&&(identical(other.password, password) || other.password == password));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,username,password);
+
+@override
+String toString() {
+  return 'Credentials(username: $username, password: $password)';
+}
+
+
 }
 
 /// @nodoc
-abstract class $CredentialsCopyWith<$Res> {
-  factory $CredentialsCopyWith(
-    Credentials value,
-    $Res Function(Credentials) then,
-  ) = _$CredentialsCopyWithImpl<$Res, Credentials>;
-  @useResult
-  $Res call({String username, @JsonKey(name: 'apikey') String password});
-}
+abstract mixin class $CredentialsCopyWith<$Res>  {
+  factory $CredentialsCopyWith(Credentials value, $Res Function(Credentials) _then) = _$CredentialsCopyWithImpl;
+@useResult
+$Res call({
+ String username,@JsonKey(name: 'apikey') String password
+});
 
+
+
+
+}
 /// @nodoc
-class _$CredentialsCopyWithImpl<$Res, $Val extends Credentials>
+class _$CredentialsCopyWithImpl<$Res>
     implements $CredentialsCopyWith<$Res> {
-  _$CredentialsCopyWithImpl(this._value, this._then);
+  _$CredentialsCopyWithImpl(this._self, this._then);
 
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
+  final Credentials _self;
+  final $Res Function(Credentials) _then;
 
-  /// Create a copy of Credentials
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({Object? username = null, Object? password = null}) {
-    return _then(
-      _value.copyWith(
-            username: null == username
-                ? _value.username
-                : username // ignore: cast_nullable_to_non_nullable
-                      as String,
-            password: null == password
-                ? _value.password
-                : password // ignore: cast_nullable_to_non_nullable
-                      as String,
-          )
-          as $Val,
-    );
-  }
+/// Create a copy of Credentials
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? username = null,Object? password = null,}) {
+  return _then(_self.copyWith(
+username: null == username ? _self.username : username // ignore: cast_nullable_to_non_nullable
+as String,password: null == password ? _self.password : password // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
 }
 
-/// @nodoc
-abstract class _$$CredentialsImplCopyWith<$Res>
-    implements $CredentialsCopyWith<$Res> {
-  factory _$$CredentialsImplCopyWith(
-    _$CredentialsImpl value,
-    $Res Function(_$CredentialsImpl) then,
-  ) = __$$CredentialsImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({String username, @JsonKey(name: 'apikey') String password});
 }
 
-/// @nodoc
-class __$$CredentialsImplCopyWithImpl<$Res>
-    extends _$CredentialsCopyWithImpl<$Res, _$CredentialsImpl>
-    implements _$$CredentialsImplCopyWith<$Res> {
-  __$$CredentialsImplCopyWithImpl(
-    _$CredentialsImpl _value,
-    $Res Function(_$CredentialsImpl) _then,
-  ) : super(_value, _then);
-
-  /// Create a copy of Credentials
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({Object? username = null, Object? password = null}) {
-    return _then(
-      _$CredentialsImpl(
-        username: null == username
-            ? _value.username
-            : username // ignore: cast_nullable_to_non_nullable
-                  as String,
-        password: null == password
-            ? _value.password
-            : password // ignore: cast_nullable_to_non_nullable
-                  as String,
-      ),
-    );
-  }
-}
 
 /// @nodoc
 @JsonSerializable()
-class _$CredentialsImpl extends _Credentials {
-  const _$CredentialsImpl({
-    required this.username,
-    @JsonKey(name: 'apikey') required this.password,
-  }) : super._();
 
-  factory _$CredentialsImpl.fromJson(Map<String, dynamic> json) =>
-      _$$CredentialsImplFromJson(json);
+class _Credentials extends Credentials {
+  const _Credentials({required this.username, @JsonKey(name: 'apikey') required this.password}): super._();
+  factory _Credentials.fromJson(Map<String, dynamic> json) => _$CredentialsFromJson(json);
 
-  @override
-  final String username;
-  @override
-  @JsonKey(name: 'apikey')
-  final String password;
+@override final  String username;
+@override@JsonKey(name: 'apikey') final  String password;
 
-  @override
-  String toString() {
-    return 'Credentials(username: $username, password: $password)';
-  }
+/// Create a copy of Credentials
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$CredentialsCopyWith<_Credentials> get copyWith => __$CredentialsCopyWithImpl<_Credentials>(this, _$identity);
 
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$CredentialsImpl &&
-            (identical(other.username, username) ||
-                other.username == username) &&
-            (identical(other.password, password) ||
-                other.password == password));
-  }
-
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  int get hashCode => Object.hash(runtimeType, username, password);
-
-  /// Create a copy of Credentials
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$CredentialsImplCopyWith<_$CredentialsImpl> get copyWith =>
-      __$$CredentialsImplCopyWithImpl<_$CredentialsImpl>(this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$CredentialsImplToJson(this);
-  }
+@override
+Map<String, dynamic> toJson() {
+  return _$CredentialsToJson(this, );
 }
 
-abstract class _Credentials extends Credentials {
-  const factory _Credentials({
-    required final String username,
-    @JsonKey(name: 'apikey') required final String password,
-  }) = _$CredentialsImpl;
-  const _Credentials._() : super._();
-
-  factory _Credentials.fromJson(Map<String, dynamic> json) =
-      _$CredentialsImpl.fromJson;
-
-  @override
-  String get username;
-  @override
-  @JsonKey(name: 'apikey')
-  String get password;
-
-  /// Create a copy of Credentials
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$CredentialsImplCopyWith<_$CredentialsImpl> get copyWith =>
-      throw _privateConstructorUsedError;
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Credentials&&(identical(other.username, username) || other.username == username)&&(identical(other.password, password) || other.password == password));
 }
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,username,password);
+
+@override
+String toString() {
+  return 'Credentials(username: $username, password: $password)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$CredentialsCopyWith<$Res> implements $CredentialsCopyWith<$Res> {
+  factory _$CredentialsCopyWith(_Credentials value, $Res Function(_Credentials) _then) = __$CredentialsCopyWithImpl;
+@override @useResult
+$Res call({
+ String username,@JsonKey(name: 'apikey') String password
+});
+
+
+
+
+}
+/// @nodoc
+class __$CredentialsCopyWithImpl<$Res>
+    implements _$CredentialsCopyWith<$Res> {
+  __$CredentialsCopyWithImpl(this._self, this._then);
+
+  final _Credentials _self;
+  final $Res Function(_Credentials) _then;
+
+/// Create a copy of Credentials
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? username = null,Object? password = null,}) {
+  return _then(_Credentials(
+username: null == username ? _self.username : username // ignore: cast_nullable_to_non_nullable
+as String,password: null == password ? _self.password : password // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
+
+// dart format on

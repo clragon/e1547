@@ -5,7 +5,7 @@ part 'comment.freezed.dart';
 part 'comment.g.dart';
 
 @freezed
-class Comment with _$Comment {
+abstract class Comment with _$Comment {
   const factory Comment({
     required int id,
     required int postId,

@@ -4,7 +4,7 @@ part 'identity.freezed.dart';
 part 'identity.g.dart';
 
 @freezed
-class Identity with _$Identity {
+abstract class Identity with _$Identity {
   const factory Identity({
     required int id,
     required String host,
@@ -16,7 +16,7 @@ class Identity with _$Identity {
 }
 
 @freezed
-class IdentityRequest with _$IdentityRequest {
+abstract class IdentityRequest with _$IdentityRequest {
   const factory IdentityRequest({
     required String host,
     String? username,

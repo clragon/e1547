@@ -4,7 +4,7 @@ part 'follow.freezed.dart';
 part 'follow.g.dart';
 
 @freezed
-class Follow with _$Follow {
+abstract class Follow with _$Follow {
   const factory Follow({
     required int id,
     required String tags,
@@ -21,7 +21,7 @@ class Follow with _$Follow {
 }
 
 @freezed
-class FollowRequest with _$FollowRequest {
+abstract class FollowRequest with _$FollowRequest {
   const factory FollowRequest({
     required String tags,
     String? title,
@@ -34,7 +34,7 @@ class FollowRequest with _$FollowRequest {
 }
 
 @freezed
-class FollowUpdate with _$FollowUpdate {
+abstract class FollowUpdate with _$FollowUpdate {
   const factory FollowUpdate({
     required int id,
     String? tags,

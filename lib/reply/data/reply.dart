@@ -5,7 +5,7 @@ part 'reply.freezed.dart';
 part 'reply.g.dart';
 
 @freezed
-class Reply with _$Reply {
+abstract class Reply with _$Reply {
   const factory Reply({
     required int id,
     required int creatorId,

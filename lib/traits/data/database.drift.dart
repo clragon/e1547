@@ -514,7 +514,7 @@ class $TraitsTableTable extends i6.TraitsTable
   @override
   i5.Traits map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return i5.Traits(
+    return i5.Traits.new(
       id: attachedDatabase.typeMapping.read(
         i0.DriftSqlType.int,
         data['${effectivePrefix}id'],

@@ -4,7 +4,7 @@ part 'wiki.freezed.dart';
 part 'wiki.g.dart';
 
 @freezed
-class Wiki with _$Wiki {
+abstract class Wiki with _$Wiki {
   const factory Wiki({
     required int id,
     required String title,

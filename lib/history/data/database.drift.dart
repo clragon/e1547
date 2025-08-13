@@ -1037,7 +1037,7 @@ class $HistoriesTableTable extends i6.HistoriesTable
   @override
   i5.History map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return i5.History(
+    return i5.History.new(
       id: attachedDatabase.typeMapping.read(
         i0.DriftSqlType.int,
         data['${effectivePrefix}id'],

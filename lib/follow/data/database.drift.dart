@@ -1062,7 +1062,7 @@ class $FollowsTableTable extends i6.FollowsTable
   @override
   i5.Follow map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return i5.Follow(
+    return i5.Follow.new(
       id: attachedDatabase.typeMapping.read(
         i0.DriftSqlType.int,
         data['${effectivePrefix}id'],

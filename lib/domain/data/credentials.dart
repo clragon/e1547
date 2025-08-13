@@ -7,7 +7,7 @@ part 'credentials.freezed.dart';
 part 'credentials.g.dart';
 
 @freezed
-class Credentials with _$Credentials {
+abstract class Credentials with _$Credentials {
   const factory Credentials({
     required String username,
     @JsonKey(name: 'apikey') required String password,

@@ -4,7 +4,7 @@ part 'flag.freezed.dart';
 part 'flag.g.dart';
 
 @freezed
-class PostFlag with _$PostFlag {
+abstract class PostFlag with _$PostFlag {
   const factory PostFlag({
     required int id,
     required DateTime createdAt,

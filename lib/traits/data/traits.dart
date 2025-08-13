@@ -4,7 +4,7 @@ part 'traits.freezed.dart';
 part 'traits.g.dart';
 
 @freezed
-class Traits with _$Traits {
+abstract class Traits with _$Traits {
   const factory Traits({
     required int id,
     required int? userId,
@@ -18,7 +18,7 @@ class Traits with _$Traits {
 }
 
 @freezed
-class TraitsRequest with _$TraitsRequest {
+abstract class TraitsRequest with _$TraitsRequest {
   const factory TraitsRequest({
     required int identity,
     int? userId,

@@ -4,7 +4,7 @@ part 'history.freezed.dart';
 part 'history.g.dart';
 
 @freezed
-class History with _$History {
+abstract class History with _$History {
   const factory History({
     required int id,
     required DateTime visitedAt,
@@ -20,7 +20,7 @@ class History with _$History {
 }
 
 @freezed
-class HistoryRequest with _$HistoryRequest {
+abstract class HistoryRequest with _$HistoryRequest {
   const factory HistoryRequest({
     required DateTime visitedAt,
     required String link,

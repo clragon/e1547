@@ -296,7 +296,7 @@ class $IdentitiesTableTable extends i5.IdentitiesTable
   @override
   i4.Identity map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return i4.Identity(
+    return i4.Identity.new(
       id: attachedDatabase.typeMapping.read(
         i0.DriftSqlType.int,
         data['${effectivePrefix}id'],

@@ -1,3 +1,4 @@
+// dart format width=80
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint
@@ -9,249 +10,151 @@ part of 'account.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// dart format off
 T _$identity<T>(T value) => value;
-
-final _privateConstructorUsedError = UnsupportedError(
-  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
-);
-
-Account _$AccountFromJson(Map<String, dynamic> json) {
-  return _Account.fromJson(json);
-}
 
 /// @nodoc
 mixin _$Account {
-  int get id => throw _privateConstructorUsedError;
-  String get name => throw _privateConstructorUsedError;
-  int? get avatarId => throw _privateConstructorUsedError;
-  String? get blacklistedTags => throw _privateConstructorUsedError;
-  int? get perPage => throw _privateConstructorUsedError;
+
+ int get id; String get name; int? get avatarId; String? get blacklistedTags; int? get perPage;
+/// Create a copy of Account
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$AccountCopyWith<Account> get copyWith => _$AccountCopyWithImpl<Account>(this as Account, _$identity);
 
   /// Serializes this Account to a JSON map.
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+  Map<String, dynamic> toJson();
 
-  /// Create a copy of Account
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  $AccountCopyWith<Account> get copyWith => throw _privateConstructorUsedError;
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Account&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.avatarId, avatarId) || other.avatarId == avatarId)&&(identical(other.blacklistedTags, blacklistedTags) || other.blacklistedTags == blacklistedTags)&&(identical(other.perPage, perPage) || other.perPage == perPage));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,id,name,avatarId,blacklistedTags,perPage);
+
+@override
+String toString() {
+  return 'Account(id: $id, name: $name, avatarId: $avatarId, blacklistedTags: $blacklistedTags, perPage: $perPage)';
+}
+
+
 }
 
 /// @nodoc
-abstract class $AccountCopyWith<$Res> {
-  factory $AccountCopyWith(Account value, $Res Function(Account) then) =
-      _$AccountCopyWithImpl<$Res, Account>;
-  @useResult
-  $Res call({
-    int id,
-    String name,
-    int? avatarId,
-    String? blacklistedTags,
-    int? perPage,
-  });
-}
+abstract mixin class $AccountCopyWith<$Res>  {
+  factory $AccountCopyWith(Account value, $Res Function(Account) _then) = _$AccountCopyWithImpl;
+@useResult
+$Res call({
+ int id, String name, int? avatarId, String? blacklistedTags, int? perPage
+});
 
+
+
+
+}
 /// @nodoc
-class _$AccountCopyWithImpl<$Res, $Val extends Account>
+class _$AccountCopyWithImpl<$Res>
     implements $AccountCopyWith<$Res> {
-  _$AccountCopyWithImpl(this._value, this._then);
+  _$AccountCopyWithImpl(this._self, this._then);
 
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
+  final Account _self;
+  final $Res Function(Account) _then;
 
-  /// Create a copy of Account
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? id = null,
-    Object? name = null,
-    Object? avatarId = freezed,
-    Object? blacklistedTags = freezed,
-    Object? perPage = freezed,
-  }) {
-    return _then(
-      _value.copyWith(
-            id: null == id
-                ? _value.id
-                : id // ignore: cast_nullable_to_non_nullable
-                      as int,
-            name: null == name
-                ? _value.name
-                : name // ignore: cast_nullable_to_non_nullable
-                      as String,
-            avatarId: freezed == avatarId
-                ? _value.avatarId
-                : avatarId // ignore: cast_nullable_to_non_nullable
-                      as int?,
-            blacklistedTags: freezed == blacklistedTags
-                ? _value.blacklistedTags
-                : blacklistedTags // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            perPage: freezed == perPage
-                ? _value.perPage
-                : perPage // ignore: cast_nullable_to_non_nullable
-                      as int?,
-          )
-          as $Val,
-    );
-  }
+/// Create a copy of Account
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? avatarId = freezed,Object? blacklistedTags = freezed,Object? perPage = freezed,}) {
+  return _then(_self.copyWith(
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as int,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String,avatarId: freezed == avatarId ? _self.avatarId : avatarId // ignore: cast_nullable_to_non_nullable
+as int?,blacklistedTags: freezed == blacklistedTags ? _self.blacklistedTags : blacklistedTags // ignore: cast_nullable_to_non_nullable
+as String?,perPage: freezed == perPage ? _self.perPage : perPage // ignore: cast_nullable_to_non_nullable
+as int?,
+  ));
 }
 
-/// @nodoc
-abstract class _$$AccountImplCopyWith<$Res> implements $AccountCopyWith<$Res> {
-  factory _$$AccountImplCopyWith(
-    _$AccountImpl value,
-    $Res Function(_$AccountImpl) then,
-  ) = __$$AccountImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({
-    int id,
-    String name,
-    int? avatarId,
-    String? blacklistedTags,
-    int? perPage,
-  });
 }
 
-/// @nodoc
-class __$$AccountImplCopyWithImpl<$Res>
-    extends _$AccountCopyWithImpl<$Res, _$AccountImpl>
-    implements _$$AccountImplCopyWith<$Res> {
-  __$$AccountImplCopyWithImpl(
-    _$AccountImpl _value,
-    $Res Function(_$AccountImpl) _then,
-  ) : super(_value, _then);
-
-  /// Create a copy of Account
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? id = null,
-    Object? name = null,
-    Object? avatarId = freezed,
-    Object? blacklistedTags = freezed,
-    Object? perPage = freezed,
-  }) {
-    return _then(
-      _$AccountImpl(
-        id: null == id
-            ? _value.id
-            : id // ignore: cast_nullable_to_non_nullable
-                  as int,
-        name: null == name
-            ? _value.name
-            : name // ignore: cast_nullable_to_non_nullable
-                  as String,
-        avatarId: freezed == avatarId
-            ? _value.avatarId
-            : avatarId // ignore: cast_nullable_to_non_nullable
-                  as int?,
-        blacklistedTags: freezed == blacklistedTags
-            ? _value.blacklistedTags
-            : blacklistedTags // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        perPage: freezed == perPage
-            ? _value.perPage
-            : perPage // ignore: cast_nullable_to_non_nullable
-                  as int?,
-      ),
-    );
-  }
-}
 
 /// @nodoc
 @JsonSerializable()
-class _$AccountImpl implements _Account {
-  const _$AccountImpl({
-    required this.id,
-    required this.name,
-    required this.avatarId,
-    required this.blacklistedTags,
-    required this.perPage,
-  });
 
-  factory _$AccountImpl.fromJson(Map<String, dynamic> json) =>
-      _$$AccountImplFromJson(json);
+class _Account implements Account {
+  const _Account({required this.id, required this.name, required this.avatarId, required this.blacklistedTags, required this.perPage});
+  factory _Account.fromJson(Map<String, dynamic> json) => _$AccountFromJson(json);
 
-  @override
-  final int id;
-  @override
-  final String name;
-  @override
-  final int? avatarId;
-  @override
-  final String? blacklistedTags;
-  @override
-  final int? perPage;
+@override final  int id;
+@override final  String name;
+@override final  int? avatarId;
+@override final  String? blacklistedTags;
+@override final  int? perPage;
 
-  @override
-  String toString() {
-    return 'Account(id: $id, name: $name, avatarId: $avatarId, blacklistedTags: $blacklistedTags, perPage: $perPage)';
-  }
+/// Create a copy of Account
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$AccountCopyWith<_Account> get copyWith => __$AccountCopyWithImpl<_Account>(this, _$identity);
 
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$AccountImpl &&
-            (identical(other.id, id) || other.id == id) &&
-            (identical(other.name, name) || other.name == name) &&
-            (identical(other.avatarId, avatarId) ||
-                other.avatarId == avatarId) &&
-            (identical(other.blacklistedTags, blacklistedTags) ||
-                other.blacklistedTags == blacklistedTags) &&
-            (identical(other.perPage, perPage) || other.perPage == perPage));
-  }
-
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  int get hashCode =>
-      Object.hash(runtimeType, id, name, avatarId, blacklistedTags, perPage);
-
-  /// Create a copy of Account
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$AccountImplCopyWith<_$AccountImpl> get copyWith =>
-      __$$AccountImplCopyWithImpl<_$AccountImpl>(this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$AccountImplToJson(this);
-  }
+@override
+Map<String, dynamic> toJson() {
+  return _$AccountToJson(this, );
 }
 
-abstract class _Account implements Account {
-  const factory _Account({
-    required final int id,
-    required final String name,
-    required final int? avatarId,
-    required final String? blacklistedTags,
-    required final int? perPage,
-  }) = _$AccountImpl;
-
-  factory _Account.fromJson(Map<String, dynamic> json) = _$AccountImpl.fromJson;
-
-  @override
-  int get id;
-  @override
-  String get name;
-  @override
-  int? get avatarId;
-  @override
-  String? get blacklistedTags;
-  @override
-  int? get perPage;
-
-  /// Create a copy of Account
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$AccountImplCopyWith<_$AccountImpl> get copyWith =>
-      throw _privateConstructorUsedError;
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Account&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.avatarId, avatarId) || other.avatarId == avatarId)&&(identical(other.blacklistedTags, blacklistedTags) || other.blacklistedTags == blacklistedTags)&&(identical(other.perPage, perPage) || other.perPage == perPage));
 }
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,id,name,avatarId,blacklistedTags,perPage);
+
+@override
+String toString() {
+  return 'Account(id: $id, name: $name, avatarId: $avatarId, blacklistedTags: $blacklistedTags, perPage: $perPage)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$AccountCopyWith<$Res> implements $AccountCopyWith<$Res> {
+  factory _$AccountCopyWith(_Account value, $Res Function(_Account) _then) = __$AccountCopyWithImpl;
+@override @useResult
+$Res call({
+ int id, String name, int? avatarId, String? blacklistedTags, int? perPage
+});
+
+
+
+
+}
+/// @nodoc
+class __$AccountCopyWithImpl<$Res>
+    implements _$AccountCopyWith<$Res> {
+  __$AccountCopyWithImpl(this._self, this._then);
+
+  final _Account _self;
+  final $Res Function(_Account) _then;
+
+/// Create a copy of Account
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? avatarId = freezed,Object? blacklistedTags = freezed,Object? perPage = freezed,}) {
+  return _then(_Account(
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as int,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String,avatarId: freezed == avatarId ? _self.avatarId : avatarId // ignore: cast_nullable_to_non_nullable
+as int?,blacklistedTags: freezed == blacklistedTags ? _self.blacklistedTags : blacklistedTags // ignore: cast_nullable_to_non_nullable
+as String?,perPage: freezed == perPage ? _self.perPage : perPage // ignore: cast_nullable_to_non_nullable
+as int?,
+  ));
+}
+
+
+}
+
+// dart format on

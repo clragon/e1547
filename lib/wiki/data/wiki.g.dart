@@ -6,7 +6,7 @@ part of 'wiki.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$WikiImpl _$$WikiImplFromJson(Map<String, dynamic> json) => _$WikiImpl(
+_Wiki _$WikiFromJson(Map<String, dynamic> json) => _Wiki(
   id: (json['id'] as num).toInt(),
   title: json['title'] as String,
   body: json['body'] as String,
@@ -20,13 +20,12 @@ _$WikiImpl _$$WikiImplFromJson(Map<String, dynamic> json) => _$WikiImpl(
   isLocked: json['is_locked'] as bool?,
 );
 
-Map<String, dynamic> _$$WikiImplToJson(_$WikiImpl instance) =>
-    <String, dynamic>{
-      'id': instance.id,
-      'title': instance.title,
-      'body': instance.body,
-      'created_at': instance.createdAt.toIso8601String(),
-      'updated_at': instance.updatedAt?.toIso8601String(),
-      'other_names': instance.otherNames,
-      'is_locked': instance.isLocked,
-    };
+Map<String, dynamic> _$WikiToJson(_Wiki instance) => <String, dynamic>{
+  'id': instance.id,
+  'title': instance.title,
+  'body': instance.body,
+  'created_at': instance.createdAt.toIso8601String(),
+  'updated_at': instance.updatedAt?.toIso8601String(),
+  'other_names': instance.otherNames,
+  'is_locked': instance.isLocked,
+};
