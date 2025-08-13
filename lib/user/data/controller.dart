@@ -1,13 +1,13 @@
 import 'package:e1547/post/post.dart';
 
 class UserFavoritesController extends PostController {
-  UserFavoritesController({required this.user, required super.client});
+  UserFavoritesController({required this.user, required super.domain});
 
   final String user;
 
   @override
   Future<List<Post>> fetch(int page, bool force) {
-    return client.posts.byFavoriter(
+    return domain.posts.byFavoriter(
       username: user,
       page: page,
       force: force,
@@ -17,13 +17,13 @@ class UserFavoritesController extends PostController {
 }
 
 class UserUploadsController extends PostController {
-  UserUploadsController({required this.user, required super.client});
+  UserUploadsController({required this.user, required super.domain});
 
   final String user;
 
   @override
   Future<List<Post>> fetch(int page, bool force) {
-    return client.posts.byUploader(
+    return domain.posts.byUploader(
       username: user,
       page: page,
       force: force,

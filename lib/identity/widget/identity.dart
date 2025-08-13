@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:drift/isolate.dart';
 import 'package:drift/native.dart';
 import 'package:e1547/app/app.dart';
-import 'package:e1547/client/client.dart';
+import 'package:e1547/domain/domain.dart';
 import 'package:e1547/identity/identity.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:e1547/shared/shared.dart';

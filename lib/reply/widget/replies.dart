@@ -18,7 +18,7 @@ class RepliesPage extends StatelessWidget {
       child: Consumer<ReplyController>(
         builder: (context, controller, child) => ControllerHistoryConnector(
           controller: controller,
-          addToHistory: (context, client, controller) => client.histories
+          addToHistory: (context, domain, controller) => domain.histories
               .addTopic(topic: topic, replies: controller.items!),
           child: RefreshableDataPage(
             appBar: DefaultAppBar(

@@ -1,4 +1,4 @@
-import 'package:e1547/client/client.dart';
+import 'package:e1547/domain/domain.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/shared/shared.dart';
 import 'package:flutter/foundation.dart';
@@ -6,7 +6,7 @@ import 'package:flutter/foundation.dart';
 class PostController extends PageClientDataController<Post>
     with PostActionController, PostFilterableController {
   PostController({
-    required this.client,
+    required this.domain,
     QueryMap? query,
     bool orderFavorites = false,
     bool orderPools = true,
@@ -17,11 +17,11 @@ class PostController extends PageClientDataController<Post>
        _orderFavorites = orderFavorites,
        _orderPools = orderPools {
     this.denying = denying;
-    client.traits.addListener(applyFilter);
+    domain.traits.addListener(applyFilter);
   }
 
   @override
-  final Client client;
+  final Domain domain;
 
   final bool canSearch;
   QueryMap _query;
@@ -57,7 +57,7 @@ class PostController extends PageClientDataController<Post>
 
   @override
   @protected
-  Future<List<Post>> fetch(int page, bool force) async => client.posts.page(
+  Future<List<Post>> fetch(int page, bool force) async => domain.posts.page(
     page: page,
     query: query,
     force: force,
@@ -68,7 +68,7 @@ class PostController extends PageClientDataController<Post>
 
   @override
   void dispose() {
-    client.traits.removeListener(applyFilter);
+    domain.traits.removeListener(applyFilter);
     super.dispose();
   }
 }
@@ -76,7 +76,7 @@ class PostController extends PageClientDataController<Post>
 class SinglePostController extends PostController {
   SinglePostController({
     required this.id,
-    required super.client,
+    required super.domain,
     super.filterMode = PostFilterMode.plain,
   }) : super(canSearch: false);
 
@@ -85,11 +85,11 @@ class SinglePostController extends PostController {
   @override
   Future<List<Post>> fetch(int page, bool force) async => [
     if (page == firstPageKey)
-      await client.posts.get(id: id, force: force, cancelToken: cancelToken),
+      await domain.posts.get(id: id, force: force, cancelToken: cancelToken),
   ];
 }
 
-class PostProvider extends SubChangeNotifierProvider<Client, PostController> {
+class PostProvider extends SubChangeNotifierProvider<Domain, PostController> {
   PostProvider({
     QueryMap? query,
     bool orderFavorites = false,
@@ -101,7 +101,7 @@ class PostProvider extends SubChangeNotifierProvider<Client, PostController> {
     super.builder,
   }) : super(
          create: (context, client) => PostController(
-           client: client,
+           domain: client,
            query: query,
            orderPools: orderPools,
            denying: denying,
@@ -126,9 +126,9 @@ class SinglePostProvider extends PostProvider {
     super.child,
     super.builder,
   }) : super.builder(
-         create: (context, client) => SinglePostController(
+         create: (context, domain) => SinglePostController(
            id: id,
-           client: client,
+           domain: domain,
            filterMode: filterMode,
          ),
        );

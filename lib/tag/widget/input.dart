@@ -1,5 +1,5 @@
 import 'package:collection/collection.dart';
-import 'package:e1547/client/client.dart';
+import 'package:e1547/domain/domain.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:e1547/shared/shared.dart';
 import 'package:e1547/tag/tag.dart';
@@ -115,12 +115,12 @@ class TagInput extends StatelessWidget {
             ],
           ),
           suggestionsCallback: (pattern) async {
-            Client client = context.read<Client>();
+            final domain = context.read<Domain>();
             List<String> tags = controller.text.split(' ');
             int selection = findTag(tags, controller.selection.extent.offset);
             String tag = tags[selection];
             if (tag.isEmpty) return [];
-            return client.tags.autocomplete(
+            return domain.tags.autocomplete(
               search: tagToRaw(tags[selection]),
               category: category,
               limit: 3,

@@ -1,4 +1,4 @@
-import 'package:e1547/client/client.dart';
+import 'package:e1547/domain/domain.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:e1547/shared/shared.dart';
@@ -12,10 +12,10 @@ class LikeDisplay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Client client = context.watch<Client>();
+    final domain = context.watch<Domain>();
     PostController controller = context.watch<PostController>();
     ScaffoldMessengerState messenger = ScaffoldMessenger.of(context);
-    bool canVote = client.hasLogin;
+    bool canVote = domain.hasLogin;
     return Column(
       children: [
         Row(

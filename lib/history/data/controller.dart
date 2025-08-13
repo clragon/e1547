@@ -1,14 +1,14 @@
-import 'package:e1547/client/client.dart';
+import 'package:e1547/domain/domain.dart';
 import 'package:e1547/history/history.dart';
 import 'package:e1547/shared/shared.dart';
 import 'package:flutter/foundation.dart';
 
 class HistoryController extends PageClientDataController<History> {
-  HistoryController({required this.client, QueryMap? query})
+  HistoryController({required this.domain, QueryMap? query})
     : _query = query ?? {};
 
   @override
-  final Client client;
+  final Domain domain;
 
   QueryMap _query;
   QueryMap get search => _query;
@@ -20,7 +20,7 @@ class HistoryController extends PageClientDataController<History> {
 
   @override
   Future<List<History>> fetch(int page, bool force) {
-    return client.histories.page(
+    return domain.histories.page(
       page: page,
       query: _query,
       force: force,
@@ -30,11 +30,11 @@ class HistoryController extends PageClientDataController<History> {
 }
 
 class HistoryProvider
-    extends SubChangeNotifierProvider<Client, HistoryController> {
+    extends SubChangeNotifierProvider<Domain, HistoryController> {
   HistoryProvider({QueryMap? search, super.child, super.builder})
     : super(
         create: (context, client) =>
-            HistoryController(client: client, query: search),
+            HistoryController(domain: client, query: search),
         update: (context, service, controller) {
           if (search != null) {
             controller.search = search;

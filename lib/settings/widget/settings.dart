@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:e1547/app/app.dart';
-import 'package:e1547/client/client.dart';
+import 'package:e1547/domain/domain.dart';
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/identity/identity.dart';
 import 'package:e1547/logs/logs.dart';
@@ -43,9 +43,9 @@ class SettingsPage extends StatelessWidget {
               ),
               const Divider(),
               const ListTileHeader(title: 'User'),
-              Consumer<Client>(
-                builder: (context, client, child) => ValueListenableBuilder(
-                  valueListenable: client.traits,
+              Consumer<Domain>(
+                builder: (context, domain, child) => ValueListenableBuilder(
+                  valueListenable: domain.traits,
                   builder: (context, traits, child) => ListTile(
                     title: const Text('Blacklist'),
                     leading: const Icon(Icons.block),
@@ -58,10 +58,10 @@ class SettingsPage extends StatelessWidget {
                   ),
                 ),
               ),
-              Consumer<Client>(
-                builder: (context, client, child) => SubStream<int>(
-                  create: () => client.follows.count().streamed,
-                  keys: [client],
+              Consumer<Domain>(
+                builder: (context, domain, child) => SubStream<int>(
+                  create: () => domain.follows.count().streamed,
+                  keys: [domain],
                   builder: (context, snapshot) => ListTile(
                     title: const Text('Follows'),
                     subtitle: snapshot.data != null && snapshot.data != 0
@@ -77,15 +77,15 @@ class SettingsPage extends StatelessWidget {
                   ),
                 ),
               ),
-              Consumer<Client>(
-                builder: (context, client, child) => SubStream<int>(
-                  create: () => client.histories.count().streamed,
-                  keys: [client],
+              Consumer<Domain>(
+                builder: (context, domain, child) => SubStream<int>(
+                  create: () => domain.histories.count().streamed,
+                  keys: [domain],
                   builder: (context, countSnapshot) {
                     int? count = countSnapshot.data;
                     return SubStream(
-                      initialData: client.histories.enabled,
-                      create: () => client.histories.enabledStream,
+                      initialData: domain.histories.enabled,
+                      create: () => domain.histories.enabledStream,
                       builder: (context, enabledSnapshot) {
                         bool enabled = enabledSnapshot.data!;
                         return DividerListTile(
@@ -96,11 +96,11 @@ class SettingsPage extends StatelessWidget {
                           leading: const Icon(Icons.history),
                           onTap: () => Navigator.pushNamed(context, '/history'),
                           onTapSeparated: () =>
-                              client.histories.enabled = !enabled,
+                              domain.histories.enabled = !enabled,
                           separated: Switch(
                             value: enabled,
                             onChanged: (value) =>
-                                client.histories.enabled = value,
+                                domain.histories.enabled = value,
                           ),
                         );
                       },

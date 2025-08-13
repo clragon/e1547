@@ -1,8 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:e1547/account/account.dart';
 import 'package:e1547/app/app.dart';
-import 'package:e1547/client/client.dart';
 import 'package:e1547/comment/comment.dart';
+import 'package:e1547/domain/domain.dart';
 import 'package:e1547/flag/flag.dart';
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/history/history.dart';
@@ -21,8 +21,8 @@ import 'package:flutter/foundation.dart';
 
 export 'package:dio/dio.dart' show CancelToken;
 
-class Client with Disposable {
-  Client({required this.identity, required this.traits, required this.storage})
+class Domain with Disposable {
+  Domain({required this.identity, required this.traits, required this.storage})
     : dio = createDefaultDio(identity, cache: storage.httpCache);
 
   final Dio dio;
@@ -81,7 +81,7 @@ class Client with Disposable {
   }
 }
 
-extension ClientExtension on Client {
+extension DomainExtension on Domain {
   String get host => identity.host;
   bool get hasLogin => identity.username != null;
   String withHost(String path) => identity.withHost(path);

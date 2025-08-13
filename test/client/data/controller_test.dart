@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:e1547/client/client.dart';
+import 'package:e1547/domain/domain.dart';
 import 'package:e1547/shared/shared.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -96,7 +96,7 @@ class MockPageClientDataController extends PageClientDataController<MockItem> {
   MockPageClientDataController({super.firstPageKey = 1});
 
   @override
-  Client get client => throw UnimplementedError();
+  Domain get domain => throw UnimplementedError();
 
   Future<List<MockItem>> Function(int page, bool force)? mockFetch;
 

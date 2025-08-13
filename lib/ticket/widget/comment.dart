@@ -1,5 +1,5 @@
-import 'package:e1547/client/client.dart';
 import 'package:e1547/comment/comment.dart';
+import 'package:e1547/domain/domain.dart';
 import 'package:e1547/shared/shared.dart';
 import 'package:e1547/ticket/ticket.dart';
 import 'package:flutter/material.dart';
@@ -14,7 +14,7 @@ class CommentReportScreen extends StatelessWidget {
     return ReasonReportScreen(
       title: Text('Comment #${comment.id}'),
       onReport: (reason) => validateCall(
-        () => context.read<Client>().tickets.create(
+        () => context.read<Domain>().tickets.create(
           type: TicketType.comment,
           item: comment.id,
           reason: reason,

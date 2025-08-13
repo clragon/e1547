@@ -1,10 +1,10 @@
-import 'package:e1547/client/client.dart';
+import 'package:e1547/domain/domain.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/shared/shared.dart';
 import 'package:flutter/material.dart';
 
 class FavoritePostController extends PostController {
-  FavoritePostController({required super.client});
+  FavoritePostController({required super.domain});
 
   @override
   @protected
@@ -20,7 +20,7 @@ class FavoritePostController extends PostController {
   @override
   @protected
   Future<List<Post>> fetch(int page, bool force) async {
-    return client.posts.favorites(
+    return domain.posts.favorites(
       page: page,
       query: query,
       orderByAdded: orderFavorites,
@@ -43,12 +43,12 @@ class FavoritePostController extends PostController {
 }
 
 class HotPostController extends PostController {
-  HotPostController({required super.client});
+  HotPostController({required super.domain});
 
   @override
   @protected
   Future<List<Post>> fetch(int page, bool force) async {
-    return client.posts.byHot(
+    return domain.posts.byHot(
       page: page,
       query: query,
       force: force,

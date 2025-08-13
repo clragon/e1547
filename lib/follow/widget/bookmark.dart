@@ -1,4 +1,4 @@
-import 'package:e1547/client/client.dart';
+import 'package:e1547/domain/domain.dart';
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/shared/shared.dart';
@@ -11,16 +11,16 @@ class FollowsBookmarkPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return RouterDrawerEntry<FollowsBookmarkPage>(
-      child: SubChangeNotifierProvider<Client, FollowController>(
+      child: SubChangeNotifierProvider<Domain, FollowController>(
         create: (context, client) =>
-            FollowController(client: client, types: [FollowType.bookmark]),
+            FollowController(domain: client, types: [FollowType.bookmark]),
         child: Consumer<FollowController>(
           builder: (context, controller, child) => SubEffect(
             effect: () {
               // remove this when the paged grid view is implemented
               controller.getNextPage();
-              final client = context.read<Client>();
-              client.follows.sync();
+              final domain = context.read<Domain>();
+              domain.follows.sync();
               return null;
             },
             keys: const [],
@@ -38,7 +38,7 @@ class FollowsBookmarkPage extends StatelessWidget {
                     onSubmit: (value) async {
                       value = value.trim();
                       if (value.isEmpty) return;
-                      await context.read<Client>().follows.create(
+                      await context.read<Domain>().follows.create(
                         tags: value,
                         type: FollowType.bookmark,
                       );

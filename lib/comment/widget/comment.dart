@@ -1,5 +1,5 @@
-import 'package:e1547/client/client.dart';
 import 'package:e1547/comment/comment.dart';
+import 'package:e1547/domain/domain.dart';
 import 'package:e1547/markup/markup.dart';
 import 'package:e1547/shared/shared.dart';
 import 'package:e1547/ticket/ticket.dart';
@@ -125,7 +125,7 @@ class CommentVotes extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Client client = context.watch<Client>();
+    final domain = context.watch<Domain>();
     VoteInfo? vote = comment.vote;
     if (vote == null) return const SizedBox();
 
@@ -137,7 +137,7 @@ class CommentVotes extends StatelessWidget {
         padding: EdgeInsets.zero,
         score: vote.score,
         status: vote.status,
-        onUpvote: client.hasLogin
+        onUpvote: domain.hasLogin
             ? (isLiked) async {
                 controller
                     .vote(comment: comment, upvote: true, replace: !isLiked)
@@ -156,7 +156,7 @@ class CommentVotes extends StatelessWidget {
                 return !isLiked;
               }
             : null,
-        onDownvote: client.hasLogin
+        onDownvote: domain.hasLogin
             ? (isLiked) async {
                 controller
                     .vote(comment: comment, upvote: false, replace: !isLiked)
@@ -206,12 +206,12 @@ class CommentMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Client client = context.watch<Client>();
+    final domain = context.watch<Domain>();
     return PopupMenuButton<VoidCallback>(
       icon: const Dimmed(child: Icon(Icons.more_vert)),
       onSelected: (value) => value(),
       itemBuilder: (context) => [
-        if (client.identity.username == comment.creatorName)
+        if (domain.identity.username == comment.creatorName)
           PopupMenuTile(
             title: 'Edit',
             icon: Icons.edit,

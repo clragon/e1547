@@ -1,5 +1,5 @@
 import 'package:collection/collection.dart';
-import 'package:e1547/client/client.dart';
+import 'package:e1547/domain/domain.dart';
 import 'package:e1547/markup/markup.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/shared/shared.dart';
@@ -212,8 +212,8 @@ class _SearchTagDisplayState extends State<SearchTagDisplay> {
   late Future<Wiki?> wiki = retrieveWiki();
 
   Future<Wiki?> retrieveWiki() async {
-    Client client = context.read<Client>();
-    List<Wiki> results = await client.wikis.page(
+    final domain = context.read<Domain>();
+    List<Wiki> results = await domain.wikis.page(
       query: {'search[title]': tagToRaw(widget.tag)},
     );
     return results.firstWhereOrNull((e) => e.title == tagToRaw(widget.tag));
@@ -223,12 +223,12 @@ class _SearchTagDisplayState extends State<SearchTagDisplay> {
   void initState() {
     super.initState();
     // TODO: history connector?
-    Client client = context.read<Client>();
+    final domain = context.read<Domain>();
     wiki.then((value) {
       if (value != null) {
-        client.histories.addWiki(wiki: value);
+        domain.histories.addWiki(wiki: value);
       } else {
-        client.histories.addWikiSearch(
+        domain.histories.addWikiSearch(
           query: {'search[title]': tagToRaw(widget.tag)},
         );
       }

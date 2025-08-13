@@ -1,5 +1,5 @@
 import 'package:collection/collection.dart';
-import 'package:e1547/client/client.dart';
+import 'package:e1547/domain/domain.dart';
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/shared/shared.dart';
@@ -18,12 +18,12 @@ class TagListActions extends StatelessWidget {
     if (wikiMetaTags.any((prefix) => tag.startsWith(prefix))) {
       return const SizedBox.shrink();
     }
-    return Consumer<Client>(
-      builder: (context, client, child) => SubStream<Follow?>(
-        create: () => client.follows.getByTags(tags: tag).streamed,
-        keys: [client, tag],
+    return Consumer<Domain>(
+      builder: (context, domain, child) => SubStream<Follow?>(
+        create: () => domain.follows.getByTags(tags: tag).streamed,
+        keys: [domain, tag],
         builder: (context, snapshot) => ValueListenableBuilder(
-          valueListenable: client.traits,
+          valueListenable: domain.traits,
           builder: (context, traits, child) {
             if ([
               ConnectionState.none,
@@ -51,18 +51,18 @@ class TagListActions extends StatelessWidget {
               return () {
                 if (hasFollow) {
                   if (follow.type == type) {
-                    client.follows.delete(follow.id);
+                    domain.follows.delete(follow.id);
                   }
                   if (follow.type == FollowType.notify &&
                       type == FollowType.update) {
-                    client.follows.delete(follow.id);
+                    domain.follows.delete(follow.id);
                   } else {
-                    client.follows.update(id: follow.id, type: type);
+                    domain.follows.update(id: follow.id, type: type);
                   }
                 } else {
-                  client.follows.create(tags: tag, type: type);
+                  domain.follows.create(tags: tag, type: type);
                   if (denied) {
-                    client.traits.value = traits.copyWith(
+                    domain.traits.value = traits.copyWith(
                       denylist: traits.denylist..remove(tag),
                     );
                   }
@@ -100,12 +100,12 @@ class TagListActions extends StatelessWidget {
                                 : const Text('Notify'),
                             onTap: () {
                               if (notifying) {
-                                client.follows.update(
+                                domain.follows.update(
                                   id: follow!.id,
                                   type: FollowType.update,
                                 );
                               } else {
-                                client.follows.update(
+                                domain.follows.update(
                                   id: follow!.id,
                                   type: FollowType.notify,
                                 );
@@ -138,7 +138,7 @@ class TagListActions extends StatelessWidget {
                           : const Text('Block'),
                       onTap: () {
                         if (denied) {
-                          client.accounts.push(
+                          domain.accounts.push(
                             traits: traits.copyWith(
                               denylist: traits.denylist
                                   .whereNot((element) => element == tag)
@@ -147,9 +147,9 @@ class TagListActions extends StatelessWidget {
                           );
                         } else {
                           if (hasFollow) {
-                            client.follows.delete(follow.id);
+                            domain.follows.delete(follow.id);
                           }
-                          client.accounts.push(
+                          domain.accounts.push(
                             traits: traits.copyWith(
                               denylist: [...traits.denylist, tag],
                             ),

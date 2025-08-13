@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:e1547/client/client.dart';
+import 'package:e1547/domain/domain.dart';
 import 'package:e1547/identity/identity.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:e1547/shared/shared.dart';
@@ -22,7 +22,7 @@ class _CookieCapturePageState extends State<CookieCapturePage> {
     ..setUserAgent(AppInfo.instance.userAgent)
     ..setJavaScriptMode(JavaScriptMode.unrestricted)
     ..setBackgroundColor(Theme.of(context).colorScheme.surface)
-    ..loadRequest(Uri.https(context.read<Client>().host));
+    ..loadRequest(Uri.https(context.read<Domain>().host));
 
   Future<void> setCookies(BuildContext context) async {
     IdentityService service = context.read<IdentityService>();

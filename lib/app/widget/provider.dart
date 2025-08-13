@@ -8,7 +8,7 @@ library;
 import 'dart:io';
 
 import 'package:e1547/app/app.dart';
-import 'package:e1547/client/client.dart';
+import 'package:e1547/domain/domain.dart';
 import 'package:e1547/identity/identity.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:e1547/shared/shared.dart';
@@ -107,7 +107,7 @@ class ClientProvider
           IdentityService,
           TraitsService,
           ClientFactory,
-          Client
+          Domain
         > {
   ClientProvider({super.child, super.builder})
     : super(
@@ -124,7 +124,7 @@ class ClientProvider
           context.watch<TraitsService>(), // notifier is created per identity
           context.watch<AppStorage>().httpCache,
         ],
-        dispose: (context, client) => client.dispose(),
+        dispose: (context, domain) => domain.dispose(),
       );
 }
 

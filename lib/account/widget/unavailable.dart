@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:e1547/account/account.dart';
-import 'package:e1547/client/client.dart';
+import 'package:e1547/domain/domain.dart';
 import 'package:e1547/shared/shared.dart';
 import 'package:flutter/material.dart';
 
@@ -28,7 +28,7 @@ class HostUnvailablePage extends StatelessWidget {
               ),
               const SizedBox(height: 20),
               Text(
-                'It appears that ${linkToDisplay(context.watch<Client>().host)} is not available!',
+                'It appears that ${linkToDisplay(context.watch<Domain>().host)} is not available!',
               ),
               const SizedBox(height: 16),
               if (offerResolve && (Platform.isAndroid || Platform.isIOS)) ...[
@@ -48,7 +48,7 @@ class HostUnvailablePage extends StatelessWidget {
               ] else
                 Dimmed(
                   child: Text(
-                    '\nPlease wait for ${linkToDisplay(context.watch<Client>().host)} to resolve the situation on their end.',
+                    '\nPlease wait for ${linkToDisplay(context.watch<Domain>().host)} to resolve the situation on their end.',
                   ),
                 ),
             ],

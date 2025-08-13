@@ -1,4 +1,4 @@
-import 'package:e1547/client/client.dart';
+import 'package:e1547/domain/domain.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:e1547/shared/shared.dart';
@@ -15,9 +15,9 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> with RouterDrawerEntryWidget {
   @override
   Widget build(BuildContext context) {
-    Client client = context.watch<Client>();
+    final domain = context.watch<Domain>();
     return PostProvider(
-      query: {'tags': client.traits.value.homeTags},
+      query: {'tags': domain.traits.value.homeTags},
       child: Consumer<PostController>(
         builder: (context, controller, child) =>
             PostsControllerHistoryConnector(
@@ -25,8 +25,8 @@ class _HomePageState extends State<HomePage> with RouterDrawerEntryWidget {
               child: SubListener(
                 initialize: true,
                 listenable: controller,
-                listener: () => client.accounts.push(
-                  traits: client.traits.value.copyWith(
+                listener: () => domain.accounts.push(
+                  traits: domain.traits.value.copyWith(
                     homeTags: controller.query['tags'].toString(),
                   ),
                 ),

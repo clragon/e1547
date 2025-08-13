@@ -1,4 +1,4 @@
-import 'package:e1547/client/client.dart';
+import 'package:e1547/domain/domain.dart';
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/settings/settings.dart';
@@ -15,9 +15,9 @@ class FollowsSubscriptionsPage extends StatelessWidget {
       child: ValueListenableBuilder(
         valueListenable: context.watch<Settings>().filterUnseenFollows,
         builder: (context, filterUnseenFollows, child) =>
-            SubChangeNotifierProvider<Client, FollowController>(
+            SubChangeNotifierProvider<Domain, FollowController>(
               create: (context, value) => FollowController(
-                client: value,
+                domain: value,
                 types: [FollowType.update, FollowType.notify],
                 filterUnseen: filterUnseenFollows,
               ),
@@ -29,8 +29,8 @@ class FollowsSubscriptionsPage extends StatelessWidget {
             effect: () {
               // remove this when the paged grid view is implemented
               controller.getNextPage();
-              final client = context.read<Client>();
-              client.follows.sync();
+              final domain = context.read<Domain>();
+              domain.follows.sync();
               return null;
             },
             keys: [controller],
@@ -82,7 +82,7 @@ class FollowsSubscriptionsPage extends StatelessWidget {
                     onSubmit: (value) async {
                       value = value.trim();
                       if (value.isEmpty) return;
-                      await context.read<Client>().follows.create(
+                      await context.read<Domain>().follows.create(
                         tags: value,
                         type: FollowType.update,
                       );

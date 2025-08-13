@@ -1,4 +1,4 @@
-import 'package:e1547/client/client.dart';
+import 'package:e1547/domain/domain.dart';
 import 'package:e1547/shared/shared.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:e1547/traits/traits.dart';
@@ -32,9 +32,9 @@ class DenyListPage extends StatelessWidget {
 
     return PromptActions(
       child: LimitedWidthLayout(
-        child: Consumer<Client>(
-          builder: (context, client, child) => ValueListenableBuilder(
-            valueListenable: client.traits,
+        child: Consumer<Domain>(
+          builder: (context, domain, child) => ValueListenableBuilder(
+            valueListenable: domain.traits,
             builder: (context, traits, child) {
               List<String> denylist = traits.denylist.toList();
               return RefreshableLoadingPage(
@@ -74,13 +74,13 @@ class DenyListPage extends StatelessWidget {
                             value = value.trim();
                             try {
                               if (value.isEmpty) {
-                                await client.accounts.push(
+                                await domain.accounts.push(
                                   traits: traits.copyWith(
                                     denylist: List.of(denylist)..remove(tag),
                                   ),
                                 );
                               } else {
-                                await client.accounts.push(
+                                await domain.accounts.push(
                                   traits: traits.copyWith(
                                     denylist: List.of(denylist)
                                       ..[denylist.indexOf(tag)] = value,
@@ -96,7 +96,7 @@ class DenyListPage extends StatelessWidget {
                         ),
                       );
                     },
-                    onDelete: () => client.accounts.push(
+                    onDelete: () => domain.accounts.push(
                       traits: traits.copyWith(
                         denylist: denylist..remove(denylist[index]),
                       ),
@@ -124,7 +124,7 @@ class DenyListPage extends StatelessWidget {
                       value = value.trim();
                       if (value.isEmpty) return;
                       try {
-                        await client.accounts.push(
+                        await domain.accounts.push(
                           traits: traits.copyWith(
                             denylist: denylist..add(value),
                           ),
@@ -140,7 +140,7 @@ class DenyListPage extends StatelessWidget {
                 ),
                 refresh: (refreshController) async {
                   try {
-                    await client.accounts.pull(force: true);
+                    await domain.accounts.pull(force: true);
                     refreshController.refreshCompleted();
                   } on ClientException {
                     refreshController.refreshFailed();

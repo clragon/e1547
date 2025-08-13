@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:e1547/client/client.dart';
+import 'package:e1547/domain/domain.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/shared/shared.dart';
 import 'package:flutter/material.dart';
@@ -32,13 +32,13 @@ class PostLoadingPage extends StatelessWidget {
 }
 
 class SingleFuturePostsProvider
-    extends SubProvider<Client, Future<PostController>> {
+    extends SubProvider<Domain, Future<PostController>> {
   SingleFuturePostsProvider({required int id, super.child, super.builder})
     : super(
-        create: (context, client) => Future<PostController>(() async {
+        create: (context, domain) => Future<PostController>(() async {
           PostController controller = SinglePostController(
             id: id,
-            client: client,
+            domain: domain,
           );
           await controller.getNextPage();
           return controller;

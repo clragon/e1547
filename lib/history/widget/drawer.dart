@@ -1,4 +1,4 @@
-import 'package:e1547/client/client.dart';
+import 'package:e1547/domain/domain.dart';
 import 'package:e1547/history/history.dart';
 import 'package:e1547/shared/shared.dart';
 import 'package:e1547/stream/stream.dart';
@@ -11,19 +11,19 @@ class HistoryEnableTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Client client = context.watch<Client>();
+    final domain = context.watch<Domain>();
     return SubStream<int>(
-      create: () => client.histories.count().streamed,
-      keys: [client],
+      create: () => domain.histories.count().streamed,
+      keys: [domain],
       builder: (context, countSnapshot) => SubStream(
-        initialData: client.histories.enabled,
-        create: () => client.histories.enabledStream,
+        initialData: domain.histories.enabled,
+        create: () => domain.histories.enabledStream,
         builder: (context, enabledSnapshot) => SwitchListTile(
           title: const Text('Enabled'),
           subtitle: Text('${countSnapshot.data ?? 0} pages visited'),
           secondary: const Icon(Icons.history),
           value: enabledSnapshot.data!,
-          onChanged: (value) => client.histories.enabled = value,
+          onChanged: (value) => domain.histories.enabled = value,
         ),
       ),
     );
@@ -35,10 +35,10 @@ class HistoryLimitTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Client client = context.watch<Client>();
+    final domain = context.watch<Domain>();
     return SubStream(
-      create: () => client.histories.trimmingStream,
-      initialData: client.histories.trimming,
+      create: () => domain.histories.trimmingStream,
+      initialData: domain.histories.trimming,
       builder: (context, snapshot) => SwitchListTile(
         value: snapshot.data!,
         onChanged: (value) {
@@ -48,8 +48,8 @@ class HistoryLimitTile extends StatelessWidget {
               builder: (context) => AlertDialog(
                 title: const Text('History limit'),
                 content: Text(
-                  'Enabling history limit means all history entries beyond ${NumberFormat.compact().format(client.histories.trimAmount)} '
-                  'and all entries older than ${client.histories.trimAge.inDays ~/ 30} months are automatically deleted.',
+                  'Enabling history limit means all history entries beyond ${NumberFormat.compact().format(domain.histories.trimAmount)} '
+                  'and all entries older than ${domain.histories.trimAge.inDays ~/ 30} months are automatically deleted.',
                 ),
                 actions: [
                   TextButton(
@@ -58,7 +58,7 @@ class HistoryLimitTile extends StatelessWidget {
                   ),
                   TextButton(
                     onPressed: () {
-                      client.histories.trimming = value;
+                      domain.histories.trimming = value;
                       Navigator.of(context).maybePop();
                     },
                     child: const Text('OK'),
@@ -67,7 +67,7 @@ class HistoryLimitTile extends StatelessWidget {
               ),
             );
           } else {
-            client.histories.trimming = value;
+            domain.histories.trimming = value;
           }
         },
         secondary: Icon(
@@ -76,8 +76,8 @@ class HistoryLimitTile extends StatelessWidget {
         title: const Text('Limit history'),
         subtitle: snapshot.data!
             ? Text(
-                'Limited to newer than ${client.histories.trimAge.inDays ~/ 30} months or '
-                'less than ${NumberFormat.compact().format(client.histories.trimAmount)} entries.',
+                'Limited to newer than ${domain.histories.trimAge.inDays ~/ 30} months or '
+                'less than ${NumberFormat.compact().format(domain.histories.trimAmount)} entries.',
               )
             : const Text('history is infinite'),
       ),

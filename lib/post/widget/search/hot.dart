@@ -9,7 +9,7 @@ class HotPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return RouterDrawerEntry<HotPage>(
       child: PostProvider.builder(
-        create: (context, client) => HotPostController(client: client),
+        create: (context, domain) => HotPostController(domain: domain),
         child: Consumer<PostController>(
           builder: (context, controller, child) =>
               PostsControllerHistoryConnector(

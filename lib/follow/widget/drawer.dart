@@ -1,4 +1,4 @@
-import 'package:e1547/client/client.dart';
+import 'package:e1547/domain/domain.dart';
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:e1547/shared/shared.dart';
@@ -32,7 +32,7 @@ class FollowMarkReadTile extends StatelessWidget {
               : const Text('no unseen posts'),
           onTap: () {
             Scaffold.of(context).closeEndDrawer();
-            context.read<Client>().follows.markAllSeen(null);
+            context.read<Domain>().follows.markAllSeen(null);
             onTap?.call();
           },
         );
@@ -89,10 +89,10 @@ class FollowForceSyncTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final client = context.watch<Client>();
+    final domain = context.watch<Domain>();
     return SubStream<FollowSync?>(
-      create: () => client.follows.syncStream,
-      keys: [client],
+      create: () => domain.follows.syncStream,
+      keys: [domain],
       builder: (context, syncSnapshot) {
         bool enabled = false;
         FollowSync? sync = syncSnapshot.data;
@@ -115,7 +115,7 @@ class FollowForceSyncTile extends StatelessWidget {
                 enabled: enabled,
                 onTap: () {
                   // Scaffold.of(context).closeEndDrawer();
-                  client.follows.sync(force: true);
+                  domain.follows.sync(force: true);
                 },
               ),
               if (sync != null)

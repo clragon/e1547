@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:e1547/account/account.dart';
-import 'package:e1547/client/client.dart';
+import 'package:e1547/domain/domain.dart';
 import 'package:e1547/logs/logs.dart';
 import 'package:e1547/shared/shared.dart';
 import 'package:flutter/material.dart';
@@ -31,9 +31,9 @@ class _AvailabilityCheckState extends State<AvailabilityCheck> {
 
   Future<void> check(BuildContext context) async {
     bool? offerResolve;
-    Client client = context.read<Client>();
+    final domain = context.read<Domain>();
     try {
-      await client.accounts.available();
+      await domain.accounts.available();
       logger.info('Client is available!');
     } on ClientException catch (e, stacktrace) {
       if (CancelToken.isCancel(e)) {

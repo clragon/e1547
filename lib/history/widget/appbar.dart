@@ -1,4 +1,4 @@
-import 'package:e1547/client/client.dart';
+import 'package:e1547/domain/domain.dart';
 import 'package:e1547/history/history.dart';
 import 'package:e1547/shared/shared.dart';
 import 'package:flutter/material.dart';
@@ -21,7 +21,7 @@ class HistorySelectionAppBar extends StatelessWidget with AppBarBuilderWidget {
           icon: const Icon(Icons.delete_outline),
           onPressed: () async {
             data.onChanged({});
-            await context.read<Client>().histories.removeAll(
+            await context.read<Domain>().histories.removeAll(
               data.selections.map((e) => e.id).toList(),
             );
           },

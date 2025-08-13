@@ -1,4 +1,4 @@
-import 'package:e1547/client/client.dart';
+import 'package:e1547/domain/domain.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/shared/shared.dart';
 import 'package:e1547/tag/tag.dart';
@@ -109,11 +109,11 @@ bool onPostTagsEdit(
   tags[category] = tags[category]!.toSet().toList();
   tags[category]!.sort();
   controller.value = controller.value!.copyWith(tags: tags);
-  final client = context.read<Client>();
+  final domain = context.read<Domain>();
   Future<void>(() async {
     for (String tag in edited) {
       List<Tag> tags = await rateLimit(
-        client.tags.page(
+        domain.tags.page(
           page: 1,
           limit: 1,
           query: {'search[name_matches]': tag},

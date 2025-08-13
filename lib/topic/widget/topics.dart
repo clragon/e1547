@@ -17,8 +17,8 @@ class TopicsPage extends StatelessWidget {
         child: Consumer<TopicController>(
           builder: (context, controller, child) => ControllerHistoryConnector(
             controller: controller,
-            addToHistory: (context, client, controller) =>
-                client.histories.addTopicSearch(
+            addToHistory: (context, domain, controller) =>
+                domain.histories.addTopicSearch(
                   query: controller.query,
                   topics: controller.items!,
                 ),

@@ -1,5 +1,5 @@
-import 'package:e1547/client/client.dart';
 import 'package:e1547/comment/comment.dart';
+import 'package:e1547/domain/domain.dart';
 import 'package:e1547/shared/shared.dart';
 import 'package:flutter/material.dart';
 
@@ -18,7 +18,7 @@ class PostCommentsPage extends StatelessWidget {
             title: Text('#$postId comments'),
             actions: const [ContextDrawerButton()],
           ),
-          floatingActionButton: context.read<Client>().hasLogin
+          floatingActionButton: context.read<Domain>().hasLogin
               ? FloatingActionButton(
                   heroTag: 'float',
                   backgroundColor: Theme.of(context).cardColor,

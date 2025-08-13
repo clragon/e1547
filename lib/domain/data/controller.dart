@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:deep_pick/deep_pick.dart';
 import 'package:drift/drift.dart';
 import 'package:drift/isolate.dart';
-import 'package:e1547/client/client.dart';
+import 'package:e1547/domain/domain.dart';
 import 'package:e1547/logs/logs.dart';
 import 'package:e1547/shared/shared.dart';
 import 'package:e1547/stream/stream.dart';
@@ -14,7 +14,7 @@ abstract class ClientDataController<KeyType, ItemType>
     extends DataController<KeyType, ItemType> {
   ClientDataController({required super.firstPageKey});
 
-  Client get client;
+  Domain get domain;
 
   CancelToken _cancelToken = CancelToken();
   CancelToken get cancelToken => _cancelToken;

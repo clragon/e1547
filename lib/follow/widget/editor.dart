@@ -1,5 +1,5 @@
 import 'package:collection/collection.dart';
-import 'package:e1547/client/client.dart';
+import 'package:e1547/domain/domain.dart';
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/shared/shared.dart';
 import 'package:flutter/material.dart';
@@ -16,8 +16,8 @@ class _FollowEditorState extends State<FollowEditor> {
   final String subscribe = FollowType.update.name;
   final String bookmark = FollowType.bookmark.name;
 
-  late Client client = context.read<Client>();
-  late Future<List<Follow>> all = client.follows.all();
+  late final domain = context.read<Domain>();
+  late Future<List<Follow>> all = domain.follows.all();
   late Future<Map<String, String>> follows = all.then(
     (all) => {
       notify: followString(all.where((e) => e.type == FollowType.notify)),
@@ -65,10 +65,10 @@ class _FollowEditorState extends State<FollowEditor> {
     }
 
     for (final follow in allRemoved) {
-      await client.follows.delete(follow.id);
+      await domain.follows.delete(follow.id);
     }
     for (final follow in allAdded) {
-      await client.follows.create(tags: follow.tags, type: follow.type);
+      await domain.follows.create(tags: follow.tags, type: follow.type);
     }
   }
 

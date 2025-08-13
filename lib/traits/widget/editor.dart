@@ -1,4 +1,4 @@
-import 'package:e1547/client/client.dart';
+import 'package:e1547/domain/domain.dart';
 import 'package:e1547/shared/shared.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
@@ -8,7 +8,7 @@ class DenyListEditor extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Client client = context.read<Client>();
+    final domain = context.read<Domain>();
     return TextEditor(
       title: const Text('Blacklist'),
       actions: [
@@ -18,14 +18,14 @@ class DenyListEditor extends StatelessWidget {
               showTagSearchPrompt(context: context, tag: 'e621:blacklist'),
         ),
       ],
-      content: client.traits.value.denylist.join('\n'),
+      content: domain.traits.value.denylist.join('\n'),
       onSubmitted: (value) async {
         List<String> tags = value.split('\n');
         tags = tags.trim();
         tags.removeWhere((tag) => tag.isEmpty);
         try {
-          await client.accounts.push(
-            traits: client.traits.value.copyWith(denylist: tags),
+          await domain.accounts.push(
+            traits: domain.traits.value.copyWith(denylist: tags),
           );
         } on ClientException {
           return 'Failed to update blacklist!';

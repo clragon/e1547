@@ -1,4 +1,4 @@
-import 'package:e1547/client/client.dart';
+import 'package:e1547/domain/domain.dart';
 import 'package:e1547/pool/pool.dart';
 import 'package:e1547/shared/shared.dart';
 import 'package:flutter/material.dart';
@@ -14,7 +14,7 @@ class PoolLoadingPage extends StatefulWidget {
 }
 
 class _PoolLoadingPageState extends State<PoolLoadingPage> {
-  late Future<Pool> pool = context.read<Client>().pools.get(id: widget.id);
+  late Future<Pool> pool = context.read<Domain>().pools.get(id: widget.id);
 
   @override
   Widget build(BuildContext context) {

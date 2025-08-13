@@ -1,6 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:e1547/app/app.dart';
-import 'package:e1547/client/client.dart';
+import 'package:e1547/domain/domain.dart';
 import 'package:e1547/logs/logs.dart';
 import 'package:e1547/markup/markup.dart';
 import 'package:e1547/shared/shared.dart';
@@ -197,12 +197,12 @@ class DTextBody extends StatelessWidget {
       if (linkAction != null) {
         action = linkAction;
       } else {
-        action = () => launch(context.read<Client>().withHost(link));
+        action = () => launch(context.read<Domain>().withHost(link));
       }
     }
 
     LinkPreviewProviderState preview = LinkPreviewProvider.of(context);
-    String previewLink = local ? context.read<Client>().withHost(link) : link;
+    String previewLink = local ? context.read<Domain>().withHost(link) : link;
 
     return TextSpan(
       children: wrapWithGesture(

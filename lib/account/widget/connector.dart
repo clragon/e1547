@@ -1,5 +1,5 @@
 import 'package:e1547/account/account.dart';
-import 'package:e1547/client/client.dart';
+import 'package:e1547/domain/domain.dart';
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/shared/shared.dart';
 import 'package:e1547/stream/stream.dart';
@@ -18,28 +18,28 @@ class AccountConnector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final client = context.watch<Client>();
+    final domain = context.watch<Domain>();
     return AvailabilityCheck(
       navigatorKey: navigatorKey,
       child: SubEffect(
         effect: () {
-          client.follows.sync();
+          domain.follows.sync();
           return null;
         },
-        keys: [client],
+        keys: [domain],
         child: SubStream<List<Follow>>(
-          create: () => client.follows.all().streamed,
-          keys: [client],
-          listener: (event) => client.follows.sync(),
+          create: () => domain.follows.all().streamed,
+          keys: [domain],
+          listener: (event) => domain.follows.sync(),
           builder: (context, _) => SubEffect(
             effect: () {
-              client.accounts.pull(force: true);
+              domain.accounts.pull(force: true);
               return null;
             },
-            keys: [client],
+            keys: [domain],
             child: SubValueListener(
-              listenable: client.traits,
-              listener: (traits) => client.accounts.push(traits: traits),
+              listenable: domain.traits,
+              listener: (traits) => domain.accounts.push(traits: traits),
               builder: (context, _) => child,
             ),
           ),

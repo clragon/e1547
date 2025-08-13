@@ -1,5 +1,5 @@
-import 'package:e1547/client/client.dart';
 import 'package:e1547/comment/comment.dart';
+import 'package:e1547/domain/domain.dart';
 import 'package:e1547/shared/shared.dart';
 import 'package:flutter/widgets.dart';
 
@@ -13,7 +13,7 @@ class CommentLoadingPage extends StatefulWidget {
 }
 
 class _CommentLoadingPageState extends State<CommentLoadingPage> {
-  late Future<Comment> comment = context.read<Client>().comments.get(
+  late Future<Comment> comment = context.read<Domain>().comments.get(
     id: widget.id,
   );
 
