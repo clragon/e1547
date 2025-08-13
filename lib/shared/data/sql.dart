@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:drift/drift.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 
 @optionalTypeArgs
 class JsonSqlConverter<T> extends TypeConverter<T, String> {
