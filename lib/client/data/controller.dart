@@ -6,6 +6,7 @@ import 'package:drift/isolate.dart';
 import 'package:e1547/client/client.dart';
 import 'package:e1547/logs/logs.dart';
 import 'package:e1547/shared/shared.dart';
+import 'package:e1547/stream/stream.dart';
 import 'package:flutter/foundation.dart';
 import 'package:rxdart/rxdart.dart';
 
