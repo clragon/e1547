@@ -1,8 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:e1547/ticket/ticket.dart';
 
-class TicketService {
-  TicketService({required this.dio});
+class TicketClient {
+  TicketClient({required this.dio});
 
   final Dio dio;
 

@@ -5,8 +5,8 @@ import 'package:drift/drift.dart';
 import 'package:e1547/identity/identity.dart';
 import 'package:flutter/foundation.dart';
 
-class IdentityService extends IdentityRepository with ChangeNotifier {
-  IdentityService({required GeneratedDatabase database, this.onCreate})
+class IdentityClient extends IdentityRepository with ChangeNotifier {
+  IdentityClient({required GeneratedDatabase database, this.onCreate})
     : super(database);
 
   StreamSubscription<Identity?>? _subscription;
@@ -31,7 +31,7 @@ class IdentityService extends IdentityRepository with ChangeNotifier {
     if (result == null) {
       if (onCreate == null) {
         throw StateError(
-          'IdentitiesService failed to activate because no identity '
+          'IdentitiesClient failed to activate because no identity '
           'was found and no onCreate callback was provided',
         );
       }
@@ -63,7 +63,7 @@ class IdentityService extends IdentityRepository with ChangeNotifier {
   Identity get identity {
     if (_identity == null) {
       throw StateError(
-        'IdentityService was not activated before accessing '
+        'IdentityClient was not activated before accessing '
         'the identity property',
       );
     }

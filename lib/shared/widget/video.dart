@@ -24,8 +24,8 @@ class VideoPlayer extends Player {
   bool get isInitialized => _initialized.value;
 }
 
-class VideoService extends ChangeNotifier {
-  VideoService({bool muteVideos = false}) : _muteVideos = muteVideos;
+class VideoClient extends ChangeNotifier {
+  VideoClient({bool muteVideos = false}) : _muteVideos = muteVideos;
 
   static void ensureInitialized() => MediaKit.ensureInitialized();
 
@@ -79,11 +79,11 @@ class VideoService extends ChangeNotifier {
 }
 
 class VideoServiceProvider
-    extends SubChangeNotifierProvider<Settings, VideoService> {
+    extends SubChangeNotifierProvider<Settings, VideoClient> {
   VideoServiceProvider({super.child, super.builder})
     : super(
         create: (context, settings) =>
-            VideoService(muteVideos: settings.muteVideos.value),
+            VideoClient(muteVideos: settings.muteVideos.value),
       );
 }
 
@@ -92,7 +92,7 @@ class VideoServiceVolumeControl extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    VideoService service = context.watch<VideoService>();
+    VideoClient service = context.watch<VideoClient>();
     bool muted = service.muteVideos;
     return InkWell(
       onTap: () => service.muteVideos = !muted,

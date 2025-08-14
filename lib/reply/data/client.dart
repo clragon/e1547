@@ -4,8 +4,8 @@ import 'package:e1547/comment/comment.dart';
 import 'package:e1547/reply/reply.dart';
 import 'package:e1547/shared/shared.dart';
 
-class ReplyService {
-  ReplyService({required this.dio});
+class ReplyClient {
+  ReplyClient({required this.dio});
 
   final Dio dio;
 

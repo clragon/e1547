@@ -5,8 +5,8 @@ import 'package:drift/drift.dart';
 import 'package:e1547/traits/traits.dart';
 import 'package:flutter/foundation.dart';
 
-class TraitsService extends TraitsRepository with ChangeNotifier {
-  TraitsService({required GeneratedDatabase database, this.onCreate})
+class TraitsClient extends TraitsRepository with ChangeNotifier {
+  TraitsClient({required GeneratedDatabase database, this.onCreate})
     : super(database);
 
   StreamSubscription<Traits?>? _subscription;
@@ -24,7 +24,7 @@ class TraitsService extends TraitsRepository with ChangeNotifier {
     if (result == null) {
       if (onCreate == null) {
         throw StateError(
-          'TraitsService failed to activate because no traits '
+          'TraitsClient failed to activate because no traits '
           'were found and no onCreate callback was provided',
         );
       }
@@ -57,7 +57,7 @@ class TraitsService extends TraitsRepository with ChangeNotifier {
   Traits get traits {
     if (_traits == null) {
       throw StateError(
-        'IdentitySettingsService was not activated before accessing '
+        'IdentitySettingsClient was not activated before accessing '
         'the traits property',
       );
     }

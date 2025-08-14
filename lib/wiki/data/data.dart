@@ -1,3 +1,3 @@
 export 'actions.dart';
-export 'service.dart';
+export 'client.dart';
 export 'wiki.dart';

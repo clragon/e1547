@@ -30,35 +30,35 @@ class Domain with Disposable {
   final Identity identity;
   final ValueNotifier<Traits> traits;
 
-  late final AccountService accounts = AccountService(
+  late final AccountClient accounts = AccountClient(
     dio: dio,
     identity: identity,
     traits: traits,
     postsService: posts,
   );
-  late final UserService users = UserService(dio: dio);
+  late final UserClient users = UserClient(dio: dio);
 
-  late final PostService posts = PostService(
+  late final PostClient posts = PostClient(
     dio: dio,
     identity: identity,
     poolsService: pools,
   );
 
-  late final TagService tags = TagService(dio: dio);
-  late final WikiService wikis = WikiService(dio: dio);
+  late final TagClient tags = TagClient(dio: dio);
+  late final WikiClient wikis = WikiClient(dio: dio);
 
-  late final CommentService comments = CommentService(dio: dio);
+  late final CommentClient comments = CommentClient(dio: dio);
 
-  late final PoolService pools = PoolService(dio: dio);
+  late final PoolClient pools = PoolClient(dio: dio);
   // TODO: add Sets
 
-  late final TopicService topics = TopicService(dio: dio);
-  late final ReplyService replies = ReplyService(dio: dio);
+  late final TopicClient topics = TopicClient(dio: dio);
+  late final ReplyClient replies = ReplyClient(dio: dio);
 
-  late final FlagService flags = FlagService(dio: dio);
-  late final TicketService tickets = TicketService(dio: dio);
+  late final FlagClient flags = FlagClient(dio: dio);
+  late final TicketClient tickets = TicketClient(dio: dio);
 
-  late final FollowService follows = FollowService(
+  late final FollowClient follows = FollowClient(
     database: storage.sqlite,
     identity: identity,
     traits: traits,
@@ -67,7 +67,7 @@ class Domain with Disposable {
     tagsClient: tags,
   );
 
-  late final HistoryService histories = HistoryService(
+  late final HistoryClient histories = HistoryClient(
     database: storage.sqlite,
     preferences: storage.preferences,
     identity: identity,

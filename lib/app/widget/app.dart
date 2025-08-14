@@ -65,8 +65,8 @@ class App extends StatelessWidget {
                           child: LoadingShell(
                             child: MultiProvider(
                               providers: [
-                                IdentityServiceProvider(),
-                                TraitsServiceProvider(),
+                                IdentityClientProvider(),
+                                TraitsClientProvider(),
                                 ClientProvider(),
                                 CacheManagerProvider(),
                               ],

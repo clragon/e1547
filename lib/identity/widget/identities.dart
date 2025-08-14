@@ -8,7 +8,7 @@ class IdentitiesPage extends StatelessWidget {
   const IdentitiesPage({super.key});
 
   Widget tile(BuildContext context, Identity identity) {
-    bool selected = context.watch<IdentityService>().identity == identity;
+    bool selected = context.watch<IdentityClient>().identity == identity;
     return Row(
       children: [
         Container(
@@ -23,7 +23,7 @@ class IdentitiesPage extends StatelessWidget {
           child: IdentityTile(
             identity: identity,
             onTap: () {
-              context.read<IdentityService>().activate(identity.id);
+              context.read<IdentityClient>().activate(identity.id);
               Navigator.of(context).maybePop();
             },
             trailing: PopupMenuButton<VoidCallback>(
@@ -58,7 +58,7 @@ class IdentitiesPage extends StatelessWidget {
                           child: const Text('DELETE'),
                           onPressed: () {
                             Navigator.of(context).maybePop();
-                            context.read<IdentityService>().remove(identity);
+                            context.read<IdentityClient>().remove(identity);
                           },
                         ),
                       ],
@@ -97,7 +97,7 @@ class IdentitiesPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SubStream(
-      create: () => context.watch<IdentityService>().all().stream,
+      create: () => context.watch<IdentityClient>().all().stream,
       builder: (context, snapshot) => LimitedWidthLayout.builder(
         builder: (context) {
           List<Identity>? identities = snapshot.data;

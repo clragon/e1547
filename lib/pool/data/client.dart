@@ -3,8 +3,8 @@ import 'package:dio/dio.dart';
 import 'package:e1547/pool/pool.dart';
 import 'package:e1547/shared/shared.dart';
 
-class PoolService {
-  PoolService({required this.dio});
+class PoolClient {
+  PoolClient({required this.dio});
 
   final Dio dio;
 

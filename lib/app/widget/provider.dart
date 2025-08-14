@@ -17,21 +17,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_sub/flutter_sub.dart';
 
-class IdentityServiceProvider
+class IdentityClientProvider
     extends
         SubChangeNotifierProvider3<
           AppStorage,
           Settings,
           ClientFactory,
-          IdentityService
+          IdentityClient
         > {
-  IdentityServiceProvider({super.child, TransitionBuilder? builder})
+  IdentityClientProvider({super.child, TransitionBuilder? builder})
     : super(
-        create: (context, storage, settings, factory) => IdentityService(
+        create: (context, storage, settings, factory) => IdentityClient(
           database: storage.sqlite,
           onCreate: factory.createDefaultIdentity,
         ),
-        builder: (context, child) => Consumer2<IdentityService, Settings>(
+        builder: (context, child) => Consumer2<IdentityClient, Settings>(
           builder: (context, service, settings, child) => SubListener(
             listenable: service,
             listener: () => settings.identity.value = service.identity.id,
@@ -51,17 +51,17 @@ class IdentityServiceProvider
       );
 }
 
-class TraitsServiceProvider
+class TraitsClientProvider
     extends
         SubChangeNotifierProvider3<
           AppStorage,
-          IdentityService,
+          IdentityClient,
           ClientFactory,
-          TraitsService
+          TraitsClient
         > {
-  TraitsServiceProvider({super.child, TransitionBuilder? builder})
+  TraitsClientProvider({super.child, TransitionBuilder? builder})
     : super(
-        create: (context, storage, identities, factory) => TraitsService(
+        create: (context, storage, identities, factory) => TraitsClient(
           database: storage.sqlite,
           onCreate: (id) async {
             Identity? identity = await identities.getOrNull(id);
@@ -69,7 +69,7 @@ class TraitsServiceProvider
             return factory.createDefaultTraits(identity);
           },
         ),
-        builder: (context, child) => Consumer2<TraitsService, IdentityService>(
+        builder: (context, child) => Consumer2<TraitsClient, IdentityClient>(
           builder: (context, traits, identities, child) =>
               SubValue<Future<void>>(
                 create: () => traits.activate(identities.identity.id),
@@ -104,8 +104,8 @@ class ClientProvider
     extends
         SubProvider4<
           AppStorage,
-          IdentityService,
-          TraitsService,
+          IdentityClient,
+          TraitsClient,
           ClientFactory,
           Domain
         > {
@@ -120,8 +120,8 @@ class ClientProvider
               ),
             ),
         keys: (context) => [
-          context.watch<IdentityService>().identity,
-          context.watch<TraitsService>(), // notifier is created per identity
+          context.watch<IdentityClient>().identity,
+          context.watch<TraitsClient>(), // notifier is created per identity
           context.watch<AppStorage>().httpCache,
         ],
         dispose: (context, domain) => domain.dispose(),
@@ -129,7 +129,7 @@ class ClientProvider
 }
 
 class CacheManagerProvider
-    extends SubProvider<IdentityService, BaseCacheManager> {
+    extends SubProvider<IdentityClient, BaseCacheManager> {
   CacheManagerProvider({super.child, super.builder})
     : super(
         create: (context, service) => CacheManager(
@@ -139,14 +139,14 @@ class CacheManagerProvider
             repo: JsonCacheInfoRepository(
               databaseName: DefaultCacheManager.key,
             ),
-            fileService: _IdentityHttpFileService(service.identity),
+            fileService: _IdentityHttpFileClient(service.identity),
           ),
         ),
       );
 }
 
-class _IdentityHttpFileService extends HttpFileService {
-  _IdentityHttpFileService(this.identity);
+class _IdentityHttpFileClient extends HttpFileService {
+  _IdentityHttpFileClient(this.identity);
 
   final Identity identity;
 

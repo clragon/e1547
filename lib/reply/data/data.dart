@@ -1,4 +1,4 @@
 export 'actions.dart';
+export 'client.dart';
 export 'controller.dart';
 export 'reply.dart';
-export 'service.dart';

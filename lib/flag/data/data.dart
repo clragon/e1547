@@ -1,2 +1,2 @@
+export 'client.dart';
 export 'flag.dart';
-export 'service.dart';

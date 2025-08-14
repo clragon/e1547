@@ -3,8 +3,8 @@ import 'package:dio/dio.dart';
 import 'package:e1547/shared/shared.dart';
 import 'package:e1547/user/user.dart';
 
-class UserService {
-  UserService({required this.dio});
+class UserClient {
+  UserClient({required this.dio});
 
   final Dio dio;
 
