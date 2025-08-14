@@ -159,11 +159,11 @@ extension PostTyping on Post {
 extension PostVideoPlaying on Post {
   VideoPlayer? getVideo(BuildContext context, {bool? listen}) {
     if (type == PostType.video && file != null) {
-      VideoClient service;
+      VideoService service;
       if (listen ?? true) {
-        service = context.watch<VideoClient>();
+        service = context.watch<VideoService>();
       } else {
-        service = context.read<VideoClient>();
+        service = context.read<VideoService>();
       }
       Settings settings;
       if (listen ?? true) {
@@ -176,7 +176,7 @@ extension PostVideoPlaying on Post {
       String closestUrl = file!;
       int? closestDifference;
 
-      // maybe move this logic into the VideoClient
+      // maybe move this logic into the VideoService
       if (variants != null && variants!.isNotEmpty) {
         for (final MapEntry(:key, :value) in variants!.entries) {
           if (value == null) continue;

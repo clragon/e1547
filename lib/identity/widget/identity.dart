@@ -317,7 +317,7 @@ class _LoginLoadingDialogState extends State<LoginLoadingDialog> {
 
   Future<void> login() async {
     NavigatorState navigator = Navigator.of(context);
-    IdentityClient service = context.read<IdentityClient>();
+    IdentityClient client = context.read<IdentityClient>();
     Identity? identity = widget.identity;
     String host = widget.host;
     String? username = widget.username;
@@ -341,11 +341,11 @@ class _LoginLoadingDialogState extends State<LoginLoadingDialog> {
     }
     try {
       if (identity != null) {
-        await service.replace(
+        await client.replace(
           identity.copyWith(host: host, username: username, headers: headers),
         );
       } else {
-        await service.add(
+        await client.add(
           IdentityRequest(host: host, username: username, headers: headers),
         );
       }

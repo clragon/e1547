@@ -32,12 +32,12 @@ class IdentityClientProvider
           onCreate: factory.createDefaultIdentity,
         ),
         builder: (context, child) => Consumer2<IdentityClient, Settings>(
-          builder: (context, service, settings, child) => SubListener(
-            listenable: service,
-            listener: () => settings.identity.value = service.identity.id,
+          builder: (context, client, settings, child) => SubListener(
+            listenable: client,
+            listener: () => settings.identity.value = client.identity.id,
             builder: (context) => SubValue<Future<void>>(
-              create: () => service.activate(settings.identity.value),
-              keys: [service],
+              create: () => client.activate(settings.identity.value),
+              keys: [client],
               builder: (context, future) => LoadingLayer(
                 future: future,
                 builder: (context, _) =>
@@ -132,14 +132,14 @@ class CacheManagerProvider
     extends SubProvider<IdentityClient, BaseCacheManager> {
   CacheManagerProvider({super.child, super.builder})
     : super(
-        create: (context, service) => CacheManager(
+        create: (context, client) => CacheManager(
           Config(
             DefaultCacheManager.key,
             stalePeriod: const Duration(days: 1),
             repo: JsonCacheInfoRepository(
               databaseName: DefaultCacheManager.key,
             ),
-            fileService: _IdentityHttpFileClient(service.identity),
+            fileService: _IdentityHttpFileClient(client.identity),
           ),
         ),
       );

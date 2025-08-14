@@ -30,8 +30,8 @@ class SettingsPage extends StatelessWidget {
             children: [
               const ListTileHeader(title: 'Identity'),
               Consumer<IdentityClient>(
-                builder: (context, service, child) => IdentityTile(
-                  identity: service.identity,
+                builder: (context, client, child) => IdentityTile(
+                  identity: client.identity,
                   onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(
