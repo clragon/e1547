@@ -17,8 +17,8 @@ import 'package:flutter/foundation.dart';
 import 'package:notified_preferences/notified_preferences.dart';
 import 'package:rxdart/rxdart.dart';
 
-class HistoryService with Disposable {
-  HistoryService({
+class HistoryClient with Disposable {
+  HistoryClient({
     required this.database,
     required this.preferences,
     required this.identity,

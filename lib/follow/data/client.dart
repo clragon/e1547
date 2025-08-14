@@ -11,8 +11,8 @@ import 'package:e1547/traits/traits.dart';
 import 'package:flutter/foundation.dart';
 import 'package:rxdart/rxdart.dart';
 
-class FollowService with Disposable {
-  FollowService({
+class FollowClient with Disposable {
+  FollowClient({
     required GeneratedDatabase database,
     required this.identity,
     required this.traits,
@@ -23,9 +23,9 @@ class FollowService with Disposable {
 
   final Identity identity;
   final ValueNotifier<Traits> traits;
-  final PostService postsClient;
-  final PoolService? poolsClient;
-  final TagService? tagsClient;
+  final PostClient postsClient;
+  final PoolClient? poolsClient;
+  final TagClient? tagsClient;
 
   final FollowRepository repository;
 

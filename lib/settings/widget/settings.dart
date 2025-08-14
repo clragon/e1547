@@ -29,7 +29,7 @@ class SettingsPage extends StatelessWidget {
             ),
             children: [
               const ListTileHeader(title: 'Identity'),
-              Consumer<IdentityService>(
+              Consumer<IdentityClient>(
                 builder: (context, service, child) => IdentityTile(
                   identity: service.identity,
                   onTap: () => Navigator.push(

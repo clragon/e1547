@@ -1,5 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:e1547/identity/data/service.dart';
+import 'package:e1547/identity/data/client.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:e1547/shared/shared.dart';
 import 'package:flutter/material.dart';
@@ -57,7 +57,7 @@ class Donors extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String? username = context.watch<IdentityService>().identity.username;
+    String? username = context.watch<IdentityClient>().identity.username;
     return Column(
       children: [
         ...donors.sortByDonation().map(

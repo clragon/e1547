@@ -3,8 +3,8 @@ import 'package:dio/dio.dart';
 import 'package:e1547/flag/flag.dart';
 import 'package:e1547/shared/shared.dart';
 
-class FlagService {
-  FlagService({required this.dio});
+class FlagClient {
+  FlagClient({required this.dio});
 
   final Dio dio;
 

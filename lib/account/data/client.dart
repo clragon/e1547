@@ -7,8 +7,8 @@ import 'package:e1547/shared/shared.dart';
 import 'package:e1547/traits/traits.dart';
 import 'package:flutter/foundation.dart';
 
-class AccountService {
-  AccountService({
+class AccountClient {
+  AccountClient({
     required this.dio,
     required this.identity,
     required this.traits,
@@ -18,7 +18,7 @@ class AccountService {
   final Dio dio;
   final Identity identity;
   final ValueNotifier<Traits> traits;
-  final PostService postsService;
+  final PostClient postsService;
 
   Future<void> available() => dio.get('');
 

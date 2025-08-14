@@ -10,8 +10,8 @@ import 'package:e1547/post/post.dart';
 import 'package:e1547/shared/shared.dart';
 import 'package:e1547/tag/tag.dart';
 
-class PostService {
-  PostService({
+class PostClient {
+  PostClient({
     required this.dio,
     required this.identity,
     required this.poolsService,
@@ -19,7 +19,7 @@ class PostService {
 
   final Dio dio;
   final Identity identity;
-  final PoolService poolsService;
+  final PoolClient poolsService;
 
   Future<Post> get({required int id, bool? force, CancelToken? cancelToken}) =>
       dio

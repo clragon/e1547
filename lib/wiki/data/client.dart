@@ -3,8 +3,8 @@ import 'package:dio/dio.dart';
 import 'package:e1547/shared/shared.dart';
 import 'package:e1547/wiki/wiki.dart';
 
-class WikiService {
-  WikiService({required this.dio});
+class WikiClient {
+  WikiClient({required this.dio});
 
   final Dio dio;
 

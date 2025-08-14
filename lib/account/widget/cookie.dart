@@ -25,7 +25,7 @@ class _CookieCapturePageState extends State<CookieCapturePage> {
     ..loadRequest(Uri.https(context.read<Domain>().host));
 
   Future<void> setCookies(BuildContext context) async {
-    IdentityService service = context.read<IdentityService>();
+    IdentityClient service = context.read<IdentityClient>();
     WebviewCookieManager cookieManager = WebviewCookieManager();
     List<Cookie> cookies = await cookieManager.getCookies(
       service.identity.host,

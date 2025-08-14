@@ -3,8 +3,8 @@ import 'package:dio/dio.dart';
 import 'package:e1547/shared/shared.dart';
 import 'package:e1547/tag/tag.dart';
 
-class TagService {
-  TagService({required this.dio});
+class TagClient {
+  TagClient({required this.dio});
 
   final Dio dio;
 

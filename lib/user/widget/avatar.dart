@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/shared/shared.dart';
-import 'package:e1547/traits/data/service.dart';
+import 'package:e1547/traits/data/client.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_sub/flutter_sub.dart';
@@ -14,7 +14,7 @@ class IdentityAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<TraitsService>(
+    return Consumer<TraitsClient>(
       builder: (context, service, child) => SubStream(
         create: () => service.getOrNull(id).stream,
         builder: (context, snapshot) =>

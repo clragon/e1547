@@ -24,14 +24,14 @@ Future<void> runFollowUpdates({
     await allFollows.all(types: [FollowType.notify]),
   );
 
-  List<Identity> identities = await IdentityService(
+  List<Identity> identities = await IdentityClient(
     database: storage.sqlite,
   ).all();
 
   final clientFactory = ClientFactory();
 
   for (final identity in identities) {
-    TraitsService traits = TraitsService(database: storage.sqlite);
+    TraitsClient traits = TraitsClient(database: storage.sqlite);
     await traits.activate(identity.id);
 
     final domain = clientFactory.create(

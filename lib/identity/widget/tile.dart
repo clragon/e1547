@@ -33,7 +33,7 @@ class CurrentIdentityTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final identity = context.watch<IdentityService>().identity;
+    final identity = context.watch<IdentityClient>().identity;
     return IntrinsicHeight(
       child: Row(
         children: [

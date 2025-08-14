@@ -3,8 +3,8 @@ import 'package:dio/dio.dart';
 import 'package:e1547/shared/shared.dart';
 import 'package:e1547/topic/topic.dart';
 
-class TopicService {
-  TopicService({required this.dio});
+class TopicClient {
+  TopicClient({required this.dio});
 
   final Dio dio;
 

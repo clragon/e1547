@@ -3,8 +3,8 @@ import 'package:dio/dio.dart';
 import 'package:e1547/comment/comment.dart';
 import 'package:e1547/shared/shared.dart';
 
-class CommentService {
-  CommentService({required this.dio});
+class CommentClient {
+  CommentClient({required this.dio});
 
   final Dio dio;
 
