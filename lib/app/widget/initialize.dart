@@ -36,7 +36,7 @@ class AppInitState extends State<AppInit> {
     final logs = await initializeLogger();
     final storage = await initializeAppStorage();
     unawaited(initializeBackgroundTasks());
-    VideoClient.ensureInitialized();
+    VideoService.ensureInitialized();
     return (
       logs: logs,
       storage: storage,

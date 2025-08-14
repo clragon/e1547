@@ -15,8 +15,8 @@ class IdentityAvatar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Consumer<TraitsClient>(
-      builder: (context, service, child) => SubStream(
-        create: () => service.getOrNull(id).stream,
+      builder: (context, client, child) => SubStream(
+        create: () => client.getOrNull(id).stream,
         builder: (context, snapshot) =>
             Avatar(snapshot.data?.avatar, radius: radius),
       ),

@@ -25,12 +25,10 @@ class _CookieCapturePageState extends State<CookieCapturePage> {
     ..loadRequest(Uri.https(context.read<Domain>().host));
 
   Future<void> setCookies(BuildContext context) async {
-    IdentityClient service = context.read<IdentityClient>();
+    IdentityClient client = context.read<IdentityClient>();
     WebviewCookieManager cookieManager = WebviewCookieManager();
-    List<Cookie> cookies = await cookieManager.getCookies(
-      service.identity.host,
-    );
-    Map<String, String> headers = service.identity.headers ?? {};
+    List<Cookie> cookies = await cookieManager.getCookies(client.identity.host);
+    Map<String, String> headers = client.identity.headers ?? {};
     String? cookieHeader = headers['Cookie'];
     if (cookieHeader != null) {
       cookieHeader.split('; ').forEach((String cookie) {
@@ -49,7 +47,7 @@ class _CookieCapturePageState extends State<CookieCapturePage> {
     }
     String newCookieHeader = cookieList.join('; ');
     headers[HttpHeaders.cookieHeader] = newCookieHeader;
-    service.replace(service.identity.copyWith(headers: headers));
+    client.replace(client.identity.copyWith(headers: headers));
   }
 
   @override

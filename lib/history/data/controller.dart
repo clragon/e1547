@@ -35,7 +35,7 @@ class HistoryProvider
     : super(
         create: (context, client) =>
             HistoryController(domain: client, query: search),
-        update: (context, service, controller) {
+        update: (context, domain, controller) {
           if (search != null) {
             controller.search = search;
           }

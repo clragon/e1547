@@ -235,7 +235,7 @@ class PostClient {
     await dio.put('/posts/$postId.json', data: FormData.fromMap(body));
   }
 
-  // TODO: votes should be their own service
+  // TODO: votes should be their own client
   Future<void> vote(int postId, bool upvote, bool replace) async {
     await dio.cache?.deleteFromPath(
       RegExp(RegExp.escape('/posts/$postId.json')),
@@ -246,7 +246,7 @@ class PostClient {
     );
   }
 
-  // TODO: favorites should be their own service
+  // TODO: favorites should be their own client
   Future<List<Post>> favorites({
     int? page,
     int? limit,
