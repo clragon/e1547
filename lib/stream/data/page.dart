@@ -128,6 +128,15 @@ class PagedValueCacheEntry<I, V> extends ValueCacheEntry<List<V>> {
   @override
   bool get hasListeners => _stream.hasListener;
 
+  final BehaviorSubject<ValueCacheStatus> _statusStream =
+      BehaviorSubject.seeded(ValueCacheStatus.idle);
+
+  @override
+  ValueCacheStatus get status => _statusStream.value;
+
+  @override
+  Stream<ValueCacheStatus> get statusStream => _statusStream.stream;
+
   final StreamController<(FutureOr<List<V>> Function()?, bool?)> _fetchQueue =
       StreamController();
 
@@ -140,9 +149,15 @@ class PagedValueCacheEntry<I, V> extends ValueCacheEntry<List<V>> {
           final hasValue = value != null;
           if (hasValue && !stale && !(force ?? false)) return;
 
+          _statusStream.add(
+            hasValue ? ValueCacheStatus.refetching : ValueCacheStatus.fetching,
+          );
+
           try {
             value = await fetch();
+            _statusStream.add(ValueCacheStatus.idle);
           } on Object catch (e, st) {
+            _statusStream.add(ValueCacheStatus.error);
             _stream.addError(e, st);
           }
         })
@@ -178,6 +193,7 @@ class PagedValueCacheEntry<I, V> extends ValueCacheEntry<List<V>> {
   void dispose() {
     _subscription?.cancel();
     _stream.close();
+    _statusStream.close();
     _fetchQueue.close();
   }
 }

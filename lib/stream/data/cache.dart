@@ -170,12 +170,12 @@ abstract class ValueCacheEntry<V> implements Comparable<ValueCacheEntry<V>> {
   /// The current status of this cache entry.
   ///
   /// Can be used to update the UI based on the current state of the entry.
-  // ValueCacheStatus get status;
+  ValueCacheStatus get status;
 
   /// A stream of status updates.
   ///
   /// Emits when the entry starts fetching, refetching, completes, or errors.
-  // Stream<ValueCacheStatus> get statusStream;
+  Stream<ValueCacheStatus> get statusStream;
 
   /// The time this value was created.
   /// This is reset when the value is updated.

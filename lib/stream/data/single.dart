@@ -63,8 +63,10 @@ class SingleValueCacheEntry<V> extends ValueCacheEntry<V> {
   final BehaviorSubject<ValueCacheStatus> _statusStream =
       BehaviorSubject.seeded(ValueCacheStatus.idle);
 
+  @override
   ValueCacheStatus get status => _statusStream.value;
 
+  @override
   Stream<ValueCacheStatus> get statusStream => _statusStream.stream;
 
   final StreamController<(FutureOr<V> Function()?, bool?)> _fetchQueue =
