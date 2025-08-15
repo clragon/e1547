@@ -5,9 +5,7 @@ import 'package:rxdart/rxdart.dart';
 
 class SingleValueCacheEntry<V> extends ValueCacheEntry<V> {
   /// Holds a [ValueCache] value.
-  SingleValueCacheEntry(V? value)
-      : _value = value,
-        super.raw() {
+  SingleValueCacheEntry(V? value) : _value = value, super.raw() {
     _setupQueue();
   }
 
@@ -69,42 +67,47 @@ class SingleValueCacheEntry<V> extends ValueCacheEntry<V> {
 
   Stream<ValueCacheStatus> get statusStream => _statusStream.stream;
 
-  final StreamController<FutureOr<V> Function()?> _fetchQueue =
+  final StreamController<(FutureOr<V> Function()?, bool?)> _fetchQueue =
       StreamController();
 
   void _setupQueue() {
-    _fetchQueue.stream.asyncMap((fetch) async {
-      if (fetch == null) return;
+    _fetchQueue.stream
+        .asyncMap((request) async {
+          final (fetch, force) = request;
+          if (fetch == null) return;
 
-      final hasValue = value != null;
-      if (hasValue && !stale) return;
+          final hasValue = value != null;
+          if (hasValue && !stale && !(force ?? false)) return;
 
-      _statusStream.add(
-          hasValue ? ValueCacheStatus.refetching : ValueCacheStatus.fetching);
+          _statusStream.add(
+            hasValue ? ValueCacheStatus.refetching : ValueCacheStatus.fetching,
+          );
 
-      try {
-        value = await fetch();
-        _statusStream.add(ValueCacheStatus.idle);
-      } on Object catch (e, st) {
-        _statusStream.add(ValueCacheStatus.error);
-        for (final stream in _streams) {
-          stream.addError(e, st);
-        }
-      }
-    }).listen(null);
+          try {
+            value = await fetch();
+            _statusStream.add(ValueCacheStatus.idle);
+          } on Object catch (e, st) {
+            _statusStream.add(ValueCacheStatus.error);
+            for (final stream in _streams) {
+              stream.addError(e, st);
+            }
+          }
+        })
+        .listen(null);
   }
 
   @override
   Stream<V> stream({
     FutureOr<V> Function()? fetch,
     Duration? maxAge,
+    bool? force,
   }) {
     _accessed = DateTime.now();
     late BehaviorSubject<V> controller;
     controller = BehaviorSubject<V>(
       onListen: () async {
         _streams.add(controller);
-        _fetchQueue.add(fetch);
+        _fetchQueue.add((fetch, force));
       },
     );
 

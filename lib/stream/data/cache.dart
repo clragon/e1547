@@ -53,9 +53,18 @@ class ValueCache<K, V> extends MapBase<K, V> {
   /// Once the stream listener is removed, the value may be removed by the LRU / TTL evicting strategy.
   ///
   /// Also see [ValueCacheEntry.stream].
-  Stream<V> stream(K key, {FutureOr<V> Function()? fetch, Duration? maxAge}) {
+  Stream<V> stream(
+    K key, {
+    FutureOr<V> Function()? fetch,
+    Duration? maxAge,
+    bool? force,
+  }) {
     _cache.putIfAbsent(key, () => _create(null));
-    return _cache[key]!.stream(fetch: fetch, maxAge: maxAge ?? this.maxAge);
+    return _cache[key]!.stream(
+      fetch: fetch,
+      maxAge: maxAge ?? this.maxAge,
+      force: force,
+    );
   }
 
   /// Optimistically updates a value.
@@ -194,8 +203,13 @@ abstract class ValueCacheEntry<V> implements Comparable<ValueCacheEntry<V>> {
   ///
   /// If [value] is null, [fetch] will be called to populate it, if provided.
   /// If [value] is stale, it will be emitted, then [fetch] will be called to update it, if provided.
+  /// If [force] is true, [fetch] will be called to update the value regardless of staleness.
   /// If [fetch] is called, [maxAge] will be used as the time to live for the value.
-  Stream<V> stream({FutureOr<V> Function()? fetch, Duration? maxAge});
+  Stream<V> stream({
+    FutureOr<V> Function()? fetch,
+    Duration? maxAge,
+    bool? force,
+  });
 
   /// Frees all resources associated with this cache entry.
   /// All streams will be closed and the value will be removed.

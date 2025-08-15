@@ -12,9 +12,9 @@ class PagedValueCache<K, I, V> extends ValueCache<K, List<V>> {
     int? pageSize,
     super.maxAge,
   }) : items = ValueCache<I, V>(
-          size: size != null ? size * (pageSize ?? 10) : null,
-          maxAge: maxAge,
-        );
+         size: size != null ? size * (pageSize ?? 10) : null,
+         maxAge: maxAge,
+       );
 
   /// Maps items to ids.
   final I Function(V value) toId;
@@ -27,11 +27,7 @@ class PagedValueCache<K, I, V> extends ValueCache<K, List<V>> {
   @override
   @protected
   ValueCacheEntry<List<V>> createEntry(List<V>? value) {
-    return PagedValueCacheEntry<I, V>(
-      value: value,
-      items: items,
-      toId: toId,
-    );
+    return PagedValueCacheEntry<I, V>(value: value, items: items, toId: toId);
   }
 
   @override
@@ -132,28 +128,32 @@ class PagedValueCacheEntry<I, V> extends ValueCacheEntry<List<V>> {
   @override
   bool get hasListeners => _stream.hasListener;
 
-  final StreamController<FutureOr<List<V>> Function()?> _fetchQueue =
+  final StreamController<(FutureOr<List<V>> Function()?, bool?)> _fetchQueue =
       StreamController();
 
   void _setupQueue() {
-    _fetchQueue.stream.asyncMap((fetch) async {
-      if (fetch == null) return;
+    _fetchQueue.stream
+        .asyncMap((request) async {
+          final (fetch, force) = request;
+          if (fetch == null) return;
 
-      final hasValue = value != null;
-      if (hasValue && !stale) return;
+          final hasValue = value != null;
+          if (hasValue && !stale && !(force ?? false)) return;
 
-      try {
-        value = await fetch();
-      } on Object catch (e, st) {
-        _stream.addError(e, st);
-      }
-    }).listen(null);
+          try {
+            value = await fetch();
+          } on Object catch (e, st) {
+            _stream.addError(e, st);
+          }
+        })
+        .listen(null);
   }
 
   @override
   Stream<List<V>> stream({
     FutureOr<List<V>> Function()? fetch,
     Duration? maxAge,
+    bool? force,
   }) {
     _accessed = DateTime.now();
     late BehaviorSubject<List<V>> controller;
@@ -168,7 +168,7 @@ class PagedValueCacheEntry<I, V> extends ValueCacheEntry<List<V>> {
             controller.close();
           },
         );
-        _fetchQueue.add(fetch);
+        _fetchQueue.add((fetch, force));
       },
     );
     return controller.stream;
