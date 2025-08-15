@@ -10,7 +10,7 @@ class QueryKey {
   QueryKey(this.raw);
 
   /// The original key used to create this [QueryKey].
-  final Object raw;
+  final List<Object?> raw;
 
   static const _equality = DeepCollectionEquality();
 
@@ -26,15 +26,4 @@ class QueryKey {
 
   @override
   String toString() => 'QueryKey($_serialized)';
-}
-
-extension QueryKeyQuerying on QueryKey {
-  bool find(String key, Object? value) {
-    if (raw case Map<String, dynamic> map) {
-      if (map.containsKey(key)) {
-        return value == null || map[key] == value;
-      }
-    }
-    return false;
-  }
 }

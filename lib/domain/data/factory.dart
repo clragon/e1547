@@ -21,7 +21,8 @@ const String _e926Host = 'https://e926.net';
 
 class ClientFactory {
   Domain create(ClientConfig config) => Domain(
-    persona: (identity: config.identity, traits: config.traits),
+    identity: config.identity,
+    traits: config.traits,
     storage: config.storage,
   );
 

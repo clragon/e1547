@@ -1,5 +1,4 @@
 import 'package:drift/drift.dart';
-import 'package:e1547/domain/domain.dart';
 import 'package:e1547/follow/data/database.dart';
 import 'package:e1547/history/history.dart';
 import 'package:e1547/identity/data/database.dart';
@@ -71,18 +70,15 @@ class AppStorage {
     required this.preferences,
     required this.temporaryFiles,
     required this.httpCache,
-    required this.clientCache,
     required this.sqlite,
   });
 
   final SharedPreferences preferences;
   final String temporaryFiles;
   final CacheStore? httpCache;
-  final ClientCache clientCache;
   final AppDatabase sqlite;
 
   Future<void> close() async {
-    clientCache.dispose();
     await httpCache?.close();
     await sqlite.close();
   }

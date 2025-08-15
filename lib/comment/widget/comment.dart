@@ -123,50 +123,57 @@ class CommentVotes extends StatelessWidget {
 
   final Comment comment;
 
-  Future<bool> vote(
-    BuildContext context, {
-    required bool upvote,
-    required bool isLiked,
-  }) async {
-    final domain = context.read<Domain>();
-    final messenger = ScaffoldMessenger.of(context);
-
-    try {
-      await domain.comments.vote(
-        id: comment.id,
-        upvote: upvote,
-        replace: !isLiked,
-      );
-      return !isLiked;
-    } on Exception {
-      messenger.showSnackBar(
-        SnackBar(
-          duration: const Duration(seconds: 1),
-          content: Text(
-            'Failed to ${!isLiked ? "upvote" : "downvote"} comment #${comment.id}',
-          ),
-        ),
-      );
-      return isLiked;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    final canVote = context.watch<Domain>().hasLogin;
-    VoteInfo? info = comment.vote;
-    if (info == null) return const SizedBox();
+    final domain = context.watch<Domain>();
+    VoteInfo? vote = comment.vote;
+    if (vote == null) return const SizedBox();
+
+    final controller = context.read<CommentController>();
+    final messenger = ScaffoldMessenger.of(context);
 
     return Dimmed(
       child: VoteDisplay(
         padding: EdgeInsets.zero,
-        score: info.score,
-        status: info.status,
-        onUpvote: canVote
-            ? (isLiked) => vote(context, upvote: true, isLiked: isLiked)
+        score: vote.score,
+        status: vote.status,
+        onUpvote: domain.hasLogin
+            ? (isLiked) async {
+                controller
+                    .vote(comment: comment, upvote: true, replace: !isLiked)
+                    .then((value) {
+                      if (!value) {
+                        messenger.showSnackBar(
+                          SnackBar(
+                            duration: const Duration(seconds: 1),
+                            content: Text(
+                              'Failed to upvote comment #${comment.id}',
+                            ),
+                          ),
+                        );
+                      }
+                    });
+                return !isLiked;
+              }
             : null,
-        onDownvote: canVote
-            ? (isLiked) => vote(context, upvote: false, isLiked: isLiked)
+        onDownvote: domain.hasLogin
+            ? (isLiked) async {
+                controller
+                    .vote(comment: comment, upvote: false, replace: !isLiked)
+                    .then((value) {
+                      if (!value) {
+                        messenger.showSnackBar(
+                          SnackBar(
+                            duration: const Duration(seconds: 1),
+                            content: Text(
+                              'Failed to downvote comment #${comment.id}',
+                            ),
+                          ),
+                        );
+                      }
+                    });
+                return !isLiked;
+              }
             : null,
       ),
     );
@@ -210,7 +217,15 @@ class CommentMenu extends StatelessWidget {
             icon: Icons.edit,
             value: () => guardWithLogin(
               context: context,
-              callback: () => editComment(context: context, comment: comment),
+              callback: () {
+                CommentController controller = context
+                    .read<CommentController>();
+                editComment(context: context, comment: comment).then((value) {
+                  if (value) {
+                    controller.refresh(force: true);
+                  }
+                });
+              },
               error: 'You must be logged in to edit comments!',
             ),
           ),
@@ -219,7 +234,14 @@ class CommentMenu extends StatelessWidget {
           icon: Icons.reply,
           value: () => guardWithLogin(
             context: context,
-            callback: () => replyComment(context: context, comment: comment),
+            callback: () {
+              CommentController controller = context.read<CommentController>();
+              replyComment(context: context, comment: comment).then((value) {
+                if (value) {
+                  controller.refresh(force: true);
+                }
+              });
+            },
             error: 'You must be logged in to reply to comments!',
           ),
         ),

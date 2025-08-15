@@ -2,27 +2,27 @@ import 'package:deep_pick/deep_pick.dart';
 import 'package:dio/dio.dart';
 import 'package:e1547/comment/comment.dart';
 import 'package:e1547/shared/shared.dart';
-import 'package:e1547/stream/stream.dart';
 
 class CommentClient {
-  CommentClient({required this.dio, required this.cache});
+  CommentClient({required this.dio});
 
   final Dio dio;
-  final PagedValueCache<QueryKey, int, Comment> cache;
 
   Future<Comment> get({
     required int id,
     bool? force,
     CancelToken? cancelToken,
-  }) => cache.items
-      .stream(
-        id,
-        fetch: () => dio
-            .get('/comments/$id.json', cancelToken: cancelToken)
-            .then((response) => E621Comment.fromJson(response.data)),
-        force: force,
-      )
-      .future;
+  }) async {
+    Map<String, dynamic> body = await dio
+        .get(
+          '/comments.json/$id.json',
+          options: forceOptions(force),
+          cancelToken: cancelToken,
+        )
+        .then((response) => response.data);
+
+    return E621Comment.fromJson(body);
+  }
 
   Future<List<Comment>> page({
     int? page,
@@ -30,29 +30,24 @@ class CommentClient {
     QueryMap? query,
     bool? force,
     CancelToken? cancelToken,
-  }) {
-    final queryMap = {'page': page, 'limit': limit, ...?query};
-
-    return cache
-        .stream(
-          QueryKey(queryMap),
-          fetch: () => dio
-              .get(
-                '/comments.json',
-                queryParameters: queryMap,
-                cancelToken: cancelToken,
-              )
-              .then((response) {
-                if (response.data is List<dynamic>) {
-                  return response.data
-                      .map<Comment>(E621Comment.fromJson)
-                      .toList();
-                }
-                return <Comment>[];
-              }),
-          force: force,
+  }) async {
+    Object body = await dio
+        .get(
+          '/comments.json',
+          queryParameters: {'page': page, 'limit': limit, ...?query},
+          options: forceOptions(force),
+          cancelToken: cancelToken,
         )
-        .future;
+        .then((response) => response.data);
+
+    List<Comment> comments = [];
+    if (body is List<dynamic>) {
+      for (Map<String, dynamic> rawComment in body) {
+        comments.add(E621Comment.fromJson(rawComment));
+      }
+    }
+
+    return comments;
   }
 
   Future<List<Comment>> byPost({
@@ -67,61 +62,54 @@ class CommentClient {
     limit: limit,
     query: {
       'group_by': 'comment',
-      'search[post_id]': id.toString(),
+      'search[post_id]': id,
       'search[order]': ascending ?? false ? 'id_asc' : 'id_desc',
-    },
+    }.toQuery(),
     force: force,
     cancelToken: cancelToken,
   );
 
-  Future<void> create({required int postId, required String content}) => dio
-      .post(
-        '/comments.json',
-        data: FormData.fromMap({
-          'comment[body]': content,
-          'comment[post_id]': postId,
-          'commit': 'Submit',
-        }),
-      )
-      .then(
-        (_) => cache.keys
-            .where((key) => key.find('search[post_id]', postId))
-            .forEach(cache.invalidate),
-      );
+  Future<void> create({required int postId, required String content}) async {
+    await dio.cache?.deleteFromPath(
+      RegExp(RegExp.escape('/comments.json')),
+      queryParams: {'search[post_id]': postId.toString()},
+    );
+    Map<String, dynamic> body = {
+      'comment[body]': content,
+      'comment[post_id]': postId,
+      'commit': 'Submit',
+    };
+
+    await dio.post('/comments.json', data: FormData.fromMap(body));
+  }
 
   Future<void> update({
     required int id,
     required int postId,
     required String content,
-  }) => cache.items.optimistic(
-    id,
-    (comment) => comment.copyWith(
-      postId: postId,
-      body: content,
-      updatedAt: DateTime.now(),
-    ),
-    () => dio.patch(
-      '/comments/$id.json',
-      data: FormData.fromMap({'comment[body]': content, 'commit': 'Submit'}),
-    ),
-  );
+  }) async {
+    await dio.cache?.deleteFromPath(
+      RegExp(RegExp.escape('/comments.json')),
+      queryParams: {'search[post_id]': postId.toString()},
+    );
+    await dio.cache?.deleteFromPath(
+      RegExp(RegExp.escape('/comments/$id.json')),
+    );
+    Map<String, dynamic> body = {'comment[body]': content, 'commit': 'Submit'};
+
+    await dio.patch('/comments/$id.json', data: FormData.fromMap(body));
+  }
 
   Future<void> vote({
     required int id,
     required bool upvote,
     required bool replace,
-  }) => cache.items.optimistic(
-    id,
-    (comment) {
-      final currentScore = comment.vote?.score ?? 0;
-      final newScore = upvote ? currentScore + 1 : currentScore - 1;
-      return comment.copyWith(vote: VoteInfo(score: newScore));
-    },
-    () => dio.post(
+  }) async {
+    await dio.post(
       '/comments/$id/votes.json',
       queryParameters: {'score': upvote ? 1 : -1, 'no_unvote': replace},
-    ),
-  );
+    );
+  }
 }
 
 extension E621Comment on Comment {
@@ -134,9 +122,7 @@ extension E621Comment on Comment {
       updatedAt: pick('updated_at').asDateTimeOrThrow(),
       creatorId: pick('creator_id').asIntOrThrow(),
       creatorName: pick('creator_name').asStringOrThrow(),
-      vote: pick(
-        'score',
-      ).letOrNull((pick) => VoteInfo(score: pick.asIntOrThrow())),
+      vote: VoteInfo(score: pick('score').asIntOrThrow()),
       warning: pick(
         'warning_type',
       ).letOrNull((pick) => WarningType.values.asNameMap()[pick.asString()]!),

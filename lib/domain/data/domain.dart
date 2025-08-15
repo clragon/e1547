@@ -22,16 +22,13 @@ import 'package:flutter/foundation.dart';
 export 'package:dio/dio.dart' show CancelToken;
 
 class Domain with Disposable {
-  Domain({required this.persona, required this.storage})
-    : dio = createDefaultDio(persona.identity, cache: storage.httpCache);
+  Domain({required this.identity, required this.traits, required this.storage})
+    : dio = createDefaultDio(identity, cache: storage.httpCache);
 
   final Dio dio;
   final AppStorage storage;
-
-  final Persona persona;
-
-  Identity get identity => persona.identity;
-  ValueNotifier<Traits> get traits => persona.traits;
+  final Identity identity;
+  final ValueNotifier<Traits> traits;
 
   late final AccountClient accounts = AccountClient(
     dio: dio,
@@ -50,14 +47,7 @@ class Domain with Disposable {
   late final TagClient tags = TagClient(dio: dio);
   late final WikiClient wikis = WikiClient(dio: dio);
 
-  late final CommentClient _comments = CommentClient(
-    dio: dio,
-    cache: storage.clientCache.comments,
-  );
-  late final CommentRepo comments = CommentRepo(
-    persona: persona,
-    client: _comments,
-  );
+  late final CommentClient comments = CommentClient(dio: dio);
 
   late final PoolClient pools = PoolClient(dio: dio);
   // TODO: add Sets
