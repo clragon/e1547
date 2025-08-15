@@ -92,6 +92,13 @@ class ValueCache<K, V> extends MapBase<K, V> {
     }
   }
 
+  /// Makes the cache entry for [key] immediately stale.
+  ///
+  /// The entry will be considered stale regardless of its actual age.
+  /// This can be used to force a refetch on the next access.
+  /// If the entry does not exist, this method does nothing.
+  void invalidate(K key) => _cache[key]?.invalidate();
+
   /// Removes entries with no listeners.
   ///
   /// Checks against both [size] and [maxAge].
@@ -210,6 +217,12 @@ abstract class ValueCacheEntry<V> implements Comparable<ValueCacheEntry<V>> {
     Duration? maxAge,
     bool? force,
   });
+
+  /// Makes this entry immediately stale.
+  ///
+  /// The entry will be considered stale regardless of its actual age.
+  /// This can be used to force a refetch on the next access.
+  void invalidate();
 
   /// Frees all resources associated with this cache entry.
   /// All streams will be closed and the value will be removed.

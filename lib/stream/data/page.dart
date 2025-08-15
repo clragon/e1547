@@ -30,6 +30,13 @@ class PagedValueCache<K, I, V> extends ValueCache<K, List<V>> {
     return PagedValueCacheEntry<I, V>(value: value, items: items, toId: toId);
   }
 
+  /// Invalidates a page cache entry.
+  ///
+  /// This makes the page entry immediately stale, but does not affect
+  /// the individual items in the items cache.
+  @override
+  void invalidate(K key) => super.invalidate(key);
+
   @override
   void dispose() {
     items.dispose();
@@ -72,6 +79,7 @@ class PagedValueCacheEntry<I, V> extends ValueCacheEntry<List<V>> {
     if (value == null) return;
     _accessed = DateTime.now();
     _created = _accessed;
+    _invalidated = false;
     List<I> ids = [];
     List<StreamSubscription<V>> keepAlives = [];
     for (final item in value) {
@@ -121,9 +129,17 @@ class PagedValueCacheEntry<I, V> extends ValueCacheEntry<List<V>> {
     _maxAge = value;
   }
 
+  bool _invalidated = false;
+
   @override
   bool get stale =>
-      _maxAge != null && DateTime.now().difference(_created) > _maxAge!;
+      _invalidated ||
+      (_maxAge != null && DateTime.now().difference(_created) > _maxAge!);
+
+  @override
+  void invalidate() {
+    _invalidated = true;
+  }
 
   @override
   bool get hasListeners => _stream.hasListener;

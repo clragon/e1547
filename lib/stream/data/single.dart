@@ -22,6 +22,7 @@ class SingleValueCacheEntry<V> extends ValueCacheEntry<V> {
     if (value == null) return;
     _accessed = DateTime.now();
     _created = _accessed;
+    _invalidated = false;
     if (_value == value) return;
     _value = value;
     _statusStream.add(ValueCacheStatus.idle);
@@ -51,9 +52,15 @@ class SingleValueCacheEntry<V> extends ValueCacheEntry<V> {
     _maxAge = value;
   }
 
+  bool _invalidated = false;
+
   @override
   bool get stale =>
-      _maxAge != null && DateTime.now().difference(_created) > _maxAge!;
+      _invalidated ||
+      (_maxAge != null && DateTime.now().difference(_created) > _maxAge!);
+
+  @override
+  void invalidate() => _invalidated = true;
 
   final List<StreamController<V>> _streams = [];
 
