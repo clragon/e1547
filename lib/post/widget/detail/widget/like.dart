@@ -84,8 +84,6 @@ class FavoriteButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final domain = DomainRef.of(context);
-
     return InkResponse(
       onTap: () {},
       child: LikeButton(
@@ -101,19 +99,8 @@ class FavoriteButton extends StatelessWidget {
         ),
         onTap: (isLiked) async {
           ScaffoldMessengerState messenger = ScaffoldMessenger.of(context);
-          const alsoVote = 1 != 1; // TODO: fetch from settings
           if (isLiked) {
             try {
-              await domain.favorites.remove(post.id);
-              if (alsoVote && post.vote.status == VoteStatus.upvoted) {
-                domain.posts
-                    .vote(
-                      id: post.id,
-                      upvote: true,
-                      replace: false, // unvote
-                    )
-                    .ignore();
-              }
               return false;
             } on Exception {
               messenger.showSnackBar(
@@ -128,12 +115,6 @@ class FavoriteButton extends StatelessWidget {
             }
           } else {
             try {
-              await domain.favorites.add(post.id);
-              if (alsoVote) {
-                domain.posts
-                    .vote(id: post.id, upvote: true, replace: true)
-                    .ignore();
-              }
               return true;
             } on Exception {
               messenger.showSnackBar(
