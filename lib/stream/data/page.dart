@@ -6,15 +6,8 @@ import 'package:rxdart/rxdart.dart';
 
 /// A cache that functions on pages of items. Each item is stored in another internal cache.
 class PagedValueCache<K, I, V> extends ValueCache<K, List<V>> {
-  PagedValueCache({
-    required this.toId,
-    super.size = 100,
-    int? pageSize,
-    super.maxAge,
-  }) : items = ValueCache<I, V>(
-         size: size != null ? size * (pageSize ?? 10) : null,
-         maxAge: maxAge,
-       );
+  PagedValueCache({required this.toId, super.size, int? pageSize, super.maxAge})
+    : items = ValueCache<I, V>(size: pageSize, maxAge: maxAge);
 
   /// Maps items to ids.
   final I Function(V value) toId;

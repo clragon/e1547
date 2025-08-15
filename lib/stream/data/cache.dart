@@ -8,7 +8,7 @@ import 'package:flutter/foundation.dart';
 
 /// An LRU and TTL Cache where entries with active listeners are kept indefinitely.
 class ValueCache<K, V> extends MapBase<K, V> {
-  ValueCache({this.size = 1000, this.maxAge});
+  ValueCache({this.size, this.maxAge});
 
   /// The amount of children with no active listeners that remain in the cache.
   ///
