@@ -17,11 +17,11 @@ class PostRepo {
 
   final String queryKey = 'posts';
 
-  late final _postCache = CacheSync<Post, int>(
+  late final _postCache = QueryBridge<Post, int>(
     cache: cache,
     baseKey: queryKey,
     getId: (post) => post.id,
-    getItem: (id) => get(id: id),
+    fetch: (id) => get(id: id),
   );
 
   Future<Post> get({required int id, bool? force, CancelToken? cancelToken}) =>
@@ -62,7 +62,7 @@ class PostRepo {
     cache: cache,
     key: [queryKey],
     getNextArg: (state) => (state?.pageParams.lastOrNull ?? 0) + 1,
-    queryFn: (key) => page(page: key).then(_postCache.populateFromPage),
+    queryFn: (key) => page(page: key).then(_postCache.savePage),
   );
 
   Future<List<Post>> byIds({
@@ -101,21 +101,13 @@ class PostRepo {
       client.setFavorite(id: id, favorite: favorite);
 
   Mutation<void, bool> useSetFavorite({required int id}) => Mutation(
-    queryFn: (isFavorite) => setFavorite(id: id, favorite: isFavorite),
-    onStartMutation: (favorite) {
-      final post = useGet(id).state.data;
-      if (post != null) {
-        useGet(id).setData(
-          post.copyWith(
-            isFavorited: favorite,
-            favCount: favorite ? post.favCount + 1 : post.favCount - 1,
-          ),
-        );
-        return post;
-      }
-    },
-    onError: (_, error, ctx) {
-      if (ctx case Post p) useGet(id).setData(p);
-    },
+    queryFn: (isFavorite) => _postCache.optimistic(
+      id,
+      (post) => post.copyWith(
+        isFavorited: isFavorite,
+        favCount: isFavorite ? post.favCount + 1 : post.favCount - 1,
+      ),
+      () => setFavorite(id: id, favorite: isFavorite),
+    ),
   );
 }

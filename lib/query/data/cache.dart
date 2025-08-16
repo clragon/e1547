@@ -1,37 +1,34 @@
+import 'dart:async';
+
 import 'package:cached_query/cached_query.dart';
 
-typedef InfiniteListQuery<T> = InfiniteQuery<List<T>, int>;
-
-class CacheSync<T, K> {
-  CacheSync({
+class QueryBridge<T, K> {
+  QueryBridge({
     required this.cache,
     required this.baseKey,
     required this.getId,
-    required this.getItem,
+    required this.fetch,
   });
 
   final CachedQuery cache;
   final String baseKey;
   final K Function(T) getId;
-  final Future<T> Function(K) getItem;
 
-  List<K> populateFromPage(List<T> items) {
-    for (final item in items) {
-      final queryKey = [baseKey, getId(item)];
-      var itemQuery = cache.getQuery<Query<T>>(queryKey);
-      itemQuery ??= Query<T>(
-        cache: cache,
-        key: queryKey,
-        initialData: item,
-        queryFn: () => getItem(getId(item)),
-      );
-      itemQuery.setData(item);
-    }
-    return items.map(getId).toList();
+  final Future<T> Function(K) fetch;
+
+  Query<T>? _getQuery(K id) => cache.getQuery<Query<T>>([baseKey, id]);
+
+  // TODO: delete this once https://github.com/D-James-GH/cached_query/issues/75 is resolved
+  Query<T> _createQuery(K id) =>
+      Query<T>(cache: cache, key: [baseKey, id], queryFn: () => fetch(id));
+
+  T? get(K id) {
+    final itemQuery = _getQuery(id);
+    return itemQuery?.state.data;
   }
 
-  void updateItem(K id, T Function(T) updateFn) {
-    final itemQuery = cache.getQuery<Query<T>>([baseKey, id]);
+  void update(K id, T Function(T) updateFn) {
+    final itemQuery = _getQuery(id);
     if (itemQuery != null) {
       final current = itemQuery.state.data;
       if (current != null) {
@@ -43,5 +40,43 @@ class CacheSync<T, K> {
     }
   }
 
-  void setItem(T item) => updateItem(getId(item), (current) => item);
+  void set(T item) => update(getId(item), (current) => item);
+
+  List<K> savePage(List<T> items) {
+    for (final item in items) {
+      final itemQuery = _getQuery(getId(item)) ?? _createQuery(getId(item));
+      itemQuery.setData(item);
+    }
+    return items.map(getId).toList();
+  }
+
+  FutureOr<R> optimistic<R>(
+    K id,
+    T Function(T) updateFn,
+    FutureOr<R> Function() callback,
+  ) async {
+    final itemQuery = _getQuery(id);
+    if (itemQuery == null) return callback();
+
+    final current = itemQuery.state.data;
+    if (current == null) return callback();
+
+    T previous = current;
+    try {
+      final updated = updateFn(current);
+      if (updated != current) {
+        itemQuery.setData(updated);
+      }
+      final result = await callback();
+      return result;
+    } on Object {
+      itemQuery.setData(previous);
+      rethrow;
+    }
+  }
+
+  void invalidate(K id) {
+    final itemQuery = _getQuery(id);
+    itemQuery?.invalidate();
+  }
 }
