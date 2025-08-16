@@ -252,12 +252,7 @@ mixin PostActionController<KeyType> on ClientDataController<KeyType, Post> {
     required bool replace,
   }) async {
     assertOwnsItem(post);
-    post = post.copyWith(
-      vote: post.vote.withVote(
-        upvote ? VoteStatus.upvoted : VoteStatus.downvoted,
-        replace,
-      ),
-    );
+    post = post.copyWith(vote: post.vote.withVote(upvote, replace));
     replacePost(post);
     try {
       await client.posts.vote(post.id, upvote, replace);

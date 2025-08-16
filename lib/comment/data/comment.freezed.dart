@@ -53,7 +53,7 @@ $Res call({
 });
 
 
-
+$VoteInfoCopyWith<$Res>? get vote;
 
 }
 /// @nodoc
@@ -81,7 +81,19 @@ as WarningType?,hidden: null == hidden ? _self.hidden : hidden // ignore: cast_n
 as bool,
   ));
 }
+/// Create a copy of Comment
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$VoteInfoCopyWith<$Res>? get vote {
+    if (_self.vote == null) {
+    return null;
+  }
 
+  return $VoteInfoCopyWith<$Res>(_self.vote!, (value) {
+    return _then(_self.copyWith(vote: value));
+  });
+}
 }
 
 
@@ -140,7 +152,7 @@ $Res call({
 });
 
 
-
+@override $VoteInfoCopyWith<$Res>? get vote;
 
 }
 /// @nodoc
@@ -169,7 +181,19 @@ as bool,
   ));
 }
 
+/// Create a copy of Comment
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$VoteInfoCopyWith<$Res>? get vote {
+    if (_self.vote == null) {
+    return null;
+  }
 
+  return $VoteInfoCopyWith<$Res>(_self.vote!, (value) {
+    return _then(_self.copyWith(vote: value));
+  });
+}
 }
 
 // dart format on
