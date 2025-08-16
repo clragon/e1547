@@ -42,7 +42,7 @@ class App extends StatelessWidget {
                 identity: const Identity(
                   id: 1,
                   host: 'https://e621.net',
-                  username: 'test',
+                  username: 'anonymous',
                   headers: {},
                 ),
                 traits: ValueNotifier(
@@ -60,12 +60,7 @@ class App extends StatelessWidget {
                 BaseOptions(
                   baseUrl: 'https://e621.net',
                   headers: {
-                    HttpHeaders.userAgentHeader:
-                        'e1547/from-rubbble (binaryfloof)',
-                    /*
-                    HttpHeaders.authorizationHeader:
-                        'Basic ${base64Encode(utf8.encode('a:b'))}',
-                        */
+                    HttpHeaders.userAgentHeader: 'e1547/pot (binaryfloof)',
                   },
                 ),
               ),
@@ -77,6 +72,7 @@ class App extends StatelessWidget {
               context,
               (settings) => settings.value.theme.data,
             ),
+            scrollBehavior: AndroidStretchScrollBehaviour(),
             initialRoute: '/posts',
             routes: {
               '/': (context) => Scaffold(

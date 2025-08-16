@@ -52,7 +52,7 @@ $Res call({
 });
 
 
-$RelationshipsCopyWith<$Res> get relationships;
+$VoteInfoCopyWith<$Res> get vote;$RelationshipsCopyWith<$Res> get relationships;
 
 }
 /// @nodoc
@@ -94,6 +94,15 @@ as Relationships,
   ));
 }
 /// Create a copy of Post
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$VoteInfoCopyWith<$Res> get vote {
+  
+  return $VoteInfoCopyWith<$Res>(_self.vote, (value) {
+    return _then(_self.copyWith(vote: value));
+  });
+}/// Create a copy of Post
 /// with the given fields replaced by the non-null parameter values.
 @override
 @pragma('vm:prefer-inline')
@@ -203,7 +212,7 @@ $Res call({
 });
 
 
-@override $RelationshipsCopyWith<$Res> get relationships;
+@override $VoteInfoCopyWith<$Res> get vote;@override $RelationshipsCopyWith<$Res> get relationships;
 
 }
 /// @nodoc
@@ -246,6 +255,15 @@ as Relationships,
 }
 
 /// Create a copy of Post
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$VoteInfoCopyWith<$Res> get vote {
+  
+  return $VoteInfoCopyWith<$Res>(_self.vote, (value) {
+    return _then(_self.copyWith(vote: value));
+  });
+}/// Create a copy of Post
 /// with the given fields replaced by the non-null parameter values.
 @override
 @pragma('vm:prefer-inline')

@@ -1,18 +1,19 @@
-class VoteInfo {
-  VoteInfo({required this.score, this.status = VoteStatus.unknown});
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-  factory VoteInfo.fromJson(Map<String, dynamic> json) => VoteInfo(
-    score: json['score'],
-    status: VoteStatus.values.asNameMap()[json['status']] ?? VoteStatus.unknown,
-  );
+part 'info.freezed.dart';
+part 'info.g.dart';
 
-  Map<String, dynamic> toJson() => {'score': score, 'status': status.name};
+@freezed
+abstract class VoteInfo with _$VoteInfo {
+  const factory VoteInfo({
+    required int score,
+    @Default(VoteStatus.unknown) VoteStatus status,
+  }) = _VoteInfo;
 
-  final int score;
-  final VoteStatus status;
+  const VoteInfo._();
 
-  VoteInfo copyWith({int? score, VoteStatus? status}) =>
-      VoteInfo(score: score ?? this.score, status: status ?? this.status);
+  factory VoteInfo.fromJson(Map<String, dynamic> json) =>
+      _$VoteInfoFromJson(json);
 
   VoteInfo withVote(bool upvote, [bool replace = false]) => switch (upvote) {
     true => switch (status) {
