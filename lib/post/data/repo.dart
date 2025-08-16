@@ -72,9 +72,6 @@ class PostRepo {
     return result;
   }
 
-  Future<void> vote({
-    required int id,
-    required bool upvote,
-    required bool replace,
-  }) => client.vote(id: id, upvote: upvote, replace: replace);
+  Future<void> setFavorite({required int id, required bool favorite}) =>
+      client.setFavorite(id: id, favorite: favorite);
 }

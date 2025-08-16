@@ -1,9 +1,8 @@
 import 'dart:math';
 
-import 'package:context_plus/context_plus.dart';
-import 'package:e1547/domain/domain.dart';
+import 'package:cached_query_flutter/cached_query_flutter.dart';
 import 'package:e1547/post/post.dart';
-import 'package:e1547/stream/stream.dart';
+import 'package:e1547/query/query.dart';
 import 'package:flutter/material.dart';
 
 class PostDetailPage extends StatelessWidget {
@@ -13,12 +12,10 @@ class PostDetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final client = DomainRef.of(context);
-
-    return SubStreamFuture(
-      create: () => client.posts.get(id: id),
+    return QueryBuilder(
+      query: usePost(context, id),
       builder: (context, state) {
-        if (state.hasError) {
+        if (state.isError) {
           return Scaffold(
             appBar: AppBar(
               title: const Text('Post'),

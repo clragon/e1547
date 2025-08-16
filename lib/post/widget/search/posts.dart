@@ -1,8 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:e1547/domain/domain.dart';
+import 'package:cached_query_flutter/cached_query_flutter.dart';
 import 'package:e1547/post/post.dart';
+import 'package:e1547/query/query.dart';
 import 'package:e1547/shared/shared.dart';
-import 'package:e1547/stream/stream.dart';
 import 'package:flutter/material.dart';
 
 class PostsPage extends StatelessWidget {
@@ -10,15 +10,13 @@ class PostsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SubStreamPageController(
-      initialPageKey: 1,
-      getNextPageKey: (state) => state.nextIntPageKey,
-      fetchPage: (pageKey) => DomainRef.of(context).posts.page(page: pageKey),
-      builder: (context, state, fetchNextPage) => Scaffold(
+    return QueryBuilder(
+      query: usePostPage(context),
+      builder: (context, state) => Scaffold(
         appBar: AppBar(title: const Text('Posts')),
         body: PagedGridView(
-          state: state.filter(context),
-          fetchNextPage: fetchNextPage,
+          state: state.paging,
+          fetchNextPage: usePostPage(context).getNextPage,
           builderDelegate: PagedChildBuilderDelegate<Post>(
             itemBuilder: (context, post, index) => InkWell(
               onTap: () => Navigator.of(context).push(
