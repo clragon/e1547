@@ -1,58 +1,73 @@
 import 'package:flutter/material.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:like_button/like_button.dart';
 
-class VoteInfo {
-  VoteInfo({required this.score, this.status = VoteStatus.unknown});
+part 'votes.freezed.dart';
+part 'votes.g.dart';
 
-  factory VoteInfo.fromJson(Map<String, dynamic> json) => VoteInfo(
-    score: json['score'],
-    status: VoteStatus.values.asNameMap()[json['status']] ?? VoteStatus.unknown,
-  );
+@freezed
+abstract class VoteInfo with _$VoteInfo {
+  const factory VoteInfo({
+    required int score,
+    @Default(VoteStatus.unknown) VoteStatus status,
+  }) = _VoteInfo;
 
-  Map<String, dynamic> toJson() => {'score': score, 'status': status.name};
+  const VoteInfo._();
 
-  final int score;
-  final VoteStatus status;
+  factory VoteInfo.fromJson(Map<String, dynamic> json) =>
+      _$VoteInfoFromJson(json);
 
-  VoteInfo copyWith({int? score, VoteStatus? status}) =>
-      VoteInfo(score: score ?? this.score, status: status ?? this.status);
-
-  VoteInfo withVote(VoteStatus status, [bool replace = false]) {
-    switch (status) {
-      case VoteStatus.upvoted:
-        switch (this.status) {
-          case VoteStatus.upvoted:
-            if (replace) return this;
-            return copyWith(score: score - 1, status: VoteStatus.unknown);
-          case VoteStatus.downvoted:
-            return copyWith(score: score - 2, status: status);
-          case VoteStatus.unknown:
-            return copyWith(score: score + 1, status: status);
-        }
-      case VoteStatus.downvoted:
-        switch (this.status) {
-          case VoteStatus.upvoted:
-            return copyWith(score: score + 2, status: status);
-          case VoteStatus.downvoted:
-            if (replace) return this;
-            return copyWith(score: score + 1, status: VoteStatus.unknown);
-          case VoteStatus.unknown:
-            return copyWith(score: score - 1, status: status);
-        }
-      case VoteStatus.unknown:
-        switch (this.status) {
-          case VoteStatus.upvoted:
-            return copyWith(score: score - 1, status: status);
-          case VoteStatus.downvoted:
-            return copyWith(score: score + 1, status: status);
-          case VoteStatus.unknown:
-            return this;
-        }
-    }
-  }
+  VoteInfo withVote(bool upvote, [bool replace = false]) => switch (upvote) {
+    true => switch (status) {
+      VoteStatus.upvoted =>
+        replace ? this : copyWith(score: score - 1, status: VoteStatus.unknown),
+      VoteStatus.downvoted => copyWith(
+        score: score + 2,
+        status: VoteStatus.upvoted,
+      ),
+      VoteStatus.unknown => copyWith(
+        score: score + 1,
+        status: VoteStatus.upvoted,
+      ),
+    },
+    false => switch (status) {
+      VoteStatus.upvoted => copyWith(
+        score: score - 2,
+        status: VoteStatus.downvoted,
+      ),
+      VoteStatus.downvoted =>
+        replace ? this : copyWith(score: score + 1, status: VoteStatus.unknown),
+      VoteStatus.unknown => copyWith(
+        score: score - 1,
+        status: VoteStatus.downvoted,
+      ),
+    },
+  };
 }
 
 enum VoteStatus { upvoted, unknown, downvoted }
+
+typedef VoteRequest = ({bool upvote, bool replace});
+
+@freezed
+abstract class VoteResult with _$VoteResult {
+  const factory VoteResult({required int score, required int ourScore}) =
+      _VoteResult;
+
+  factory VoteResult.fromJson(Map<String, dynamic> json) =>
+      _$VoteResultFromJson(json);
+}
+
+extension VoteResultInfoExtension on VoteResult {
+  VoteInfo get info => VoteInfo(
+    score: score,
+    status: switch (ourScore) {
+      1 => VoteStatus.upvoted,
+      -1 => VoteStatus.downvoted,
+      _ => VoteStatus.unknown,
+    },
+  );
+}
 
 class VoteDisplay extends StatelessWidget {
   const VoteDisplay({

@@ -54,12 +54,7 @@ class CommentController extends PageClientDataController<Comment> {
   }) async {
     assertOwnsItem(comment);
     replaceComment(
-      comment.copyWith(
-        vote: comment.vote?.withVote(
-          upvote ? VoteStatus.upvoted : VoteStatus.downvoted,
-          replace,
-        ),
-      ),
+      comment.copyWith(vote: comment.vote?.withVote(upvote, replace)),
     );
     try {
       await domain.comments.vote(
