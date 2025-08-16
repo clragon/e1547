@@ -24,29 +24,23 @@ class PostRepo {
     fetch: (id) => get(id: id),
   );
 
-  Future<Post> get({required int id, bool? force, CancelToken? cancelToken}) =>
-      client.get(id: id, force: force, cancelToken: cancelToken);
+  Future<Post> get({required int id, CancelToken? cancelToken}) =>
+      client.get(id: id, cancelToken: cancelToken);
 
-  Query<Post> useGet(int id) => Query(
+  Query<Post> useGet({required int id, bool? vendored}) => Query(
     cache: cache,
     key: [queryKey, id],
     queryFn: () => get(id: id),
+    config: _postCache.getConfig(vendored: vendored),
   );
 
   Future<List<Post>> page({
     int? page,
     int? limit,
     QueryMap? query,
-    bool? force,
     CancelToken? cancelToken,
   }) => client
-      .page(
-        page: page,
-        limit: limit,
-        query: query,
-        force: force,
-        cancelToken: cancelToken,
-      )
+      .page(page: page, limit: limit, query: query, cancelToken: cancelToken)
       .map(_filter);
 
   /// Filters out "broken" posts.
@@ -68,7 +62,6 @@ class PostRepo {
   Future<List<Post>> byIds({
     required List<int> ids,
     int? limit,
-    bool? force,
     CancelToken? cancelToken,
   }) async {
     limit = max(0, min(limit ?? 75, 100));
@@ -85,7 +78,6 @@ class PostRepo {
       List<Post> part = await page(
         query: {'tags': filter},
         limit: limit,
-        force: force,
         cancelToken: cancelToken,
       );
       Map<int, Post> table = {for (Post e in part) e.id: e};

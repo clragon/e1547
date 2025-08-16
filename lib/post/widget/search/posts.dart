@@ -13,8 +13,9 @@ class PostsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final domain = DomainRef.of(context);
+    final query = domain.posts.usePage();
     return QueryBuilder(
-      query: domain.posts.usePage(),
+      query: query,
       builder: (context, state) => Scaffold(
         appBar: AppBar(title: const Text('Posts')),
         body: SubValue(
@@ -22,22 +23,17 @@ class PostsPage extends StatelessWidget {
           builder: (context, refreshController) => SmartRefresher(
             controller: refreshController,
             onRefresh: () async {
-              CachedQuery.instance.invalidateCache(
-                filterFn: (raw, key) => switch (raw) {
-                  List e => e.firstOrNull == domain.posts.queryKey,
-                  _ => false,
-                },
-              );
+              await query.invalidate();
               refreshController.refreshCompleted();
             },
             child: PagedGridView(
               state: state.paging,
-              fetchNextPage: domain.posts.usePage().getNextPage,
+              fetchNextPage: query.getNextPage,
               builderDelegate: PagedChildBuilderDelegate<int>(
-                itemBuilder: (context, postId, index) => QueryBuilder(
-                  query: domain.posts.useGet(postId),
+                itemBuilder: (context, id, index) => QueryBuilder(
+                  query: domain.posts.useGet(id: id, vendored: true),
                   builder: (context, postState) {
-                    final post = postState.data!;
+                    final post = postState.data ?? FakePost();
                     return InkWell(
                       onTap: () => Navigator.of(context).push(
                         MaterialPageRoute(

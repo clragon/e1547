@@ -22,6 +22,12 @@ class QueryBridge<T, K> {
   Query<T> _createQuery(K id) =>
       Query<T>(cache: cache, key: [baseKey, id], queryFn: () => fetch(id));
 
+  static ShouldFetch<T> vendorFetch<T>(bool? vendored) =>
+      (key, data, createdAt) => !(vendored ?? false);
+
+  QueryConfig<T> getConfig({bool? vendored}) =>
+      QueryConfig(shouldFetch: vendorFetch<T>(vendored));
+
   T? get(K id) {
     final itemQuery = _getQuery(id);
     return itemQuery?.state.data;

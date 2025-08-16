@@ -16,7 +16,7 @@ class PostDetailPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final domain = DomainRef.of(context);
     return QueryBuilder(
-      query: domain.posts.useGet(id),
+      query: domain.posts.useGet(id: id),
       builder: (context, state) {
         if (state.isError) {
           return Scaffold(

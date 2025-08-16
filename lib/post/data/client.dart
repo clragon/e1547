@@ -7,7 +7,7 @@ class PostClient {
 
   final Dio dio;
 
-  Future<Post> get({required int id, bool? force, CancelToken? cancelToken}) {
+  Future<Post> get({required int id, CancelToken? cancelToken}) {
     print('Fetching post $id');
     return dio
         .get('/posts/$id.json', cancelToken: cancelToken)
@@ -19,7 +19,6 @@ class PostClient {
     int? page,
     int? limit,
     QueryMap? query,
-    bool? force,
     CancelToken? cancelToken,
   }) {
     print('Fetching posts page $page');
