@@ -3,21 +3,34 @@ import 'package:collection/collection.dart';
 typedef QueryMap = Map<String, String>;
 
 extension QueryMapping on Map<String, dynamic> {
-  /// Transforms a given Map into a QueryMap.
-  ///
-  /// Null values are omitted.
-  /// All other values are converted to strings.
-  QueryMap toQuery() => entries
-      .where((entry) => entry.value != null)
-      .map((entry) => MapEntry(entry.key, _stringify(entry.value)))
-      .sorted((a, b) => a.key.compareTo(b.key))
-      .toMap();
+  QueryMap toQuery() {
+    final result = <String, String>{};
 
-  String _stringify(Object? value) => switch (value) {
-    List e => e.map(_stringify).join(','),
-    Enum e => e.name,
-    _ => value.toString(),
-  };
+    void walk(String key, Object? value) {
+      if (value == null) return;
+      switch (value) {
+        case Map m:
+          for (final e in m.entries) {
+            final k = e.key.toString();
+            walk('$key[$k]', e.value);
+          }
+        case List l:
+          for (final v in l) {
+            walk('$key[]', v);
+          }
+        case Enum e:
+          result[key] = e.name;
+        default:
+          result[key] = value.toString();
+      }
+    }
+
+    for (final e in entries) {
+      walk(e.key, e.value);
+    }
+
+    return result.entries.sorted((a, b) => a.key.compareTo(b.key)).toMap();
+  }
 }
 
 extension QueryMapHandling on QueryMap {
