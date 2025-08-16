@@ -4,7 +4,6 @@ export 'image.dart';
 export 'json.dart';
 export 'link.dart';
 export 'post.dart';
-export 'query.dart';
 export 'rating.dart';
 export 'repo.dart';
 export 'type.dart';

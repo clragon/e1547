@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cached_query_flutter/cached_query_flutter.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 import 'package:e1547/about/about.dart';
 import 'package:e1547/app/data/storage.dart';
@@ -10,7 +11,11 @@ import 'package:notified_preferences/notified_preferences.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 
-typedef AppInitBundle = ({SettingsService settings, AppStorage storage});
+typedef AppInitBundle = ({
+  SettingsService settings,
+  AppStorage storage,
+  CachedQuery cache,
+});
 
 Future<AppInitBundle> initApp() async {
   final (_, settings, storage) = await (
@@ -19,7 +24,19 @@ Future<AppInitBundle> initApp() async {
     initializeAppStorage(),
   ).wait;
 
-  return (settings: settings, storage: storage);
+  final cache = CachedQuery.asNewInstance()
+    ..configFlutter(
+      config: const GlobalQueryConfigFlutter(
+        refetchDuration: Duration(minutes: 5),
+      ),
+    );
+
+  return (settings: settings, storage: storage, cache: cache);
+}
+
+Future<void> disposeApp(AppInitBundle bundle) async {
+  bundle.cache.deleteCache();
+  await bundle.storage.close();
 }
 
 Future<void> initializeAppInfo() => About.initializePlatform(

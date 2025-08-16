@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:cached_query_flutter/cached_query_flutter.dart';
 import 'package:context_plus/context_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:e1547/app/data/init.dart';
@@ -22,18 +21,11 @@ class App extends StatelessWidget {
     return ContextPlus.root(
       child: AppLoadingScreen(
         init: initApp,
-        builder: (context, initData) {
+        dispose: disposeApp,
+        builder: (context, bundle) {
           SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
 
-          if (!CachedQuery.instance.isConfigSet) {
-            CachedQuery.instance.configFlutter(
-              config: const GlobalQueryConfigFlutter(
-                refetchDuration: Duration(minutes: 5),
-              ),
-            );
-          }
-
-          final settings = SettingsRef.bindValue(context, initData.settings);
+          final settings = SettingsRef.bindValue(context, bundle.settings);
 
           DomainRef.bind(
             context,
@@ -64,6 +56,7 @@ class App extends StatelessWidget {
                   },
                 ),
               ),
+              cache: bundle.cache,
             ),
           );
 

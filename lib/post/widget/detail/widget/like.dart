@@ -36,7 +36,8 @@ class LikeDisplay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final canVote = DomainRef.of(context).hasLogin;
+    final domain = DomainRef.of(context);
+    final canVote = domain.hasLogin;
 
     return Column(
       children: [
@@ -80,8 +81,7 @@ class LikeDisplay extends StatelessWidget {
                       );
                       if (isLiked) {
                         try {
-                          final setFavorite = useSetFavoritePost(
-                            context,
+                          final setFavorite = domain.posts.useSetFavorite(
                             id: post.id,
                           );
                           await setFavorite.mutate(!isLiked);
@@ -99,8 +99,7 @@ class LikeDisplay extends StatelessWidget {
                         }
                       } else {
                         try {
-                          final setFavorite = useSetFavoritePost(
-                            context,
+                          final setFavorite = domain.posts.useSetFavorite(
                             id: post.id,
                           );
                           await setFavorite.mutate(!isLiked);

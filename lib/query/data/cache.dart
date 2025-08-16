@@ -3,87 +3,45 @@ import 'package:cached_query/cached_query.dart';
 typedef InfiniteListQuery<T> = InfiniteQuery<List<T>, int>;
 
 class CacheSync<T, K> {
-  CacheSync({required this.baseKey, required this.getId});
+  CacheSync({
+    required this.cache,
+    required this.baseKey,
+    required this.getId,
+    required this.getItem,
+  });
 
-  static int _r = 0;
-
+  final CachedQuery cache;
   final String baseKey;
   final K Function(T) getId;
+  final Future<T> Function(K) getItem;
+
+  List<K> populateFromPage(List<T> items) {
+    for (final item in items) {
+      final queryKey = [baseKey, getId(item)];
+      var itemQuery = cache.getQuery<Query<T>>(queryKey);
+      itemQuery ??= Query<T>(
+        cache: cache,
+        key: queryKey,
+        initialData: item,
+        queryFn: () => getItem(getId(item)),
+      );
+      itemQuery.setData(item);
+    }
+    return items.map(getId).toList();
+  }
 
   void updateItem(K id, T Function(T) updateFn) {
-    _r++;
-    print('re-entrant update: $_r');
-
-    final singleQuery = CachedQuery.instance.getQuery<Query<T>>([baseKey, id]);
-
-    if (singleQuery != null) {
-      final current = singleQuery.state.data;
+    final itemQuery = cache.getQuery<Query<T>>([baseKey, id]);
+    if (itemQuery != null) {
+      final current = itemQuery.state.data;
       if (current != null) {
         final updated = updateFn(current);
         if (updated != current) {
-          singleQuery.setData(updated);
+          itemQuery.setData(updated);
         }
       }
     }
-
-    _updateInfiniteQueries(id, updateFn);
   }
 
   void setItem(T item) => updateItem(getId(item), (current) => item);
-
-  void setItems(List<T> items) {
-    for (final item in items) {
-      setItem(item);
-    }
-  }
-
-  void _updateInfiniteQueries(K id, T Function(T) updateFn) {
-    final infiniteQueries = CachedQuery.instance
-        .whereQuery(
-          (query) => switch (query) {
-            InfiniteListQuery<T> q =>
-              (q.state.data?.pages.isNotEmpty ?? false) &&
-                  switch (q.unencodedKey) {
-                    List e => e.firstOrNull == baseKey,
-                    _ => false,
-                  },
-            _ => false,
-          },
-        )
-        ?.cast<InfiniteListQuery<T>>();
-
-    infiniteQueries?.forEach((query) {
-      final currentData = query.state.data!;
-      bool changed = false;
-      final updatedPages = currentData.pages.map((page) {
-        return page.map((item) {
-          if (getId(item) == id) {
-            final updated = updateFn(item);
-            if (updated != item) {
-              if (updated.toString() == item.toString()) {
-                print('something went wrong.');
-                return item;
-              }
-              changed = true;
-            }
-            return updated;
-          }
-          return item;
-        }).toList();
-      }).toList();
-
-      print(
-        'Updating infinite query: ${query.unencodedKey}, changed: $changed',
-      );
-
-      if (!changed) return;
-
-      query.setData(
-        InfiniteQueryData(
-          pages: updatedPages,
-          pageParams: currentData.pageParams,
-        ),
-      );
-    });
-  }
 }

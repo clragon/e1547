@@ -1,23 +1,41 @@
 import 'dart:math';
 
+import 'package:cached_query/cached_query.dart';
 import 'package:collection/collection.dart';
 import 'package:dio/dio.dart';
 import 'package:e1547/post/post.dart';
+import 'package:e1547/query/query.dart';
 import 'package:e1547/shared/shared.dart';
 import 'package:e1547/stream/stream.dart';
 
 class PostRepo {
-  PostRepo({required this.persona, required this.client});
+  PostRepo({required this.persona, required this.client, required this.cache});
 
   final Persona persona;
   final PostClient client;
+  final CachedQuery cache;
+
+  final String queryKey = 'posts';
+
+  late final _postCache = CacheSync<Post, int>(
+    cache: cache,
+    baseKey: queryKey,
+    getId: (post) => post.id,
+    getItem: (id) => get(id: id),
+  );
 
   Future<Post> get({required int id, bool? force, CancelToken? cancelToken}) =>
       client.get(id: id, force: force, cancelToken: cancelToken);
 
+  Query<Post> useGet(int id) => Query(
+    cache: cache,
+    key: [queryKey, id],
+    queryFn: () => get(id: id),
+  );
+
   Future<List<Post>> page({
     int? page,
-    int? limit,
+    int? limit = 5,
     QueryMap? query,
     bool? force,
     CancelToken? cancelToken,
@@ -39,6 +57,16 @@ class PostRepo {
       .whereNot((post) => !post.isDeleted && post.file == null)
       .whereNot((post) => post.ext == 'swf')
       .toList();
+
+  InfiniteQuery<List<int>, int> usePage() => InfiniteQuery<List<int>, int>(
+    cache: cache,
+    key: [queryKey],
+    getNextArg: (state) => (state?.pageParams.lastOrNull ?? 0) + 1,
+    queryFn: (page) async {
+      final posts = await this.page(page: page);
+      return _postCache.populateFromPage(posts);
+    },
+  );
 
   Future<List<Post>> byIds({
     required List<int> ids,
@@ -74,4 +102,14 @@ class PostRepo {
 
   Future<void> setFavorite({required int id, required bool favorite}) =>
       client.setFavorite(id: id, favorite: favorite);
+
+  Mutation<void, bool> useSetFavorite({required int id}) => Mutation(
+    queryFn: (isFavorite) => setFavorite(id: id, favorite: isFavorite),
+    onSuccess: (_, favorite) => useGet(id).update(
+      (post) => post!.copyWith(
+        isFavorited: favorite,
+        favCount: favorite ? post.favCount + 1 : post.favCount - 1,
+      ),
+    ),
+  );
 }
