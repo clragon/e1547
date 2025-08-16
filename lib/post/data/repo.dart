@@ -35,7 +35,7 @@ class PostRepo {
 
   Future<List<Post>> page({
     int? page,
-    int? limit = 5,
+    int? limit,
     QueryMap? query,
     bool? force,
     CancelToken? cancelToken,
@@ -62,10 +62,7 @@ class PostRepo {
     cache: cache,
     key: [queryKey],
     getNextArg: (state) => (state?.pageParams.lastOrNull ?? 0) + 1,
-    queryFn: (page) async {
-      final posts = await this.page(page: page);
-      return _postCache.populateFromPage(posts);
-    },
+    queryFn: (key) => page(page: key).then(_postCache.populateFromPage),
   );
 
   Future<List<Post>> byIds({
@@ -105,11 +102,20 @@ class PostRepo {
 
   Mutation<void, bool> useSetFavorite({required int id}) => Mutation(
     queryFn: (isFavorite) => setFavorite(id: id, favorite: isFavorite),
-    onSuccess: (_, favorite) => useGet(id).update(
-      (post) => post!.copyWith(
-        isFavorited: favorite,
-        favCount: favorite ? post.favCount + 1 : post.favCount - 1,
-      ),
-    ),
+    onStartMutation: (favorite) {
+      final post = useGet(id).state.data;
+      if (post != null) {
+        useGet(id).setData(
+          post.copyWith(
+            isFavorited: favorite,
+            favCount: favorite ? post.favCount + 1 : post.favCount - 1,
+          ),
+        );
+        return post;
+      }
+    },
+    onError: (_, error, ctx) {
+      if (ctx case Post p) useGet(id).setData(p);
+    },
   );
 }
