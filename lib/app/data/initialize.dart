@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:drift_flutter/drift_flutter.dart';
 import 'package:e1547/app/app.dart';
 import 'package:e1547/logs/logs.dart';
+import 'package:e1547/query/query.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:http_cache_drift_store/http_cache_drift_store.dart';
@@ -110,6 +111,12 @@ Future<AppStorage> initializeAppStorage({bool cache = true}) async {
     preferences: await SharedPreferences.getInstance(),
     temporaryFiles: temporaryFiles,
     httpCache: cache ? DriftCacheStore(databasePath: temporaryFiles) : null,
+    queryCache: CachedQuery.asNewInstance()
+      ..configFlutter(
+        config: const GlobalQueryConfigFlutter(
+          refetchDuration: Duration(minutes: 5),
+        ),
+      ),
     sqlite: AppDatabase(
       driftDatabase(
         name: 'app',

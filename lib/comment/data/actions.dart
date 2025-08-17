@@ -40,20 +40,16 @@ Future<bool> writeComment({
         title: Text('#$postId comment'),
         content: text ?? (comment?.body),
         onSubmitted: (text) async {
-          ScaffoldMessengerState messenger = ScaffoldMessenger.of(context);
+          final messenger = ScaffoldMessenger.of(context);
+          final domain = context.read<Domain>();
           if (text.isNotEmpty) {
             try {
               if (comment == null) {
-                await context.read<Domain>().comments.create(
-                  postId: postId,
-                  content: text,
-                );
+                await domain.comments.useCreate(postId: postId).mutate(text);
               } else {
-                await context.read<Domain>().comments.update(
-                  id: comment.id,
-                  postId: postId,
-                  content: text,
-                );
+                await domain.comments
+                    .useUpdate(id: comment.id, postId: postId)
+                    .mutate(text);
               }
             } on ClientException {
               return 'Failed to send comment!';

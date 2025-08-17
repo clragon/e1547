@@ -8,108 +8,61 @@ class CommentClient {
 
   final Dio dio;
 
-  Future<Comment> get({
-    required int id,
-    bool? force,
-    CancelToken? cancelToken,
-  }) async {
-    Map<String, dynamic> body = await dio
-        .get(
-          '/comments.json/$id.json',
-          options: forceOptions(force),
-          cancelToken: cancelToken,
-        )
-        .then((response) => response.data);
-
-    return E621Comment.fromJson(body);
-  }
+  Future<Comment> get({required int id, CancelToken? cancelToken}) => dio
+      .get(
+        '/comments/$id.json',
+        options: forceOptions(true),
+        cancelToken: cancelToken,
+      )
+      .then((response) => E621Comment.fromJson(response.data));
 
   Future<List<Comment>> page({
     int? page,
     int? limit,
     QueryMap? query,
-    bool? force,
     CancelToken? cancelToken,
-  }) async {
-    Object body = await dio
-        .get(
-          '/comments.json',
-          queryParameters: {'page': page, 'limit': limit, ...?query},
-          options: forceOptions(force),
-          cancelToken: cancelToken,
-        )
-        .then((response) => response.data);
+  }) => dio
+      .get(
+        '/comments.json',
+        queryParameters: {'page': page, 'limit': limit, ...?query}.toQuery(),
+        options: forceOptions(true),
+        cancelToken: cancelToken,
+      )
+      .then((response) {
+        if (response.data is List<dynamic>) {
+          return response.data.map<Comment>(E621Comment.fromJson).toList();
+        }
+        return [];
+      });
 
-    List<Comment> comments = [];
-    if (body is List<dynamic>) {
-      for (Map<String, dynamic> rawComment in body) {
-        comments.add(E621Comment.fromJson(rawComment));
-      }
-    }
-
-    return comments;
-  }
-
-  Future<List<Comment>> byPost({
-    required int id,
-    int? page,
-    int? limit,
-    bool? ascending,
-    bool? force,
-    CancelToken? cancelToken,
-  }) => this.page(
-    page: page,
-    limit: limit,
-    query: {
-      'group_by': 'comment',
-      'search[post_id]': id,
-      'search[order]': ascending ?? false ? 'id_asc' : 'id_desc',
-    }.toQuery(),
-    force: force,
-    cancelToken: cancelToken,
-  );
-
-  Future<void> create({required int postId, required String content}) async {
-    await dio.cache?.deleteFromPath(
-      RegExp(RegExp.escape('/comments.json')),
-      queryParams: {'search[post_id]': postId.toString()},
-    );
-    Map<String, dynamic> body = {
-      'comment[body]': content,
-      'comment[post_id]': postId,
-      'commit': 'Submit',
-    };
-
-    await dio.post('/comments.json', data: FormData.fromMap(body));
-  }
+  Future<void> create({required int postId, required String content}) =>
+      dio.post(
+        '/comments.json',
+        data: FormData.fromMap({
+          'comment[body]': content,
+          'comment[post_id]': postId,
+        }),
+      );
 
   Future<void> update({
     required int id,
     required int postId,
     required String content,
-  }) async {
-    await dio.cache?.deleteFromPath(
-      RegExp(RegExp.escape('/comments.json')),
-      queryParams: {'search[post_id]': postId.toString()},
-    );
-    await dio.cache?.deleteFromPath(
-      RegExp(RegExp.escape('/comments/$id.json')),
-    );
-    Map<String, dynamic> body = {'comment[body]': content, 'commit': 'Submit'};
+  }) => dio.patch(
+    '/comments/$id.json',
+    data: FormData.fromMap({'comment[body]': content}),
+  );
 
-    await dio.patch('/comments/$id.json', data: FormData.fromMap(body));
-  }
-
-  Future<void> vote({
+  Future<VoteResult> vote({
     required int id,
     required bool upvote,
     required bool replace,
-  }) async {
-    await dio.post(
-      '/comments/$id/votes.json',
-      queryParameters: {'score': upvote ? 1 : -1, 'no_unvote': replace},
-    );
-  }
+  }) => dio
+      .post(
+        '/comments/$id/votes.json',
+        queryParameters: {'score': upvote ? 1 : -1, 'no_unvote': replace},
+      )
+      .then((response) => VoteResult.fromJson(response.data));
 }
 
 extension E621Comment on Comment {
@@ -122,7 +75,9 @@ extension E621Comment on Comment {
       updatedAt: pick('updated_at').asDateTimeOrThrow(),
       creatorId: pick('creator_id').asIntOrThrow(),
       creatorName: pick('creator_name').asStringOrThrow(),
-      vote: VoteInfo(score: pick('score').asIntOrThrow()),
+      vote: pick(
+        'score',
+      ).letOrNull((pick) => VoteInfo(score: pick.asIntOrThrow())),
       warning: pick(
         'warning_type',
       ).letOrNull((pick) => WarningType.values.asNameMap()[pick.asString()]!),
