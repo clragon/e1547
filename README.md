@@ -73,6 +73,12 @@ or
 2. Open it on your Android device with a file manager
 3. Click install
 
+#### Which APK should I download?
+
+- New phone (2019+) -> `e1547-arm64.apk`
+- Old phone -> `e1547-armv7.apk`
+- Doesn't work? -> `e1547-universal.apk`
+
 ### Installing on iOS
 
 The app is not available in the AppStore.
