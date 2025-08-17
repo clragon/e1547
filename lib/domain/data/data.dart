@@ -6,4 +6,5 @@ export 'dio.dart';
 export 'domain.dart';
 export 'factory.dart';
 export 'newline.dart';
+export 'persona.dart';
 export 'status.dart';

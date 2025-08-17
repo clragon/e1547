@@ -27,6 +27,7 @@ Future<T> rateLimit<T>(Future<T> call, [Duration? duration]) => Future.wait([
   Future.delayed(duration ?? const Duration(milliseconds: 500)),
 ]).then((value) => value[0]);
 
+// TODO: phase this out
 Options forceOptions(bool? force) {
   return ClientCacheConfig(
     policy: switch (force) {

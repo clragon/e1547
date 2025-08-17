@@ -2,6 +2,7 @@ import 'package:drift/drift.dart';
 import 'package:e1547/follow/data/database.dart';
 import 'package:e1547/history/history.dart';
 import 'package:e1547/identity/data/database.dart';
+import 'package:e1547/query/query.dart';
 import 'package:e1547/shared/shared.dart';
 import 'package:e1547/traits/traits.dart';
 import 'package:notified_preferences/notified_preferences.dart';
@@ -70,16 +71,19 @@ class AppStorage {
     required this.preferences,
     required this.temporaryFiles,
     required this.httpCache,
+    required this.queryCache,
     required this.sqlite,
   });
 
   final SharedPreferences preferences;
   final String temporaryFiles;
   final CacheStore? httpCache;
+  final CachedQuery queryCache;
   final AppDatabase sqlite;
 
   Future<void> close() async {
     await httpCache?.close();
+    queryCache.deleteCache();
     await sqlite.close();
   }
 }
