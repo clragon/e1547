@@ -15,9 +15,10 @@ class Dimmed extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return IconTheme(
-      data: Theme.of(
-        context,
-      ).iconTheme.copyWith(color: dimTextColor(context, opacity)),
+      data: Theme.of(context).iconTheme.copyWith(
+        color: dimTextColor(context, opacity),
+        size: smallIconSize(context),
+      ),
       child: DefaultTextStyle.merge(
         style: TextStyle(color: dimTextColor(context, opacity)),
         child: child,
