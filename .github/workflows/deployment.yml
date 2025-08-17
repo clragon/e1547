@@ -81,14 +81,28 @@ jobs:
 
       - name: package release
         run: |
-          mv build/app/outputs/flutter-apk/app-release.apk app-release.apk
+          mv build/app/outputs/flutter-apk/app-universal-release.apk app-universal-release.apk
+          mv build/app/outputs/flutter-apk/app-arm64-v8a-release.apk app-arm64-v8a-release.apk
+          mv build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk app-armeabi-v7a-release.apk
           mv build/app/outputs/bundle/release/app-release.aab app-release.aab
 
-      - name: upload APK to artifacts
+      - name: upload Universal APK to artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: release-apk
-          path: app-release.apk
+          name: release-apk-universal
+          path: app-universal-release.apk
+
+      - name: upload ARM64 APK to artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-apk-arm64
+          path: app-arm64-v8a-release.apk
+
+      - name: upload ARMv7 APK to artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-apk-armv7
+          path: app-armeabi-v7a-release.apk
 
       - name: upload AAB to artifacts
         uses: actions/upload-artifact@v4
@@ -201,10 +215,20 @@ jobs:
             CHANGELOG.md
             fastlane
 
-      - name: download APK from artifacts
+      - name: download Universal APK from artifacts
         uses: actions/download-artifact@v4
         with:
-          name: release-apk
+          name: release-apk-universal
+
+      - name: download ARM64 APK from artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: release-apk-arm64
+
+      - name: download ARMv7 APK from artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: release-apk-armv7
 
       - name: download AAB from artifacts
         uses: actions/download-artifact@v4
@@ -220,7 +244,9 @@ jobs:
         run: |
           mkdir -p build/app/outputs/bundle/release
           mv app-release.aab build/app/outputs/bundle/release/
-          mv app-release.apk e1547.apk
+          mv app-universal-release.apk e1547-universal.apk
+          mv app-arm64-v8a-release.apk e1547-arm64.apk
+          mv app-armeabi-v7a-release.apk e1547-armv7.apk
           mv Runner.ipa e1547.ipa
 
       - name: configure playstore keys
@@ -242,5 +268,7 @@ jobs:
           name: ${{ env.RELEASE_TITLE }}
           body_path: ./fastlane/metadata/android/en-US/changelogs/${{ env.BUILD_NUMBER }}.txt
           files: |
-            e1547.apk
+            e1547-universal.apk
+            e1547-arm64.apk
+            e1547-armv7.apk
             e1547.ipa
