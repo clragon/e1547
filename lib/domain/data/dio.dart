@@ -6,6 +6,7 @@ import 'package:e1547/identity/identity.dart';
 import 'package:e1547/logs/logs.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:e1547/shared/shared.dart';
+import 'package:native_dio_adapter/native_dio_adapter.dart';
 
 /// Create a default [Dio] instance for the given [Identity].
 /// Includes user agent, logging and caching.
@@ -21,6 +22,9 @@ Dio createDefaultDio(Identity identity, {CacheStore? cache}) {
       connectTimeout: const Duration(seconds: 30),
     ),
   );
+
+  dio.httpClientAdapter = NativeAdapter();
+
   dio.interceptors.add(NewlineReplaceInterceptor());
   dio.interceptors.add(LoggingDioInterceptor());
   if (cache != null) {

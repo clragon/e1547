@@ -8,10 +8,12 @@ import 'package:e1547/settings/settings.dart';
 import 'package:e1547/shared/shared.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:native_dio_adapter/native_dio_adapter.dart';
 import 'package:pub_semver/pub_semver.dart';
 
 class AppInfoClient {
   AppInfoClient() {
+    _dio.httpClientAdapter = NativeAdapter();
     _dio.interceptors.add(LoggingDioInterceptor());
     _dio.interceptors.add(
       ClientCacheInterceptor(options: ClientCacheConfig(store: cache)),
