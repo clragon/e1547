@@ -1360,7 +1360,7 @@ packages:
     source: hosted
     version: "5.0.0"
   runtime_type:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: runtime_type
       sha256: "00e431718064e4512012a46e74ed94977ea4d86d83ae416e635092c50ad1397e"
