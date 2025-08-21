@@ -1,6 +1,8 @@
 import 'package:collection/collection.dart';
 import 'package:runtime_type/runtime_type.dart';
 
+typedef ProtoMap = Map<String, Object?>;
+
 typedef QueryMap = Map<String, String>;
 
 extension QueryMapping on Map<String, dynamic> {
@@ -102,6 +104,12 @@ extension QueryMapHandling on QueryMap {
   List<int>? getIntList(String key) {
     final stringList = getStringList(key);
     return stringList?.map(int.tryParse).whereType<int>().toList();
+  }
+
+  T? getEnum<T extends Enum>(String key, List<T> values) {
+    final value = getString(key);
+    if (value == null) return null;
+    return values.asNameMap()[value];
   }
 
   T? get<T>(String key) {

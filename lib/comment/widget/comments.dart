@@ -13,14 +13,18 @@ class PostCommentsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final domain = context.watch<Domain>();
     return FilterControllerProvider(
-      create: (_) => CommentFilterController(domain: domain),
+      create: (_) => CommentFilter(
+        domain: domain,
+        value: {
+          CommentFilter.keys.postId: postId,
+          CommentFilter.keys.groupBy: CommentGroupBy.comment,
+          CommentFilter.keys.order: CommentOrder.id_asc,
+        }.toQuery(),
+      ),
       keys: (_) => [domain],
       builder: (context, _) {
-        final controller = context.watch<CommentFilterController>();
-        final query = domain.comments.useByPost(
-          postId: postId,
-          ascending: controller.orderByOldest,
-        );
+        final controller = context.watch<CommentFilter>();
+        final query = domain.comments.usePage(query: controller.request);
         return PagedQueryBuilder(
           query: query,
           getItem: (id) => domain.comments.useGet(id: id, vendored: true),
@@ -50,14 +54,15 @@ class PostCommentsPage extends StatelessWidget {
                     builder: (context) => SwitchListTile(
                       secondary: const Icon(Icons.sort),
                       title: const Text('Comment order'),
-                      subtitle: Text(
-                        controller.orderByOldest
-                            ? 'oldest first'
-                            : 'newest first',
-                      ),
-                      value: controller.orderByOldest,
+                      subtitle: Text(switch (controller.order) {
+                        CommentOrder.id_asc => 'oldest first',
+                        CommentOrder.id_desc => 'newest first',
+                      }),
+                      value: controller.order == CommentOrder.id_asc,
                       onChanged: (value) {
-                        controller.orderByOldest = value;
+                        controller.order = value
+                            ? CommentOrder.id_asc
+                            : CommentOrder.id_desc;
                         Scaffold.of(context).closeEndDrawer();
                       },
                     ),
