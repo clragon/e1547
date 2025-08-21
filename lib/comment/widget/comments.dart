@@ -24,8 +24,9 @@ class _PostCommentsPageState extends State<PostCommentsPage> {
       ascending: orderByOldest,
     );
 
-    return QueryBuilder(
+    return PagedQueryBuilder(
       query: query,
+      getItem: (id) => domain.comments.useGet(id: id, vendored: true),
       builder: (context, state) => AdaptiveScaffold(
         appBar: DefaultAppBar(
           title: Text('#${widget.postId} comments'),
@@ -62,18 +63,15 @@ class _PostCommentsPageState extends State<PostCommentsPage> {
         ),
         body: PullToRefresh(
           onRefresh: query.invalidate,
-          child: PagedListView<int, int>(
+          child: PagedListView<int, Comment>(
             primary: true,
             padding: defaultActionListPadding,
             state: state.paging,
             fetchNextPage: query.getNextPage,
             builderDelegate: defaultPagedChildBuilderDelegate(
               onRetry: query.getNextPage,
-              itemBuilder: (context, commentId, index) => QueryBuilder(
-                query: domain.comments.useGet(id: commentId, vendored: true),
-                builder: (context, commentState) =>
-                    CommentTile(comment: commentState.data!),
-              ),
+              itemBuilder: (context, comment, index) =>
+                  CommentTile(comment: comment),
               onEmpty: const Text('No comments'),
               onError: const Text('Failed to load comments'),
             ),
