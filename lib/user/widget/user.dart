@@ -308,11 +308,11 @@ class _UserProfileActions extends StatelessWidget {
           value: () {
             if (blocked) {
               traits.value = traits.value.copyWith(
-                denylist: traits.value.denylist..remove(userTag),
+                denylist: traits.value.denylist.toList()..remove(userTag),
               );
             } else {
               traits.value = traits.value.copyWith(
-                denylist: traits.value.denylist..add(userTag),
+                denylist: traits.value.denylist.toList()..add(userTag),
               );
             }
           },
