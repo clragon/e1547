@@ -16,9 +16,9 @@ class PostCommentsPage extends StatelessWidget {
       create: (_) => CommentFilter(
         domain: domain,
         value: {
-          CommentFilter.keys.postId: postId,
-          CommentFilter.keys.groupBy: CommentGroupBy.comment,
-          CommentFilter.keys.order: CommentOrder.id_asc,
+          CommentFilter.postIdFilter.tag: postId,
+          CommentFilter.groupByFilter.tag: CommentGroupBy.comment,
+          CommentFilter.orderFilter.tag: CommentOrder.id_asc,
         }.toQuery(),
       ),
       keys: (_) => [domain],

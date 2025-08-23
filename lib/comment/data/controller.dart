@@ -2,7 +2,6 @@ import 'package:collection/collection.dart';
 import 'package:e1547/comment/comment.dart';
 import 'package:e1547/domain/domain.dart';
 import 'package:e1547/query/query.dart';
-
 import 'package:e1547/tag/tag.dart';
 
 enum CommentGroupBy { post, comment }
@@ -15,34 +14,65 @@ class CommentFilter extends FilterController<Comment> {
 
   final Domain domain;
 
-  static const keys = (
-    groupBy: 'group_by',
-    postId: 'search[post_id]',
-    body: 'search[body_matches]',
-    creator: 'search[creator_name]',
-    postTags: 'search[post_tags_match]',
-    order: 'search[order]',
+  static final groupByFilter = EnumFilterTag<CommentGroupBy>(
+    tag: 'group_by',
+    name: 'Group by',
+    values: CommentGroupBy.values,
+    nameMapper: (value) => switch (value) {
+      CommentGroupBy.post => 'Post',
+      CommentGroupBy.comment => 'Comment',
+    },
+  );
+
+  static const postIdFilter = NumberFilterTag(
+    tag: 'search[post_id]',
+    name: 'Post ID',
+  );
+
+  static const bodyFilter = TextFilterTag(
+    tag: 'search[body_matches]',
+    name: 'Body contains',
+  );
+
+  static const creatorFilter = TextFilterTag(
+    tag: 'search[creator_name]',
+    name: 'Creator',
+  );
+
+  static const postTagsFilter = TextFilterTag(
+    tag: 'search[post_tags_match]',
+    name: 'Post tags',
+  );
+
+  static final orderFilter = EnumFilterTag<CommentOrder>(
+    tag: 'search[order]',
+    name: 'Sort by',
+    values: CommentOrder.values,
+    nameMapper: (value) => switch (value) {
+      CommentOrder.id_desc => 'Newest first',
+      CommentOrder.id_asc => 'Oldest first',
+    },
   );
 
   CommentGroupBy get groupBy =>
-      getEnum(keys.groupBy, CommentGroupBy.values) ?? CommentGroupBy.post;
-  set groupBy(CommentGroupBy value) => set(keys.groupBy, value);
+      getFilterEnum(groupByFilter) ?? CommentGroupBy.post;
+  set groupBy(CommentGroupBy value) => setFilterEnum(groupByFilter, value);
 
-  int? get postId => get(keys.postId);
-  set postId(int? value) => set(keys.postId, value);
+  int? get postId => getFilter(postIdFilter);
+  set postId(int? value) => setFilter(postIdFilter, value);
 
-  String? get body => get(keys.body);
-  set body(String? value) => set(keys.body, value);
+  String? get body => getFilter(bodyFilter);
+  set body(String? value) => setFilter(bodyFilter, value);
 
-  String? get creator => get(keys.creator);
-  set creator(String? value) => set(keys.creator, value);
+  String? get creator => getFilter(creatorFilter);
+  set creator(String? value) => setFilter(creatorFilter, value);
 
-  List<String>? get postTags => TagMap(get<String>(keys.postTags)).tags;
-  set postTags(List<String>? value) => set(keys.postTags, value?.join(' '));
+  List<String>? get postTags => TagMap(getFilter<String>(postTagsFilter)).tags;
+  set postTags(List<String>? value) =>
+      setFilter(postTagsFilter, value?.join(' '));
 
-  CommentOrder get order =>
-      getEnum(keys.order, CommentOrder.values) ?? CommentOrder.id_desc;
-  set order(CommentOrder value) => set(keys.order, value);
+  CommentOrder get order => getFilterEnum(orderFilter) ?? CommentOrder.id_desc;
+  set order(CommentOrder value) => setFilterEnum(orderFilter, value);
 
   @override
   List<List<Comment>> filter(List<List<Comment>> items) => items

@@ -12,6 +12,7 @@ class FilterControllerProvider<T extends FilterController<R>, R>
     super.keys,
   }) : super(
          builder: (context, child) =>
+             // Also provide the generic version to allow [QueryFilter] to access the controller
              ListenableProvider<FilterController<R>>.value(
                value: context.read<T>(),
                builder: builder,
@@ -31,13 +32,14 @@ class QueryFilter<T, K> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = context.watch<FilterController<T>>();
+    final controller = context.watch<FilterController<T>?>();
     return builder(
       context,
       state.data != null
           ? state.copyWithData(
               InfiniteQueryData(
-                pages: controller.filter(state.data!.pages),
+                pages:
+                    controller?.filter(state.data!.pages) ?? state.data!.pages,
                 pageParams: state.data!.pageParams,
               ),
             )

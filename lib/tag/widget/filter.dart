@@ -144,6 +144,7 @@ class FilterList extends StatelessWidget {
       child: switch (config) {
         TextFilterTag() => TextFilter(state.apply(config)),
         NumberRangeFilterTag() => NumberRangeFilter(state.apply(config)),
+        NumberFilterTag() => NumberFilter(state.apply(config)),
         ChoiceFilterTag() => ChoiceFilter(state.apply(config)),
         ToggleFilterTag() => ToggleFilter(state.apply(config)),
         BuilderFilterTag() => BuilderTagFilter(state.apply(config)),
@@ -330,6 +331,27 @@ class _TextFilterState extends State<TextFilter> {
   }
 }
 
+class NumberFilter extends StatelessWidget {
+  const NumberFilter(this.state, {super.key});
+
+  final FilterTagState<NumberFilterTag> state;
+
+  @override
+  Widget build(BuildContext context) {
+    FilterTagThemeData theme = FilterTagTheme.of(context);
+    return TextFormField(
+      key: Key('FilterList/${state.filter.tag}'),
+      decoration: theme.decoration.copyWith(
+        labelText: state.filter.name,
+        suffixIcon: mergeSuffixIcons(theme.decoration, state.filter.icon),
+      ),
+      keyboardType: TextInputType.number,
+      initialValue: state.value,
+      onChanged: (value) => state.onChanged(value.isNotEmpty ? value : null),
+    );
+  }
+}
+
 class NumberRangeFilter extends StatelessWidget {
   const NumberRangeFilter(this.state, {super.key});
 
@@ -382,7 +404,7 @@ class ChoiceFilter extends StatelessWidget {
     }
     return DropdownButtonFormField<String>(
       key: Key('FilterList/${state.filter.tag}'),
-      value: value,
+      initialValue: value,
       decoration: theme.decoration.copyWith(labelText: state.filter.name),
       icon: state.filter.icon,
       isExpanded: true,

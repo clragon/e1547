@@ -5,7 +5,7 @@ typedef ProtoMap = Map<String, Object?>;
 
 typedef QueryMap = Map<String, String>;
 
-extension QueryMapping on Map<String, dynamic> {
+extension QueryMapping on ProtoMap {
   String? _serialize(Object? value) {
     if (value == null) return null;
     switch (value) {
