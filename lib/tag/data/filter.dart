@@ -52,10 +52,32 @@ class TextFilterTag extends FilterTag {
   final Widget? icon;
 }
 
+/// A filter that has a number as value.
+///
+/// This is represented by a number input field.
+class NumberFilterTag extends FilterTag {
+  const NumberFilterTag({
+    required super.tag,
+    super.name,
+    this.min,
+    this.max,
+    this.icon,
+  });
+
+  /// The minimum value of the number.
+  final int? min;
+
+  /// The maximum value of the number.
+  final int? max;
+
+  /// The icon of this filter.
+  final Widget? icon;
+}
+
 /// A filter that is tied to a number or range of numbers.
 ///
 /// This is represented by a range dialog.
-class NumberRangeFilterTag extends FilterTag {
+class NumberRangeFilterTag extends NumberFilterTag {
   const NumberRangeFilterTag({
     required super.tag,
     super.name,
@@ -69,9 +91,11 @@ class NumberRangeFilterTag extends FilterTag {
   /// The minimum value of the number.
   ///
   /// Defaults to 0.
+  @override
   final int? min;
 
   /// The maximum value of the number.
+  @override
   final int max;
 
   /// The number of divisions of the slider.
@@ -81,6 +105,7 @@ class NumberRangeFilterTag extends FilterTag {
   final NumberRange? initial;
 
   /// The icon of this filter.
+  @override
   final Widget? icon;
 }
 
@@ -118,6 +143,32 @@ class ChoiceFilterTag extends FilterTag {
 
   /// The icon of this filter.
   final Widget? icon;
+}
+
+/// A specialized choice filter for enums.
+///
+/// This provides type-safe enum handling with convenient get/set methods.
+class EnumFilterTag<T extends Enum> extends ChoiceFilterTag {
+  EnumFilterTag({
+    required super.tag,
+    super.name,
+    required this.values,
+    super.icon,
+    this.nameMapper,
+  }) : super(
+         options: values.map((value) {
+           return ChoiceFilterTagValue(
+             value: value.name,
+             name: nameMapper?.call(value) ?? value.name,
+           );
+         }).toList(),
+       );
+
+  /// The enum values for this filter
+  final List<T> values;
+
+  /// Optional function to map enum values to display names
+  final String? Function(T)? nameMapper;
 }
 
 /// A toggle filter value.
