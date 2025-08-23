@@ -5,6 +5,13 @@ import 'package:flutter/material.dart';
 
 typedef GetItemQuery<T> = Query<T> Function(int id);
 
+typedef PageQueryBuilderCallback<T, Arg> =
+    Widget Function(
+      BuildContext context,
+      InfiniteQueryStatus<List<T>, Arg> state,
+      InfiniteQuery<List<Arg>, Arg> query,
+    );
+
 class PagedQueryBuilder<T, Arg> extends StatefulWidget {
   const PagedQueryBuilder({
     super.key,
