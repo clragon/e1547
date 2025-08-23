@@ -7,12 +7,7 @@ import 'package:flutter/material.dart';
 class CommentPageQueryBuilder extends StatelessWidget {
   const CommentPageQueryBuilder({super.key, required this.builder});
 
-  final Widget Function(
-    BuildContext context,
-    InfiniteQueryStatus<List<Comment>, int> state,
-    InfiniteQuery<List<int>, int> query,
-  )
-  builder;
+  final PageQueryBuilderCallback<Comment, int> builder;
 
   @override
   Widget build(BuildContext context) {
