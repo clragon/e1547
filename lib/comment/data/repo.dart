@@ -56,39 +56,6 @@ class CommentRepo {
             page(page: key, query: query).then(_commentCache.savePage),
       );
 
-  QueryMap _byPostQuery({
-    required int id,
-    int? page,
-    int? limit,
-    bool? ascending,
-  }) => {
-    'group_by': 'comment',
-    'search': {
-      'post_id': id,
-      'order': ascending ?? false ? 'id_asc' : 'id_desc',
-    },
-  }.toQuery();
-
-  Future<List<Comment>> byPost({
-    required int id,
-    int? page,
-    int? limit,
-    bool? ascending,
-    CancelToken? cancelToken,
-  }) => client.page(
-    page: page,
-    limit: limit,
-    query: _byPostQuery(id: id, page: page, limit: limit, ascending: ascending),
-    cancelToken: cancelToken,
-  );
-
-  InfiniteQuery<List<int>, int> useByPost({
-    required int postId,
-    bool? ascending,
-  }) => usePage(
-    query: _byPostQuery(id: postId, ascending: ascending),
-  );
-
   Future<void> create({required int postId, required String content}) =>
       client.create(postId: postId, content: content);
 
@@ -96,8 +63,6 @@ class CommentRepo {
     queryFn: (content) => create(postId: postId, content: content),
     onSuccess: (data, content) {
       // TODO: this needs to invalidate all queries with post_id
-      useByPost(postId: postId).invalidate();
-      useByPost(postId: postId, ascending: true).invalidate();
     },
   );
 
