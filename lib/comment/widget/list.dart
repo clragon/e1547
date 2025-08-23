@@ -32,6 +32,7 @@ class SliverCommentList extends StatelessWidget {
       state: state.paging,
       fetchNextPage: query.getNextPage,
       builderDelegate: defaultPagedChildBuilderDelegate(
+        onRetry: query.getNextPage,
         itemBuilder: (context, item, index) => CommentTile(comment: item),
         onEmpty: const Text('No comments'),
         onError: const Text('Failed to load comments'),
