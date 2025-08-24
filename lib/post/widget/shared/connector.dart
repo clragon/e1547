@@ -72,10 +72,10 @@ class PostsIdConnector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    PostController? controller = context.watch<PostController>();
+    PostController? controller = context.watch<PostController?>();
     return SubValue(
-      create: () => controller.items?.firstWhereOrNull((e) => e.id == id),
-      keys: [controller.items.hashCode],
+      create: () => controller?.items?.firstWhereOrNull((e) => e.id == id),
+      keys: [controller?.items.hashCode],
       builder: builder,
     );
   }
