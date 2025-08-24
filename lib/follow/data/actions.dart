@@ -57,11 +57,12 @@ extension Updating on Follow {
       updated = updated.copyWith(unseen: 0);
     }
     if (post != null) {
+      final thumbnail = post.sample ?? post.preview;
       if (updated.latest == null || updated.latest! < post.id) {
-        updated = updated.copyWith(latest: post.id, thumbnail: post.sample);
+        updated = updated.copyWith(latest: post.id, thumbnail: thumbnail);
       } else {
-        if (updated.thumbnail != post.sample) {
-          updated = updated.copyWith(thumbnail: post.sample);
+        if (updated.thumbnail != thumbnail) {
+          updated = updated.copyWith(thumbnail: thumbnail);
         }
       }
     }
