@@ -20,8 +20,12 @@ class QueryBridge<T, K> {
   Query<T>? _getQuery(K id) => cache.getQuery<Query<T>>([baseKey, id]);
 
   // TODO: delete this once https://github.com/D-James-GH/cached_query/issues/75 is resolved
-  Query<T> _createQuery(K id) =>
-      Query<T>(cache: cache, key: [baseKey, id], queryFn: () => fetch(id));
+  Query<T> _createQuery(K id) => Query<T>(
+    cache: cache,
+    key: [baseKey, id],
+    queryFn: () => fetch(id),
+    config: getConfig(vendored: true),
+  );
 
   static ShouldFetch<T> vendorFetch<T>(bool? vendored) =>
       (key, data, createdAt) => !(vendored ?? false);
