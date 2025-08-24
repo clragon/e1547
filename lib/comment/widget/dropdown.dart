@@ -24,13 +24,13 @@ class CommentListDropdown extends StatelessWidget {
         ),
         PopupMenuTile(
           icon: Icons.sort,
-          title: controller.order == CommentOrder.id_asc
+          title: controller.order == CommentOrder.oldest
               ? 'Newest first'
               : 'Oldest first',
           value: () =>
-              controller.order = controller.order == CommentOrder.id_asc
-              ? CommentOrder.id_desc
-              : CommentOrder.id_asc,
+              controller.order = controller.order == CommentOrder.oldest
+              ? CommentOrder.newest
+              : CommentOrder.oldest,
         ),
         if (postId != null)
           PopupMenuTile(

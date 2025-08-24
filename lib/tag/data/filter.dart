@@ -145,6 +145,11 @@ class ChoiceFilterTag extends FilterTag {
   final Widget? icon;
 }
 
+class EnumFilterNullTagValue extends ChoiceFilterTagValue {
+  const EnumFilterNullTagValue({String? name})
+    : super(value: null, name: name ?? 'All');
+}
+
 /// A specialized choice filter for enums.
 ///
 /// This provides type-safe enum handling with convenient get/set methods.
@@ -154,21 +159,33 @@ class EnumFilterTag<T extends Enum> extends ChoiceFilterTag {
     super.name,
     required this.values,
     super.icon,
+    this.valueMapper,
     this.nameMapper,
+    this.undefinedOption,
   }) : super(
-         options: values.map((value) {
-           return ChoiceFilterTagValue(
-             value: value.name,
-             name: nameMapper?.call(value) ?? value.name,
-           );
-         }).toList(),
+         options: [
+           if (undefinedOption != null) undefinedOption,
+           ...values.map((value) {
+             return ChoiceFilterTagValue(
+               value: valueMapper?.call(value) ?? value.name,
+               name: nameMapper?.call(value) ?? value.name,
+             );
+           }),
+         ],
        );
 
   /// The enum values for this filter
   final List<T> values;
 
+  /// Optional function to map enum values to API values
+  /// If not provided, uses enum.name as the value
+  final String Function(T)? valueMapper;
+
   /// Optional function to map enum values to display names
   final String? Function(T)? nameMapper;
+
+  /// Optional choice for the value `null`
+  final EnumFilterNullTagValue? undefinedOption;
 }
 
 /// A toggle filter value.
@@ -198,6 +215,15 @@ class ToggleFilterTag extends FilterTag {
   /// A short description of this filter.
   /// Shown below the title.
   final String? description;
+}
+
+class BooleanFilterTag extends ToggleFilterTag {
+  const BooleanFilterTag({
+    required super.tag,
+    super.name,
+    super.description,
+    bool tristate = false,
+  }) : super(enabled: 'true', disabled: tristate ? 'false' : null);
 }
 
 extension FilterStateConfigExtension on FilterConfigState {
