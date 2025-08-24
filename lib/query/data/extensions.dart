@@ -11,12 +11,31 @@ extension FilterControllerExtensions<T> on FilterController<T> {
   void setFilter<V>(FilterTag filter, V? val) => set(filter.tag, val);
 
   /// Get an enum value using an EnumFilterTag configuration
-  E? getFilterEnum<E extends Enum>(EnumFilterTag<E> filter) =>
-      getEnum<E>(filter.tag, filter.values);
+  E? getFilterEnum<E extends Enum>(EnumFilterTag<E> filter) {
+    final value = get<String>(filter.tag);
+    if (value == null) return null;
+
+    if (filter.valueMapper != null) {
+      for (final enumValue in filter.values) {
+        if (filter.valueMapper!(enumValue) == value) {
+          return enumValue;
+        }
+      }
+      return null;
+    }
+
+    return filter.values.asNameMap()[value];
+  }
 
   /// Set an enum value using an EnumFilterTag configuration
-  void setFilterEnum<E extends Enum>(EnumFilterTag<E> filter, E? val) =>
-      set(filter.tag, val);
+  void setFilterEnum<E extends Enum>(EnumFilterTag<E> filter, E? val) {
+    if (val == null) {
+      set(filter.tag, null);
+    } else {
+      final mappedValue = filter.valueMapper?.call(val) ?? val.name;
+      set(filter.tag, mappedValue);
+    }
+  }
 
   /// Get a boolean value using a ToggleFilterTag configuration
   bool? getFilterBool(ToggleFilterTag filter) {

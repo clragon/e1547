@@ -60,7 +60,7 @@ class SliverPostCommentSection extends StatelessWidget {
         value: {
           CommentFilter.postIdFilter.tag: postId,
           CommentFilter.groupByFilter.tag: CommentGroupBy.comment,
-          CommentFilter.orderFilter.tag: CommentOrder.id_asc,
+          CommentFilter.orderFilter.tag: CommentOrder.oldest,
         }.toQuery(),
       ),
       keys: (_) => [domain],

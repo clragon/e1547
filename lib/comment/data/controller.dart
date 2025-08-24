@@ -6,7 +6,14 @@ import 'package:e1547/tag/tag.dart';
 
 enum CommentGroupBy { post, comment }
 
-enum CommentOrder { id_desc, id_asc }
+enum CommentOrder {
+  newest('id_desc'),
+  oldest('id_asc');
+
+  const CommentOrder(this.value);
+
+  final String value;
+}
 
 class CommentFilter extends FilterController<Comment> {
   CommentFilter({ProtoMap? value, required this.domain})
@@ -48,9 +55,10 @@ class CommentFilter extends FilterController<Comment> {
     tag: 'search[order]',
     name: 'Sort by',
     values: CommentOrder.values,
+    valueMapper: (value) => value.value,
     nameMapper: (value) => switch (value) {
-      CommentOrder.id_desc => 'Newest first',
-      CommentOrder.id_asc => 'Oldest first',
+      CommentOrder.newest => 'Newest first',
+      CommentOrder.oldest => 'Oldest first',
     },
   );
 
@@ -71,7 +79,7 @@ class CommentFilter extends FilterController<Comment> {
   set postTags(List<String>? value) =>
       setFilter(postTagsFilter, value?.join(' '));
 
-  CommentOrder get order => getFilterEnum(orderFilter) ?? CommentOrder.id_desc;
+  CommentOrder get order => getFilterEnum(orderFilter) ?? CommentOrder.newest;
   set order(CommentOrder value) => setFilterEnum(orderFilter, value);
 
   @override
