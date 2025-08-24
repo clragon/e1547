@@ -213,7 +213,7 @@ class HistoryClient with Disposable {
   List<String> _getThumbnails(List<Post>? posts) =>
       posts
           ?.whereNot((e) => e.isDeniedBy(traits.value.denylist))
-          .map((e) => e.sample)
+          .map((e) => e.sample ?? e.preview)
           .nonNulls
           .take(4)
           .toList() ??
