@@ -42,10 +42,10 @@ extension E621Pool on Pool {
     (pick) => Pool(
       id: pick('id').asIntOrThrow(),
       name: pick('name').asStringOrThrow(),
+      description: pick('description').asStringOrThrow(),
       createdAt: pick('created_at').asDateTimeOrThrow(),
       updatedAt: pick('updated_at').asDateTimeOrThrow(),
-      description: pick('description').asStringOrThrow(),
-      postIds: pick('post_ids').asListOrThrow((pick) => pick.asIntOrThrow()),
+      postIds: pick('post_ids').asListOrThrow((e) => e.asIntOrThrow()).toList(),
       postCount: pick('post_count').asIntOrThrow(),
       active: pick('is_active').asBoolOrThrow(),
     ),

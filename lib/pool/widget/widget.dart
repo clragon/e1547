@@ -1,7 +1,10 @@
+export 'fab.dart';
 export 'info.dart';
-export 'input.dart';
+export 'list.dart';
 export 'loading.dart';
 export 'pool.dart';
-export 'pools.dart';
 export 'prompt.dart';
+export 'query.dart';
+export 'search.dart';
+export 'thumbnails.dart';
 export 'tile.dart';

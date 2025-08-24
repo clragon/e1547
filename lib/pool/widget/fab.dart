@@ -2,78 +2,31 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:e1547/app/app.dart';
 import 'package:e1547/domain/domain.dart';
 import 'package:e1547/history/history.dart';
-import 'package:e1547/pool/data/controller.dart';
+import 'package:e1547/pool/pool.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/shared/shared.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
-class PoolsPageFloatingActionButton extends StatelessWidget {
-  const PoolsPageFloatingActionButton({super.key, required this.controller});
-
-  final PoolController controller;
+class PoolsPageFab extends StatelessWidget {
+  const PoolsPageFab({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final controller = context.watch<PoolFilter>();
     return SearchPromptFloatingActionButton(
       tags: controller.query,
       onSubmit: (value) => controller.query = value,
       filters: [
-        WrapperFilterConfig(
-          wrapper: (value) => 'search[$value]',
-          unwrapper: (value) => value.substring(7, value.length - 1),
+        PrimaryFilterConfig(
+          filter: PoolNameFilterTag(tag: PoolFilter.nameFilter.tag),
           filters: [
-            PrimaryFilterConfig(
-              filter: PoolNameFilterTag(tag: 'name_matches'),
-              filters: const [
-                TextFilterTag(
-                  tag: 'description_matches',
-                  name: 'Description',
-                  icon: Icon(Icons.description),
-                ),
-                TextFilterTag(
-                  tag: 'creator_name',
-                  name: 'Creator',
-                  icon: Icon(Icons.person),
-                ),
-                ToggleFilterTag(
-                  tag: 'is_active',
-                  name: 'Active',
-                  enabled: 'true',
-                  disabled: 'false',
-                  description: 'Is active',
-                ),
-                ChoiceFilterTag(
-                  tag: 'category',
-                  name: 'Category',
-                  icon: Icon(Icons.category),
-                  options: [
-                    ChoiceFilterTagValue(value: null, name: 'Default'),
-                    ChoiceFilterTagValue(value: 'series', name: 'Series'),
-                    ChoiceFilterTagValue(
-                      value: 'collection',
-                      name: 'Collection',
-                    ),
-                  ],
-                ),
-                ChoiceFilterTag(
-                  tag: 'order',
-                  name: 'Sort by',
-                  icon: Icon(Icons.sort),
-                  options: [
-                    ChoiceFilterTagValue(value: null, name: 'Default'),
-                    ChoiceFilterTagValue(value: 'name', name: 'Name'),
-                    ChoiceFilterTagValue(value: 'created_at', name: 'Created'),
-                    ChoiceFilterTagValue(value: 'updated_at', name: 'Updated'),
-                    ChoiceFilterTagValue(
-                      value: 'post_count',
-                      name: 'Post count',
-                    ),
-                  ],
-                ),
-              ],
-            ),
+            PoolFilter.descriptionFilter,
+            PoolFilter.creatorFilter,
+            PoolFilter.activeFilter,
+            PoolFilter.categoryFilter,
+            PoolFilter.orderFilter,
           ],
         ),
       ],

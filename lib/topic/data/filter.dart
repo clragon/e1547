@@ -27,8 +27,9 @@ enum TopicCategory {
 }
 
 class TopicFilter extends FilterController<Topic> {
-  TopicFilter({ProtoMap? value})
-    : super({orderFilter.tag: TopicOrder.sticky, ...?value}.toQuery());
+  TopicFilter({ProtoMap? value}) : super(value?.toQuery()) {
+    order ??= TopicOrder.sticky;
+  }
 
   static const titleFilter = TextFilterTag(
     tag: 'search[title_matches]',
@@ -106,8 +107,8 @@ class TopicFilter extends FilterController<Topic> {
   set categoryId(TopicCategory? value) =>
       setFilterEnum(categoryIdFilter, value);
 
-  TopicOrder get order => getFilterEnum(orderFilter) ?? TopicOrder.newest;
-  set order(TopicOrder value) => setFilterEnum(orderFilter, value);
+  TopicOrder? get order => getFilterEnum(orderFilter);
+  set order(TopicOrder? value) => setFilterEnum(orderFilter, value);
 
   bool? get sticky => getFilterBool(stickyFilter);
   set sticky(bool? value) => setFilterBool(stickyFilter, value);
