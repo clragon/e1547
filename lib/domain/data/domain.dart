@@ -44,7 +44,7 @@ class Domain with Disposable {
   late final PostClient posts = PostClient(
     dio: dio,
     identity: identity,
-    poolsService: pools,
+    poolsService: _pools,
   );
 
   late final TagClient tags = TagClient(dio: dio);
@@ -57,7 +57,12 @@ class Domain with Disposable {
     cache: storage.queryCache,
   );
 
-  late final PoolClient pools = PoolClient(dio: dio);
+  late final PoolClient _pools = PoolClient(dio: dio);
+  late final PoolRepo pools = PoolRepo(
+    persona: persona,
+    client: _pools,
+    cache: storage.queryCache,
+  );
   // TODO: add Sets
 
   late final TopicClient _topics = TopicClient(dio: dio);
@@ -76,7 +81,7 @@ class Domain with Disposable {
     identity: identity,
     traits: traits,
     postsClient: posts,
-    poolsClient: pools,
+    poolsClient: _pools,
     tagsClient: tags,
   );
 
