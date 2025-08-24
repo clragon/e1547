@@ -73,7 +73,7 @@ class _PagedQueryBuilderState<T, Arg> extends State<PagedQueryBuilder<T, Arg>> {
       return cachedState!;
     }
 
-    final pages = state.data?.pages ?? <List<int>>[];
+    final pages = state.data?.pages ?? [];
 
     final allIds = pages.expand((page) => page).toSet();
 
@@ -90,13 +90,16 @@ class _PagedQueryBuilderState<T, Arg> extends State<PagedQueryBuilder<T, Arg>> {
     }
 
     final resolvedPages = <List<T>>[];
+    final seenIds = <int>{};
 
     for (final page in pages) {
       final resolvedPage = <T>[];
       for (final id in page) {
+        if (seenIds.contains(id)) continue;
         final item = items[id];
         if (item != null) {
           resolvedPage.add(item);
+          seenIds.add(id);
         }
       }
       resolvedPages.add(resolvedPage);
