@@ -13,14 +13,10 @@ class PostCommentsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final domain = context.watch<Domain>();
     return FilterControllerProvider(
-      create: (_) => CommentFilter(
-        domain: domain,
-        value: {
-          CommentFilter.postIdFilter.tag: postId,
-          CommentFilter.groupByFilter.tag: CommentGroupBy.comment,
-          CommentFilter.orderFilter.tag: CommentOrder.oldest,
-        }.toQuery(),
-      ),
+      create: (_) => CommentFilter(domain: domain)
+        ..postId = postId
+        ..groupBy = CommentGroupBy.comment
+        ..order = CommentOrder.oldest,
       keys: (_) => [domain],
       builder: (context, _) => AdaptiveScaffold(
         appBar: DefaultAppBar(
