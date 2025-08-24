@@ -60,7 +60,12 @@ class Domain with Disposable {
   late final PoolClient pools = PoolClient(dio: dio);
   // TODO: add Sets
 
-  late final TopicClient topics = TopicClient(dio: dio);
+  late final TopicClient _topics = TopicClient(dio: dio);
+  late final TopicRepo topics = TopicRepo(
+    persona: persona,
+    client: _topics,
+    cache: storage.queryCache,
+  );
   late final ReplyClient replies = ReplyClient(dio: dio);
 
   late final FlagClient flags = FlagClient(dio: dio);
