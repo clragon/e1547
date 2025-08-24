@@ -30,5 +30,8 @@ class FilterController<T> extends ValueNotifier<QueryMap> {
 
   void clear() => query = {};
 
+  // We are abusing this controller both for query parameters and local filtering.
+  // It would probably be cleaner to disentangle these two mechanisms.
+  // TODO: refactor this to separate concerns
   List<List<T>> filter(List<List<T>> items) => items;
 }

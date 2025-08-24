@@ -1,28 +1,31 @@
+import 'package:e1547/shared/shared.dart';
 import 'package:e1547/topic/topic.dart';
 import 'package:flutter/material.dart';
 
-class TopicTagEditingTile extends StatelessWidget {
-  const TopicTagEditingTile({super.key, required this.controller});
-
-  final TopicController controller;
+class TopicListDrawer extends StatelessWidget {
+  const TopicListDrawer({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: controller,
-      builder: (context, child) => SwitchListTile(
-        secondary: const Icon(Icons.inventory_outlined),
-        title: const Text('hide tags edits'),
-        subtitle: Text(
-          controller.hideTagEditing
-              ? 'hide tag alias and implications'
-              : 'show tag alias and implications',
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
+    final controller = context.watch<TopicFilter>();
+    return ContextDrawer(
+      title: const Text('Topics'),
+      children: [
+        SwitchListTile(
+          secondary: const Icon(Icons.sell),
+          title: const Text('Hide tags edits'),
+          subtitle: Text(
+            controller.hideTagEditing ? 'hidden' : 'visible',
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+          value: controller.hideTagEditing,
+          onChanged: (value) {
+            controller.hideTagEditing = value;
+            Scaffold.of(context).closeEndDrawer();
+          },
         ),
-        value: controller.hideTagEditing,
-        onChanged: (value) => controller.hideTagEditing = value,
-      ),
+      ],
     );
   }
 }
