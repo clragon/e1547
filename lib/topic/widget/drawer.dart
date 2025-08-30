@@ -15,13 +15,13 @@ class TopicListDrawer extends StatelessWidget {
           secondary: const Icon(Icons.sell),
           title: const Text('Hide tags edits'),
           subtitle: Text(
-            controller.hideTagEditing ? 'hidden' : 'visible',
+            controller.value.hideTagEditing ? 'hidden' : 'visible',
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
-          value: controller.hideTagEditing,
+          value: controller.value.hideTagEditing,
           onChanged: (value) {
-            controller.hideTagEditing = value;
+            controller.value = (hideTagEditing: value);
             Scaffold.of(context).closeEndDrawer();
           },
         ),

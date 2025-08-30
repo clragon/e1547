@@ -9,7 +9,7 @@ class CommentListDropdown extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final domain = context.watch<Domain>();
-    final controller = context.watch<CommentFilter>();
+    final controller = context.watch<CommentParams>();
     final query = domain.comments.usePage(query: controller.request);
     final postId = controller.postId;
 

@@ -14,19 +14,19 @@ class PoolsPageFab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = context.watch<PoolFilter>();
+    final controller = context.watch<PoolParams>();
     return SearchPromptFloatingActionButton(
       tags: controller.query,
       onSubmit: (value) => controller.query = value,
       filters: [
         PrimaryFilterConfig(
-          filter: PoolNameFilterTag(tag: PoolFilter.nameFilter.tag),
+          filter: PoolNameFilterTag(tag: PoolParams.nameFilter.tag),
           filters: [
-            PoolFilter.descriptionFilter,
-            PoolFilter.creatorFilter,
-            PoolFilter.activeFilter,
-            PoolFilter.categoryFilter,
-            PoolFilter.orderFilter,
+            PoolParams.descriptionFilter,
+            PoolParams.creatorFilter,
+            PoolParams.activeFilter,
+            PoolParams.categoryFilter,
+            PoolParams.orderFilter,
           ],
         ),
       ],

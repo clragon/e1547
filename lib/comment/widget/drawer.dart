@@ -7,7 +7,7 @@ class CommentListDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = context.watch<CommentFilter>();
+    final controller = context.watch<CommentParams>();
     return ContextDrawer(
       title: const Text('Comments'),
       children: [

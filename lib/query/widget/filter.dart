@@ -2,8 +2,8 @@ import 'package:e1547/query/query.dart';
 import 'package:e1547/shared/shared.dart';
 import 'package:flutter/material.dart';
 
-class FilterControllerProvider<T extends FilterController<R>, R>
-    extends SubListenableProvider0<T> {
+class FilterControllerProvider<C extends FilterController<T>, T>
+    extends SubListenableProvider0<C> {
   // ignore: use_key_in_widget_constructors
   FilterControllerProvider({
     required super.create,
@@ -13,8 +13,8 @@ class FilterControllerProvider<T extends FilterController<R>, R>
   }) : super(
          builder: (context, child) =>
              // Also provide the generic version to allow [QueryFilter] to access the controller
-             ListenableProvider<FilterController<R>>.value(
-               value: context.read<T>(),
+             ListenableProvider<FilterController<T>>.value(
+               value: context.read<C>(),
                builder: builder,
                child: child,
              ),
@@ -39,7 +39,8 @@ class QueryFilter<T, K> extends StatelessWidget {
           ? state.copyWithData(
               InfiniteQueryData(
                 pages:
-                    controller?.filter(state.data!.pages) ?? state.data!.pages,
+                    controller?.filterPages(state.data!.pages) ??
+                    state.data!.pages,
                 pageParams: state.data!.pageParams,
               ),
             )

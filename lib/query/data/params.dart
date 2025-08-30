@@ -3,8 +3,8 @@ import 'package:flutter/foundation.dart';
 
 export 'package:e1547/shared/data/map.dart';
 
-class FilterController<T> extends ValueNotifier<QueryMap> {
-  FilterController([QueryMap? value]) : super(value ?? {});
+class ParamsController<T> extends ValueNotifier<QueryMap> {
+  ParamsController([QueryMap? value]) : super(value ?? {});
 
   QueryMap get query => value;
 
@@ -29,9 +29,4 @@ class FilterController<T> extends ValueNotifier<QueryMap> {
   bool has(String key) => get(key) != null;
 
   void clear() => query = {};
-
-  // We are abusing this controller both for query parameters and local filtering.
-  // It would probably be cleaner to disentangle these two mechanisms.
-  // TODO: refactor this to separate concerns
-  List<List<T>> filter(List<List<T>> items) => items;
 }

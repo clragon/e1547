@@ -1,5 +1,4 @@
 import 'package:e1547/pool/pool.dart';
-import 'package:e1547/query/query.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:e1547/shared/shared.dart';
 import 'package:flutter/material.dart';
@@ -11,8 +10,8 @@ class PoolsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => RouterDrawerEntry<PoolsPage>(
-    child: FilterControllerProvider(
-      create: (_) => PoolFilter(value: search),
+    child: ListenableProvider(
+      create: (_) => PoolParams(value: search),
       child: AdaptiveScaffold(
         appBar: const DefaultAppBar(
           title: Text('Pools'),
