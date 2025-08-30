@@ -21,10 +21,8 @@ class PostThumbnailQueryLoader extends StatelessWidget {
   Widget build(BuildContext context) {
     final domain = context.watch<Domain>();
 
-    final postCache = QueryBridge<Post, int>(
-      cache: domain.storage.queryCache,
-      baseKey: 'posts',
-      getId: (post) => post.id,
+    final postCache = domain.storage.queryCache.bridge<Post, int>(
+      'posts',
       fetch: (id) => domain.posts.get(id: id),
     );
 

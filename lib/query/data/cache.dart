@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:cached_query_flutter/cached_query_flutter.dart';
 export 'package:cached_query_flutter/cached_query_flutter.dart';
 
+/// Cache normalisation intermediary
 class QueryBridge<T, K> {
   QueryBridge({
     required this.cache,
@@ -90,4 +91,29 @@ class QueryBridge<T, K> {
     final itemQuery = _getQuery(id);
     itemQuery?.invalidate();
   }
+}
+
+extension QueryCacheBridging on CachedQuery {
+  static K _dynamicGetId<T, K>(T item) {
+    try {
+      return (item as dynamic).id as K;
+      // ignore: avoid_catching_errors
+    } on NoSuchMethodError {
+      throw ArgumentError(
+        'Item does not have an id property. '
+        'Either add an id property to the item or provide a custom getId function.',
+      );
+    }
+  }
+
+  QueryBridge<T, K> bridge<T, K>(
+    String key, {
+    K Function(T)? getId,
+    required Future<T> Function(K) fetch,
+  }) => QueryBridge(
+    cache: this,
+    baseKey: key,
+    getId: getId ?? _dynamicGetId,
+    fetch: fetch,
+  );
 }

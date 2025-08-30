@@ -14,10 +14,8 @@ class PoolRepo {
 
   final String queryKey = 'pools';
 
-  late final _poolCache = QueryBridge<Pool, int>(
-    cache: cache,
-    baseKey: queryKey,
-    getId: (pool) => pool.id,
+  late final _poolCache = cache.bridge<Pool, int>(
+    queryKey,
     fetch: (id) => get(id: id),
   );
 
