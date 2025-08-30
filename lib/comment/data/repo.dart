@@ -18,10 +18,8 @@ class CommentRepo {
 
   final String queryKey = 'comments';
 
-  late final _commentCache = QueryBridge<Comment, int>(
-    cache: cache,
-    baseKey: queryKey,
-    getId: (comment) => comment.id,
+  late final _commentCache = cache.bridge<Comment, int>(
+    queryKey,
     fetch: (id) => get(id: id),
   );
 

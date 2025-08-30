@@ -14,10 +14,8 @@ class TopicRepo {
 
   final String queryKey = 'topics';
 
-  late final _topicCache = QueryBridge<Topic, int>(
-    cache: cache,
-    baseKey: queryKey,
-    getId: (topic) => topic.id,
+  late final _topicCache = cache.bridge<Topic, int>(
+    queryKey,
     fetch: (id) => get(id: id),
   );
 
