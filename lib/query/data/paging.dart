@@ -11,7 +11,7 @@ extension QueryPagingState<T, Arg> on InfiniteQueryStatus<List<T>, Arg> {
   PagingState<Arg, T> get paging {
     return PagingState(
       pages: data?.pages,
-      keys: data?.pageParams,
+      keys: data?.args,
       error: error,
       isLoading: isLoading,
       hasNextPage: hasNextPage,
@@ -20,8 +20,7 @@ extension QueryPagingState<T, Arg> on InfiniteQueryStatus<List<T>, Arg> {
 }
 
 extension QueryDataIntPagingState<T> on InfiniteQueryData<List<T>, int>? {
-  int? get nextPage =>
-      hasNextPage ? (this?.pageParams.lastOrNull ?? 0) + 1 : null;
+  int? get nextPage => hasNextPage ? (this?.args.lastOrNull ?? 0) + 1 : null;
 }
 
 extension QueryStatusErroring<T> on QueryStatus<T> {

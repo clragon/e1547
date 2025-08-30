@@ -58,7 +58,7 @@ class CommentRepo {
       client.create(postId: postId, content: content);
 
   Mutation<void, String> useCreate({required int postId}) => Mutation(
-    queryFn: (content) => create(postId: postId, content: content),
+    mutationFn: (content) => create(postId: postId, content: content),
     onSuccess: (data, content) {
       // TODO: this needs to invalidate all queries with post_id
     },
@@ -72,7 +72,7 @@ class CommentRepo {
 
   Mutation<void, String> useUpdate({required int id, required int postId}) =>
       Mutation(
-        queryFn: (content) => _commentCache.optimistic(
+        mutationFn: (content) => _commentCache.optimistic(
           id,
           (comment) =>
               comment.copyWith(body: content, updatedAt: DateTime.now()),
@@ -87,7 +87,7 @@ class CommentRepo {
   }) => client.vote(id: id, upvote: upvote, replace: replace);
 
   Mutation<VoteResult, VoteRequest> useVote({required int id}) => Mutation(
-    queryFn: (p) {
+    mutationFn: (p) {
       final (:upvote, :replace) = p;
       return _commentCache.optimistic(
         id,

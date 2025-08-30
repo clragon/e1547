@@ -51,11 +51,7 @@ dependencies:
   # data
   app_links: ^6.3.3
   async: ^2.11.0
-  cached_query_flutter:
-    git:
-      url: https://github.com/D-James-GH/cached_query.git
-      ref: bbc8877
-      path: packages/cached_query_flutter
+  cached_query_flutter: ^3.0.0-dev.19
   collection: ^1.19.0
   deep_pick: ^1.0.0
   dio: ^5.9.0
@@ -111,13 +107,6 @@ dev_dependencies:
   flutter_native_splash: ^2.4.6
   freezed: ^3.0.6
   json_serializable: ^6.9.5
-
-dependency_overrides:
-  cached_query:
-    git:
-      url: https://github.com/D-James-GH/cached_query.git
-      ref: bbc8877
-      path: packages/cached_query
 
 flutter:
   uses-material-design: true
