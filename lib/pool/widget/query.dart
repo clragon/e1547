@@ -12,7 +12,7 @@ class PoolPageQueryBuilder extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final domain = context.watch<Domain>();
-    final controller = context.watch<PoolFilter>();
+    final controller = context.watch<PoolParams>();
     final query = domain.pools.usePage(query: controller.request);
 
     return PagedQueryBuilder(

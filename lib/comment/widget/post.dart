@@ -13,21 +13,24 @@ class PostCommentsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final domain = context.watch<Domain>();
     return FilterControllerProvider(
-      create: (_) => CommentFilter(domain: domain)
-        ..postId = postId
-        ..groupBy = CommentGroupBy.comment
-        ..order = CommentOrder.oldest,
+      create: (_) => CommentFilter(domain),
       keys: (_) => [domain],
-      builder: (context, _) => AdaptiveScaffold(
-        appBar: DefaultAppBar(
-          title: Text('#$postId comments'),
-          actions: const [ContextDrawerButton()],
+      child: Provider(
+        create: (_) => CommentParams()
+          ..postId = postId
+          ..groupBy = CommentGroupBy.comment
+          ..order = CommentOrder.oldest,
+        builder: (context, _) => AdaptiveScaffold(
+          appBar: DefaultAppBar(
+            title: Text('#$postId comments'),
+            actions: const [ContextDrawerButton()],
+          ),
+          floatingActionButton: domain.hasLogin
+              ? CommentCreateFab(postId: postId)
+              : null,
+          endDrawer: const CommentListDrawer(),
+          body: const CommentList(),
         ),
-        floatingActionButton: domain.hasLogin
-            ? CommentCreateFab(postId: postId)
-            : null,
-        endDrawer: const CommentListDrawer(),
-        body: const CommentList(),
       ),
     );
   }

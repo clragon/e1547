@@ -11,16 +11,19 @@ class TopicsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) => RouterDrawerEntry<TopicsPage>(
     child: FilterControllerProvider(
-      create: (_) => TopicFilter(value: query),
-      child: const AdaptiveScaffold(
-        appBar: DefaultAppBar(
-          title: Text('Topics'),
-          actions: [ContextDrawerButton()],
+      create: (_) => TopicFilter(),
+      child: ListenableProvider(
+        create: (_) => TopicParams(value: query),
+        child: const AdaptiveScaffold(
+          appBar: DefaultAppBar(
+            title: Text('Topics'),
+            actions: [ContextDrawerButton()],
+          ),
+          floatingActionButton: TopicSearchFab(),
+          drawer: RouterDrawer(),
+          endDrawer: TopicListDrawer(),
+          body: TopicList(),
         ),
-        floatingActionButton: TopicSearchFab(),
-        drawer: RouterDrawer(),
-        endDrawer: TopicListDrawer(),
-        body: TopicList(),
       ),
     ),
   );

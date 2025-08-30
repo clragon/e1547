@@ -12,7 +12,7 @@ class TopicPageQueryBuilder extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final domain = context.watch<Domain>();
-    final controller = context.watch<TopicFilter>();
+    final controller = context.watch<TopicParams>();
     final query = domain.topics.usePage(query: controller.request);
 
     return PagedQueryBuilder(

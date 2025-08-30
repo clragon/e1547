@@ -24,8 +24,8 @@ enum PoolCategory {
   final String value;
 }
 
-class PoolFilter extends FilterController<Pool> {
-  PoolFilter({ProtoMap? value}) : super(value?.toQuery());
+class PoolParams extends ParamsController<Pool> {
+  PoolParams({ProtoMap? value}) : super(value?.toQuery());
 
   static const nameFilter = TextFilterTag(
     tag: 'search[name_matches]',

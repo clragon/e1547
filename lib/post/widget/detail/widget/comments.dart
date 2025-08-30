@@ -55,44 +55,47 @@ class SliverPostCommentSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final domain = context.watch<Domain>();
     return FilterControllerProvider(
-      create: (_) => CommentFilter(domain: domain)
-        ..postId = postId
-        ..groupBy = CommentGroupBy.comment
-        ..order = CommentOrder.oldest,
+      create: (_) => CommentFilter(domain),
       keys: (_) => [domain],
-      builder: (context, _) => SliverMainAxisGroup(
-        slivers: [
-          const SliverToBoxAdapter(
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
-                children: [
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            'Comments',
-                            style: TextStyle(fontSize: 16),
+      child: ListenableProvider(
+        create: (_) => CommentParams()
+          ..postId = postId
+          ..groupBy = CommentGroupBy.comment
+          ..order = CommentOrder.oldest,
+        builder: (context, _) => SliverMainAxisGroup(
+          slivers: [
+            const SliverToBoxAdapter(
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              'Comments',
+                              style: TextStyle(fontSize: 16),
+                            ),
                           ),
-                        ),
-                        CommentListDropdown(),
-                      ],
+                          CommentListDropdown(),
+                        ],
+                      ),
                     ),
-                  ),
-                  SizedBox(height: 16),
-                ],
+                    SizedBox(height: 16),
+                  ],
+                ),
               ),
             ),
-          ),
-          SliverPadding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 12,
-            ).add(const EdgeInsets.only(bottom: 30)),
-            sliver: const SliverCommentList(),
-          ),
-        ],
+            SliverPadding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 12,
+              ).add(const EdgeInsets.only(bottom: 30)),
+              sliver: const SliverCommentList(),
+            ),
+          ],
+        ),
       ),
     );
   }
