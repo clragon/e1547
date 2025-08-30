@@ -41,7 +41,7 @@ class QueryFilter<T, K> extends StatelessWidget {
                 pages:
                     controller?.filterPages(state.data!.pages) ??
                     state.data!.pages,
-                pageParams: state.data!.pageParams,
+                args: state.data!.args,
               ),
             )
           : state,

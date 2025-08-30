@@ -114,7 +114,7 @@ Future<AppStorage> initializeAppStorage({bool cache = true}) async {
     queryCache: CachedQuery.asNewInstance()
       ..configFlutter(
         config: const GlobalQueryConfigFlutter(
-          refetchDuration: Duration(minutes: 5),
+          staleDuration: Duration(minutes: 5),
         ),
       ),
     sqlite: AppDatabase(

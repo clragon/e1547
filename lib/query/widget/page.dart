@@ -108,7 +108,7 @@ class _PagedQueryBuilderState<T, Arg> extends State<PagedQueryBuilder<T, Arg>> {
     final data = resolvedPages.isNotEmpty
         ? InfiniteQueryData<List<T>, Arg>(
             pages: resolvedPages,
-            pageParams: state.data?.pageParams ?? <Arg>[],
+            args: state.data?.args ?? [],
           )
         : null;
 
