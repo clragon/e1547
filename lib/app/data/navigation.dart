@@ -31,6 +31,14 @@ final List<RouterDrawerDestination> rootDestintations = [
     group: _drawerSearchGroup,
   ),
   NamedRouterDrawerDestination(
+    path: '/popular',
+    name: 'Popular',
+    icon: const Icon(Icons.trending_up),
+    builder: (context) => const PopularPage(),
+    unique: true,
+    group: _drawerSearchGroup,
+  ),
+  NamedRouterDrawerDestination(
     path: '/search',
     name: 'Search',
     icon: const Icon(Icons.search),
