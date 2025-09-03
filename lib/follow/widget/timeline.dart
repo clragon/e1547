@@ -17,7 +17,7 @@ class _FollowsTimelinePageState extends State<FollowsTimelinePage> {
       child: PostProvider.builder(
         create: (context, domain) => FollowTimelineController(domain: domain),
         child: Consumer<PostController>(
-          builder: (context, controller, child) => PostsPage(
+          builder: (context, controller, child) => PostListPage(
             appBar: const DefaultAppBar(
               title: Text('Timeline'),
               actions: [ContextDrawerButton()],

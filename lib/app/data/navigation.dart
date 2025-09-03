@@ -34,7 +34,7 @@ final List<RouterDrawerDestination> rootDestintations = [
     path: '/search',
     name: 'Search',
     icon: const Icon(Icons.search),
-    builder: (context) => const PostsSearchPage(),
+    builder: (context) => const PostsPage(),
     group: _drawerSearchGroup,
   ),
   NamedRouterDrawerDestination(

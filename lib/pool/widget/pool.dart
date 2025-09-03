@@ -35,7 +35,7 @@ class _PoolPageState extends State<PoolPage> {
               posts: controller.items,
             );
           },
-          child: PostsPage(
+          child: PostListPage(
             controller: controller,
             displayType: readerMode ? PostDisplayType.comic : null,
             appBar: DefaultAppBar(

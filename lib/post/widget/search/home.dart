@@ -30,7 +30,7 @@ class _HomePageState extends State<HomePage> with RouterDrawerEntryWidget {
                     homeTags: controller.query['tags'].toString(),
                   ),
                 ),
-                builder: (context) => PostsPage(
+                builder: (context) => PostListPage(
                   appBar: const DefaultAppBar(
                     title: Center(child: AppIcon()),
                     actions: [ContextDrawerButton()],

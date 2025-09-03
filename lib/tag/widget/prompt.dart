@@ -51,8 +51,7 @@ class TagSearchSheet extends StatelessWidget {
                       Navigator.of(context).maybePop();
                       Navigator.of(context).push(
                         MaterialPageRoute(
-                          builder: (context) =>
-                              PostsSearchPage(query: {'tags': tag}),
+                          builder: (context) => PostsPage(query: {'tags': tag}),
                         ),
                       );
                     },
