@@ -29,12 +29,10 @@ class _PoolPageState extends State<PoolPage> {
       child: Consumer<PostController>(
         builder: (context, controller, child) => ControllerHistoryConnector(
           controller: controller,
-          addToHistory: (context, domain, data) {
-            domain.histories.addPool(
-              pool: widget.pool,
-              posts: controller.items,
-            );
-          },
+          getEntry: (context, data) => PoolHistoryRequest.item(
+            pool: widget.pool,
+            posts: controller.items,
+          ),
           child: PostListPage(
             controller: controller,
             displayType: readerMode ? PostDisplayType.comic : null,

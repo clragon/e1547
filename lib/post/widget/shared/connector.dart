@@ -130,8 +130,7 @@ class PostHistoryConnector extends StatelessWidget {
   @override
   Widget build(BuildContext context) => ItemHistoryConnector<Post>(
     item: post,
-    addToHistory: (context, domain, item) =>
-        domain.histories.addPost(post: post),
+    getEntry: (context, item) => PostHistoryRequest.item(post: post),
     child: child,
   );
 }
@@ -150,10 +149,8 @@ class PostsControllerHistoryConnector extends StatelessWidget {
   Widget build(BuildContext context) =>
       ControllerHistoryConnector<PostController>(
         controller: controller,
-        addToHistory: (context, domain, data) => domain.histories.addPostSearch(
-          query: data.query,
-          posts: data.items,
-        ),
+        getEntry: (context, data) =>
+            PostHistoryRequest.search(query: data.query, posts: data.items),
         child: child,
       );
 }

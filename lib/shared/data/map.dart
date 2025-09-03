@@ -24,10 +24,9 @@ extension QueryMapping on ProtoMap {
           final k = e.key.toString();
           _serializeNested(result, '$key[$k]', e.value);
         }
-      case List l:
-        for (final v in l) {
-          _serializeNested(result, '$key[]', v);
-        }
+      case Iterable i:
+        final serialized = i.map(_serialize).whereType<String>().join(',');
+        if (serialized.isNotEmpty) result[key] = serialized;
       default:
         final serialized = _serialize(value);
         if (serialized != null) result[key] = serialized;
@@ -65,11 +64,13 @@ extension QueryMapHandling on QueryMap {
 
     switch (value) {
       case Map _:
-      case List _:
         final serialized = <String, String>{};
         _serializeNested(serialized, key, value);
         remove(key);
         addAll(serialized);
+      case Iterable i:
+        final serialized = i.map(_serialize).whereType<String>().join(',');
+        setOrRemove(key, serialized.isNotEmpty ? serialized : null);
       default:
         final serialized = _serialize(value);
         if (serialized != null) {
@@ -106,6 +107,16 @@ extension QueryMapHandling on QueryMap {
     return stringList?.map(int.tryParse).whereType<int>().toList();
   }
 
+  Set<String>? getStringSet(String key) {
+    final stringList = getStringList(key);
+    return stringList?.toSet();
+  }
+
+  Set<int>? getIntSet(String key) {
+    final intList = getIntList(key);
+    return intList?.toSet();
+  }
+
   T? getEnum<T extends Enum>(String key, List<T> values) {
     final value = getString(key);
     if (value == null) return null;
@@ -127,6 +138,12 @@ extension QueryMapHandling on QueryMap {
     }
     if (_isTypeOrNull<List<int>, T>()) {
       return getIntList(key) as T?;
+    }
+    if (_isTypeOrNull<Set<String>, T>()) {
+      return getStringSet(key) as T?;
+    }
+    if (_isTypeOrNull<Set<int>, T>()) {
+      return getIntSet(key) as T?;
     }
     throw UnsupportedError('Type $T is not supported by QueryMap.get()');
   }

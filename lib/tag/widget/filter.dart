@@ -146,6 +146,7 @@ class FilterList extends StatelessWidget {
         NumberRangeFilterTag() => NumberRangeFilter(state.apply(config)),
         NumberFilterTag() => NumberFilter(state.apply(config)),
         ChoiceFilterTag() => ChoiceFilter(state.apply(config)),
+        MultiChoiceFilterTag() => MultiChoiceFilter(state.apply(config)),
         ToggleFilterTag() => ToggleFilter(state.apply(config)),
         BuilderFilterTag() => BuilderTagFilter(state.apply(config)),
         BuilderFilterConfig() => config.builder(context, state),
@@ -413,6 +414,54 @@ class ChoiceFilter extends StatelessWidget {
           DropdownMenuItem(value: option.value, child: Text(option.title)),
       ],
       onChanged: state.onChanged,
+    );
+  }
+}
+
+class MultiChoiceFilter extends StatelessWidget {
+  const MultiChoiceFilter(this.state, {super.key});
+
+  final FilterTagState<MultiChoiceFilterTag> state;
+
+  @override
+  Widget build(BuildContext context) {
+    FilterTagThemeData theme = FilterTagTheme.of(context);
+
+    Set<String> selectedValues = {};
+    if (state.value != null && state.value!.isNotEmpty) {
+      selectedValues = state.value!
+          .split(',')
+          .map((e) => e.trim())
+          .where((e) => e.isNotEmpty)
+          .toSet();
+    }
+
+    final stringOptions = state.filter.options
+        .where((option) => option.value != null)
+        .map((option) => option.value!)
+        .toList();
+
+    final titleMap = Map.fromEntries(
+      state.filter.options
+          .where((option) => option.value != null)
+          .map((option) => MapEntry(option.value!, option.title)),
+    );
+
+    return MultiSelectFormField<String>(
+      key: Key('FilterList/${state.filter.tag}'),
+      options: stringOptions,
+      valueMapper: (value) => value,
+      titleMapper: (value) => titleMap[value] ?? value,
+      value: selectedValues,
+      onChanged: (newSelection) {
+        String newValue = newSelection.join(',');
+        state.onChanged(newValue);
+      },
+      decoration: theme.decoration.copyWith(
+        labelText: state.filter.name,
+        suffixIcon: mergeSuffixIcons(theme.decoration, state.filter.icon),
+      ),
+      icon: state.filter.icon,
     );
   }
 }

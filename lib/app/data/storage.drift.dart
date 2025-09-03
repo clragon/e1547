@@ -3,7 +3,7 @@
 import 'package:drift/drift.dart' as i0;
 import 'package:e1547/identity/data/database.drift.dart' as i1;
 import 'package:e1547/traits/data/database.drift.dart' as i2;
-import 'package:e1547/history/data/database.drift.dart' as i3;
+import 'package:e1547/history/data/client.drift.dart' as i3;
 import 'package:e1547/follow/data/database.drift.dart' as i4;
 
 abstract class $AppDatabase extends i0.GeneratedDatabase {

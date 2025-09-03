@@ -145,6 +145,25 @@ class ChoiceFilterTag extends FilterTag {
   final Widget? icon;
 }
 
+/// A multi-choice filter.
+///
+/// This is represented by a dropdown with checkboxes for multiple selection.
+class MultiChoiceFilterTag extends FilterTag {
+  const MultiChoiceFilterTag({
+    required super.tag,
+    super.name,
+    required this.options,
+    this.icon,
+  });
+
+  /// The options of this filter.
+  /// Options must be unique.
+  final List<ChoiceFilterTagValue> options;
+
+  /// The icon of this filter.
+  final Widget? icon;
+}
+
 class EnumFilterNullTagValue extends ChoiceFilterTagValue {
   const EnumFilterNullTagValue({String? name})
     : super(value: null, name: name ?? 'All');
@@ -186,6 +205,37 @@ class EnumFilterTag<T extends Enum> extends ChoiceFilterTag {
 
   /// Optional choice for the value `null`
   final EnumFilterNullTagValue? undefinedOption;
+}
+
+/// A specialized multi-choice filter for enums.
+///
+/// This provides type-safe enum handling for selecting multiple enum values.
+class MultiEnumFilterTag<T extends Enum> extends MultiChoiceFilterTag {
+  MultiEnumFilterTag({
+    required super.tag,
+    super.name,
+    required this.values,
+    super.icon,
+    this.valueMapper,
+    this.nameMapper,
+  }) : super(
+         options: values.map((value) {
+           return ChoiceFilterTagValue(
+             value: valueMapper?.call(value) ?? value.name,
+             name: nameMapper?.call(value) ?? value.name,
+           );
+         }).toList(),
+       );
+
+  /// The enum values for this filter
+  final List<T> values;
+
+  /// Optional function to map enum values to API values
+  /// If not provided, uses enum.name as the value
+  final String Function(T)? valueMapper;
+
+  /// Optional function to map enum values to display names
+  final String? Function(T)? nameMapper;
 }
 
 /// A toggle filter value.

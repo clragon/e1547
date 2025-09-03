@@ -100,6 +100,7 @@ class _HistoryTileDropdown extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final domain = context.watch<Domain>();
     return PopupMenuButton<VoidCallback>(
       icon: Icon(Icons.more_vert, color: dimTextColor(context)),
       iconSize: 18,
@@ -123,13 +124,12 @@ class _HistoryTileDropdown extends StatelessWidget {
         PopupMenuTile(
           title: 'Share',
           icon: Icons.share,
-          value: () =>
-              Share.text(context, context.read<Domain>().withHost(entry.link)),
+          value: () => Share.text(context, domain.withHost(entry.link)),
         ),
         PopupMenuTile(
           title: 'Delete',
           icon: Icons.delete,
-          value: () => context.read<Domain>().histories.remove(entry.id),
+          value: () => domain.histories.useRemove().mutate([entry.id]),
         ),
       ],
     );

@@ -6,6 +6,7 @@ import 'package:e1547/domain/domain.dart';
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/identity/identity.dart';
 import 'package:e1547/logs/logs.dart';
+import 'package:e1547/query/query.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:e1547/shared/shared.dart';
 import 'package:e1547/stream/stream.dart';
@@ -78,11 +79,10 @@ class SettingsPage extends StatelessWidget {
                 ),
               ),
               Consumer<Domain>(
-                builder: (context, domain, child) => SubStream<int>(
-                  create: () => domain.histories.count().streamed,
-                  keys: [domain],
-                  builder: (context, countSnapshot) {
-                    int? count = countSnapshot.data;
+                builder: (context, domain, child) => QueryBuilder(
+                  query: domain.histories.useCount(),
+                  builder: (context, countState) {
+                    int? count = countState.data;
                     return SubStream(
                       initialData: domain.histories.enabled,
                       create: () => domain.histories.enabledStream,

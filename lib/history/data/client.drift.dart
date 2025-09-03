@@ -2,11 +2,11 @@
 // ignore_for_file: type=lint
 import 'package:drift/drift.dart' as i0;
 import 'package:drift/src/runtime/api/runtime_api.dart' as i1;
-import 'package:e1547/history/data/database.drift.dart' as i2;
+import 'package:e1547/history/data/client.drift.dart' as i2;
 import 'package:drift/internal/modular.dart' as i3;
 import 'package:e1547/identity/data/database.drift.dart' as i4;
 import 'package:e1547/history/data/history.dart' as i5;
-import 'package:e1547/history/data/database.dart' as i6;
+import 'package:e1547/history/data/client.dart' as i6;
 import 'package:e1547/shared/data/sql.dart' as i7;
 
 typedef $$HistoriesTableTableCreateCompanionBuilder =
@@ -866,7 +866,7 @@ typedef $$HistoriesIdentitiesTableTableProcessedTableManager =
       i2.HistoryIdentity,
       i0.PrefetchHooks Function({bool identity, bool history})
     >;
-mixin $HistoryRepositoryMixin on i0.DatabaseAccessor<i1.GeneratedDatabase> {
+mixin $HistoryClientMixin on i0.DatabaseAccessor<i1.GeneratedDatabase> {
   i2.$HistoriesTableTable get historiesTable => i3.ReadDatabaseContainer(
     attachedDatabase,
   ).resultSet<i2.$HistoriesTableTable>('histories_table');
