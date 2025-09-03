@@ -15,7 +15,7 @@ class PostCommentsPage extends StatelessWidget {
     return FilterControllerProvider(
       create: (_) => CommentFilter(domain),
       keys: (_) => [domain],
-      child: Provider(
+      child: ListenableProvider(
         create: (_) => CommentParams()
           ..postId = postId
           ..groupBy = CommentGroupBy.comment
