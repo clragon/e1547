@@ -33,7 +33,7 @@ class SliverTopicList extends StatelessWidget {
       Navigator.of(context).push(
         MaterialPageRoute(
           builder: (context) =>
-              RepliesPage(topic: topic, orderByOldest: orderByOldest),
+              TopicRepliesPage(topic: topic, orderByOldest: orderByOldest),
         ),
       );
     }

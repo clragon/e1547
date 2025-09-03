@@ -5,8 +5,8 @@ import 'package:e1547/shared/shared.dart';
 import 'package:e1547/topic/topic.dart';
 import 'package:flutter/material.dart';
 
-class RepliesPage extends StatelessWidget {
-  const RepliesPage({super.key, required this.topic, this.orderByOldest});
+class TopicRepliesPage extends StatelessWidget {
+  const TopicRepliesPage({super.key, required this.topic, this.orderByOldest});
 
   final Topic topic;
   final bool? orderByOldest;
