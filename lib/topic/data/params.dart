@@ -1,6 +1,5 @@
 import 'package:e1547/query/query.dart';
 import 'package:e1547/tag/tag.dart';
-import 'package:e1547/topic/topic.dart';
 
 enum TopicOrder {
   sticky('sticky'),
@@ -26,7 +25,7 @@ enum TopicCategory {
   final int id;
 }
 
-class TopicParams extends ParamsController<Topic> {
+class TopicParams extends ParamsController {
   TopicParams({ProtoMap? value}) : super(value?.toQuery()) {
     order ??= TopicOrder.sticky;
   }

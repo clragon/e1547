@@ -3,7 +3,7 @@ import 'package:e1547/shared/shared.dart';
 import 'package:e1547/tag/tag.dart';
 
 /// Extensions on FilterController to use FilterTag configurations for getting/setting values
-extension FilterControllerExtensions<T> on ParamsController<T> {
+extension FilterControllerExtensions on ParamsController {
   /// Get a value using a FilterTag configuration
   V? getFilter<V>(FilterTag filter) => get<V>(filter.tag);
 
