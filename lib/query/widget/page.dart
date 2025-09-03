@@ -18,11 +18,13 @@ class PagedQueryBuilder<T, Arg> extends StatefulWidget {
     required this.query,
     required this.getItem,
     required this.builder,
+    this.enabled = true,
   });
 
   final InfiniteQuery<List<int>, Arg> query;
   final GetItemQuery<T> getItem;
   final QueryBuilderCallback<InfiniteQueryStatus<List<T>, Arg>> builder;
+  final bool enabled;
 
   @override
   State<PagedQueryBuilder<T, Arg>> createState() =>
@@ -145,6 +147,7 @@ class _PagedQueryBuilderState<T, Arg> extends State<PagedQueryBuilder<T, Arg>> {
   @override
   Widget build(BuildContext context) => QueryBuilder(
     query: widget.query,
+    enabled: widget.enabled,
     builder: (context, state) {
       final resolved = resolveState(state);
       return widget.builder(context, resolved);
