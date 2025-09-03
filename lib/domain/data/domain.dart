@@ -71,7 +71,13 @@ class Domain with Disposable {
     client: _topics,
     cache: storage.queryCache,
   );
-  late final ReplyClient replies = ReplyClient(dio: dio);
+
+  late final ReplyClient _replies = ReplyClient(dio: dio);
+  late final ReplyRepo replies = ReplyRepo(
+    persona: persona,
+    client: _replies,
+    cache: storage.queryCache,
+  );
 
   late final FlagClient flags = FlagClient(dio: dio);
   late final TicketClient tickets = TicketClient(dio: dio);
