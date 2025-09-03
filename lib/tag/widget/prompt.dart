@@ -1,5 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:e1547/domain/domain.dart';
+import 'package:e1547/history/history.dart';
 import 'package:e1547/markup/markup.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/shared/shared.dart';
@@ -225,10 +226,12 @@ class _SearchTagDisplayState extends State<SearchTagDisplay> {
     final domain = context.read<Domain>();
     wiki.then((value) {
       if (value != null) {
-        domain.histories.addWiki(wiki: value);
+        domain.histories.useAdd().mutate(WikiHistoryRequest.item(wiki: value));
       } else {
-        domain.histories.addWikiSearch(
-          query: {'search[title]': tagToRaw(widget.tag)},
+        domain.histories.useAdd().mutate(
+          WikiHistoryRequest.search(
+            query: {'search[title]': tagToRaw(widget.tag)},
+          ),
         );
       }
     });

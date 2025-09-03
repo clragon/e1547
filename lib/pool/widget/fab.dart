@@ -86,14 +86,15 @@ class PoolNameFilter extends StatelessWidget {
               final domain = context.read<Domain>();
               return (await domain.histories.page(
                     page: 1,
-                    query: HistoryQuery(
-                      date: DateTime.now(),
-                      link: r'/pools/.*',
-                      title:
-                          r'.*' +
-                          RegExp.escape(value.replaceAll(' ', '_')) +
-                          r'.*',
-                    ),
+                    query:
+                        (HistoryParams()
+                              ..date = DateTime.now()
+                              ..link = r'/pools/.*'
+                              ..title =
+                                  r'.*' +
+                                  RegExp.escape(value.replaceAll(' ', '_')) +
+                                  r'.*')
+                            .request,
                     limit: 4,
                   ))
                   .where((e) => e.title != null)

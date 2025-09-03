@@ -91,8 +91,11 @@ class Domain with Disposable {
     tagsClient: tags,
   );
 
-  late final HistoryClient histories = HistoryClient(
-    database: storage.sqlite,
+  late final HistoryClient _histories = HistoryClient(database: storage.sqlite);
+  late final HistoryRepo histories = HistoryRepo(
+    persona: persona,
+    client: _histories,
+    cache: storage.queryCache,
     preferences: storage.preferences,
     identity: identity,
     traits: traits,

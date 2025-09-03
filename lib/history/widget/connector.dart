@@ -1,21 +1,22 @@
 import 'package:e1547/domain/domain.dart';
+import 'package:e1547/history/history.dart';
 import 'package:e1547/shared/shared.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sub/flutter_sub.dart';
 
 typedef HistoryConnector<T> =
-    void Function(BuildContext context, Domain domain, T data);
+    HistoryRequest Function(BuildContext context, T data);
 
 class ItemHistoryConnector<T> extends StatefulWidget {
   const ItemHistoryConnector({
     super.key,
     required this.item,
-    required this.addToHistory,
+    required this.getEntry,
     required this.child,
   });
 
   final T item;
-  final HistoryConnector<T> addToHistory;
+  final HistoryConnector<T> getEntry;
   final Widget child;
 
   @override
@@ -28,14 +29,16 @@ class _ItemHistoryConnectorState<T> extends State<ItemHistoryConnector<T>> {
   void initState() {
     super.initState();
     final domain = context.read<Domain>();
-    widget.addToHistory(context, domain, widget.item);
+    final request = widget.getEntry(context, widget.item);
+    domain.histories.useAdd().mutate(request);
   }
 
   @override
   void didUpdateWidget(covariant ItemHistoryConnector<T> oldWidget) {
     if (oldWidget.item != widget.item) {
       final domain = context.read<Domain>();
-      widget.addToHistory(context, domain, widget.item);
+      final request = widget.getEntry(context, widget.item);
+      domain.histories.useAdd().mutate(request);
     }
     super.didUpdateWidget(oldWidget);
   }
@@ -48,13 +51,13 @@ class ControllerHistoryConnector<T extends DataController?>
     extends StatefulWidget {
   const ControllerHistoryConnector({
     super.key,
-    required this.addToHistory,
+    required this.getEntry,
     required this.controller,
     required this.child,
   });
 
   final T controller;
-  final HistoryConnector<T> addToHistory;
+  final HistoryConnector<T> getEntry;
   final Widget child;
 
   @override
@@ -76,7 +79,8 @@ class _ControllerHistoryConnectorState<T extends DataController?>
         if (controller.error != null) return;
         if (!context.mounted) return;
         final domain = context.read<Domain>();
-        widget.addToHistory(context, domain, controller);
+        final request = widget.getEntry(context, controller);
+        domain.histories.useAdd().mutate(request);
       },
       builder: (context) => widget.child,
     );

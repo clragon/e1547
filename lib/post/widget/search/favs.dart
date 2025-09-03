@@ -15,11 +15,10 @@ class FavPage extends StatelessWidget {
         child: Consumer<PostController>(
           builder: (context, controller, child) => ControllerHistoryConnector(
             controller: controller,
-            addToHistory: (context, domain, controller) =>
-                domain.histories.addPostSearch(
-                  query: controller.query,
-                  posts: controller.items,
-                ),
+            getEntry: (context, controller) => PostHistoryRequest.search(
+              query: controller.query,
+              posts: controller.items,
+            ),
             child: LoadingPage(
               isEmpty: controller.error is NoUserLoginException,
               isError: controller.error is NoUserLoginException,

@@ -1,7 +1,7 @@
 import 'package:e1547/domain/domain.dart';
 import 'package:e1547/history/history.dart';
+import 'package:e1547/query/query.dart';
 import 'package:e1547/shared/shared.dart';
-import 'package:e1547/stream/stream.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sub/flutter_sub.dart';
 import 'package:intl/intl.dart';
@@ -12,15 +12,14 @@ class HistoryEnableTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final domain = context.watch<Domain>();
-    return SubStream<int>(
-      create: () => domain.histories.count().streamed,
-      keys: [domain],
-      builder: (context, countSnapshot) => SubStream(
+    return QueryBuilder(
+      query: domain.histories.useCount(),
+      builder: (context, countState) => SubStream(
         initialData: domain.histories.enabled,
         create: () => domain.histories.enabledStream,
         builder: (context, enabledSnapshot) => SwitchListTile(
           title: const Text('Enabled'),
-          subtitle: Text('${countSnapshot.data ?? 0} pages visited'),
+          subtitle: Text('${countState.data ?? 0} pages visited'),
           secondary: const Icon(Icons.history),
           value: enabledSnapshot.data!,
           onChanged: (value) => domain.histories.enabled = value,
@@ -90,8 +89,8 @@ class HistoryCategoryFilterTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<HistoryController>(
-      builder: (context, controller, child) => Column(
+    return Consumer<HistoryParams>(
+      builder: (context, params, _) => Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           const Padding(
@@ -100,25 +99,24 @@ class HistoryCategoryFilterTile extends StatelessWidget {
           ),
           for (final filter in HistoryCategory.values)
             AnimatedBuilder(
-              animation: controller,
+              animation: params,
               builder: (context, child) {
-                HistoryQuery query = HistoryQuery.from(controller.search);
                 return Padding(
                   padding: const EdgeInsets.only(left: 16),
                   child: CheckboxListTile(
                     secondary: filter.icon,
                     title: Text(filter.title),
-                    value: query.categories?.contains(filter) ?? true,
+                    value: params.categories?.contains(filter) ?? true,
                     onChanged: (value) {
                       if (value == null) return;
                       Set<HistoryCategory> filters =
-                          query.categories ?? HistoryCategory.values.toSet();
+                          params.categories ?? HistoryCategory.values.toSet();
                       if (value) {
                         filters.add(filter);
                       } else {
                         filters.remove(filter);
                       }
-                      controller.search = query.copy()..categories = filters;
+                      params.categories = filters;
                     },
                   ),
                 );
@@ -135,8 +133,8 @@ class HistoryTypeFilterTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<HistoryController>(
-      builder: (context, controller, child) => Column(
+    return Consumer<HistoryParams>(
+      builder: (context, params, _) => Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           const Padding(
@@ -145,25 +143,24 @@ class HistoryTypeFilterTile extends StatelessWidget {
           ),
           for (final filter in HistoryType.values)
             AnimatedBuilder(
-              animation: controller,
+              animation: params,
               builder: (context, child) {
-                HistoryQuery query = HistoryQuery.from(controller.search);
                 return Padding(
                   padding: const EdgeInsets.only(left: 16),
                   child: CheckboxListTile(
                     secondary: filter.icon,
                     title: Text(filter.title),
-                    value: query.types?.contains(filter) ?? true,
+                    value: params.types?.contains(filter) ?? true,
                     onChanged: (value) {
                       if (value == null) return;
                       Set<HistoryType> filters =
-                          query.types ?? HistoryType.values.toSet();
+                          params.types ?? HistoryType.values.toSet();
                       if (value) {
                         filters.add(filter);
                       } else {
                         filters.remove(filter);
                       }
-                      controller.search = query.copy()..types = filters;
+                      params.types = filters;
                     },
                   ),
                 );
