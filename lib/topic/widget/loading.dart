@@ -24,7 +24,7 @@ class _TopicLoadingPageState extends State<TopicLoadingPage> {
       query: query,
       builder: (context, state) {
         if (state.data != null) {
-          return RepliesPage(
+          return TopicRepliesPage(
             topic: state.data!,
             orderByOldest: widget.orderByOldest,
           );
