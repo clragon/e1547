@@ -32,7 +32,7 @@ class FavPage extends StatelessWidget {
                 body: Center(child: child(context)),
                 drawer: const RouterDrawer(),
               ),
-              child: (context) => PostsPage(
+              child: (context) => PostListPage(
                 controller: controller,
                 appBar: const DefaultAppBar(
                   title: Text('Favorites'),

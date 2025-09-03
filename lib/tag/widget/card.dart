@@ -18,7 +18,7 @@ class TagCard extends StatelessWidget {
           Colors.grey,
       onTap: () => Navigator.of(context).push(
         MaterialPageRoute(
-          builder: (context) => PostsSearchPage(query: {'tags': tag}),
+          builder: (context) => PostsPage(query: {'tags': tag}),
         ),
       ),
       onLongPress: () => showTagSearchPrompt(context: context, tag: tag),
