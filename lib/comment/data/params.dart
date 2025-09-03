@@ -1,4 +1,3 @@
-import 'package:e1547/comment/comment.dart';
 import 'package:e1547/query/query.dart';
 import 'package:e1547/tag/tag.dart';
 
@@ -13,7 +12,7 @@ enum CommentOrder {
   final String value;
 }
 
-class CommentParams extends ParamsController<Comment> {
+class CommentParams extends ParamsController {
   CommentParams({ProtoMap? value}) : super(value?.toQuery());
 
   static final groupByFilter = EnumFilterTag<CommentGroupBy>(

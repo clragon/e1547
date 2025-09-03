@@ -3,7 +3,7 @@ import 'package:flutter/foundation.dart';
 
 export 'package:e1547/shared/data/map.dart';
 
-class ParamsController<T> extends ValueNotifier<QueryMap> {
+class ParamsController extends ValueNotifier<QueryMap> {
   ParamsController([QueryMap? value]) : super(value ?? {});
 
   QueryMap get query => value;

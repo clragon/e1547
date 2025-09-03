@@ -1,4 +1,3 @@
-import 'package:e1547/pool/pool.dart';
 import 'package:e1547/query/query.dart';
 import 'package:e1547/tag/tag.dart';
 
@@ -24,7 +23,7 @@ enum PoolCategory {
   final String value;
 }
 
-class PoolParams extends ParamsController<Pool> {
+class PoolParams extends ParamsController {
   PoolParams({ProtoMap? value}) : super(value?.toQuery());
 
   static const nameFilter = TextFilterTag(
