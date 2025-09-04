@@ -19,10 +19,11 @@ Future<void> runFollowUpdates({
   CancelToken? cancelToken,
 }) async {
   // this ensures continued scheduling on iOS.
-  FollowRepository allFollows = FollowRepository(database: storage.sqlite);
-  registerFollowBackgroundTask(
-    await allFollows.all(types: [FollowType.notify]),
+  FollowClient allFollows = FollowClient(database: storage.sqlite);
+  List<Follow> follows = await allFollows.all(
+    query: (FollowParams()..types = {FollowType.notify}).query,
   );
+  registerFollowBackgroundTask(follows);
 
   List<Identity> identities = await IdentityClient(
     database: storage.sqlite,
@@ -50,7 +51,9 @@ Future<void> runFollowUpdates({
   }
 
   registerFollowBackgroundTask(
-    await allFollows.all(types: [FollowType.notify]),
+    await allFollows.all(
+      query: (FollowParams()..types = {FollowType.notify}).query,
+    ),
   );
 }
 
@@ -59,17 +62,17 @@ Future<void> runClientFollowUpdate({
   required FlutterLocalNotificationsPlugin notifications,
   CancelToken? cancelToken,
 }) async {
-  List<Follow> previous = await domain.follows.all(
-    query: FollowsQuery(types: [FollowType.notify]),
+  final params = FollowParams()..types = {FollowType.notify};
+
+  List<Follow> previous = await domain.follows.all(query: params.query);
+
+  cancelToken?.whenCancel.then(
+    (_) => domain.followsServer.currentSync?.cancel(),
   );
 
-  cancelToken?.whenCancel.then((_) => domain.follows.currentSync?.cancel());
+  await domain.followsServer.sync();
 
-  await domain.follows.sync();
-
-  List<Follow> updated = await domain.follows.all(
-    query: FollowsQuery(types: [FollowType.notify]),
-  );
+  List<Follow> updated = await domain.follows.all(query: params.query);
 
   await updateFollowNotifications(
     identity: domain.identity.id,

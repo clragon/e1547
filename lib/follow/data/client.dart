@@ -1,112 +1,251 @@
-import 'dart:async';
+import 'dart:math';
 
 import 'package:drift/drift.dart';
+import 'package:e1547/follow/data/client.drift.dart';
 import 'package:e1547/follow/follow.dart';
-import 'package:e1547/identity/identity.dart';
+import 'package:e1547/identity/data/database.dart';
 import 'package:e1547/pool/pool.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/shared/shared.dart';
+import 'package:e1547/stream/stream.dart';
 import 'package:e1547/tag/tag.dart';
-import 'package:e1547/traits/traits.dart';
-import 'package:flutter/foundation.dart';
-import 'package:rxdart/rxdart.dart';
 
-class FollowClient with Disposable {
-  FollowClient({
-    required GeneratedDatabase database,
-    required this.identity,
-    required this.traits,
-    required this.postsClient,
-    this.poolsClient,
-    this.tagsClient,
-  }) : repository = FollowRepository(database: database);
+@UseRowClass(Follow, generateInsertable: true)
+class FollowsTable extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get tags => text()();
+  TextColumn get title => text().nullable()();
+  TextColumn get alias => text().nullable()();
+  TextColumn get type => textEnum<FollowType>()();
+  IntColumn get latest => integer().nullable()();
+  IntColumn get unseen => integer().nullable()();
+  TextColumn get thumbnail => text().nullable()();
+  DateTimeColumn get updated => dateTime().nullable()();
+}
 
-  final Identity identity;
-  final ValueNotifier<Traits> traits;
-  final PostClient postsClient;
-  final PoolClient? poolsClient;
-  final TagClient? tagsClient;
+@DataClassName('FollowIdentity')
+class FollowsIdentitiesTable extends Table {
+  IntColumn get identity => integer().references(
+    IdentitiesTable,
+    #id,
+    onDelete: KeyAction.noAction,
+    onUpdate: KeyAction.noAction,
+  )();
+  IntColumn get follow => integer().references(
+    FollowsTable,
+    #id,
+    onDelete: KeyAction.cascade,
+    onUpdate: KeyAction.cascade,
+  )();
 
-  final FollowRepository repository;
+  @override
+  Set<Column> get primaryKey => {identity, follow};
+}
 
-  Future<Follow> get({
-    required int id,
-    bool? force,
-    CancelToken? cancelToken,
-  }) => repository.get(id);
+@DriftAccessor(tables: [FollowsTable, FollowsIdentitiesTable, IdentitiesTable])
+class FollowClient extends DatabaseAccessor<GeneratedDatabase>
+    with $FollowClientMixin {
+  FollowClient({required GeneratedDatabase database}) : super(database);
 
-  Future<Follow?> getByTags({
-    required String tags,
-    bool? force,
-    CancelToken? cancelToken,
-  }) => repository.getByTags(tags, identity.id);
+  StreamFuture<Follow> get(int id) => (select(
+    followsTable,
+  )..where((tbl) => tbl.id.equals(id))).watchSingle().future;
 
-  Future<List<Follow>> page({
+  StreamFuture<Follow?> getByTags(String tags, int identity) =>
+      (select(followsTable)
+            ..where((tbl) => _identityQuery(tbl, identity))
+            ..where((tbl) => tbl.tags.equals(tags)))
+          .watchSingleOrNull()
+          .future;
+
+  Expression<bool> _identityQuery($FollowsTableTable tbl, int? identity) {
+    final subQuery = followsIdentitiesTable.selectOnly()
+      ..addColumns([followsIdentitiesTable.follow])
+      ..where(
+        Variable(identity).isNull() |
+            followsIdentitiesTable.identity.equalsNullable(identity),
+      );
+
+    return tbl.id.isInQuery(subQuery);
+  }
+
+  SimpleSelectStatement<FollowsTable, Follow> _querySelect({
+    int? limit,
+    int? offset,
+    int? identity,
+    QueryMap? query,
+  }) {
+    final FollowParams(:tags, :title, :types, :hasUnseen) = FollowParams(
+      value: query,
+    );
+    final String? tagRegex = tags?.infixRegex;
+    final String? titleRegex = title?.infixRegex;
+
+    final selectable = select(followsTable)
+      ..orderBy([
+        (t) => OrderingTerm(expression: t.latest, mode: OrderingMode.desc),
+        (t) => OrderingTerm(
+          expression: coalesce([t.title, t.tags]),
+          mode: OrderingMode.desc,
+        ),
+      ])
+      ..where((tbl) => _identityQuery(tbl, identity));
+    if (tagRegex != null) {
+      selectable.where(
+        (tbl) => tbl.tags.regexp(tagRegex, caseSensitive: false),
+      );
+    }
+    if (titleRegex != null) {
+      selectable.where(
+        (tbl) => tbl.title.regexp(titleRegex, caseSensitive: false),
+      );
+    }
+    if (types != null) {
+      selectable.where((tbl) => tbl.type.isIn(types.map((e) => e.name)));
+    }
+    if (hasUnseen ?? false) {
+      selectable.where((tbl) => tbl.unseen.isBiggerThanValue(0));
+    }
+    assert(
+      offset == null || limit != null,
+      'Cannot specify offset without limit!',
+    );
+    if (limit != null) {
+      selectable.limit(limit, offset: offset);
+    }
+    return selectable;
+  }
+
+  StreamFuture<List<Follow>> page({
     int? page,
     int? limit,
+    int? identity,
     QueryMap? query,
-    bool? force,
-    CancelToken? cancelToken,
   }) {
-    final search = FollowsQuery.from(query);
-    return repository.page(
-      identity: identity.id,
-      page: page ?? 1,
+    page ??= 1;
+    limit ??= 75;
+    int offset = (max(1, page) - 1) * limit;
+    return _querySelect(
       limit: limit,
-      tagRegex: search?.tags?.infixRegex,
-      titleRegex: search?.title?.infixRegex,
-      hasUnseen: search?.hasUnseen,
-      types: search?.type,
-    );
+      offset: offset,
+      identity: identity,
+      query: query,
+    ).watch().future;
   }
 
-  Future<List<Follow>> all({
+  StreamFuture<List<Follow>> all({
+    int? limit,
+    int? identity,
     QueryMap? query,
-    bool? force,
-    CancelToken? cancelToken,
-  }) {
-    final search = FollowsQuery.from(query);
-    return repository.all(
-      identity: identity.id,
-      tagRegex: search?.tags?.infixRegex,
-      titleRegex: search?.title?.infixRegex,
-      types: search?.type,
-      hasUnseen: search?.hasUnseen,
-    );
+  }) => _querySelect(
+    limit: limit,
+    identity: identity,
+    query: query,
+  ).watch().future;
+
+  StreamFuture<int> length({int? identity}) {
+    final Expression<int> count = followsTable.id.count();
+    final Expression<bool> identified = _identityQuery(followsTable, identity);
+
+    return (selectOnly(followsTable)
+          ..where(identified)
+          ..addColumns([count]))
+        .map((row) => row.read(count)!)
+        .watchSingle()
+        .future;
   }
 
-  Future<void> create({
-    required String tags,
-    required FollowType type,
-    String? title,
-    String? alias,
-  }) => repository.add(
-    FollowRequest(tags: tags, type: type, title: title, alias: alias),
-    identity.id,
-  );
+  StreamFuture<List<Follow>> outdated({
+    required Duration minAge,
+    List<FollowType>? types,
+    int? identity,
+  }) =>
+      (_querySelect(
+            identity: identity,
+            query: types != null
+                ? (FollowParams()..types = types.toSet()).query
+                : null,
+          )..where(
+            (tbl) =>
+                (tbl.updated.isSmallerThanValue(
+                  DateTime.now().subtract(minAge),
+                )) |
+                tbl.updated.isNull(),
+          ))
+          .watch()
+          .future;
 
-  Future<void> update({
-    required int id,
-    String? tags,
-    String? title,
-    FollowType? type,
-  }) => repository.transaction(() async {
-    await ((repository.update(
-      repository.followsTable,
-    ))..where((tbl) => tbl.id.equals(id))).write(
+  StreamFuture<List<Follow>> fresh({List<FollowType>? types, int? identity}) =>
+      (_querySelect(
+        identity: identity,
+        query: types != null
+            ? (FollowParams()..types = types.toSet()).query
+            : null,
+      )..where((tbl) => tbl.updated.isNull())).watch().future;
+
+  Future<void> add(FollowRequest item, int identity) async {
+    Follow follow;
+    Follow? existing = await _querySelect(
+      identity: identity,
+      query: (FollowParams()..tags = item.tags).query,
+    ).getSingleOrNull();
+    if (existing != null) {
+      follow = existing.copyWith(
+        title: item.title,
+        alias: item.alias,
+        type: item.type,
+      );
+      await replace(follow);
+    } else {
+      follow = await into(followsTable).insertReturning(
+        FollowCompanion(
+          tags: Value(item.tags),
+          title: Value(item.title),
+          alias: Value(item.alias),
+          type: Value(item.type),
+        ),
+        mode: InsertMode.insertOrIgnore,
+      );
+      await into(followsIdentitiesTable).insert(
+        FollowIdentityCompanion(
+          identity: Value(identity),
+          follow: Value(follow.id),
+        ),
+      );
+    }
+  }
+
+  Future<void> markAllSeen({List<int>? ids, int? identity}) =>
+      (update(followsTable)
+            ..where((tbl) => _identityQuery(tbl, identity))
+            ..where((tbl) => Variable(ids).isNull() | tbl.id.isIn(ids ?? []))
+            ..where((tbl) => (tbl.unseen.isBiggerThanValue(0))))
+          .write(const FollowCompanion(unseen: Value(0)));
+
+  Future<void> replace(Follow item) => ((update(
+    followsTable,
+  ))..where((tbl) => tbl.id.equals(item.id))).write(item.toInsertable());
+
+  Future<void> remove(int id) =>
+      (delete(followsTable)..where((tbl) => tbl.id.equals(id))).go();
+
+  Future<void> updateFollow(FollowUpdate update) => transaction(() async {
+    await ((this.update(
+      followsTable,
+    ))..where((tbl) => tbl.id.equals(update.id))).write(
       FollowCompanion(
-        title: title != null
-            ? Value(title.nullWhenEmpty)
+        title: update.title != null
+            ? Value(update.title!.nullWhenEmpty)
             : const Value.absent(),
-        type: type != null ? Value(type) : const Value.absent(),
+        type: update.type != null ? Value(update.type!) : const Value.absent(),
       ),
     );
-    if (tags?.nullWhenEmpty != null) {
-      await ((repository.update(
-        repository.followsTable,
-      ))..where((tbl) => tbl.id.equals(id))).write(
+    if (update.tags?.nullWhenEmpty != null) {
+      await ((this.update(
+        followsTable,
+      ))..where((tbl) => tbl.id.equals(update.id))).write(
         FollowCompanion(
-          tags: Value(tags!),
+          tags: Value(update.tags!),
           updated: const Value(null),
           unseen: const Value(null),
           thumbnail: const Value(null),
@@ -116,50 +255,8 @@ class FollowClient with Disposable {
     }
   });
 
-  Future<void> markSeen(int id) => markAllSeen([id]);
-
-  Future<void> markAllSeen(List<int>? ids) =>
-      repository.markAllSeen(ids: ids, identity: identity.id);
-
-  Future<void> delete(int id) => repository.remove(id);
-
-  Future<int> count() => repository.length(identity: identity.id);
-
-  final StreamController<FollowSync?> _syncStream =
-      BehaviorSubject<FollowSync?>();
-
-  Stream<FollowSync?> get syncStream => _syncStream.stream;
-
-  FollowSync? get currentSync => _currentSync;
-  FollowSync? _currentSync;
-
-  Future<void> sync({bool? force}) async {
-    if (_currentSync != null) return;
-    final sync = FollowSync(
-      repository: repository,
-      identity: identity,
-      traits: traits,
-      postsClient: postsClient,
-      poolsClient: poolsClient,
-      tagsClient: tagsClient,
-      force: force,
-    );
-    _currentSync = sync;
-    _syncStream.add(sync);
-    await sync.run();
-    _currentSync = null;
-    _syncStream.add(null);
-  }
-
-  Future<void> syncWith({
-    required int id,
-    List<Post>? posts,
-    Pool? pool,
-    bool? seen,
-  }) =>
-      ((repository.update(
-        repository.followsTable,
-      ))..where((tbl) => tbl.id.equals(id))).write(
+  Future<void> syncWith({required int id, List<Post>? posts, Pool? pool}) =>
+      ((update(followsTable))..where((tbl) => tbl.id.equals(id))).write(
         FollowCompanion(
           latest: posts?.isNotEmpty ?? false
               ? Value(posts!.first.id)
@@ -170,48 +267,6 @@ class FollowClient with Disposable {
           title: pool?.name != null
               ? Value(tagToName(pool!.name))
               : const Value.absent(),
-          unseen: seen ?? true ? const Value(0) : const Value.absent(),
         ),
       );
-
-  @override
-  void dispose() {
-    super.dispose();
-    _currentSync?.cancel();
-    _currentSync = null;
-    _syncStream.add(_currentSync);
-    _syncStream.close();
-  }
-}
-
-extension type FollowsQuery._(QueryMap self) implements QueryMap {
-  factory FollowsQuery({
-    String? tags,
-    String? title,
-    List<FollowType>? types,
-    bool? hasUnseen,
-  }) => FollowsQuery._(
-    {
-      'search[tags]': tags,
-      'search[title]': title,
-      'search[type]': types,
-      'search[has_unseen]': hasUnseen,
-    }.toQuery(),
-  );
-
-  static FollowsQuery? from(QueryMap? map) {
-    if (map == null) return null;
-    return FollowsQuery._(map);
-  }
-
-  String? get tags => self['search[tags]'];
-  String? get title => self['search[title]'];
-  List<FollowType>? get type => self['search[type]']
-      ?.split(',')
-      .map((e) => FollowType.values.asNameMap()[e])
-      .whereType<FollowType>()
-      .toList();
-  // TODO: implement this in Disk
-  bool? get hasUnseen =>
-      bool.tryParse(self['search[has_unseen]'] ?? '', caseSensitive: false);
 }

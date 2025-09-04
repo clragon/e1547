@@ -9,7 +9,6 @@ import 'package:e1547/logs/logs.dart';
 import 'package:e1547/query/query.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:e1547/shared/shared.dart';
-import 'package:e1547/stream/stream.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sub/flutter_sub.dart';
 import 'package:local_auth/local_auth.dart';
@@ -19,6 +18,7 @@ class SettingsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final domain = context.watch<Domain>();
     return Consumer<Settings>(
       builder: (context, settings, child) => Scaffold(
         appBar: const DefaultAppBar(title: Text('Settings')),
@@ -59,54 +59,49 @@ class SettingsPage extends StatelessWidget {
                   ),
                 ),
               ),
-              Consumer<Domain>(
-                builder: (context, domain, child) => SubStream<int>(
-                  create: () => domain.follows.count().streamed,
-                  keys: [domain],
-                  builder: (context, snapshot) => ListTile(
-                    title: const Text('Follows'),
-                    subtitle: snapshot.data != null && snapshot.data != 0
-                        ? Text('${snapshot.data} searches followed')
-                        : null,
-                    leading: const Icon(Icons.person_add),
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const FollowEditor(),
-                      ),
+              QueryBuilder(
+                query: domain.follows.useCount(),
+                builder: (context, state) => ListTile(
+                  title: const Text('Follows'),
+                  subtitle: state.data != null && state.data != 0
+                      ? Text('${state.data} searches followed')
+                      : null,
+                  leading: const Icon(Icons.person_add),
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const FollowEditor(),
                     ),
                   ),
                 ),
               ),
-              Consumer<Domain>(
-                builder: (context, domain, child) => QueryBuilder(
-                  query: domain.histories.useCount(),
-                  builder: (context, countState) {
-                    int? count = countState.data;
-                    return SubStream(
-                      initialData: domain.histories.enabled,
-                      create: () => domain.histories.enabledStream,
-                      builder: (context, enabledSnapshot) {
-                        bool enabled = enabledSnapshot.data!;
-                        return DividerListTile(
-                          title: const Text('History'),
-                          subtitle: enabled && count != null
-                              ? Text('$count pages visited')
-                              : null,
-                          leading: const Icon(Icons.history),
-                          onTap: () => Navigator.pushNamed(context, '/history'),
-                          onTapSeparated: () =>
-                              domain.histories.enabled = !enabled,
-                          separated: Switch(
-                            value: enabled,
-                            onChanged: (value) =>
-                                domain.histories.enabled = value,
-                          ),
-                        );
-                      },
-                    );
-                  },
-                ),
+              QueryBuilder(
+                query: domain.histories.useCount(),
+                builder: (context, countState) {
+                  int? count = countState.data;
+                  return SubStream(
+                    initialData: domain.histories.enabled,
+                    create: () => domain.histories.enabledStream,
+                    builder: (context, enabledSnapshot) {
+                      bool enabled = enabledSnapshot.data!;
+                      return DividerListTile(
+                        title: const Text('History'),
+                        subtitle: enabled && count != null
+                            ? Text('$count pages visited')
+                            : null,
+                        leading: const Icon(Icons.history),
+                        onTap: () => Navigator.pushNamed(context, '/history'),
+                        onTapSeparated: () =>
+                            domain.histories.enabled = !enabled,
+                        separated: Switch(
+                          value: enabled,
+                          onChanged: (value) =>
+                              domain.histories.enabled = value,
+                        ),
+                      );
+                    },
+                  );
+                },
               ),
               const Divider(),
               const ListTileHeader(title: 'Appearance'),

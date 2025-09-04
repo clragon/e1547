@@ -137,10 +137,9 @@ class _NotificationHandlerState extends State<NotificationHandler> {
   @override
   Widget build(BuildContext context) {
     final domain = context.watch<Domain>();
+    final notifyParams = FollowParams()..types = {FollowType.notify};
     return SubStream<List<Follow>>(
-      create: () => domain.follows
-          .all(query: FollowsQuery(types: [FollowType.notify]))
-          .streamed,
+      create: () => domain.follows.all(query: notifyParams.query).streamed,
       keys: [domain],
       listener: (event) async {
         await Future.wait([

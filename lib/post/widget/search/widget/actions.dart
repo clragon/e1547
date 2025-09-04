@@ -2,11 +2,10 @@ import 'package:collection/collection.dart';
 import 'package:e1547/domain/domain.dart';
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/post/post.dart';
+import 'package:e1547/query/query.dart';
 import 'package:e1547/shared/shared.dart';
-import 'package:e1547/stream/stream.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_sub/flutter_sub.dart';
 
 class TagListActions extends StatelessWidget {
   const TagListActions({super.key, required this.tag});
@@ -19,23 +18,12 @@ class TagListActions extends StatelessWidget {
       return const SizedBox.shrink();
     }
     return Consumer<Domain>(
-      builder: (context, domain, child) => SubStream<Follow?>(
-        create: () => domain.follows.getByTags(tags: tag).streamed,
-        keys: [domain, tag],
-        builder: (context, snapshot) => ValueListenableBuilder(
+      builder: (context, domain, child) => QueryBuilder(
+        query: domain.follows.useGetByTags(tags: tag),
+        builder: (context, followState) => ValueListenableBuilder(
           valueListenable: domain.traits,
           builder: (context, traits, child) {
-            if ([
-              ConnectionState.none,
-              ConnectionState.waiting,
-            ].contains(snapshot.connectionState)) {
-              return const AnimatedSwitcher(
-                duration: defaultAnimationDuration,
-                child: SizedBox.shrink(),
-              );
-            }
-
-            Follow? follow = snapshot.data;
+            Follow? follow = followState.data;
             bool hasFollow = follow != null;
 
             bool following = [
@@ -51,16 +39,20 @@ class TagListActions extends StatelessWidget {
               return () {
                 if (hasFollow) {
                   if (follow.type == type) {
-                    domain.follows.delete(follow.id);
+                    domain.follows.useDelete().mutate(follow.id);
                   }
                   if (follow.type == FollowType.notify &&
                       type == FollowType.update) {
-                    domain.follows.delete(follow.id);
+                    domain.follows.useDelete().mutate(follow.id);
                   } else {
-                    domain.follows.update(id: follow.id, type: type);
+                    domain.follows.useUpdate().mutate(
+                      FollowUpdate(id: follow.id, type: type),
+                    );
                   }
                 } else {
-                  domain.follows.create(tags: tag, type: type);
+                  domain.follows.useCreate().mutate(
+                    FollowRequest(tags: tag, type: type),
+                  );
                   if (denied) {
                     domain.traits.value = traits.copyWith(
                       denylist: traits.denylist..remove(tag),
@@ -100,14 +92,18 @@ class TagListActions extends StatelessWidget {
                                 : const Text('Notify'),
                             onTap: () {
                               if (notifying) {
-                                domain.follows.update(
-                                  id: follow!.id,
-                                  type: FollowType.update,
+                                domain.follows.useUpdate().mutate(
+                                  FollowUpdate(
+                                    id: follow!.id,
+                                    type: FollowType.update,
+                                  ),
                                 );
                               } else {
-                                domain.follows.update(
-                                  id: follow!.id,
-                                  type: FollowType.notify,
+                                domain.follows.useUpdate().mutate(
+                                  FollowUpdate(
+                                    id: follow!.id,
+                                    type: FollowType.notify,
+                                  ),
                                 );
                               }
                             },
@@ -147,7 +143,7 @@ class TagListActions extends StatelessWidget {
                           );
                         } else {
                           if (hasFollow) {
-                            domain.follows.delete(follow.id);
+                            domain.follows.useDelete().mutate(follow.id);
                           }
                           domain.accounts.push(
                             traits: traits.copyWith(

@@ -47,11 +47,12 @@ class _PostsPageState extends State<PostsPage> {
               follow = null;
             }
             if (follow != null) {
-              await domain.follows.syncWith(
+              await domain.followsServer.syncWith(
                 id: follow!.id,
                 posts: controller.items,
                 pool: pool,
               );
+              domain.follows.useMarkSeen().mutate([follow!.id]);
               if (!context.mounted) return;
               Follow updated = await domain.follows.get(id: follow!.id);
               if (follow == updated) return;
