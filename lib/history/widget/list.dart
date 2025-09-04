@@ -8,13 +8,32 @@ class HistoryList extends StatelessWidget {
   const HistoryList({super.key});
 
   @override
-  Widget build(BuildContext context) => HistoryPageQueryBuilder(
-    builder: (context, state, query) => LimitedWidthLayout.builder(
-      builder: (context) => PagedGroupedListView<int, History, DateTime>(
-        primary: true,
-        padding: defaultActionListPadding.add(
-          LimitedWidthLayout.of(context).padding,
+  Widget build(BuildContext context) => LimitedWidthLayout(
+    child: HistoryPageQueryBuilder(
+      builder: (context, state, query) => PullToRefresh(
+        onRefresh: query.invalidate,
+        child: CustomScrollView(
+          primary: true,
+          slivers: [
+            SliverPadding(
+              padding: defaultActionListPadding,
+              sliver: const SliverHistoryList(),
+            ),
+          ],
         ),
+      ),
+    ),
+  );
+}
+
+class SliverHistoryList extends StatelessWidget {
+  const SliverHistoryList({super.key});
+
+  @override
+  Widget build(BuildContext context) => HistoryPageQueryBuilder(
+    builder: (context, state, query) => SliverPadding(
+      padding: LimitedWidthLayout.maybeOf(context)?.padding ?? EdgeInsets.zero,
+      sliver: PagedSliverGroupedListView<int, History, DateTime>(
         state: state.paging,
         fetchNextPage: query.getNextPage,
         order: GroupedListOrder.DESC,
