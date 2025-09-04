@@ -2,11 +2,11 @@
 // ignore_for_file: type=lint
 import 'package:drift/drift.dart' as i0;
 import 'package:drift/src/runtime/api/runtime_api.dart' as i1;
-import 'package:e1547/follow/data/database.drift.dart' as i2;
+import 'package:e1547/follow/data/client.drift.dart' as i2;
 import 'package:drift/internal/modular.dart' as i3;
 import 'package:e1547/identity/data/database.drift.dart' as i4;
 import 'package:e1547/follow/data/follow.dart' as i5;
-import 'package:e1547/follow/data/database.dart' as i6;
+import 'package:e1547/follow/data/client.dart' as i6;
 
 typedef $$FollowsTableTableCreateCompanionBuilder =
     i2.FollowCompanion Function({
@@ -864,7 +864,7 @@ typedef $$FollowsIdentitiesTableTableProcessedTableManager =
       i2.FollowIdentity,
       i0.PrefetchHooks Function({bool identity, bool follow})
     >;
-mixin $FollowRepositoryMixin on i0.DatabaseAccessor<i1.GeneratedDatabase> {
+mixin $FollowClientMixin on i0.DatabaseAccessor<i1.GeneratedDatabase> {
   i2.$FollowsTableTable get followsTable => i3.ReadDatabaseContainer(
     attachedDatabase,
   ).resultSet<i2.$FollowsTableTable>('follows_table');

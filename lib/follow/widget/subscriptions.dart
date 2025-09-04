@@ -1,93 +1,54 @@
 import 'package:e1547/domain/domain.dart';
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/post/post.dart';
+import 'package:e1547/query/query.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:e1547/shared/shared.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_sub/flutter_sub.dart';
 
 class FollowsSubscriptionsPage extends StatelessWidget {
   const FollowsSubscriptionsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final domain = context.watch<Domain>();
     return RouterDrawerEntry<FollowsSubscriptionsPage>(
       child: ValueListenableBuilder(
         valueListenable: context.watch<Settings>().filterUnseenFollows,
-        builder: (context, filterUnseenFollows, child) =>
-            SubChangeNotifierProvider<Domain, FollowController>(
-              create: (context, value) => FollowController(
-                domain: value,
-                types: [FollowType.update, FollowType.notify],
-                filterUnseen: filterUnseenFollows,
+        builder: (context, filterUnseenFollows, child) => ListenableProvider(
+          create: (_) => FollowParams()
+            ..types = {FollowType.update, FollowType.notify}
+            ..hasUnseen = filterUnseenFollows ? true : null,
+          child: PromptActions(
+            child: AdaptiveScaffold(
+              appBar: const FollowSelectionAppBar(
+                child: DefaultAppBar(
+                  title: Text('Subscriptions'),
+                  actions: [ContextDrawerButton()],
+                ),
               ),
-              keys: (context) => [filterUnseenFollows],
-              child: child,
-            ),
-        child: Consumer<FollowController>(
-          builder: (context, controller, _) => SubEffect(
-            effect: () {
-              // remove this when the paged grid view is implemented
-              controller.getNextPage();
-              final domain = context.read<Domain>();
-              domain.follows.sync();
-              return null;
-            },
-            keys: [controller],
-            child: SelectionLayout<Follow>(
-              items: controller.items,
-              child: PromptActions(
-                child: RefreshableDataPage.builder(
-                  controller: controller,
-                  builder: (context, child) => TileLayout(child: child),
-                  child: (context) => ListenableBuilder(
-                    listenable: controller,
-                    builder: (context, _) =>
-                        PagedAlignedGridView<int, Follow>.count(
-                          primary: true,
-                          padding: defaultActionListPadding,
-                          state: controller.state,
-                          fetchNextPage: controller.getNextPage,
-                          addAutomaticKeepAlives: false,
-                          builderDelegate: defaultPagedChildBuilderDelegate(
-                            onRetry: controller.getNextPage,
-                            itemBuilder: (context, item, index) =>
-                                FollowTile(follow: item),
-                            onEmpty: const Text('No subscriptions'),
-                            onError: const Text('Failed to load subscriptions'),
-                          ),
-                          crossAxisCount: TileLayout.of(context).crossAxisCount,
-                        ),
-                  ),
-                  appBar: const FollowSelectionAppBar(
-                    child: DefaultAppBar(
-                      title: Text('Subscriptions'),
-                      actions: [ContextDrawerButton()],
-                    ),
-                  ),
-                  drawer: const RouterDrawer(),
-                  endDrawer: const ContextDrawer(
-                    title: Text('Subscriptions'),
-                    children: [
-                      FollowEditingTile(),
-                      Divider(),
-                      FollowFilterReadTile(),
-                      FollowMarkReadTile(),
-                      Divider(),
-                      FollowForceSyncTile(),
-                    ],
-                  ),
-                  floatingActionButton: AddTagFloatingActionButton(
-                    title: 'Add to subscriptions',
-                    onSubmit: (value) async {
-                      value = value.trim();
-                      if (value.isEmpty) return;
-                      await context.read<Domain>().follows.create(
-                        tags: value,
-                        type: FollowType.update,
-                      );
-                    },
-                  ),
+              drawer: const RouterDrawer(),
+              endDrawer: const ContextDrawer(
+                title: Text('Subscriptions'),
+                children: [
+                  FollowEditingTile(),
+                  Divider(),
+                  FollowFilterReadTile(),
+                  FollowMarkReadTile(),
+                  Divider(),
+                  FollowForceSyncTile(),
+                ],
+              ),
+              body: const FollowList(),
+              floatingActionButton: MutationBuilder(
+                mutation: domain.follows.useCreate(),
+                builder: (context, state, mutate) => AddTagFloatingActionButton(
+                  title: 'Add to subscriptions',
+                  onSubmit: (value) {
+                    value = value.trim();
+                    if (value.isEmpty) return;
+                    mutate(FollowRequest(tags: value));
+                  },
                 ),
               ),
             ),

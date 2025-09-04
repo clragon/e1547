@@ -1,15 +1,16 @@
-import 'package:e1547/domain/domain.dart';
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/post/post.dart';
-import 'package:e1547/stream/stream.dart';
 
 class FollowTimelineController extends PostController {
   FollowTimelineController({required super.domain}) : super(canSearch: false);
 
   @override
   Future<List<Post>> fetch(int page, bool force) async {
+    final params = FollowParams()
+      ..types = {FollowType.update, FollowType.notify};
+
     List<Follow> follows = await domain.follows.all(
-      query: FollowsQuery(types: [FollowType.update, FollowType.notify]),
+      query: params.query,
       force: force,
     );
     return domain.posts.byTags(
@@ -21,56 +22,5 @@ class FollowTimelineController extends PostController {
       force: force,
       cancelToken: cancelToken,
     );
-  }
-}
-
-class FollowController extends PageClientDataController<Follow> {
-  FollowController({
-    required this.domain,
-    this.types = FollowType.values,
-    bool filterUnseen = false,
-  }) : _filterUnseen = filterUnseen;
-
-  @override
-  final Domain domain;
-  final List<FollowType> types;
-
-  bool get filterUnseen => _filterUnseen;
-  bool _filterUnseen;
-  set filterUnseen(bool value) {
-    if (_filterUnseen == value) return;
-    _filterUnseen = value;
-    refresh();
-  }
-
-  @override
-  Future<List<Follow>> fetch(int page, bool force) {
-    StreamFuture<List<Follow>> result;
-    if (page == 1) {
-      result = domain.follows
-          .all(
-            query: FollowsQuery(types: types, hasUnseen: _filterUnseen),
-            force: force,
-          )
-          .stream;
-      if (_filterUnseen) {
-        return result.stream.asyncExpand((event) {
-          if (event.fold(0, (a, b) => a + b.unseen!) == 0) {
-            return domain.follows
-                .all(
-                  query: FollowsQuery(types: types),
-                  force: force,
-                )
-                .stream
-                .stream; // I can explain
-          } else {
-            return Stream.value(event);
-          }
-        }).future;
-      }
-    } else {
-      result = StreamFuture.value([]);
-    }
-    return result;
   }
 }

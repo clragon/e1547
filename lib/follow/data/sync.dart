@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:async/async.dart';
 import 'package:collection/collection.dart';
+import 'package:e1547/domain/domain.dart';
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/identity/identity.dart';
 import 'package:e1547/logs/logs.dart';
@@ -10,15 +11,12 @@ import 'package:e1547/pool/data/client.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/shared/shared.dart';
 import 'package:e1547/tag/tag.dart';
-import 'package:e1547/traits/traits.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:rxdart/rxdart.dart';
 
 class FollowSync {
   FollowSync({
-    required this.repository,
-    required this.identity,
-    required this.traits,
+    required this.client,
+    required this.persona,
     required this.postsClient,
     this.poolsClient,
     this.tagsClient,
@@ -30,9 +28,8 @@ class FollowSync {
   final int refreshAmount = 5;
   final Duration refreshRate = const Duration(hours: 1);
 
-  final FollowRepository repository;
-  final Identity identity;
-  final ValueNotifier<Traits> traits;
+  final FollowClient client;
+  final Persona persona;
   final PostClient postsClient;
   final PoolClient? poolsClient;
   final TagClient? tagsClient;
@@ -92,17 +89,19 @@ class FollowSync {
   Future<void> _run() async {
     logger.info(
       'Sync started for '
-      '${identity.usernameOrAnon} on ${identity.host}',
+      '${persona.identity.usernameOrAnon} on ${persona.identity.host}',
     );
     try {
       if (force ?? false) {
         logger.fine('Force refreshing follows...');
-        await repository.transaction(() async {
-          List<Follow> follows = await repository.all(
-            types: [FollowType.notify, FollowType.update],
+        await client.transaction(() async {
+          List<Follow> follows = await client.all(
+            query:
+                (FollowParams()..types = {FollowType.notify, FollowType.update})
+                    .query,
           );
           for (final follow in follows) {
-            await repository.replace(follow.copyWith(updated: null));
+            await client.replace(follow.copyWith(updated: null));
           }
         });
       }
@@ -111,17 +110,17 @@ class FollowSync {
         List<Follow> follows = [];
 
         follows.addAll(
-          await repository.outdated(
+          await client.outdated(
             minAge: refreshRate,
             types: [FollowType.notify, FollowType.update],
-            identity: identity.id,
+            identity: persona.identity.id,
           ),
         );
 
         follows.addAll(
-          await repository.fresh(
+          await client.fresh(
             types: [FollowType.bookmark],
-            identity: identity.id,
+            identity: persona.identity.id,
           ),
         );
 
@@ -131,9 +130,9 @@ class FollowSync {
         List<Follow> singles = follows.where((e) => e.isSingle).toList();
         if (singles.isNotEmpty) {
           List<Follow> updates = await _refreshSingles(singles);
-          await repository.transaction(() async {
+          await client.transaction(() async {
             for (final update in updates) {
-              await repository.replace(update);
+              await client.replace(update);
             }
           });
           continue;
@@ -142,7 +141,7 @@ class FollowSync {
         List<Follow> multiples = follows.whereNot(singles.contains).toList();
         if (multiples.isNotEmpty) {
           Follow update = await _refreshMultiples(multiples);
-          await repository.replace(update);
+          await client.replace(update);
           continue;
         }
 
@@ -203,7 +202,7 @@ class FollowSync {
         if (alias != follow.alias) {
           Follow updated = follow.copyWith(alias: alias);
           updates[updated] = updates.remove(follow)!;
-          await repository.replace(updated);
+          await client.replace(updated);
           updates = assign(updates.keys.toList(), allPosts);
           if (!hasLeftovers()) break;
         }
@@ -218,7 +217,7 @@ class FollowSync {
       bool latestReached = posts.any((e) => e.id == follow.latest);
       bool depleted = allPosts.length < limit;
       if ([limitReached, latestReached, depleted].any((e) => e)) {
-        posts.removeWhere((e) => e.isDeniedBy(traits.value.denylist));
+        posts.removeWhere((e) => e.isDeniedBy(persona.traits.value.denylist));
         result.add(follow.withUnseen(posts));
       }
     }
@@ -237,7 +236,7 @@ class FollowSync {
         force: force,
       ),
     );
-    posts.removeWhere((e) => e.isDeniedBy(traits.value.denylist));
+    posts.removeWhere((e) => e.isDeniedBy(persona.traits.value.denylist));
     follow = follow.withUnseen(posts);
     if (poolsClient != null) {
       RegExpMatch? match = poolRegex().firstMatch(follow.tags);

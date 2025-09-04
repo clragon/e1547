@@ -82,10 +82,16 @@ class Domain with Disposable {
   late final FlagClient flags = FlagClient(dio: dio);
   late final TicketClient tickets = TicketClient(dio: dio);
 
-  late final FollowClient follows = FollowClient(
-    database: storage.sqlite,
-    identity: identity,
-    traits: traits,
+  late final FollowClient _follows = FollowClient(database: storage.sqlite);
+  late final FollowRepo follows = FollowRepo(
+    persona: persona,
+    client: _follows,
+    cache: storage.queryCache,
+  );
+
+  late final FollowServer followsServer = FollowServer(
+    client: _follows,
+    persona: persona,
     postsClient: posts,
     poolsClient: _pools,
     tagsClient: tags,

@@ -13,6 +13,8 @@ class FollowSelectionAppBar extends StatelessWidget with AppBarBuilderWidget {
   @override
   Widget build(BuildContext context) {
     final domain = context.watch<Domain>();
+    final update = domain.follows.useUpdate().mutate;
+    final markSeen = domain.follows.useMarkSeen().mutate;
     return SelectionAppBar<Follow>(
       child: child,
       titleBuilder: (context, data) => data.selections.length == 1
@@ -39,16 +41,14 @@ class FollowSelectionAppBar extends StatelessWidget with AppBarBuilderWidget {
                 data.clear();
                 if (notified) {
                   for (final follow in data.selections) {
-                    await domain.follows.update(
-                      id: follow.id,
-                      type: FollowType.update,
+                    await update(
+                      FollowUpdate(id: follow.id, type: FollowType.update),
                     );
                   }
                 } else {
                   for (final follow in data.selections) {
-                    await domain.follows.update(
-                      id: follow.id,
-                      type: FollowType.notify,
+                    await update(
+                      FollowUpdate(id: follow.id, type: FollowType.notify),
                     );
                   }
                 }
@@ -61,16 +61,14 @@ class FollowSelectionAppBar extends StatelessWidget with AppBarBuilderWidget {
               data.clear();
               if (bookmarked) {
                 for (final follow in data.selections) {
-                  await domain.follows.update(
-                    id: follow.id,
-                    type: FollowType.update,
+                  await update(
+                    FollowUpdate(id: follow.id, type: FollowType.update),
                   );
                 }
               } else {
                 for (final follow in data.selections) {
-                  await domain.follows.update(
-                    id: follow.id,
-                    type: FollowType.bookmark,
+                  await update(
+                    FollowUpdate(id: follow.id, type: FollowType.bookmark),
                   );
                 }
               }
@@ -84,9 +82,7 @@ class FollowSelectionAppBar extends StatelessWidget with AppBarBuilderWidget {
             onPressed: unseen > 0
                 ? () async {
                     data.clear();
-                    domain.follows.markAllSeen(
-                      data.selections.map((e) => e.id).toList(),
-                    );
+                    markSeen(data.selections.map((e) => e.id).toList());
                   }
                 : null,
           ),

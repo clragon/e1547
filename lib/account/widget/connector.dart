@@ -23,14 +23,14 @@ class AccountConnector extends StatelessWidget {
       navigatorKey: navigatorKey,
       child: SubEffect(
         effect: () {
-          domain.follows.sync();
+          domain.followsServer.sync();
           return null;
         },
         keys: [domain],
         child: SubStream<List<Follow>>(
           create: () => domain.follows.all().streamed,
           keys: [domain],
-          listener: (event) => domain.follows.sync(),
+          listener: (event) => domain.followsServer.sync(),
           builder: (context, _) => SubEffect(
             effect: () {
               domain.accounts.pull(force: true);
