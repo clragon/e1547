@@ -153,27 +153,63 @@ class _DrawerCustomizationPageState extends State<DrawerCustomizationPage> {
           ),
         ],
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          // Startup Screen Selection
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Startup Screen',
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  const SizedBox(height: 8),
-                  DropdownButtonFormField<String>(
-                    initialValue: _config.startupScreen,
-                    decoration: const InputDecoration(
-                      labelText: 'Default startup screen',
-                      border: OutlineInputBorder(),
+      body: ColoredBox(
+        color: Theme.of(context).colorScheme.surface,
+        child: ListView(
+          padding: const EdgeInsets.all(16),
+          children: [
+            // Startup Screen Selection
+            Card(
+              elevation: Theme.of(context).brightness == Brightness.dark ? 0 : 1,
+              color: Theme.of(context).colorScheme.surface,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+                side: Theme.of(context).brightness == Brightness.dark
+                    ? BorderSide(color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2))
+                    : BorderSide.none,
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Startup Screen',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurface,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
+                    const SizedBox(height: 12),
+                    DropdownButtonFormField<String>(
+                      initialValue: _config.startupScreen,
+                      decoration: InputDecoration(
+                        labelText: 'Default startup screen',
+                        labelStyle: TextStyle(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide(
+                            color: Theme.of(context).colorScheme.outline,
+                          ),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide(
+                            color: Theme.of(context).colorScheme.outline,
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide(
+                            color: Theme.of(context).colorScheme.primary,
+                            width: 2,
+                          ),
+                        ),
+                        filled: true,
+                        fillColor: Theme.of(context).colorScheme.surface,
+                      ),
                     items: enabledItems
                         .map((item) => DropdownMenuItem(
                               value: item.path,
@@ -201,82 +237,96 @@ class _DrawerCustomizationPageState extends State<DrawerCustomizationPage> {
 
           // Screen Configuration
           Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Available Screens',
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Toggle screens to show or hide them in the drawer. Drag the handle to reorder items.',
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
-                  const SizedBox(height: 16),
+            elevation: Theme.of(context).brightness == Brightness.dark ? 0 : 1,
+            color: Theme.of(context).colorScheme.surface,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+              side: BorderSide(
+                color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.12),
+              ),
+            ),
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                color: Theme.of(context).colorScheme.surface,
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Available Screens',
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Toggle screens to show or hide them in the drawer. Drag the handle to reorder items.',
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                    const SizedBox(height: 16),
                   
-                  // Reorderable list with improved UI
-                  ReorderableListView(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    onReorder: (oldIndex, newIndex) {
-                      setState(() {
-                        if (oldIndex < newIndex) {
-                          newIndex -= 1;
-                        }
-                        final item = _items.removeAt(oldIndex);
-                        _items.insert(newIndex, item);
+                    // Reorderable list with improved UI
+                    ReorderableListView(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      onReorder: (oldIndex, newIndex) {
+                        setState(() {
+                          if (oldIndex < newIndex) {
+                            newIndex -= 1;
+                          }
+                          final item = _items.removeAt(oldIndex);
+                          _items.insert(newIndex, item);
+                          
+                          // Update order values based on new positions
+                          for (int i = 0; i < _items.length; i++) {
+                            _items[i] = _items[i].copyWith(order: i);
+                          }
+                        });
+                      },
+                      children: _items.map((item) {
+                        final isEssential = item.id == 'settings' || item.id == 'home';
                         
-                        // Update order values based on new positions
-                        for (int i = 0; i < _items.length; i++) {
-                          _items[i] = _items[i].copyWith(order: i);
-                        }
-                      });
-                    },
-                    children: _items.map((item) {
-                      final isEssential = item.id == 'settings' || item.id == 'home';
-                      
-                      return Container(
-                        key: ValueKey(item.id),
-                        margin: const EdgeInsets.symmetric(vertical: 2),
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            color: Theme.of(context).dividerColor,
-                            width: 0.5,
+                        return Container(
+                          key: ValueKey(item.id),
+                          margin: const EdgeInsets.symmetric(vertical: 2),
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              color: Theme.of(context).dividerColor,
+                              width: 0.5,
+                            ),
+                            borderRadius: BorderRadius.circular(8),
+                            color: Theme.of(context).cardColor,
                           ),
-                          borderRadius: BorderRadius.circular(8),
-                          color: Theme.of(context).cardColor,
-                        ),
-                        child: ListTile(
-                          title: Text(item.name),
-                          subtitle: Text(
-                            isEssential 
-                                ? '${item.group} • ${item.path} • Required'
-                                : '${item.group} • ${item.path}'
+                          child: ListTile(
+                            title: Text(item.name),
+                            subtitle: Text(
+                              isEssential 
+                                  ? '${item.group} • ${item.path} • Required'
+                                  : '${item.group} • ${item.path}'
+                            ),
+                            leading: _getIconFromString(item.icon),
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Switch(
+                                  value: item.enabled,
+                                  onChanged: isEssential ? null : (_) => _toggleItem(item),
+                                ),
+                                const SizedBox(width: 8),
+                                Icon(
+                                  isEssential ? Icons.lock : Icons.drag_handle,
+                                  color: isEssential ? Colors.grey : Theme.of(context).iconTheme.color,
+                                  size: 20,
+                                ),
+                              ],
+                            ),
                           ),
-                          leading: _getIconFromString(item.icon),
-                          trailing: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Switch(
-                                value: item.enabled,
-                                onChanged: isEssential ? null : (_) => _toggleItem(item),
-                              ),
-                              const SizedBox(width: 8),
-                              Icon(
-                                isEssential ? Icons.lock : Icons.drag_handle,
-                                color: isEssential ? Colors.grey : Theme.of(context).iconTheme.color,
-                                size: 20,
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
-                    }).toList(),
-                  ),
-                ],
+                        );
+                      }).toList(),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -284,43 +334,57 @@ class _DrawerCustomizationPageState extends State<DrawerCustomizationPage> {
 
           // Preview Section
           Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Drawer Preview',
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Enabled screens in order:',
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
-                  const SizedBox(height: 8),
-                  Container(
-                    height: 200,
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Theme.of(context).dividerColor),
-                      borderRadius: BorderRadius.circular(8),
+            elevation: Theme.of(context).brightness == Brightness.dark ? 0 : 1,
+            color: Theme.of(context).colorScheme.surface,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+              side: BorderSide(
+                color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.12),
+              ),
+            ),
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                color: Theme.of(context).colorScheme.surface,
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Drawer Preview',
+                      style: Theme.of(context).textTheme.titleMedium,
                     ),
-                    child: ListView(
-                      padding: const EdgeInsets.all(8),
-                      children: enabledItems.map((item) {
-                        return ListTile(
-                          dense: true,
-                          title: Text(item.name),
-                          leading: _getIconFromString(item.icon),
-                          trailing: item.path == _config.startupScreen
-                              ? const Icon(Icons.home, color: Colors.green)
-                              : null,
-                          visualDensity: VisualDensity.compact,
-                        );
-                      }).toList(),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Enabled screens in order:',
+                      style: Theme.of(context).textTheme.bodySmall,
                     ),
-                  ),
-                ],
+                    const SizedBox(height: 8),
+                    Container(
+                      height: 200,
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Theme.of(context).dividerColor),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: ListView(
+                        padding: const EdgeInsets.all(8),
+                        children: enabledItems.map((item) {
+                          return ListTile(
+                            dense: true,
+                            title: Text(item.name),
+                            leading: _getIconFromString(item.icon),
+                            trailing: item.path == _config.startupScreen
+                                ? const Icon(Icons.home, color: Colors.green)
+                                : null,
+                            visualDensity: VisualDensity.compact,
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -328,34 +392,49 @@ class _DrawerCustomizationPageState extends State<DrawerCustomizationPage> {
 
           // Instructions
           Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      const Icon(Icons.info_outline),
-                      const SizedBox(width: 8),
-                      Text(
-                        'How to Customize',
-                        style: Theme.of(context).textTheme.titleMedium,
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  const Text(
-                    '• Toggle switches to show/hide screens in the drawer\n'
-                    '• Drag the handle (⋮⋮) to reorder items - drag up or down to change position\n'
-                    '• Choose your preferred startup screen from enabled items\n'
-                    '• Use the reset button to restore defaults\n'
-                    '• Home and Settings cannot be disabled (required for app functionality)',
-                  ),
-                ],
+            elevation: Theme.of(context).brightness == Brightness.dark ? 0 : 1,
+            color: Theme.of(context).colorScheme.surface,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+              side: BorderSide(
+                color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.12),
+              ),
+            ),
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                color: Theme.of(context).colorScheme.surface,
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        const Icon(Icons.info_outline),
+                        const SizedBox(width: 8),
+                        Text(
+                          'How to Customize',
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    const Text(
+                      '• Toggle switches to show/hide screens in the drawer\n'
+                      '• Drag the handle (⋮⋮) to reorder items - drag up or down to change position\n'
+                      '• Choose your preferred startup screen from enabled items\n'
+                      '• Use the reset button to restore defaults\n'
+                      '• Home and Settings cannot be disabled (required for app functionality)',
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
         ],
+        ),
       ),
     );
   }
