@@ -59,6 +59,10 @@ class Settings extends NotifiedSettings {
     key: 'muteVideos',
     initialValue: true,
   );
+  late final ValueNotifier<bool> favoriteButtonLeft = createSetting<bool>(
+    key: 'favoriteButtonLeft',
+    initialValue: false,
+  );
   late final ValueNotifier<VideoResolution> videoResolution = createEnumSetting(
     key: 'videoResolution',
     initialValue: VideoResolution.source,

@@ -249,6 +249,16 @@ class SettingsPage extends StatelessWidget {
                   onChanged: (value) => settings.muteVideos.value = value,
                 ),
               ),
+              ValueListenableBuilder<bool>(
+                valueListenable: settings.favoriteButtonLeft,
+                builder: (context, value, child) => SwitchListTile(
+                  title: const Text('Favorite button position'),
+                  subtitle: Text(value ? 'left side' : 'right side'),
+                  secondary: Icon(value ? Icons.favorite_border : Icons.favorite),
+                  value: value,
+                  onChanged: (value) => settings.favoriteButtonLeft.value = value,
+                ),
+              ),
               ValueListenableBuilder<VideoResolution>(
                 valueListenable: settings.videoResolution,
                 builder: (context, value, child) => ListTile(
