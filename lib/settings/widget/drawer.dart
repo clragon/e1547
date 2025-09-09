@@ -212,12 +212,12 @@ class _DrawerCustomizationPageState extends State<DrawerCustomizationPage> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Toggle screens to show or hide them in the drawer. Long press and drag to reorder.',
+                    'Toggle screens to show or hide them in the drawer. Drag the handle to reorder items.',
                     style: Theme.of(context).textTheme.bodySmall,
                   ),
                   const SizedBox(height: 16),
                   
-                  // Group items by category with reordering
+                  // Reorderable list with improved UI
                   ReorderableListView(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
@@ -229,7 +229,7 @@ class _DrawerCustomizationPageState extends State<DrawerCustomizationPage> {
                         final item = _items.removeAt(oldIndex);
                         _items.insert(newIndex, item);
                         
-                        // Update order values
+                        // Update order values based on new positions
                         for (int i = 0; i < _items.length; i++) {
                           _items[i] = _items[i].copyWith(order: i);
                         }
@@ -238,29 +238,40 @@ class _DrawerCustomizationPageState extends State<DrawerCustomizationPage> {
                     children: _items.map((item) {
                       final isEssential = item.id == 'settings' || item.id == 'home';
                       
-                      return Card(
+                      return Container(
                         key: ValueKey(item.id),
                         margin: const EdgeInsets.symmetric(vertical: 2),
-                        child: SwitchListTile(
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: Theme.of(context).dividerColor,
+                            width: 0.5,
+                          ),
+                          borderRadius: BorderRadius.circular(8),
+                          color: Theme.of(context).cardColor,
+                        ),
+                        child: ListTile(
                           title: Text(item.name),
                           subtitle: Text(
                             isEssential 
-                                ? '${item.group} • ${item.path} • Essential'
+                                ? '${item.group} • ${item.path} • Required'
                                 : '${item.group} • ${item.path}'
                           ),
-                          secondary: Row(
+                          leading: _getIconFromString(item.icon),
+                          trailing: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              _getIconFromString(item.icon),
+                              Switch(
+                                value: item.enabled,
+                                onChanged: isEssential ? null : (_) => _toggleItem(item),
+                              ),
                               const SizedBox(width: 8),
-                              if (isEssential)
-                                const Icon(Icons.lock, size: 16, color: Colors.grey)
-                              else
-                                const Icon(Icons.drag_handle),
+                              Icon(
+                                isEssential ? Icons.lock : Icons.drag_handle,
+                                color: isEssential ? Colors.grey : Theme.of(context).iconTheme.color,
+                                size: 20,
+                              ),
                             ],
                           ),
-                          value: item.enabled,
-                          onChanged: isEssential ? null : (_) => _toggleItem(item),
                         ),
                       );
                     }).toList(),
@@ -335,10 +346,10 @@ class _DrawerCustomizationPageState extends State<DrawerCustomizationPage> {
                   const SizedBox(height: 8),
                   const Text(
                     '• Toggle switches to show/hide screens in the drawer\n'
-                    '• Long press and drag items to reorder them\n'
+                    '• Drag the handle (⋮⋮) to reorder items - drag up or down to change position\n'
                     '• Choose your preferred startup screen from enabled items\n'
                     '• Use the reset button to restore defaults\n'
-                    '• Home and Settings cannot be disabled (essential screens)',
+                    '• Home and Settings cannot be disabled (required for app functionality)',
                   ),
                 ],
               ),
