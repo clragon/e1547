@@ -169,7 +169,7 @@ class _DrawerCustomizationPageState extends State<DrawerCustomizationPage> {
                   ),
                   const SizedBox(height: 8),
                   DropdownButtonFormField<String>(
-                    value: _config.startupScreen,
+                    initialValue: _config.startupScreen,
                     decoration: const InputDecoration(
                       labelText: 'Default startup screen',
                       border: OutlineInputBorder(),

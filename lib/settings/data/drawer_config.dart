@@ -13,6 +13,15 @@ class DrawerItemConfig {
     this.order = 0,
   });
 
+  DrawerItemConfig.fromJson(Map<String, dynamic> json)
+      : id = json['id'] as String,
+        name = json['name'] as String,
+        icon = json['icon'] as String,
+        path = json['path'] as String,
+        group = json['group'] as String,
+        enabled = json['enabled'] as bool? ?? true,
+        order = json['order'] as int? ?? 0;
+
   final String id;
   final String name;
   final String icon; // Icon name as string for serialization
@@ -53,15 +62,6 @@ class DrawerItemConfig {
     };
   }
 
-  DrawerItemConfig.fromJson(Map<String, dynamic> json)
-      : id = json['id'] as String,
-        name = json['name'] as String,
-        icon = json['icon'] as String,
-        path = json['path'] as String,
-        group = json['group'] as String,
-        enabled = json['enabled'] as bool? ?? true,
-        order = json['order'] as int? ?? 0;
-
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
@@ -89,6 +89,12 @@ class DrawerConfiguration {
     required this.startupScreen,
   });
 
+  DrawerConfiguration.fromJson(Map<String, dynamic> json)
+      : items = (json['items'] as List<dynamic>)
+            .map((item) => DrawerItemConfig.fromJson(item as Map<String, dynamic>))
+            .toList(),
+        startupScreen = json['startupScreen'] as String? ?? '/';
+
   final List<DrawerItemConfig> items;
   final String startupScreen; // path of the startup screen
 
@@ -108,12 +114,6 @@ class DrawerConfiguration {
       'startupScreen': startupScreen,
     };
   }
-
-  DrawerConfiguration.fromJson(Map<String, dynamic> json)
-      : items = (json['items'] as List<dynamic>)
-            .map((item) => DrawerItemConfig.fromJson(item as Map<String, dynamic>))
-            .toList(),
-        startupScreen = json['startupScreen'] as String? ?? '/';
 
   @override
   bool operator ==(Object other) {
@@ -137,7 +137,6 @@ const List<DrawerItemConfig> defaultDrawerItems = [
     icon: 'home',
     path: '/',
     group: 'search',
-    enabled: true, // Always enabled - essential screen
   ),
   DrawerItemConfig(
     id: 'hot',
@@ -225,7 +224,6 @@ const List<DrawerItemConfig> defaultDrawerItems = [
     icon: 'settings',
     path: '/settings',
     group: 'settings',
-    enabled: true, // Always enabled - essential screen
     order: 11,
   ),
   DrawerItemConfig(
