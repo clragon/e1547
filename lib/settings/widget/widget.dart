@@ -1,6 +1,8 @@
 export 'about.dart';
+export 'customizable_drawer.dart';
 export 'database.dart';
 export 'donations.dart';
+export 'drawer.dart';
 export 'grid.dart';
 export 'icon.dart';
 export 'settings.dart';

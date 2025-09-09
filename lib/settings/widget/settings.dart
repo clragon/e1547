@@ -205,6 +205,7 @@ class SettingsPage extends StatelessWidget {
                   onChanged: (value) => settings.showPostInfo.value = value,
                 ),
               ),
+              const DrawerCustomizationTile(),
               const Divider(),
               const ListTileHeader(title: 'Interactions'),
               if (!Platform.isIOS)

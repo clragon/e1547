@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:e1547/app/app.dart';
+import 'package:e1547/settings/data/drawer_config.dart';
 import 'package:e1547/shared/shared.dart';
 import 'package:flutter/foundation.dart';
 import 'package:notified_preferences/notified_preferences.dart';
@@ -94,4 +97,26 @@ class Settings extends NotifiedSettings {
     key: 'showDev',
     initialValue: false,
   );
+
+  late final ValueNotifier<String> drawerConfiguration = createSetting<String>(
+    key: 'drawerConfiguration',
+    initialValue: '',
+  );
+
+  DrawerConfiguration get drawerConfig {
+    String configJson = drawerConfiguration.value;
+    if (configJson.isEmpty) {
+      return defaultDrawerConfiguration;
+    }
+    try {
+      Map<String, dynamic> json = jsonDecode(configJson) as Map<String, dynamic>;
+      return DrawerConfiguration.fromJson(json);
+    } catch (e) {
+      return defaultDrawerConfiguration;
+    }
+  }
+
+  set drawerConfig(DrawerConfiguration config) {
+    drawerConfiguration.value = jsonEncode(config.toJson());
+  }
 }

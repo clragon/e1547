@@ -40,46 +40,49 @@ class App extends StatelessWidget {
                   const SystemUiOverlayStyle(),
               child: SubValue<GlobalKey<NavigatorState>>(
                 create: () => GlobalKey<NavigatorState>(),
-                builder: (context, navigatorKey) => MaterialApp(
-                  title: AppInfo.instance.appName,
-                  theme: value.data,
-                  scrollBehavior: AndroidStretchScrollBehaviour(),
-                  localizationsDelegates: const [
-                    GlobalWidgetsLocalizations.delegate,
-                    GlobalMaterialLocalizations.delegate,
-                    GlobalCupertinoLocalizations.delegate,
-                    RelativeTimeLocalizations.delegate,
-                  ],
-                  navigatorKey: navigatorKey,
-                  navigatorObservers: [
-                    context.watch<AnyRouteObserver>(),
-                    RouteLoggerObserver(),
-                    MaterialApp.createMaterialHeroController(),
-                  ],
-                  routes: context.watch<RouterDrawerController>().routes,
-                  builder: (context, child) => WindowFrame(
-                    child: WindowShortcuts(
-                      navigatorKey: navigatorKey,
-                      child: SecureDisplay(
-                        child: LockScreen(
-                          child: LoadingShell(
-                            child: MultiProvider(
-                              providers: [
-                                IdentityClientProvider(),
-                                TraitsClientProvider(),
-                                ClientProvider(),
-                                CacheManagerProvider(),
-                              ],
-                              child: LoadingCore(
-                                child: ErrorNotifier(
-                                  navigatorKey: navigatorKey,
-                                  child: AccountConnector(
+                builder: (context, navigatorKey) => Consumer<Settings>(
+                  builder: (context, settings, child) => MaterialApp(
+                    title: AppInfo.instance.appName,
+                    theme: value.data,
+                    scrollBehavior: AndroidStretchScrollBehaviour(),
+                    localizationsDelegates: const [
+                      GlobalWidgetsLocalizations.delegate,
+                      GlobalMaterialLocalizations.delegate,
+                      GlobalCupertinoLocalizations.delegate,
+                      RelativeTimeLocalizations.delegate,
+                    ],
+                    navigatorKey: navigatorKey,
+                    navigatorObservers: [
+                      context.watch<AnyRouteObserver>(),
+                      RouteLoggerObserver(),
+                      MaterialApp.createMaterialHeroController(),
+                    ],
+                    routes: context.watch<RouterDrawerController>().routes,
+                    initialRoute: settings.drawerConfig.startupScreen,
+                    builder: (context, child) => WindowFrame(
+                      child: WindowShortcuts(
+                        navigatorKey: navigatorKey,
+                        child: SecureDisplay(
+                          child: LockScreen(
+                            child: LoadingShell(
+                              child: MultiProvider(
+                                providers: [
+                                  IdentityClientProvider(),
+                                  TraitsClientProvider(),
+                                  ClientProvider(),
+                                  CacheManagerProvider(),
+                                ],
+                                child: LoadingCore(
+                                  child: ErrorNotifier(
                                     navigatorKey: navigatorKey,
-                                    child: AppLinkHandler(
+                                    child: AccountConnector(
                                       navigatorKey: navigatorKey,
-                                      child: NotificationHandler(
+                                      child: AppLinkHandler(
                                         navigatorKey: navigatorKey,
-                                        child: child!,
+                                        child: NotificationHandler(
+                                          navigatorKey: navigatorKey,
+                                          child: child!,
+                                        ),
                                       ),
                                     ),
                                   ),
