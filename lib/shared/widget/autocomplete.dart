@@ -135,7 +135,7 @@ class AutocompleteCutout extends ShapeBorder {
             1,
             -1,
             1,
-          )..translate(0.0, -size.height - offset)).storage,
+          )..translateByDouble(0, -size.height - offset, 0, 1)).storage,
         );
   }
 
