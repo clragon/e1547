@@ -24,7 +24,7 @@ class ReportFormDropdown<T> extends StatelessWidget {
           labelText: 'Type',
           border: OutlineInputBorder(),
         ),
-        value: type,
+        initialValue: type,
         onChanged: isLoading ? null : onChanged,
         validator: (value) {
           if (value == null) {
