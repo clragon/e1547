@@ -137,6 +137,7 @@ const List<DrawerItemConfig> defaultDrawerItems = [
     icon: 'home',
     path: '/',
     group: 'search',
+    enabled: true, // Always enabled - essential screen
   ),
   DrawerItemConfig(
     id: 'hot',
@@ -224,6 +225,7 @@ const List<DrawerItemConfig> defaultDrawerItems = [
     icon: 'settings',
     path: '/settings',
     group: 'settings',
+    enabled: true, // Always enabled - essential screen
     order: 11,
   ),
   DrawerItemConfig(

@@ -110,7 +110,17 @@ class Settings extends NotifiedSettings {
     }
     try {
       Map<String, dynamic> json = jsonDecode(configJson) as Map<String, dynamic>;
-      return DrawerConfiguration.fromJson(json);
+      DrawerConfiguration config = DrawerConfiguration.fromJson(json);
+      
+      // Ensure essential screens are always enabled
+      List<DrawerItemConfig> items = config.items.map((item) {
+        if (item.id == 'settings' || item.id == 'home') {
+          return item.copyWith(enabled: true);
+        }
+        return item;
+      }).toList();
+      
+      return config.copyWith(items: items);
     } catch (e) {
       return defaultDrawerConfiguration;
     }

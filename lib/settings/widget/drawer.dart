@@ -39,6 +39,15 @@ class _DrawerCustomizationPageState extends State<DrawerCustomizationPage> {
     final Settings settings = context.read<Settings>();
     _config = settings.drawerConfig;
     _items = List<DrawerItemConfig>.from(_config.items);
+    
+    // Ensure essential items are enabled
+    _items = _items.map((item) {
+      if (item.id == 'settings' || item.id == 'home') {
+        return item.copyWith(enabled: true);
+      }
+      return item;
+    }).toList();
+    
     _items.sort((a, b) => a.order.compareTo(b.order));
   }
 
@@ -53,11 +62,25 @@ class _DrawerCustomizationPageState extends State<DrawerCustomizationPage> {
     setState(() {
       _config = defaultDrawerConfiguration;
       _items = List<DrawerItemConfig>.from(_config.items);
+      
+      // Ensure essential items are enabled
+      _items = _items.map((item) {
+        if (item.id == 'settings' || item.id == 'home') {
+          return item.copyWith(enabled: true);
+        }
+        return item;
+      }).toList();
+      
       _items.sort((a, b) => a.order.compareTo(b.order));
     });
   }
 
   void _toggleItem(DrawerItemConfig item) {
+    // Prevent disabling essential screens
+    if (item.id == 'settings' || item.id == 'home') {
+      return;
+    }
+    
     setState(() {
       final index = _items.indexWhere((i) => i.id == item.id);
       if (index != -1) {
@@ -213,22 +236,31 @@ class _DrawerCustomizationPageState extends State<DrawerCustomizationPage> {
                       });
                     },
                     children: _items.map((item) {
+                      final isEssential = item.id == 'settings' || item.id == 'home';
+                      
                       return Card(
                         key: ValueKey(item.id),
                         margin: const EdgeInsets.symmetric(vertical: 2),
                         child: SwitchListTile(
                           title: Text(item.name),
-                          subtitle: Text('${item.group} • ${item.path}'),
+                          subtitle: Text(
+                            isEssential 
+                                ? '${item.group} • ${item.path} • Essential'
+                                : '${item.group} • ${item.path}'
+                          ),
                           secondary: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               _getIconFromString(item.icon),
                               const SizedBox(width: 8),
-                              const Icon(Icons.drag_handle),
+                              if (isEssential)
+                                const Icon(Icons.lock, size: 16, color: Colors.grey)
+                              else
+                                const Icon(Icons.drag_handle),
                             ],
                           ),
                           value: item.enabled,
-                          onChanged: (_) => _toggleItem(item),
+                          onChanged: isEssential ? null : (_) => _toggleItem(item),
                         ),
                       );
                     }).toList(),
@@ -305,7 +337,8 @@ class _DrawerCustomizationPageState extends State<DrawerCustomizationPage> {
                     '• Toggle switches to show/hide screens in the drawer\n'
                     '• Long press and drag items to reorder them\n'
                     '• Choose your preferred startup screen from enabled items\n'
-                    '• Use the reset button to restore defaults',
+                    '• Use the reset button to restore defaults\n'
+                    '• Home and Settings cannot be disabled (essential screens)',
                   ),
                 ],
               ),
