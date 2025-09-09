@@ -141,7 +141,6 @@ class _PopularPageState extends State<PopularPage> with SingleTickerProviderStat
                               padding: defaultActionListPadding,
                               sliver: PostSliverDisplay(
                                 controller: controller,
-                                displayType: PostDisplayType.grid,
                               ),
                             ),
                           ],
