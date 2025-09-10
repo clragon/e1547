@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:e1547/domain/domain.dart';
 import 'package:e1547/post/post.dart';
+import 'package:e1547/settings/settings.dart';
 import 'package:e1547/shared/shared.dart';
 import 'package:flutter/material.dart';
 
@@ -87,12 +88,18 @@ class PostDetail extends StatelessWidget {
         post: post,
         child: PostEditor(
           post: post,
-          child: Scaffold(
-            extendBodyBehindAppBar: true,
-            appBar: PostDetailAppBar(post: post),
-            floatingActionButton: context.read<Domain>().hasLogin
-                ? PostDetailFloatingActionButton(post: post)
-                : null,
+          child: Consumer<Settings>(
+            builder: (context, settings, child) => ValueListenableBuilder<bool>(
+              valueListenable: settings.favoriteButtonLeft,
+              builder: (context, isLeft, child) => Scaffold(
+                extendBodyBehindAppBar: true,
+                appBar: PostDetailAppBar(post: post),
+                floatingActionButton: context.read<Domain>().hasLogin
+                    ? PostDetailFloatingActionButton(post: post)
+                    : null,
+                floatingActionButtonLocation: isLeft
+                    ? FloatingActionButtonLocation.startFloat
+                    : FloatingActionButtonLocation.endFloat,
             body: MediaQuery.removeViewInsets(
               context: context,
               removeTop: true,
@@ -155,6 +162,8 @@ class PostDetail extends StatelessWidget {
                     );
                   }
                 },
+              ),
+            ),
               ),
             ),
           ),

@@ -118,7 +118,7 @@ extension M2ThemeData on ThemeData {
             ? Brightness.dark
             : Brightness.light,
       ),
-      color: theme.canvasColor,
+      backgroundColor: theme.canvasColor,
       foregroundColor: theme.iconTheme.color,
     ),
     dialogTheme: theme.dialogTheme.copyWith(

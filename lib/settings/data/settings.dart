@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:e1547/app/app.dart';
+import 'package:e1547/settings/data/drawer_config.dart';
 import 'package:e1547/shared/shared.dart';
 import 'package:flutter/foundation.dart';
 import 'package:notified_preferences/notified_preferences.dart';
@@ -59,6 +62,10 @@ class Settings extends NotifiedSettings {
     key: 'muteVideos',
     initialValue: true,
   );
+  late final ValueNotifier<bool> favoriteButtonLeft = createSetting<bool>(
+    key: 'favoriteButtonLeft',
+    initialValue: false,
+  );
   late final ValueNotifier<VideoResolution> videoResolution = createEnumSetting(
     key: 'videoResolution',
     initialValue: VideoResolution.source,
@@ -90,4 +97,36 @@ class Settings extends NotifiedSettings {
     key: 'showDev',
     initialValue: false,
   );
+
+  late final ValueNotifier<String> drawerConfiguration = createSetting<String>(
+    key: 'drawerConfiguration',
+    initialValue: '',
+  );
+
+  DrawerConfiguration get drawerConfig {
+    String configJson = drawerConfiguration.value;
+    if (configJson.isEmpty) {
+      return defaultDrawerConfiguration;
+    }
+    try {
+      Map<String, dynamic> json = jsonDecode(configJson) as Map<String, dynamic>;
+      DrawerConfiguration config = DrawerConfiguration.fromJson(json);
+      
+      // Ensure essential screens are always enabled
+      List<DrawerItemConfig> items = config.items.map((item) {
+        if (item.id == 'settings' || item.id == 'home') {
+          return item.copyWith(enabled: true);
+        }
+        return item;
+      }).toList();
+      
+      return config.copyWith(items: items);
+    } catch (e) {
+      return defaultDrawerConfiguration;
+    }
+  }
+
+  set drawerConfig(DrawerConfiguration config) {
+    drawerConfiguration.value = jsonEncode(config.toJson());
+  }
 }

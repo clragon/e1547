@@ -104,6 +104,41 @@ class PostClient {
     );
   }
 
+  Future<List<Post>> byPopular({
+    int? page,
+    int? limit,
+    QueryMap? query,
+    String? date,
+    String? scale,
+    bool? force,
+    CancelToken? cancelToken,
+  }) {
+    Map<String, dynamic> queryParameters = {
+      'page': page,
+      'limit': limit,
+      ...?query,
+    };
+    
+    if (date != null) queryParameters['date'] = date;
+    if (scale != null) queryParameters['scale'] = scale;
+    
+    return dio
+        .get(
+          '/popular.json',
+          queryParameters: queryParameters,
+          options: forceOptions(force),
+          cancelToken: cancelToken,
+        )
+        .then(
+          (response) => (response.data['posts'] as List<dynamic>)
+              .map<Post>(E621Post.fromJson)
+              .whereNot(
+                (e) => (e.file == null && !e.isDeleted) || e.ext == 'swf',
+              )
+              .toList(),
+        );
+  }
+
   Future<List<Post>> byIds({
     required List<int> ids,
     int? limit,

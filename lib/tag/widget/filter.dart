@@ -382,7 +382,7 @@ class ChoiceFilter extends StatelessWidget {
     }
     return DropdownButtonFormField<String>(
       key: Key('FilterList/${state.filter.tag}'),
-      value: value,
+      initialValue: value,
       decoration: theme.decoration.copyWith(labelText: state.filter.name),
       icon: state.filter.icon,
       isExpanded: true,
