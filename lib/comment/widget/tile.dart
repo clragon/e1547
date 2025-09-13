@@ -145,7 +145,6 @@ class CommentVotes extends StatelessWidget {
                 ? (isLiked) async {
                     try {
                       await mutate((upvote: true, replace: !isLiked));
-                      return !isLiked;
                     } on Exception {
                       messenger.showSnackBar(
                         SnackBar(
@@ -155,7 +154,6 @@ class CommentVotes extends StatelessWidget {
                           ),
                         ),
                       );
-                      return isLiked;
                     }
                   }
                 : null,
@@ -163,7 +161,6 @@ class CommentVotes extends StatelessWidget {
                 ? (isLiked) async {
                     try {
                       await mutate((upvote: false, replace: !isLiked));
-                      return !isLiked;
                     } on Exception {
                       messenger.showSnackBar(
                         SnackBar(
@@ -173,7 +170,6 @@ class CommentVotes extends StatelessWidget {
                           ),
                         ),
                       );
-                      return isLiked;
                     }
                   }
                 : null,

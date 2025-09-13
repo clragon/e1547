@@ -1,3 +1,7 @@
+// TODO: Reimplement this I guess
+
+/*
+
 import 'package:e1547/post/post.dart';
 import 'package:e1547/shared/shared.dart';
 import 'package:e1547/tag/tag.dart';
@@ -148,3 +152,6 @@ class DrawerTagCounterBody extends StatelessWidget {
     );
   }
 }
+
+
+*/

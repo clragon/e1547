@@ -1,6 +1,5 @@
 export 'actions.dart';
 export 'client.dart';
-export 'controller.dart';
 export 'follow.dart';
 export 'notifications.dart';
 export 'params.dart';

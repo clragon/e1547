@@ -2,14 +2,21 @@ import 'dart:async';
 
 import 'package:e1547/domain/domain.dart';
 import 'package:e1547/pool/pool.dart';
+import 'package:e1547/post/post.dart';
 import 'package:e1547/query/query.dart';
 import 'package:e1547/shared/shared.dart';
 
 class PoolRepo {
-  PoolRepo({required this.persona, required this.client, required this.cache});
+  PoolRepo({
+    required this.persona,
+    required this.client,
+    required this.cache,
+    required this.postClient,
+  });
 
   final Persona persona;
   final PoolClient client;
+  final PostClient postClient;
   final CachedQuery cache;
 
   final String queryKey = 'pools';

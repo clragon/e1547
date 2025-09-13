@@ -1,3 +1,4 @@
+import 'package:e1547/shared/shared.dart';
 import 'package:flutter/material.dart';
 
 class SizedCircularProgressIndicator extends StatelessWidget {
@@ -72,85 +73,104 @@ class IconMessage extends StatelessWidget {
   }
 }
 
-/// Similar to [TransitionBuilder] except that child is guaranteed to be non-null.
-typedef WidgetChildBuilder =
-    Widget Function(BuildContext context, Widget child);
+enum LoadingDisplayState {
+  loading,
+  empty,
+  error,
+  done;
 
-enum LoadingPageState { loading, empty, error, done }
+  static LoadingDisplayState compute({
+    bool isLoading = false,
+    bool isEmpty = false,
+    bool isError = false,
+  }) {
+    if (isLoading) return LoadingDisplayState.loading;
+    if (isError) return LoadingDisplayState.error;
+    if (isEmpty) return LoadingDisplayState.empty;
+    return LoadingDisplayState.done;
+  }
+}
 
-class LoadingPage extends StatelessWidget {
-  const LoadingPage({
+class LoadingDisplay extends StatelessWidget {
+  const LoadingDisplay({
     super.key,
-    required this.child,
-    this.isError = false,
-    this.isLoading = false,
-    this.isEmpty = false,
-    this.isBuilt,
-    this.pageBuilder,
-    this.loadingBuilder,
+    required this.builder,
+    required this.state,
     this.onEmpty,
     this.onError,
   });
 
-  final WidgetBuilder child;
-  final Widget Function(BuildContext context, WidgetBuilder child)? pageBuilder;
-  final Widget Function(BuildContext context, WidgetBuilder child)?
-  loadingBuilder;
+  final WidgetBuilder builder;
+  final LoadingDisplayState state;
   final Widget? onEmpty;
   final Widget? onError;
+
+  @override
+  Widget build(BuildContext context) => Material(
+    child: switch (state) {
+      LoadingDisplayState.loading => const Center(
+        child: CircularProgressIndicator(),
+      ),
+      LoadingDisplayState.error =>
+        onError ??
+            const IconMessage(
+              icon: Icon(Icons.warning_amber_outlined),
+              title: Text('Failed to load'),
+            ),
+      LoadingDisplayState.empty =>
+        onEmpty ??
+            const IconMessage(
+              icon: Icon(Icons.clear),
+              title: Text('Nothing to see here'),
+            ),
+      LoadingDisplayState.done => builder(context),
+    },
+  );
+}
+
+class LoadingPage extends StatelessWidget {
+  const LoadingPage({
+    super.key,
+    this.isLoading = false,
+    this.isError = false,
+    this.isEmpty = false,
+    this.onEmpty,
+    this.onError,
+    this.title,
+    required this.builder,
+  });
+
   final bool isLoading;
-  final bool isEmpty;
   final bool isError;
-  final bool? isBuilt;
+  final bool isEmpty;
+  final Widget? onEmpty;
+  final Widget? onError;
+  final Widget? title;
+  final WidgetBuilder builder;
 
   @override
   Widget build(BuildContext context) {
-    LoadingPageState state = isBuilt ?? true
-        ? LoadingPageState.done
-        : LoadingPageState.loading;
-    if (isEmpty) {
-      if (isLoading) {
-        state = LoadingPageState.loading;
-      } else if (isError) {
-        state = LoadingPageState.error;
-      } else {
-        state = LoadingPageState.empty;
-      }
+    final content = LoadingDisplay(
+      state: LoadingDisplayState.compute(
+        isLoading: isLoading,
+        isError: isError,
+        isEmpty: isEmpty,
+      ),
+      onEmpty: onEmpty,
+      onError: onError,
+      builder: builder,
+    );
+
+    if (isLoading || isError) {
+      return Scaffold(
+        appBar: TransparentAppBar(
+          child: DefaultAppBar(leading: const CloseButton(), title: title),
+        ),
+        body: content,
+      );
     }
 
-    Widget content(BuildContext context) {
-      switch (state) {
-        case LoadingPageState.loading:
-          return const Center(child: CircularProgressIndicator());
-        case LoadingPageState.error:
-          return onError ??
-              const IconMessage(
-                icon: Icon(Icons.warning_amber_outlined),
-                title: Text('Failed to load'),
-              );
-        case LoadingPageState.empty:
-          return onEmpty ??
-              const IconMessage(
-                icon: Icon(Icons.clear),
-                title: Text('Nothing to see here'),
-              );
-        case LoadingPageState.done:
-          return child(context);
-      }
-    }
-
-    Widget body() {
-      Widget? body;
-      if (pageBuilder != null) {
-        body = pageBuilder!(context, content);
-      }
-      if (loadingBuilder != null && state != LoadingPageState.done) {
-        body = loadingBuilder!(context, content);
-      }
-      return body ?? content(context);
-    }
-
-    return Material(child: body());
+    return content;
   }
 }
 
@@ -161,37 +181,30 @@ class AsyncLoadingPage<T> extends StatelessWidget {
     required this.builder,
     this.title,
     this.isEmpty,
-    this.isBuilt,
     this.onEmpty,
     this.onError,
   });
 
-  final Widget Function(BuildContext context, T value) builder;
   final Widget? title;
   final Widget? onEmpty;
   final Widget? onError;
   final bool? isEmpty;
-  final bool? isBuilt;
   final AsyncSnapshot<T> snapshot;
+  final Widget Function(BuildContext context, T value) builder;
 
   @override
-  Widget build(BuildContext context) {
-    return LoadingPage(
-      child: (context) => builder(context, snapshot.data as T),
-      loadingBuilder: (context, child) => Scaffold(
-        appBar: title != null
-            ? AppBar(leading: const CloseButton(), title: title)
-            : null,
-        body: child(context),
-      ),
-      isLoading: snapshot.connectionState != ConnectionState.done,
-      isError: snapshot.hasError,
-      isEmpty: isEmpty ?? snapshot.connectionState != ConnectionState.done,
-      isBuilt: isBuilt,
-      onEmpty: onEmpty,
-      onError: onError,
-    );
-  }
+  Widget build(BuildContext context) => LoadingPage(
+    isLoading: ![
+      ConnectionState.active,
+      ConnectionState.done,
+    ].contains(snapshot.connectionState),
+    isError: snapshot.hasError,
+    isEmpty: isEmpty ?? false,
+    onEmpty: onEmpty,
+    onError: onError,
+    title: title,
+    builder: (context) => builder(context, snapshot.data as T),
+  );
 }
 
 class FutureLoadingPage<T> extends StatelessWidget {
@@ -201,32 +214,27 @@ class FutureLoadingPage<T> extends StatelessWidget {
     required this.builder,
     this.title,
     this.isEmpty,
-    this.isBuilt,
     this.onEmpty,
     this.onError,
   });
 
-  final Widget Function(BuildContext context, T value) builder;
   final Widget? title;
   final Widget? onEmpty;
   final Widget? onError;
   final bool? isEmpty;
-  final bool? isBuilt;
   final Future<T> future;
+  final Widget Function(BuildContext context, T value) builder;
 
   @override
-  Widget build(BuildContext context) {
-    return FutureBuilder<T>(
-      future: future,
-      builder: (context, snapshot) => AsyncLoadingPage(
-        snapshot: snapshot,
-        title: title,
-        isEmpty: isEmpty,
-        isBuilt: isBuilt,
-        onEmpty: onEmpty,
-        onError: onError,
-        builder: builder,
-      ),
-    );
-  }
+  Widget build(BuildContext context) => FutureBuilder<T>(
+    future: future,
+    builder: (context, snapshot) => AsyncLoadingPage<T>(
+      snapshot: snapshot,
+      title: title,
+      isEmpty: isEmpty,
+      onEmpty: onEmpty,
+      onError: onError,
+      builder: builder,
+    ),
+  );
 }

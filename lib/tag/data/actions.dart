@@ -19,6 +19,9 @@ String tagToName(String tags) =>
 /// Removes underscores and prefixes from tags
 String tagToTitle(String tags) => tagToName(tagToRaw(tags));
 
+/// Converts a name to a pretty format.
+String nameToPretty(String name) => name.replaceAll('_', ' ');
+
 enum TagCategory {
   general,
   species,

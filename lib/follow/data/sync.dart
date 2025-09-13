@@ -229,12 +229,7 @@ class FollowSync {
     _assertNoDuplicates([follow.tags]);
 
     List<Post> posts = await rateLimit(
-      postsClient.page(
-        query: {'tags': follow.tags},
-        limit: refreshAmount,
-        ordered: false,
-        force: force,
-      ),
+      postsClient.page(query: {'tags': follow.tags}, limit: refreshAmount),
     );
     posts.removeWhere((e) => e.isDeniedBy(persona.traits.value.denylist));
     follow = follow.withUnseen(posts);

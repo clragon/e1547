@@ -5,6 +5,7 @@ import 'package:e1547/comment/comment.dart';
 import 'package:e1547/domain/domain.dart';
 import 'package:e1547/markup/markup.dart';
 import 'package:e1547/post/post.dart';
+import 'package:e1547/query/query.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:e1547/shared/shared.dart';
 import 'package:flutter/material.dart';
@@ -105,25 +106,16 @@ class PostTileOverlay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return PostsConnector(
-      post: post,
-      builder: (context, post) {
-        PostController? controller = context.watch<PostController?>();
-        if (post.isDeleted) {
-          return const Center(child: Text('deleted'));
-        }
-        if (post.type == PostType.unsupported) {
-          return const Center(child: Text('unsupported'));
-        }
-        if (post.file == null) {
-          return const Center(child: Text('unavailable'));
-        }
-        if (controller?.isDenied(post) ?? false) {
-          return const Center(child: Text('blacklisted'));
-        }
-        return child;
-      },
-    );
+    if (post.isDeleted) {
+      return const Center(child: Text('deleted'));
+    }
+    if (post.type == PostType.unsupported) {
+      return const Center(child: Text('unsupported'));
+    }
+    if (post.file == null) {
+      return const Center(child: Text('unavailable'));
+    }
+    return child;
   }
 }
 
@@ -210,21 +202,12 @@ class PostInfoBar extends StatelessWidget {
 }
 
 void defaultPushPostDetail(BuildContext context, Post post) {
-  PostController? controller = context.read<PostController?>();
   int? cacheSize = context.read<ImageCacheSize>().size;
   Navigator.of(context).push(
     MaterialPageRoute(
       builder: (context) => ImageCacheSizeProvider(
         size: cacheSize,
-        child: controller != null
-            ? PostsRouteConnector(
-                controller: controller,
-                child: PostDetailGallery(
-                  controller: controller,
-                  initialPage: controller.items!.indexOf(post),
-                ),
-              )
-            : PostDetail(post: post),
+        child: PostDetail(post: post),
       ),
     ),
   );
@@ -300,58 +283,49 @@ class PostFeedTile extends StatelessWidget {
                 Text(post.commentCount.toString()),
               ],
             ),
-            VoteDisplay(
-              status: post.vote.status,
-              score: post.vote.score,
-              onUpvote: (isLiked) async {
-                PostController controller = context.read<PostController>();
-                ScaffoldMessengerState messenger = ScaffoldMessenger.of(
-                  context,
-                );
-                if (context.read<Domain>().hasLogin) {
-                  controller
-                      .vote(post: post, upvote: true, replace: !isLiked)
-                      .then((value) {
-                        if (!value) {
-                          messenger.showSnackBar(
-                            SnackBar(
-                              duration: const Duration(seconds: 1),
-                              content: Text(
-                                'Failed to upvote Post #${post.id}',
+            MutationBuilder(
+              mutation: context.watch<Domain>().posts.useVote(id: post.id),
+              builder: (context, state, mutate) {
+                final domain = context.watch<Domain>();
+                final messenger = ScaffoldMessenger.of(context);
+                final enabled = domain.hasLogin && !state.isLoading;
+
+                return VoteDisplay(
+                  status: post.vote.status,
+                  score: post.vote.score,
+                  onUpvote: enabled
+                      ? (isLiked) async {
+                          try {
+                            await mutate((upvote: true, replace: !isLiked));
+                          } on Exception {
+                            messenger.showSnackBar(
+                              SnackBar(
+                                duration: const Duration(seconds: 1),
+                                content: Text(
+                                  'Failed to upvote Post #${post.id}',
+                                ),
                               ),
-                            ),
-                          );
+                            );
+                          }
                         }
-                      });
-                  return !isLiked;
-                } else {
-                  return false;
-                }
-              },
-              onDownvote: (isLiked) async {
-                PostController controller = context.read<PostController>();
-                ScaffoldMessengerState messenger = ScaffoldMessenger.of(
-                  context,
-                );
-                if (context.read<Domain>().hasLogin) {
-                  controller
-                      .vote(post: post, upvote: false, replace: !isLiked)
-                      .then((value) {
-                        if (!value) {
-                          messenger.showSnackBar(
-                            SnackBar(
-                              duration: const Duration(seconds: 1),
-                              content: Text(
-                                'Failed to downvote Post #${post.id}',
+                      : null,
+                  onDownvote: enabled
+                      ? (isLiked) async {
+                          try {
+                            await mutate((upvote: false, replace: !isLiked));
+                          } on Exception {
+                            messenger.showSnackBar(
+                              SnackBar(
+                                duration: const Duration(seconds: 1),
+                                content: Text(
+                                  'Failed to downvote Post #${post.id}',
+                                ),
                               ),
-                            ),
-                          );
+                            );
+                          }
                         }
-                      });
-                  return !isLiked;
-                } else {
-                  return false;
-                }
+                      : null,
+                );
               },
             ),
             Row(
@@ -401,28 +375,17 @@ class PostFeedTile extends StatelessWidget {
           aspectRatio: max(post.width / post.height, 0.9),
           child: PostImageTile(
             post: post,
-            onTap: () {
-              PostController? controller = context.read<PostController?>();
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => PostVideoRoute(
-                    post: post,
-                    child: ImageCacheSizeProvider(
-                      size: cacheSize,
-                      child: controller != null
-                          ? ChangeNotifierProvider.value(
-                              value: controller,
-                              child: PostsRouteConnector(
-                                controller: controller,
-                                child: PostFullscreen(post: post),
-                              ),
-                            )
-                          : PostFullscreen(post: post),
-                    ),
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => PostVideoRoute(
+                  post: post,
+                  child: ImageCacheSizeProvider(
+                    size: cacheSize,
+                    child: PostFullscreen(post: post),
                   ),
                 ),
-              );
-            },
+              ),
+            ),
           ),
         ),
       );

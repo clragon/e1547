@@ -2,6 +2,7 @@ import 'package:drift/drift.dart';
 import 'package:e1547/identity/identity.dart';
 import 'package:e1547/shared/shared.dart';
 import 'package:e1547/stream/stream.dart';
+import 'package:e1547/traits/data/database.drift.dart';
 import 'package:e1547/traits/traits.dart';
 
 @UseRowClass(Traits, generateInsertable: true)

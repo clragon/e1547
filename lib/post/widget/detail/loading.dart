@@ -1,7 +1,6 @@
-import 'dart:async';
-
 import 'package:e1547/domain/domain.dart';
 import 'package:e1547/post/post.dart';
+import 'package:e1547/query/query.dart';
 import 'package:e1547/shared/shared.dart';
 import 'package:flutter/material.dart';
 
@@ -12,38 +11,16 @@ class PostLoadingPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleFuturePostsProvider(
-      id: id,
-      child: Consumer<Future<PostController>>(
-        builder: (context, controller, child) =>
-            FutureLoadingPage<PostController>(
-              future: controller,
-              builder: (context, value) => PostsRouteConnector(
-                controller: value,
-                child: PostDetailGallery(controller: value),
-              ),
-              title: Text('Post #$id'),
-              onError: const Text('Failed to load post'),
-              onEmpty: const Text('Post not found'),
-            ),
+    final domain = context.watch<Domain>();
+    return QueryBuilder(
+      query: domain.posts.useGet(id: id),
+      builder: (context, state) => LoadingPage(
+        isLoading: state.isLoading,
+        isError: state.isError,
+        onError: const Text('Failed to load post'),
+        onEmpty: const Text('Post not found'),
+        builder: (context) => PostDetail(post: state.data!),
       ),
     );
   }
-}
-
-class SingleFuturePostsProvider
-    extends SubProvider<Domain, Future<PostController>> {
-  SingleFuturePostsProvider({required int id, super.child, super.builder})
-    : super(
-        create: (context, domain) => Future<PostController>(() async {
-          PostController controller = SinglePostController(
-            id: id,
-            domain: domain,
-          );
-          await controller.getNextPage();
-          return controller;
-        }),
-        keys: (context) => [id],
-        dispose: (context, value) async => (await value).dispose(),
-      );
 }

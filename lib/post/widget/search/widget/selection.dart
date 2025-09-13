@@ -4,13 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:like_button/like_button.dart';
 
 class PostSelectionAppBar extends StatelessWidget with AppBarBuilderWidget {
-  const PostSelectionAppBar({
-    super.key,
-    required this.controller,
-    required this.child,
-  });
+  const PostSelectionAppBar({super.key, required this.child});
 
-  final PostController controller;
   @override
   final PreferredSizeWidget child;
 
@@ -50,7 +45,6 @@ class PostSelectionAppBar extends StatelessWidget with AppBarBuilderWidget {
               postFavoritingNotification(
                 context,
                 Set.from(data.selections),
-                controller,
                 isLiked,
               );
               data.onChanged({});

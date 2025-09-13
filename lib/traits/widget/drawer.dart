@@ -4,77 +4,78 @@ import 'package:e1547/tag/tag.dart';
 import 'package:flutter/material.dart';
 
 class DrawerDenySwitch extends StatelessWidget {
-  const DrawerDenySwitch({super.key, required this.controller});
-
-  final PostController controller;
+  const DrawerDenySwitch({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: controller,
-      builder: (context, child) => DrawerDenySwitchBody(
-        denying: controller.denying,
-        denied: controller.deniedPosts ?? {},
-        updateAllowedList: (value) => controller.allowedTags = value,
-        updateDenying: (value) => controller.denying = value,
-        allowedList: controller.allowedTags,
-      ),
+    final filter = context.watch<PostFilter?>();
+    if (filter == null) return const SizedBox.shrink();
+
+    Map<String, List<int>> entries = {};
+
+    filter.postFilterEntries.forEach((postId, deniers) {
+      for (final denier in deniers) {
+        entries.putIfAbsent(denier, () => []);
+        entries[denier]!.add(postId);
+      }
+    });
+    entries.addAll({for (final e in filter.allowedEntries) e: []});
+
+    entries = Map.fromEntries(
+      entries.entries.toList()..sort((a, b) => a.key.compareTo(b.key)),
     );
-  }
-}
 
-class DrawerMultiDenySwitch extends StatefulWidget {
-  const DrawerMultiDenySwitch({super.key, required this.controllers});
+    int count = filter.postFilterEntries.entries
+        .where((entry) => !filter.allowedPosts.contains(entry.key))
+        .where(
+          (entry) =>
+              entry.value.any((tag) => !filter.allowedEntries.contains(tag)),
+        )
+        .length;
 
-  final List<PostController> controllers;
-
-  @override
-  State<DrawerMultiDenySwitch> createState() => _DrawerMultiDenySwitchState();
-}
-
-class _DrawerMultiDenySwitchState extends State<DrawerMultiDenySwitch> {
-  bool denying = true;
-  List<String> allowedList = [];
-
-  void updateDenying(bool value) {
-    denying = value;
-    widget.controllers.forEach((e) => e.denying = denying);
-  }
-
-  void updateAllowedList(List<String> value) {
-    allowedList = value;
-    widget.controllers.forEach((e) => e.allowedTags = allowedList);
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    updateDenying(denying);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: Listenable.merge(widget.controllers),
-      builder: (context, child) {
-        Map<Post, List<String>> denied = {};
-        List<String> allowedList = [];
-        for (PostController controller in widget.controllers) {
-          if (controller.deniedPosts != null) {
-            denied.addAll(controller.deniedPosts!);
-          }
-          allowedList.addAll(controller.allowedTags);
-        }
-        allowedList = allowedList.toSet().toList();
-
-        return DrawerDenySwitchBody(
-          denying: denying,
-          denied: denied,
-          updateAllowedList: updateAllowedList,
-          updateDenying: updateDenying,
-          allowedList: allowedList,
-        );
-      },
+    return Column(
+      children: [
+        SwitchListTile(
+          title: const Text('Blacklist'),
+          subtitle: filter.denying && count > 0
+              ? TweenAnimationBuilder<int>(
+                  tween: IntTween(begin: 0, end: count),
+                  duration: defaultAnimationDuration,
+                  builder: (context, value, child) =>
+                      Text('blocked $value posts'),
+                )
+              : null,
+          secondary: const Icon(Icons.block),
+          value: filter.denying,
+          onChanged: (value) => filter.denying = value,
+        ),
+        CrossFade(
+          showChild:
+              filter.postFilterEntries.isNotEmpty ||
+              filter.allowedEntries.isNotEmpty,
+          child: Column(
+            children: [
+              const Divider(),
+              ...entries.entries.map(
+                (entry) => DrawerDenyTile(
+                  entry: entry,
+                  isAllowed: !filter.allowedEntries.contains(entry.key),
+                  onChanged: (value) {
+                    List<String> allowed = List.from(filter.allowedEntries);
+                    if (value!) {
+                      allowed.remove(entry.key);
+                    } else {
+                      allowed.add(entry.key);
+                    }
+                    filter.allowedEntries = allowed;
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+        const Divider(),
+      ],
     );
   }
 }
@@ -89,7 +90,7 @@ class DrawerDenyTile extends StatelessWidget {
 
   final bool isAllowed;
   final void Function(bool? value) onChanged;
-  final MapEntry<String, List<Post>> entry;
+  final MapEntry<String, List<int>> entry;
 
   @override
   Widget build(BuildContext context) {
@@ -121,86 +122,6 @@ class DrawerDenyTile extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-}
-
-class DrawerDenySwitchBody extends StatelessWidget {
-  const DrawerDenySwitchBody({
-    super.key,
-    required this.denying,
-    required this.denied,
-    required this.allowedList,
-    required this.updateDenying,
-    required this.updateAllowedList,
-  });
-
-  final bool denying;
-  final Map<Post, List<String>> denied;
-  final List<String> allowedList;
-
-  final ValueChanged<bool> updateDenying;
-  final ValueChanged<List<String>> updateAllowedList;
-
-  @override
-  Widget build(BuildContext context) {
-    Map<String, List<Post>> entries = {};
-
-    denied.forEach((key, value) {
-      for (final denier in value) {
-        entries.putIfAbsent(denier, () => []);
-        entries[denier]!.add(key);
-      }
-    });
-    entries.addAll({for (final e in allowedList) e: <Post>[]});
-
-    entries = Map.fromEntries(
-      entries.entries.toList()..sort((a, b) => a.key.compareTo(b.key)),
-    );
-
-    int count = denied.keys.length;
-
-    return Column(
-      children: [
-        SwitchListTile(
-          title: const Text('Blacklist'),
-          subtitle: denying && count > 0
-              ? TweenAnimationBuilder<int>(
-                  tween: IntTween(begin: 0, end: count),
-                  duration: defaultAnimationDuration,
-                  builder: (context, value, child) =>
-                      Text('blocked $value posts'),
-                )
-              : null,
-          secondary: const Icon(Icons.block),
-          value: denying,
-          onChanged: updateDenying,
-        ),
-        CrossFade(
-          showChild: denied.isNotEmpty || allowedList.isNotEmpty,
-          child: Column(
-            children: [
-              const Divider(),
-              ...entries.entries.map(
-                (entry) => DrawerDenyTile(
-                  entry: entry,
-                  isAllowed: !allowedList.contains(entry.key),
-                  onChanged: (value) {
-                    List<String> allowed = List.from(allowedList);
-                    if (value!) {
-                      allowed.remove(entry.key);
-                    } else {
-                      allowed.add(entry.key);
-                    }
-                    updateAllowedList(allowed);
-                  },
-                ),
-              ),
-            ],
-          ),
-        ),
-        const Divider(),
-      ],
     );
   }
 }

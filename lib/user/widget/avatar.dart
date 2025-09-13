@@ -1,7 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:e1547/domain/domain.dart';
 import 'package:e1547/post/post.dart';
+import 'package:e1547/query/data/cache.dart';
 import 'package:e1547/shared/shared.dart';
 import 'package:e1547/traits/data/client.dart';
+import 'package:e1547/user/user.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_sub/flutter_sub.dart';
@@ -25,101 +28,106 @@ class IdentityAvatar extends StatelessWidget {
 }
 
 class UserAvatar extends StatelessWidget {
-  const UserAvatar({super.key, required this.controller, required this.id});
+  const UserAvatar({
+    super.key,
+    required this.id,
+    this.radius,
+    this.onTap,
+    this.vendored = false,
+  });
 
-  final PostController? controller;
-  final int? id;
+  final String? id;
+  final double? radius;
+  final VoidCallback? onTap;
+  final bool vendored;
 
   @override
-  Widget build(BuildContext context) {
-    int? id = this.id;
-    PostController? controller = this.controller;
-    if (id == null || controller == null) {
-      return const EmptyAvatar();
-    }
-    return SubFuture<PostController>(
-      create: () => Future<PostController>(() async {
-        await controller.getNextPage();
-        return controller;
-      }),
-      keys: [controller],
-      builder: (context, _) => PostsControllerConnector(
-        id: id,
-        controller: controller,
-        builder: (context, post) => Avatar(
-          post?.sample,
-          onTap: () => Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => PostsControllerConnector(
-                id: id,
-                controller: controller,
-                builder: (context, post) => PostsRouteConnector(
-                  controller: controller,
-                  child: PostDetail(post: post!),
-                ),
-              ),
-            ),
-          ),
-        ),
+  Widget build(BuildContext context) => switch (id) {
+    final id? => QueryBuilder(
+      query: context.watch<Domain>().users.useGet(id: id, vendored: vendored),
+      builder: (context, state) => PostAvatar(
+        id: state.data?.avatarId,
+        onTap: state.data != null
+            ? onTap ??
+                  () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => UserPage(user: state.data!),
+                    ),
+                  )
+            : null,
+        vendored: vendored,
       ),
-    );
-  }
+    ),
+    _ => const EmptyAvatar(),
+  };
 }
 
 class PostAvatar extends StatelessWidget {
-  const PostAvatar({super.key, required this.id});
+  const PostAvatar({
+    super.key,
+    required this.id,
+    this.radius,
+    this.onTap,
+    this.vendored = false,
+  });
 
   final int? id;
+  final double? radius;
+  final VoidCallback? onTap;
+  final bool vendored;
 
   @override
-  Widget build(BuildContext context) {
-    if (id == null) {
-      return const EmptyAvatar();
-    } else {
-      return SinglePostProvider(
-        id: id!,
-        child: Consumer<PostController>(
-          builder: (context, controller, child) =>
-              UserAvatar(id: id, controller: controller),
-        ),
-      );
-    }
-  }
+  Widget build(BuildContext context) => switch (id) {
+    final id? => QueryBuilder(
+      query: context.watch<Domain>().posts.useGet(id: id, vendored: vendored),
+      builder: (context, state) => Avatar(
+        state.data?.sample,
+        radius: radius,
+        onTap: state.data != null
+            ? onTap ??
+                  () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => PostDetail(post: state.data!),
+                    ),
+                  )
+            : null,
+      ),
+    ),
+    _ => const EmptyAvatar(),
+  };
 }
 
 class Avatar extends StatelessWidget {
-  const Avatar(this.url, {super.key, this.onTap, this.radius = 20});
+  const Avatar(this.url, {super.key, this.onTap, double? radius})
+    : radius = radius ?? 20;
 
   final String? url;
   final double radius;
   final VoidCallback? onTap;
 
   @override
-  Widget build(BuildContext context) {
-    if (url case final url?) {
-      return MouseCursorRegion(
-        onTap: onTap,
-        child: Container(
-          decoration: const BoxDecoration(shape: BoxShape.circle),
-          clipBehavior: Clip.antiAlias,
-          width: radius * 2,
-          height: radius * 2,
-          child: CachedNetworkImage(
-            imageUrl: url,
-            fit: BoxFit.cover,
-            cacheManager: context.read<BaseCacheManager>(),
-            placeholder: (context, url) => EmptyAvatar(radius: radius),
-            errorWidget: (context, url, error) =>
-                const Center(child: Icon(Icons.warning_amber)),
-            fadeInDuration: Duration.zero,
-            fadeOutDuration: Duration.zero,
-          ),
+  Widget build(BuildContext context) => switch (url) {
+    final url? => MouseCursorRegion(
+      onTap: onTap,
+      child: Container(
+        decoration: const BoxDecoration(shape: BoxShape.circle),
+        clipBehavior: Clip.antiAlias,
+        width: radius * 2,
+        height: radius * 2,
+        child: CachedNetworkImage(
+          imageUrl: url,
+          fit: BoxFit.cover,
+          cacheManager: context.read<BaseCacheManager>(),
+          placeholder: (context, url) => EmptyAvatar(radius: radius),
+          errorWidget: (context, url, error) =>
+              const Center(child: Icon(Icons.warning_amber)),
+          fadeInDuration: Duration.zero,
+          fadeOutDuration: Duration.zero,
         ),
-      );
-    } else {
-      return EmptyAvatar(radius: radius);
-    }
-  }
+      ),
+    ),
+    _ => EmptyAvatar(radius: radius),
+  };
 }
 
 class EmptyAvatar extends StatelessWidget {

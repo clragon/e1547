@@ -35,7 +35,7 @@ dependencies:
   grouped_list: ^6.0.0
   infinite_scroll_pagination: ^5.1.0
   keyboard_dismisser: ^3.0.0
-  like_button: ^2.0.4
+  like_button: ^2.1.0
   local_auth: ^2.2.0
   overflow_view: ^0.5.0
   photo_view: ^0.15.0

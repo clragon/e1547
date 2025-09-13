@@ -165,109 +165,90 @@ class TagListActions extends StatelessWidget {
 }
 
 class RemoveTagAction extends StatelessWidget {
-  const RemoveTagAction({
-    super.key,
-    required this.controller,
-    required this.tag,
-  });
+  const RemoveTagAction({super.key, required this.tag});
 
-  final PostController controller;
   final String tag;
 
   @override
   Widget build(BuildContext context) {
+    final controller = context.watch<PostParams>();
+
     return ActionButton(
       icon: const Icon(Icons.search_off),
       label: const Text('Remove'),
       onTap: () {
         Navigator.of(context).maybePop();
-        QueryMap result = controller.query.toQuery();
-        result['tags'] = (TagMap(result['tags'])..remove(tag)).toString();
-        controller.query = result;
+        controller.removeTag(tag);
       },
     );
   }
 }
 
 class AddTagAction extends StatelessWidget {
-  const AddTagAction({super.key, required this.controller, required this.tag});
+  const AddTagAction({super.key, required this.tag});
 
-  final PostController controller;
   final String tag;
 
   @override
   Widget build(BuildContext context) {
+    final controller = context.watch<PostParams>();
+
     return ActionButton(
       icon: const Icon(Icons.zoom_in),
       label: const Text('Add'),
       onTap: () {
         Navigator.of(context).maybePop();
-        final result = controller.query.toQuery();
-        result['tags'] = (TagMap(result['tags'])..add(tag)).toString();
-        controller.query = result;
+        controller.addTag(tag);
       },
     );
   }
 }
 
 class SubtractTagAction extends StatelessWidget {
-  const SubtractTagAction({
-    super.key,
-    required this.controller,
-    required this.tag,
-  });
+  const SubtractTagAction({super.key, required this.tag});
 
-  final PostController controller;
   final String tag;
 
   @override
   Widget build(BuildContext context) {
+    final controller = context.watch<PostParams>();
+
     return ActionButton(
       icon: const Icon(Icons.zoom_out),
       label: const Text('Subtract'),
       onTap: () {
         Navigator.of(context).maybePop();
-        final result = controller.query.toQuery();
-        result['tags'] = (TagMap(result['tags'])..add('-$tag')).toString();
-        controller.query = result;
+        controller.subtractTag(tag);
       },
     );
   }
 }
 
 class TagSearchActions extends StatelessWidget {
-  const TagSearchActions({
-    super.key,
-    required this.tag,
-    required this.controller,
-  });
+  const TagSearchActions({super.key, required this.tag});
 
   final String tag;
-  final PostController controller;
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: controller,
-      builder: (context, child) {
-        if (!controller.canSearch || tag.contains(' ')) {
-          return const SizedBox.shrink();
-        }
+    final controller = context.watch<PostParams>();
 
-        bool isSearched = TagMap(controller.query['tags']).containsKey(tag);
+    if (tag.contains(' ')) {
+      return const SizedBox.shrink();
+    }
 
-        if (isSearched) {
-          return RemoveTagAction(controller: controller, tag: tag);
-        } else {
-          return Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              AddTagAction(controller: controller, tag: tag),
-              SubtractTagAction(controller: controller, tag: tag),
-            ],
-          );
-        }
-      },
-    );
+    bool isSearched = controller.hasTag(tag);
+
+    if (isSearched) {
+      return RemoveTagAction(tag: tag);
+    } else {
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          AddTagAction(tag: tag),
+          SubtractTagAction(tag: tag),
+        ],
+      );
+    }
   }
 }

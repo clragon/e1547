@@ -269,4 +269,21 @@ class FollowClient extends DatabaseAccessor<GeneratedDatabase>
               : const Value.absent(),
         ),
       );
+
+  Future<Map<FollowType, List<String>>> timelineTags({
+    required int identity,
+  }) async {
+    final follows = await _querySelect(
+      identity: identity,
+      query: (FollowParams()..tags = r'^[^\s:]+$').query,
+    ).get();
+
+    final result = <FollowType, List<String>>{};
+
+    for (final follow in follows) {
+      result.putIfAbsent(follow.type, () => []).add(follow.tags);
+    }
+
+    return result;
+  }
 }

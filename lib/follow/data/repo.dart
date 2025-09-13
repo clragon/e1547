@@ -80,6 +80,15 @@ class FollowRepo with Disposable {
     return client.all(identity: persona.identity.id, query: query);
   }
 
+  Future<Map<FollowType, List<String>>> timelineTags() =>
+      client.timelineTags(identity: persona.identity.id);
+
+  Query<Map<FollowType, List<String>>> useTimelineTags() => Query(
+    cache: cache,
+    key: [queryKey, 'timeline_tags'],
+    queryFn: () => timelineTags(),
+  );
+
   Future<void> create({
     required String tags,
     required FollowType type,

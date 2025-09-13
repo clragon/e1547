@@ -1,6 +1,6 @@
 import 'package:e1547/domain/domain.dart';
 import 'package:e1547/post/post.dart';
-import 'package:e1547/settings/settings.dart';
+import 'package:e1547/query/query.dart';
 import 'package:e1547/shared/shared.dart';
 import 'package:flutter/material.dart';
 import 'package:like_button/like_button.dart';
@@ -13,55 +13,54 @@ class LikeDisplay extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final domain = context.watch<Domain>();
-    PostController controller = context.watch<PostController>();
-    ScaffoldMessengerState messenger = ScaffoldMessenger.of(context);
-    bool canVote = domain.hasLogin;
+    final messenger = ScaffoldMessenger.of(context);
+
     return Column(
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            VoteDisplay(
-              status: post.vote.status,
-              score: post.vote.score,
-              onUpvote: canVote
-                  ? (isLiked) async {
-                      controller
-                          .vote(post: post, upvote: true, replace: !isLiked)
-                          .then((value) {
-                            if (!value) {
-                              messenger.showSnackBar(
-                                SnackBar(
-                                  duration: const Duration(seconds: 1),
-                                  content: Text(
-                                    'Failed to upvote Post #${post.id}',
-                                  ),
+            MutationBuilder(
+              mutation: domain.posts.useVote(id: post.id),
+              builder: (context, state, mutate) {
+                final bool enabled = domain.hasLogin && !state.isLoading;
+                return VoteDisplay(
+                  status: post.vote.status,
+                  score: post.vote.score,
+                  onUpvote: enabled
+                      ? (isLiked) async {
+                          try {
+                            await mutate((upvote: true, replace: !isLiked));
+                          } on Exception {
+                            messenger.showSnackBar(
+                              SnackBar(
+                                duration: const Duration(seconds: 1),
+                                content: Text(
+                                  'Failed to upvote Post #${post.id}',
                                 ),
-                              );
-                            }
-                          });
-                      return !isLiked;
-                    }
-                  : null,
-              onDownvote: canVote
-                  ? (isLiked) async {
-                      controller
-                          .vote(post: post, upvote: false, replace: !isLiked)
-                          .then((value) {
-                            if (!value) {
-                              messenger.showSnackBar(
-                                SnackBar(
-                                  duration: const Duration(seconds: 1),
-                                  content: Text(
-                                    'Failed to downvote Post #${post.id}',
-                                  ),
+                              ),
+                            );
+                          }
+                        }
+                      : null,
+                  onDownvote: enabled
+                      ? (isLiked) async {
+                          try {
+                            await mutate((upvote: false, replace: !isLiked));
+                          } on Exception {
+                            messenger.showSnackBar(
+                              SnackBar(
+                                duration: const Duration(seconds: 1),
+                                content: Text(
+                                  'Failed to downvote Post #${post.id}',
                                 ),
-                              );
-                            }
-                          });
-                      return !isLiked;
-                    }
-                  : null,
+                              ),
+                            );
+                          }
+                        }
+                      : null,
+                );
+              },
             ),
             Row(
               children: [
@@ -92,62 +91,47 @@ class FavoriteButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkResponse(
-      onTap: () {},
-      child: LikeButton(
-        isLiked: post.isFavorited,
-        circleColor: const CircleColor(start: Colors.pink, end: Colors.red),
-        bubblesColor: const BubblesColor(
-          dotPrimaryColor: Colors.pink,
-          dotSecondaryColor: Colors.red,
-        ),
-        likeBuilder: (isLiked) => Icon(
-          Icons.favorite,
-          color: isLiked ? Colors.pinkAccent : IconTheme.of(context).color,
-        ),
-        onTap: (isLiked) async {
-          PostController controller = context.read<PostController>();
-          ScaffoldMessengerState messenger = ScaffoldMessenger.of(context);
-          if (isLiked) {
-            controller.unfav(post).then((value) {
-              if (!value) {
-                messenger.showSnackBar(
-                  SnackBar(
-                    duration: const Duration(seconds: 1),
-                    content: Text(
-                      'Failed to remove Post #${post.id} from favorites',
+    final domain = context.watch<Domain>();
+    final messenger = ScaffoldMessenger.of(context);
+
+    return MutationBuilder(
+      mutation: domain.favorites.useSetFavorite(id: post.id),
+      builder: (context, state, mutate) {
+        return InkResponse(
+          onTap: state.isLoading ? null : () {},
+          child: LikeButton(
+            isLiked: post.isFavorited,
+            circleColor: const CircleColor(start: Colors.pink, end: Colors.red),
+            bubblesColor: const BubblesColor(
+              dotPrimaryColor: Colors.pink,
+              dotSecondaryColor: Colors.red,
+            ),
+            likeBuilder: (isLiked) => Icon(
+              Icons.favorite,
+              color: isLiked ? Colors.pinkAccent : IconTheme.of(context).color,
+            ),
+            onTap: (isLiked) async {
+              (() async {
+                try {
+                  await mutate(!isLiked);
+                } on Exception {
+                  messenger.showSnackBar(
+                    SnackBar(
+                      duration: const Duration(seconds: 1),
+                      content: Text(
+                        isLiked
+                            ? 'Failed to remove Post #${post.id} from favorites'
+                            : 'Failed to add Post #${post.id} to favorites',
+                      ),
                     ),
-                  ),
-                );
-              }
-            });
-            return false;
-          } else {
-            bool upvote = context.read<Settings>().upvoteFavs.value;
-            controller.fav(post).then((value) {
-              if (value) {
-                if (upvote) {
-                  controller.vote(
-                    post: controller.postById(post.id)!,
-                    upvote: true,
-                    replace: true,
                   );
                 }
-              } else {
-                messenger.showSnackBar(
-                  SnackBar(
-                    duration: const Duration(seconds: 1),
-                    content: Text(
-                      'Failed to add Post #${post.id} to favorites',
-                    ),
-                  ),
-                );
-              }
-            });
-            return true;
-          }
-        },
-      ),
+              })();
+              return null;
+            },
+          ),
+        );
+      },
     );
   }
 }

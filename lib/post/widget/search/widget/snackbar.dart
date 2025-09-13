@@ -1,3 +1,4 @@
+import 'package:e1547/domain/domain.dart';
 import 'package:e1547/logs/logs.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/settings/settings.dart';
@@ -46,10 +47,9 @@ Future<void> postDownloadingNotification(
 Future<void> postFavoritingNotification(
   BuildContext context,
   Set<Post> items,
-  PostController controller,
   bool isLiked,
 ) {
-  PostController controller = context.read<PostController>();
+  Domain domain = context.read<Domain>();
   bool upvote = context.read<Settings>().upvoteFavs.value;
   return loadingNotification<Post>(
     context: context,
@@ -57,28 +57,14 @@ Future<void> postFavoritingNotification(
     items: items,
     timeout: const Duration(milliseconds: 300),
     process: (post) async {
-      if (isLiked) {
-        if (post.isFavorited) {
-          return controller.unfav(post);
-        } else {
-          return true;
+      try {
+        await domain.favorites.setFavorite(id: post.id, favorite: !isLiked);
+        if (!isLiked && upvote) {
+          await domain.posts.vote(id: post.id, upvote: true, replace: true);
         }
-      } else {
-        if (!post.isFavorited) {
-          return Future<bool>(() async {
-            bool result = await controller.fav(post);
-            if (result && upvote) {
-              result = await controller.vote(
-                post: controller.postById(post.id)!,
-                upvote: true,
-                replace: true,
-              );
-            }
-            return result;
-          });
-        } else {
-          return true;
-        }
+        return true;
+      } on Exception {
+        return false;
       }
     },
     onDone: isLiked

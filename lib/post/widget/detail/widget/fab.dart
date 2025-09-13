@@ -1,3 +1,4 @@
+import 'package:e1547/domain/domain.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/shared/shared.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +12,7 @@ class PostDetailFloatingActionButton extends StatelessWidget {
   Widget build(BuildContext context) {
     PostEditingController editingController = context
         .watch<PostEditingController>();
+    final domain = context.watch<Domain>();
 
     Future<void> editPost() async {
       ScaffoldMessengerState messenger = ScaffoldMessenger.of(context);
@@ -18,7 +20,7 @@ class PostDetailFloatingActionButton extends StatelessWidget {
       Map<String, String?>? body = editingController.value?.toForm();
       if (body != null) {
         try {
-          await context.read<PostController>().updatePost(post, body);
+          await domain.posts.update(id: post.id, data: body);
           editingController.stopEditing();
         } on ClientException {
           editingController.setLoading(false);

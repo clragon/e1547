@@ -3,6 +3,7 @@ import 'package:e1547/account/account.dart';
 import 'package:e1547/app/app.dart';
 import 'package:e1547/comment/comment.dart';
 import 'package:e1547/domain/domain.dart';
+import 'package:e1547/favorite/favorite.dart';
 import 'package:e1547/flag/flag.dart';
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/history/history.dart';
@@ -37,14 +38,28 @@ class Domain with Disposable {
     dio: dio,
     identity: identity,
     traits: traits,
-    postsService: posts,
+    postsService: _posts,
   );
-  late final UserClient users = UserClient(dio: dio);
 
-  late final PostClient posts = PostClient(
-    dio: dio,
-    identity: identity,
-    poolsService: _pools,
+  late final UserClient _users = UserClient(dio: dio);
+  late final UserRepo users = UserRepo(
+    persona: persona,
+    client: _users,
+    cache: storage.queryCache,
+  );
+
+  late final PostClient _posts = PostClient(dio: dio);
+  late final PostRepo posts = PostRepo(
+    persona: persona,
+    client: _posts,
+    cache: storage.queryCache,
+  );
+
+  late final FavoriteClient _favorites = FavoriteClient(dio: dio);
+  late final FavoriteRepo favorites = FavoriteRepo(
+    persona: persona,
+    client: _favorites,
+    cache: storage.queryCache,
   );
 
   late final TagClient tags = TagClient(dio: dio);
@@ -62,6 +77,7 @@ class Domain with Disposable {
     persona: persona,
     client: _pools,
     cache: storage.queryCache,
+    postClient: _posts,
   );
   // TODO: add Sets
 
@@ -92,7 +108,7 @@ class Domain with Disposable {
   late final FollowServer followsServer = FollowServer(
     client: _follows,
     persona: persona,
-    postsClient: posts,
+    postsClient: _posts,
     poolsClient: _pools,
     tagsClient: tags,
   );

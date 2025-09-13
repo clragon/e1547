@@ -1,9 +1,10 @@
+import 'package:cached_query_flutter/cached_query_flutter.dart';
 import 'package:e1547/domain/domain.dart';
 import 'package:e1547/shared/shared.dart';
 import 'package:e1547/user/user.dart';
 import 'package:flutter/material.dart';
 
-class UserLoadingPage extends StatefulWidget {
+class UserLoadingPage extends StatelessWidget {
   const UserLoadingPage(
     this.id, {
     super.key,
@@ -14,21 +15,18 @@ class UserLoadingPage extends StatefulWidget {
   final UserPageSection initalPage;
 
   @override
-  State<UserLoadingPage> createState() => _UserLoadingPageState();
-}
-
-class _UserLoadingPageState extends State<UserLoadingPage> {
-  late Future<User> user = context.read<Domain>().users.get(id: widget.id);
-
-  @override
   Widget build(BuildContext context) {
-    return FutureLoadingPage<User>(
-      future: user,
-      builder: (context, value) =>
-          UserPage(user: value, initialPage: widget.initalPage),
-      title: Text('User #${widget.id}'),
-      onError: const Text('Failed to load user'),
-      onEmpty: const Text('User not found'),
+    final domain = context.watch<Domain>();
+    return QueryBuilder(
+      query: domain.users.useGet(id: id),
+      builder: (context, state) => LoadingPage(
+        isLoading: state.isLoading,
+        isError: state.isError,
+        onError: const Text('Failed to load user'),
+        onEmpty: const Text('User not found'),
+        builder: (context) =>
+            UserPage(user: state.data!, initialPage: initalPage),
+      ),
     );
   }
 }

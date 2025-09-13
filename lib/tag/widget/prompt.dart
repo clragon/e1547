@@ -22,19 +22,15 @@ Future<void> showTagSearchPrompt({
 Future<void> showTagSearchSheet({
   required BuildContext context,
   required String tag,
-}) async {
-  PostController? controller = context.read<PostController?>();
-  return showDefaultSlidingBottomSheet(
-    context,
-    (context, sheetState) => TagSearchSheet(tag: tag, controller: controller),
-  );
-}
+}) async => showDefaultSlidingBottomSheet(
+  context,
+  (context, sheetState) => TagSearchSheet(tag: tag),
+);
 
 class TagSearchSheet extends StatelessWidget {
-  const TagSearchSheet({super.key, required this.tag, this.controller});
+  const TagSearchSheet({super.key, required this.tag});
 
   final String tag;
-  final PostController? controller;
 
   @override
   Widget build(BuildContext context) {
@@ -71,8 +67,7 @@ class TagSearchSheet extends StatelessWidget {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  if (controller != null)
-                    TagSearchActions(tag: tag, controller: controller!),
+                  TagSearchActions(tag: tag),
                   TagListActions(tag: tag),
                 ],
               ),
@@ -84,7 +79,7 @@ class TagSearchSheet extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: ConstrainedBox(
           constraints: const BoxConstraints(minHeight: 600),
-          child: TagSearchInfo(tag: tag, controller: controller),
+          child: TagSearchInfo(tag: tag),
         ),
       ),
     );
@@ -92,10 +87,9 @@ class TagSearchSheet extends StatelessWidget {
 }
 
 class TagSearchInfo extends StatelessWidget {
-  const TagSearchInfo({super.key, required this.tag, this.controller});
+  const TagSearchInfo({super.key, required this.tag});
 
   final String tag;
-  final PostController? controller;
 
   @override
   Widget build(BuildContext context) {
@@ -106,9 +100,7 @@ class TagSearchInfo extends StatelessWidget {
         primary: true,
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          children: tags
-              .map((e) => TagSearchInfoChild(tag: e, controller: controller))
-              .toList(),
+          children: tags.map((e) => TagSearchInfoChild(tag: e)).toList(),
         ),
       );
     } else {
@@ -121,10 +113,9 @@ class TagSearchInfo extends StatelessWidget {
 }
 
 class TagSearchInfoChild extends StatelessWidget {
-  const TagSearchInfoChild({super.key, required this.tag, this.controller});
+  const TagSearchInfoChild({super.key, required this.tag});
 
   final String tag;
-  final PostController? controller;
 
   @override
   Widget build(BuildContext context) {
@@ -138,8 +129,7 @@ class TagSearchInfoChild extends StatelessWidget {
               : MainAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            if (controller != null)
-              TagSearchActions(tag: tag, controller: controller!),
+            TagSearchActions(tag: tag),
             TagListActions(tag: tag),
           ],
         ),
@@ -288,19 +278,15 @@ class _SearchTagDisplayState extends State<SearchTagDisplay> {
 Future<void> showTagSearchDialog({
   required BuildContext context,
   required String tag,
-}) {
-  PostController? controller = context.read<PostController?>();
-  return showDialog(
-    context: context,
-    builder: (context) => TagSearchDialog(tag: tag, controller: controller),
-  );
-}
+}) => showDialog(
+  context: context,
+  builder: (context) => TagSearchDialog(tag: tag),
+);
 
 class TagSearchDialog extends StatelessWidget {
-  const TagSearchDialog({super.key, required this.tag, this.controller});
+  const TagSearchDialog({super.key, required this.tag});
 
   final String tag;
-  final PostController? controller;
 
   @override
   Widget build(BuildContext context) {
@@ -326,8 +312,7 @@ class TagSearchDialog extends StatelessWidget {
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      if (controller != null)
-                        TagSearchActions(tag: tag, controller: controller!),
+                      TagSearchActions(tag: tag),
                       TagListActions(tag: tag),
                     ],
                   ),
@@ -336,11 +321,7 @@ class TagSearchDialog extends StatelessWidget {
               const Divider(indent: 4, endIndent: 4),
               Flexible(
                 child: Row(
-                  children: [
-                    Expanded(
-                      child: TagSearchInfo(tag: tag, controller: controller),
-                    ),
-                  ],
+                  children: [Expanded(child: TagSearchInfo(tag: tag))],
                 ),
               ),
             ],

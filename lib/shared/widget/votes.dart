@@ -81,8 +81,8 @@ class VoteDisplay extends StatelessWidget {
 
   final VoteStatus status;
   final int score;
-  final Future<bool> Function(bool isVoted)? onUpvote;
-  final Future<bool> Function(bool isVoted)? onDownvote;
+  final void Function(bool isVoted)? onUpvote;
+  final void Function(bool isVoted)? onDownvote;
   final EdgeInsetsGeometry? padding;
 
   @override
@@ -107,7 +107,10 @@ class VoteDisplay extends StatelessWidget {
               Icons.arrow_upward,
               color: isLiked ? Colors.deepOrange : null,
             ),
-            onTap: onUpvote ?? (_) async => status == VoteStatus.upvoted,
+            onTap: (isLiked) async {
+              onUpvote?.call(isLiked);
+              return null;
+            },
           ),
         ),
         Padding(
@@ -139,7 +142,10 @@ class VoteDisplay extends StatelessWidget {
             ),
             likeBuilder: (bool isLiked) =>
                 Icon(Icons.arrow_downward, color: isLiked ? Colors.blue : null),
-            onTap: onDownvote ?? (_) async => status == VoteStatus.downvoted,
+            onTap: (isLiked) async {
+              onDownvote?.call(isLiked);
+              return null;
+            },
           ),
         ),
       ],

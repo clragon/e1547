@@ -6,6 +6,7 @@ enum LoadingNotificationStatus { loading, cancelled, failed, done }
 Future<void> loadingNotification<T>({
   required BuildContext context,
   required Set<T> items,
+  // TODO: returning bool is really annoying. Lets not do that in the future.
   required Future<bool> Function(T item) process,
   String Function(Set<T> items, int index)? onProgress,
   String Function(Set<T> items, int index)? onFailure,

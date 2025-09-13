@@ -71,7 +71,6 @@ class AccountClient {
       // TODO: this shouldnt be here
       avatar = await postsService.get(
         id: result.avatarId!,
-        force: force,
         cancelToken: cancelToken,
       );
     }
