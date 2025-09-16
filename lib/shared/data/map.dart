@@ -3,30 +3,38 @@ import 'package:collection/collection.dart';
 typedef QueryMap = Map<String, String>;
 
 extension QueryMapping on Map<String, dynamic> {
+  String? _serialize(Object? value) {
+    if (value == null) return null;
+    switch (value) {
+      case Enum e:
+        return e.name;
+      default:
+        return value.toString();
+    }
+  }
+
+  void _serializeNested(Map<String, String> result, String key, Object? value) {
+    if (value == null) return;
+    switch (value) {
+      case Map m:
+        for (final e in m.entries) {
+          final k = e.key.toString();
+          _serializeNested(result, '$key[$k]', e.value);
+        }
+      case Iterable i:
+        final serialized = i.map(_serialize).whereType<String>().join(',');
+        if (serialized.isNotEmpty) result[key] = serialized;
+      default:
+        final serialized = _serialize(value);
+        if (serialized != null) result[key] = serialized;
+    }
+  }
+
   QueryMap toQuery() {
     final result = <String, String>{};
 
-    void walk(String key, Object? value) {
-      if (value == null) return;
-      switch (value) {
-        case Map m:
-          for (final e in m.entries) {
-            final k = e.key.toString();
-            walk('$key[$k]', e.value);
-          }
-        case List l:
-          for (final v in l) {
-            walk('$key[]', v);
-          }
-        case Enum e:
-          result[key] = e.name;
-        default:
-          result[key] = value.toString();
-      }
-    }
-
     for (final e in entries) {
-      walk(e.key, e.value);
+      _serializeNested(result, e.key, e.value);
     }
 
     return result.entries.sorted((a, b) => a.key.compareTo(b.key)).toMap();
