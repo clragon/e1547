@@ -1,5 +1,5 @@
 import 'package:e1547/app/app.dart';
-import 'package:e1547/domain/domain.dart';
+import 'package:e1547/client/client.dart';
 import 'package:e1547/history/history.dart';
 import 'package:e1547/history/widget/image.dart';
 import 'package:e1547/markup/markup.dart';
@@ -124,12 +124,12 @@ class _HistoryTileDropdown extends StatelessWidget {
           title: 'Share',
           icon: Icons.share,
           value: () =>
-              Share.text(context, context.read<Domain>().withHost(entry.link)),
+              Share.text(context, context.read<Client>().withHost(entry.link)),
         ),
         PopupMenuTile(
           title: 'Delete',
           icon: Icons.delete,
-          value: () => context.read<Domain>().histories.remove(entry.id),
+          value: () => context.read<Client>().histories.remove(entry.id),
         ),
       ],
     );

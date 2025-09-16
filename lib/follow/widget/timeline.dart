@@ -15,7 +15,7 @@ class _FollowsTimelinePageState extends State<FollowsTimelinePage> {
   Widget build(BuildContext context) {
     return RouterDrawerEntry<FollowsTimelinePage>(
       child: PostProvider.builder(
-        create: (context, domain) => FollowTimelineController(domain: domain),
+        create: (context, client) => FollowTimelineController(client: client),
         child: Consumer<PostController>(
           builder: (context, controller, child) => PostsPage(
             appBar: const DefaultAppBar(

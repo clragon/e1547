@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:e1547/app/app.dart';
-import 'package:e1547/domain/domain.dart';
+import 'package:e1547/client/client.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:e1547/shared/shared.dart';
@@ -220,7 +220,7 @@ mixin PostActionController<KeyType> on ClientDataController<KeyType, Post> {
     assertOwnsItem(post);
     replacePost(post.copyWith(isFavorited: true, favCount: post.favCount + 1));
     try {
-      await domain.posts.addFavorite(post.id);
+      await client.posts.addFavorite(post.id);
       evictCache();
       return true;
     } on ClientException {
@@ -235,7 +235,7 @@ mixin PostActionController<KeyType> on ClientDataController<KeyType, Post> {
     assertOwnsItem(post);
     replacePost(post.copyWith(isFavorited: false, favCount: post.favCount - 1));
     try {
-      await domain.posts.removeFavorite(post.id);
+      await client.posts.removeFavorite(post.id);
       evictCache();
       return true;
     } on ClientException {
@@ -260,7 +260,7 @@ mixin PostActionController<KeyType> on ClientDataController<KeyType, Post> {
     );
     replacePost(post);
     try {
-      await domain.posts.vote(post.id, upvote, replace);
+      await client.posts.vote(post.id, upvote, replace);
       evictCache();
       return true;
     } on ClientException {
@@ -270,14 +270,14 @@ mixin PostActionController<KeyType> on ClientDataController<KeyType, Post> {
 
   Future<void> resetPost(Post post) async {
     assertOwnsItem(post);
-    replacePost(await domain.posts.get(id: post.id, force: true));
+    replacePost(await client.posts.get(id: post.id, force: true));
     evictCache();
   }
 
   // TODO: create a PostUpdate Object instead of a Map
   Future<void> updatePost(Post post, Map<String, String?> body) async {
     assertOwnsItem(post);
-    await domain.posts.update(post.id, body);
+    await client.posts.update(post.id, body);
     await resetPost(post);
   }
 }

@@ -1,4 +1,4 @@
-import 'package:e1547/domain/domain.dart';
+import 'package:e1547/client/client.dart';
 import 'package:e1547/shared/shared.dart';
 import 'package:e1547/tag/tag.dart';
 import 'package:e1547/topic/topic.dart';
@@ -57,7 +57,7 @@ class TopicSheet extends StatelessWidget {
                   icon: const Icon(Icons.share),
                   onTap: () async => Share.text(
                     context,
-                    context.read<Domain>().withHost(topic.link),
+                    context.read<Client>().withHost(topic.link),
                   ),
                   label: const Text('Share'),
                 ),
@@ -175,7 +175,7 @@ class TopicDialog extends StatelessWidget {
                   icon: const Icon(Icons.share),
                   onTap: () async => Share.text(
                     context,
-                    context.read<Domain>().withHost(topic.link),
+                    context.read<Client>().withHost(topic.link),
                   ),
                   label: const Text('Share'),
                 ),

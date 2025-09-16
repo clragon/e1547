@@ -1,4 +1,4 @@
-import 'package:e1547/domain/domain.dart';
+import 'package:e1547/client/client.dart';
 import 'package:e1547/reply/reply.dart';
 import 'package:e1547/shared/shared.dart';
 import 'package:e1547/topic/topic.dart';
@@ -15,7 +15,7 @@ class TopicLoadingPage extends StatefulWidget {
 }
 
 class _TopicLoadingPageState extends State<TopicLoadingPage> {
-  late Future<Topic> topic = context.read<Domain>().topics.get(id: widget.id);
+  late Future<Topic> topic = context.read<Client>().topics.get(id: widget.id);
 
   @override
   Widget build(BuildContext context) {

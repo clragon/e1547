@@ -1,4 +1,4 @@
-import 'package:e1547/domain/domain.dart';
+import 'package:e1547/client/client.dart';
 import 'package:e1547/flag/flag.dart';
 import 'package:e1547/markup/markup.dart';
 import 'package:e1547/post/post.dart';
@@ -16,7 +16,7 @@ class DeletionDisplay extends StatelessWidget {
     if (!post.isDeleted) return const SizedBox.shrink();
     return SubFuture<PostFlag>(
       create: () async {
-        List<PostFlag> flags = await context.read<Domain>().flags.list(
+        List<PostFlag> flags = await context.read<Client>().flags.list(
           limit: 1,
           query: {
             'type': 'deletion',

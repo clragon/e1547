@@ -1,11 +1,11 @@
 import 'package:collection/collection.dart';
-import 'package:e1547/domain/domain.dart';
+import 'package:e1547/client/client.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/shared/shared.dart';
 import 'package:flutter/foundation.dart';
 
 mixin PostFilterableController<KeyType> on DataController<KeyType, Post> {
-  Domain get domain;
+  Client get client;
   PostFilterMode get filterMode;
 
   List<String> _denylist = [];
@@ -65,7 +65,7 @@ mixin PostFilterableController<KeyType> on DataController<KeyType, Post> {
   List<Post>? filter(List<Post>? items) {
     List<String> denylist = [];
     if (denying && filterMode != PostFilterMode.unavailable) {
-      denylist = domain.traits.value.denylist
+      denylist = client.traits.value.denylist
           .whereNot(_allowedTags.contains)
           .toList();
     }

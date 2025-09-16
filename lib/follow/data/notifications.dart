@@ -4,7 +4,7 @@ import 'dart:io';
 
 import 'package:collection/collection.dart';
 import 'package:e1547/app/app.dart';
-import 'package:e1547/domain/domain.dart';
+import 'package:e1547/client/client.dart';
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/identity/identity.dart';
 import 'package:e1547/logs/logs.dart';
@@ -34,7 +34,7 @@ Future<void> runFollowUpdates({
     TraitsClient traits = TraitsClient(database: storage.sqlite);
     await traits.activate(identity.id);
 
-    final domain = clientFactory.create(
+    final client = clientFactory.create(
       ClientConfig(
         identity: identity,
         traits: traits.notifier,
@@ -43,7 +43,7 @@ Future<void> runFollowUpdates({
     );
 
     await runClientFollowUpdate(
-      domain: domain,
+      client: client,
       notifications: notifications,
       cancelToken: cancelToken,
     );
@@ -55,24 +55,24 @@ Future<void> runFollowUpdates({
 }
 
 Future<void> runClientFollowUpdate({
-  required Domain domain,
+  required Client client,
   required FlutterLocalNotificationsPlugin notifications,
   CancelToken? cancelToken,
 }) async {
-  List<Follow> previous = await domain.follows.all(
+  List<Follow> previous = await client.follows.all(
     query: FollowsQuery(types: [FollowType.notify]),
   );
 
-  cancelToken?.whenCancel.then((_) => domain.follows.currentSync?.cancel());
+  cancelToken?.whenCancel.then((_) => client.follows.currentSync?.cancel());
 
-  await domain.follows.sync();
+  await client.follows.sync();
 
-  List<Follow> updated = await domain.follows.all(
+  List<Follow> updated = await client.follows.all(
     query: FollowsQuery(types: [FollowType.notify]),
   );
 
   await updateFollowNotifications(
-    identity: domain.identity.id,
+    identity: client.identity.id,
     previous: previous,
     updated: updated,
     notifications: notifications,

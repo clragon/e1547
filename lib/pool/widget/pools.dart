@@ -24,8 +24,8 @@ class _PoolsPageState extends State<PoolsPage> with RouterDrawerEntryWidget {
       child: Consumer<PoolController>(
         builder: (context, controller, child) => ControllerHistoryConnector(
           controller: controller,
-          addToHistory: (context, domain, controller) async =>
-              domain.histories.addPoolSearch(
+          addToHistory: (context, client, controller) async =>
+              client.histories.addPoolSearch(
                 query: controller.query,
                 pools: controller.items,
                 posts: controller.thumbnails.items,

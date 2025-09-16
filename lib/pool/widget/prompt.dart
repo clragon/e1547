@@ -1,4 +1,4 @@
-import 'package:e1547/domain/domain.dart';
+import 'package:e1547/client/client.dart';
 import 'package:e1547/markup/markup.dart';
 import 'package:e1547/pool/pool.dart';
 import 'package:e1547/post/post.dart';
@@ -166,7 +166,7 @@ class PoolActions extends StatelessWidget {
             icon: const Icon(Icons.share),
             label: const Text('share'),
             onTap: () async =>
-                Share.text(context, context.read<Domain>().withHost(pool.link)),
+                Share.text(context, context.read<Client>().withHost(pool.link)),
           ),
           TagListActions(tag: 'pool:${pool.id}'),
         ],

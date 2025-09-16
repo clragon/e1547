@@ -1,4 +1,4 @@
-import 'package:e1547/domain/domain.dart';
+import 'package:e1547/client/client.dart';
 import 'package:e1547/history/history.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/shared/shared.dart';
@@ -11,12 +11,12 @@ class FavPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return RouterDrawerEntry<FavPage>(
       child: PostProvider.builder(
-        create: (context, domain) => FavoritePostController(domain: domain),
+        create: (context, client) => FavoritePostController(client: client),
         child: Consumer<PostController>(
           builder: (context, controller, child) => ControllerHistoryConnector(
             controller: controller,
-            addToHistory: (context, domain, controller) =>
-                domain.histories.addPostSearch(
+            addToHistory: (context, client, controller) =>
+                client.histories.addPostSearch(
                   query: controller.query,
                   posts: controller.items,
                 ),

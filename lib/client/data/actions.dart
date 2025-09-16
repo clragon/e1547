@@ -1,4 +1,4 @@
-import 'package:e1547/domain/domain.dart';
+import 'package:e1547/client/client.dart';
 import 'package:e1547/identity/identity.dart';
 import 'package:e1547/shared/shared.dart';
 import 'package:flutter/material.dart';
@@ -15,7 +15,7 @@ Future<void> guardWithLogin({
   required VoidCallback callback,
   String? error,
 }) async {
-  if (context.read<Domain>().hasLogin) {
+  if (context.read<Client>().hasLogin) {
     callback();
   } else {
     ScaffoldMessenger.of(context).showSnackBar(

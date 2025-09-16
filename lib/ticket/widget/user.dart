@@ -1,4 +1,4 @@
-import 'package:e1547/domain/domain.dart';
+import 'package:e1547/client/client.dart';
 import 'package:e1547/shared/shared.dart';
 import 'package:e1547/ticket/ticket.dart';
 import 'package:e1547/user/user.dart';
@@ -14,7 +14,7 @@ class UserReportScreen extends StatelessWidget {
     return ReasonReportScreen(
       title: Text('User #${user.id}'),
       onReport: (reason) => validateCall(
-        () => context.read<Domain>().tickets.create(
+        () => context.read<Client>().tickets.create(
           type: TicketType.user,
           item: user.id,
           reason: reason,

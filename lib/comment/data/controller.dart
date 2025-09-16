@@ -1,20 +1,20 @@
 import 'package:collection/collection.dart';
+import 'package:e1547/client/client.dart';
 import 'package:e1547/comment/comment.dart';
-import 'package:e1547/domain/domain.dart';
 import 'package:e1547/shared/shared.dart';
 import 'package:flutter/material.dart';
 
 class CommentController extends PageClientDataController<Comment> {
   CommentController({
-    required this.domain,
+    required this.client,
     required this.postId,
     bool? orderByOldest,
   }) : _orderByOldest = orderByOldest ?? true {
-    domain.traits.addListener(applyFilter);
+    client.traits.addListener(applyFilter);
   }
 
   @override
-  final Domain domain;
+  final Client client;
   final int postId;
 
   bool _orderByOldest;
@@ -27,7 +27,7 @@ class CommentController extends PageClientDataController<Comment> {
 
   @override
   @protected
-  Future<List<Comment>> fetch(int page, bool force) => domain.comments.byPost(
+  Future<List<Comment>> fetch(int page, bool force) => client.comments.byPost(
     id: postId,
     page: page,
     force: force,
@@ -39,7 +39,7 @@ class CommentController extends PageClientDataController<Comment> {
   List<Comment>? filter(List<Comment>? items) => super.filter(
     items
         ?.whereNot(
-          (e) => domain.traits.value.denylist.contains('user:${e.creatorId}'),
+          (e) => client.traits.value.denylist.contains('user:${e.creatorId}'),
         )
         .toList(),
   );
@@ -62,7 +62,7 @@ class CommentController extends PageClientDataController<Comment> {
       ),
     );
     try {
-      await domain.comments.vote(
+      await client.comments.vote(
         id: comment.id,
         upvote: upvote,
         replace: replace,
@@ -77,17 +77,17 @@ class CommentController extends PageClientDataController<Comment> {
 
   @override
   void dispose() {
-    domain.traits.removeListener(applyFilter);
+    client.traits.removeListener(applyFilter);
     super.dispose();
   }
 }
 
 class CommentProvider
-    extends SubChangeNotifierProvider<Domain, CommentController> {
+    extends SubChangeNotifierProvider<Client, CommentController> {
   CommentProvider({required int postId, super.child, super.builder})
     : super(
         create: (context, client) =>
-            CommentController(domain: client, postId: postId),
+            CommentController(client: client, postId: postId),
         keys: (context) => [postId],
       );
 }

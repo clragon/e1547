@@ -1,19 +1,19 @@
-import 'package:e1547/domain/domain.dart';
+import 'package:e1547/client/client.dart';
 import 'package:e1547/reply/reply.dart';
 import 'package:e1547/shared/shared.dart';
 import 'package:flutter/material.dart';
 
 class ReplyController extends PageClientDataController<Reply> {
   ReplyController({
-    required this.domain,
+    required this.client,
     required this.topicId,
     bool? orderByOldest,
   }) : _orderByOldest = orderByOldest ?? true {
-    domain.traits.addListener(applyFilter);
+    client.traits.addListener(applyFilter);
   }
 
   @override
-  final Domain domain;
+  final Client client;
   final int topicId;
 
   bool _orderByOldest;
@@ -26,7 +26,7 @@ class ReplyController extends PageClientDataController<Reply> {
 
   @override
   @protected
-  Future<List<Reply>> fetch(int page, bool force) => domain.replies.byTopic(
+  Future<List<Reply>> fetch(int page, bool force) => client.replies.byTopic(
     id: topicId,
     page: page,
     ascending: orderByOldest,
@@ -36,12 +36,12 @@ class ReplyController extends PageClientDataController<Reply> {
 
   @override
   void dispose() {
-    domain.traits.removeListener(applyFilter);
+    client.traits.removeListener(applyFilter);
     super.dispose();
   }
 }
 
-class ReplyProvider extends SubChangeNotifierProvider<Domain, ReplyController> {
+class ReplyProvider extends SubChangeNotifierProvider<Client, ReplyController> {
   ReplyProvider({
     required int topicId,
     bool? orderByOldest,
@@ -49,7 +49,7 @@ class ReplyProvider extends SubChangeNotifierProvider<Domain, ReplyController> {
     super.builder,
   }) : super(
          create: (context, client) => ReplyController(
-           domain: client,
+           client: client,
            topicId: topicId,
            orderByOldest: orderByOldest,
          ),

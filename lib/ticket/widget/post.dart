@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:e1547/domain/domain.dart';
+import 'package:e1547/client/client.dart';
 import 'package:e1547/markup/markup.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/shared/shared.dart';
@@ -86,7 +86,7 @@ class _PostReportScreenState extends State<PostReportScreen> {
       );
       ScaffoldMessengerState messenger = ScaffoldMessenger.of(context);
       try {
-        await context.read<Domain>().tickets.create(
+        await context.read<Client>().tickets.create(
           type: TicketType.post,
           item: widget.post.id,
           reason: reasonController.text.trim(),

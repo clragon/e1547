@@ -1,18 +1,18 @@
-import 'package:e1547/domain/domain.dart';
+import 'package:e1547/client/client.dart';
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/stream/stream.dart';
 
 class FollowTimelineController extends PostController {
-  FollowTimelineController({required super.domain}) : super(canSearch: false);
+  FollowTimelineController({required super.client}) : super(canSearch: false);
 
   @override
   Future<List<Post>> fetch(int page, bool force) async {
-    List<Follow> follows = await domain.follows.all(
+    List<Follow> follows = await client.follows.all(
       query: FollowsQuery(types: [FollowType.update, FollowType.notify]),
       force: force,
     );
-    return domain.posts.byTags(
+    return client.posts.byTags(
       tags: follows
           .where((e) => !e.tags.contains(' '))
           .map((e) => e.tags)
@@ -26,13 +26,13 @@ class FollowTimelineController extends PostController {
 
 class FollowController extends PageClientDataController<Follow> {
   FollowController({
-    required this.domain,
+    required this.client,
     this.types = FollowType.values,
     bool filterUnseen = false,
   }) : _filterUnseen = filterUnseen;
 
   @override
-  final Domain domain;
+  final Client client;
   final List<FollowType> types;
 
   bool get filterUnseen => _filterUnseen;
@@ -47,7 +47,7 @@ class FollowController extends PageClientDataController<Follow> {
   Future<List<Follow>> fetch(int page, bool force) {
     StreamFuture<List<Follow>> result;
     if (page == 1) {
-      result = domain.follows
+      result = client.follows
           .all(
             query: FollowsQuery(types: types, hasUnseen: _filterUnseen),
             force: force,
@@ -56,7 +56,7 @@ class FollowController extends PageClientDataController<Follow> {
       if (_filterUnseen) {
         return result.stream.asyncExpand((event) {
           if (event.fold(0, (a, b) => a + b.unseen!) == 0) {
-            return domain.follows
+            return client.follows
                 .all(
                   query: FollowsQuery(types: types),
                   force: force,

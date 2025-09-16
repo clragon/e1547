@@ -1,16 +1,16 @@
-import 'package:e1547/domain/domain.dart';
+import 'package:e1547/client/client.dart';
 import 'package:e1547/pool/pool.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/shared/shared.dart';
 import 'package:flutter/foundation.dart';
 
 class PoolController extends PageClientDataController<Pool> {
-  PoolController({required this.domain, QueryMap? query})
+  PoolController({required this.client, QueryMap? query})
     : _query = query ?? QueryMap(),
-      thumbnails = ThumbnailController(domain: domain);
+      thumbnails = ThumbnailController(client: client);
 
   @override
-  final Domain domain;
+  final Client client;
 
   final ThumbnailController thumbnails;
 
@@ -31,7 +31,7 @@ class PoolController extends PageClientDataController<Pool> {
   @override
   @protected
   Future<List<Pool>> fetch(int page, bool force) async {
-    List<Pool> pools = await domain.pools.page(
+    List<Pool> pools = await client.pools.page(
       page: page,
       query: query,
       force: force,
@@ -47,17 +47,17 @@ class PoolController extends PageClientDataController<Pool> {
   }
 }
 
-class PoolsProvider extends SubChangeNotifierProvider<Domain, PoolController> {
+class PoolsProvider extends SubChangeNotifierProvider<Client, PoolController> {
   PoolsProvider({QueryMap? search, super.child, super.builder})
     : super(
         create: (context, client) =>
-            PoolController(domain: client, query: search),
+            PoolController(client: client, query: search),
         keys: (context) => [search],
       );
 }
 
 class ThumbnailController extends PostController {
-  ThumbnailController({required super.domain});
+  ThumbnailController({required super.client});
 
   Map<int, List<int>> _ids = {};
 
@@ -78,13 +78,13 @@ class ThumbnailController extends PostController {
     if (ids == null) return [];
     List<int> available = rawItems?.map((e) => e.id).toList() ?? [];
     ids.removeWhere(available.contains);
-    return domain.posts.byIds(ids: ids, force: force, cancelToken: cancelToken);
+    return client.posts.byIds(ids: ids, force: force, cancelToken: cancelToken);
   }
 }
 
 class PoolPostController extends PostController {
   PoolPostController({
-    required super.domain,
+    required super.client,
     required this.id,
     bool orderByOldest = true,
   }) : super(orderPools: orderByOldest, canSearch: false);
@@ -93,7 +93,7 @@ class PoolPostController extends PostController {
 
   @override
   @protected
-  Future<List<Post>> fetch(int page, bool force) async => domain.posts.byPool(
+  Future<List<Post>> fetch(int page, bool force) async => client.posts.byPool(
     id: id,
     page: page,
     orderByOldest: orderPools,

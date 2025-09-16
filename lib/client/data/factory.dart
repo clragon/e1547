@@ -1,5 +1,5 @@
 import 'package:e1547/app/app.dart';
-import 'package:e1547/domain/domain.dart';
+import 'package:e1547/client/client.dart';
 import 'package:e1547/identity/identity.dart';
 import 'package:e1547/traits/traits.dart';
 import 'package:flutter/foundation.dart';
@@ -20,7 +20,7 @@ const String _e621Host = 'https://e621.net';
 const String _e926Host = 'https://e926.net';
 
 class ClientFactory {
-  Domain create(ClientConfig config) => Domain(
+  Client create(ClientConfig config) => Client(
     identity: config.identity,
     traits: config.traits,
     storage: config.storage,

@@ -1,4 +1,4 @@
-import 'package:e1547/domain/domain.dart';
+import 'package:e1547/client/client.dart';
 import 'package:e1547/history/history.dart';
 import 'package:e1547/shared/shared.dart';
 import 'package:flutter/material.dart';
@@ -9,9 +9,9 @@ class HistoriesPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final domain = context.watch<Domain>();
-    return SubChangeNotifierProvider<Domain, HistoryController>(
-      create: (context, client) => HistoryController(domain: client),
+    final client = context.watch<Client>();
+    return SubChangeNotifierProvider<Client, HistoryController>(
+      create: (context, client) => HistoryController(client: client),
       child: Consumer<HistoryController>(
         builder: (context, controller, child) => SelectionLayout<History>(
           items: controller.items,
@@ -45,7 +45,7 @@ class HistoriesPage extends StatelessWidget {
                 Locale locale = Localizations.localeOf(context);
 
                 // awaiting this here means the UI might not react immediately
-                List<DateTime> days = await domain.histories.days();
+                List<DateTime> days = await client.histories.days();
                 if (days.isEmpty) {
                   days.add(DateTime.now());
                 }

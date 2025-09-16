@@ -1,5 +1,5 @@
+import 'package:e1547/client/client.dart';
 import 'package:e1547/comment/comment.dart';
-import 'package:e1547/domain/domain.dart';
 import 'package:e1547/markup/markup.dart';
 import 'package:e1547/shared/shared.dart';
 import 'package:flutter/material.dart';
@@ -44,12 +44,12 @@ Future<bool> writeComment({
           if (text.isNotEmpty) {
             try {
               if (comment == null) {
-                await context.read<Domain>().comments.create(
+                await context.read<Client>().comments.create(
                   postId: postId,
                   content: text,
                 );
               } else {
-                await context.read<Domain>().comments.update(
+                await context.read<Client>().comments.update(
                   id: comment.id,
                   postId: postId,
                   content: text,

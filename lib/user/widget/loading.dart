@@ -1,4 +1,4 @@
-import 'package:e1547/domain/domain.dart';
+import 'package:e1547/client/client.dart';
 import 'package:e1547/shared/shared.dart';
 import 'package:e1547/user/user.dart';
 import 'package:flutter/material.dart';
@@ -18,7 +18,7 @@ class UserLoadingPage extends StatefulWidget {
 }
 
 class _UserLoadingPageState extends State<UserLoadingPage> {
-  late Future<User> user = context.read<Domain>().users.get(id: widget.id);
+  late Future<User> user = context.read<Client>().users.get(id: widget.id);
 
   @override
   Widget build(BuildContext context) {

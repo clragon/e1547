@@ -1,8 +1,8 @@
 import 'dart:math';
 
 import 'package:e1547/app/app.dart';
+import 'package:e1547/client/client.dart';
 import 'package:e1547/comment/comment.dart';
-import 'package:e1547/domain/domain.dart';
 import 'package:e1547/markup/markup.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/settings/settings.dart';
@@ -308,7 +308,7 @@ class PostFeedTile extends StatelessWidget {
                 ScaffoldMessengerState messenger = ScaffoldMessenger.of(
                   context,
                 );
-                if (context.read<Domain>().hasLogin) {
+                if (context.read<Client>().hasLogin) {
                   controller
                       .vote(post: post, upvote: true, replace: !isLiked)
                       .then((value) {
@@ -333,7 +333,7 @@ class PostFeedTile extends StatelessWidget {
                 ScaffoldMessengerState messenger = ScaffoldMessenger.of(
                   context,
                 );
-                if (context.read<Domain>().hasLogin) {
+                if (context.read<Client>().hasLogin) {
                   controller
                       .vote(post: post, upvote: false, replace: !isLiked)
                       .then((value) {
@@ -365,7 +365,7 @@ class PostFeedTile extends StatelessWidget {
               icon: const Icon(Icons.share),
               onPressed: () => Share.text(
                 context,
-                context.read<Domain>().withHost(post.link),
+                context.read<Client>().withHost(post.link),
               ),
             ),
           ],
@@ -386,7 +386,7 @@ class PostFeedTile extends StatelessWidget {
               icon: Icons.file_download,
             ),
           PopupMenuTile(
-            value: () => launch(context.read<Domain>().withHost(post.link)),
+            value: () => launch(context.read<Client>().withHost(post.link)),
             title: 'Browse',
             icon: Icons.open_in_browser,
           ),

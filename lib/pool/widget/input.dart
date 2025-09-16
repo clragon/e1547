@@ -1,6 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:e1547/app/app.dart';
-import 'package:e1547/domain/domain.dart';
+import 'package:e1547/client/client.dart';
 import 'package:e1547/history/history.dart';
 import 'package:e1547/pool/data/controller.dart';
 import 'package:e1547/post/post.dart';
@@ -130,8 +130,8 @@ class PoolNameFilter extends StatelessWidget {
             },
             suggestionsCallback: (value) async {
               value = value.trim();
-              final domain = context.read<Domain>();
-              return (await domain.histories.page(
+              final client = context.read<Client>();
+              return (await client.histories.page(
                     page: 1,
                     query: HistoryQuery(
                       date: DateTime.now(),

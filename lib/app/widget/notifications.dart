@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:e1547/app/app.dart';
-import 'package:e1547/domain/domain.dart';
+import 'package:e1547/client/client.dart';
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/logs/logs.dart';
 import 'package:e1547/post/post.dart';
@@ -136,16 +136,16 @@ class _NotificationHandlerState extends State<NotificationHandler> {
 
   @override
   Widget build(BuildContext context) {
-    final domain = context.watch<Domain>();
+    final client = context.watch<Client>();
     return SubStream<List<Follow>>(
-      create: () => domain.follows
+      create: () => client.follows
           .all(query: FollowsQuery(types: [FollowType.notify]))
           .streamed,
-      keys: [domain],
+      keys: [client],
       listener: (event) async {
         await Future.wait([
           setupFollowBackground(event),
-          sendNotifications(event, domain.identity.id),
+          sendNotifications(event, client.identity.id),
         ]);
         previousFollows = event;
       },

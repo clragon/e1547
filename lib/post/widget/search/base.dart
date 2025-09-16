@@ -1,4 +1,4 @@
-import 'package:e1547/domain/domain.dart';
+import 'package:e1547/client/client.dart';
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/pool/pool.dart';
 import 'package:e1547/post/post.dart';
@@ -36,23 +36,23 @@ class _PostsSearchPageState extends State<PostsSearchPage> {
     return PostProvider(
       query: widget.query,
       orderPools: widget.orderPoolsByOldest,
-      child: Consumer2<PostController, Domain>(
-        builder: (context, controller, domain, child) {
+      child: Consumer2<PostController, Client>(
+        builder: (context, controller, client, child) {
           Future<void> updateFollow() async {
             String? tags = controller.query['tags'];
             if (tags?.nullWhenEmpty != null) {
-              follow = await domain.follows.getByTags(tags: tags!);
+              follow = await client.follows.getByTags(tags: tags!);
             } else {
               follow = null;
             }
             if (follow != null) {
-              await domain.follows.syncWith(
+              await client.follows.syncWith(
                 id: follow!.id,
                 posts: controller.items,
                 pool: pool,
               );
               if (!context.mounted) return;
-              Follow updated = await domain.follows.get(id: follow!.id);
+              Follow updated = await client.follows.get(id: follow!.id);
               if (follow == updated) return;
               if (!context.mounted) return;
               setState(() => follow = updated);
@@ -70,7 +70,7 @@ class _PostsSearchPageState extends State<PostsSearchPage> {
             if (match != null) {
               if (match.namedGroup('id')! != pool?.id.toString()) {
                 try {
-                  pool = await domain.pools.get(
+                  pool = await client.pools.get(
                     id: int.parse(match.namedGroup('id')!),
                   );
                 } on ClientException {
@@ -90,15 +90,15 @@ class _PostsSearchPageState extends State<PostsSearchPage> {
             if (!mounted) return;
             if (mapEquals(lastQuery, controller.query)) return;
             lastQuery = controller.query;
-            final domain = context.read<Domain>();
+            final client = context.read<Client>();
             await updatePool();
             await controller.waitForNextPage();
             if (controller.error != null) return;
             await updateFollow();
             if (pool != null) {
-              domain.histories.addPool(pool: pool!, posts: controller.items);
+              client.histories.addPool(pool: pool!, posts: controller.items);
             } else {
-              domain.histories.addPostSearch(
+              client.histories.addPostSearch(
                 query: controller.query,
                 posts: controller.items,
               );

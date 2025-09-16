@@ -1,6 +1,6 @@
 import 'package:e1547/app/app.dart';
+import 'package:e1547/client/client.dart';
 import 'package:e1547/comment/comment.dart';
-import 'package:e1547/domain/domain.dart';
 import 'package:e1547/flag/flag.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/shared/shared.dart';
@@ -14,7 +14,7 @@ List<PopupMenuItem<VoidCallback>> postMenuPostActions(
   return [
     PopupMenuTile(
       value: () async =>
-          Share.text(context, context.read<Domain>().withHost(post.link)),
+          Share.text(context, context.read<Client>().withHost(post.link)),
       title: 'Share',
       icon: Icons.share,
     ),
@@ -25,7 +25,7 @@ List<PopupMenuItem<VoidCallback>> postMenuPostActions(
         icon: Icons.file_download,
       ),
     PopupMenuTile(
-      value: () async => launch(context.read<Domain>().withHost(post.link)),
+      value: () async => launch(context.read<Client>().withHost(post.link)),
       title: 'Browse',
       icon: Icons.open_in_browser,
     ),

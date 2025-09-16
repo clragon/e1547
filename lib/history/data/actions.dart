@@ -1,5 +1,5 @@
 import 'package:e1547/app/app.dart';
-import 'package:e1547/domain/domain.dart';
+import 'package:e1547/client/client.dart';
 import 'package:e1547/history/history.dart';
 import 'package:e1547/shared/shared.dart';
 import 'package:e1547/tag/tag.dart';
@@ -69,7 +69,7 @@ extension Identification on History {
     if (search != null && search.isNotEmpty) {
       switch (type) {
         case LinkType.post:
-          String? username = context.read<Domain>().identity.username;
+          String? username = context.read<Client>().identity.username;
           if (username != null &&
               favRegex(username).hasMatch(search['tags'] ?? '')) {
             return 'Favorites';

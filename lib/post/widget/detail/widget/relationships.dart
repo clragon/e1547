@@ -1,4 +1,4 @@
-import 'package:e1547/domain/domain.dart';
+import 'package:e1547/client/client.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/shared/shared.dart';
 import 'package:flutter/material.dart';
@@ -128,7 +128,7 @@ class ParentEditor extends StatelessWidget {
               return;
             }
             try {
-              Post parent = await context.read<Domain>().posts.get(
+              Post parent = await context.read<Client>().posts.get(
                 id: int.parse(value),
               );
               editingController.value = editingController.value!.copyWith(

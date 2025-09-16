@@ -1,5 +1,5 @@
 import 'package:e1547/app/app.dart';
-import 'package:e1547/domain/domain.dart';
+import 'package:e1547/client/client.dart';
 import 'package:e1547/history/history.dart';
 import 'package:e1547/markup/markup.dart';
 import 'package:e1547/post/post.dart';
@@ -174,7 +174,7 @@ class UserPage extends StatelessWidget {
 
             return ControllerHistoryConnector<PostController?>(
               controller: controllers.profilePost,
-              addToHistory: (context, domain, controller) => domain.histories
+              addToHistory: (context, client, controller) => client.histories
                   .addUser(user: user, avatar: controller?.items?.first),
               child: DefaultTabController(
                 length: tabs.length,
@@ -275,7 +275,7 @@ class _UserProfileActions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    ValueNotifier<Traits> traits = context.watch<Domain>().traits;
+    ValueNotifier<Traits> traits = context.watch<Client>().traits;
     String userTag = 'user:${user.id}';
     bool blocked = traits.value.denylist.contains(userTag);
     return PopupMenuButton<VoidCallback>(
@@ -285,7 +285,7 @@ class _UserProfileActions extends StatelessWidget {
         PopupMenuTile(
           title: 'Browse',
           icon: Icons.open_in_browser,
-          value: () async => launch(context.read<Domain>().withHost(user.link)),
+          value: () async => launch(context.read<Client>().withHost(user.link)),
         ),
         PopupMenuTile(
           title: 'Report',
@@ -342,18 +342,18 @@ class _UserPageControllers {
   void dispose() => all.forEach((e) => e.dispose());
 }
 
-class _UserPageProvider extends SubProvider<Domain, _UserPageControllers> {
+class _UserPageProvider extends SubProvider<Client, _UserPageControllers> {
   // ignore: unused_element, unused_element_parameter
   _UserPageProvider({required User user, super.child, super.builder})
     : super(
-        create: (context, domain) => _UserPageControllers(
+        create: (context, client) => _UserPageControllers(
           favoritePosts: UserFavoritesController(
-            domain: domain,
+            client: client,
             user: user.name,
           ),
-          uploadedPosts: UserUploadsController(domain: domain, user: user.name),
+          uploadedPosts: UserUploadsController(client: client, user: user.name),
           profilePost: user.avatarId != null
-              ? SinglePostController(domain: domain, id: user.avatarId!)
+              ? SinglePostController(client: client, id: user.avatarId!)
               : null,
         ),
         dispose: (context, value) => value.dispose(),

@@ -1,4 +1,4 @@
-import 'package:e1547/domain/domain.dart';
+import 'package:e1547/client/client.dart';
 import 'package:e1547/shared/shared.dart';
 import 'package:e1547/wiki/wiki.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +13,7 @@ class WikiLoadingPage extends StatefulWidget {
 }
 
 class _WikiLoadingPageState extends State<WikiLoadingPage> {
-  late Future<Wiki> wiki = context.read<Domain>().wikis.get(id: widget.id);
+  late Future<Wiki> wiki = context.read<Client>().wikis.get(id: widget.id);
 
   @override
   Widget build(BuildContext context) {

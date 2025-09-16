@@ -1,4 +1,4 @@
-import 'package:e1547/domain/domain.dart';
+import 'package:e1547/client/client.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/shared/shared.dart';
 import 'package:e1547/tag/tag.dart';
@@ -26,7 +26,7 @@ class TagGesture extends StatelessWidget {
     return InkWell(
       borderRadius: BorderRadius.circular(4),
       onTap: () async {
-        Traits traits = context.read<Domain>().traits.value;
+        Traits traits = context.read<Client>().traits.value;
         if (wiki || (safe && traits.denylist.contains(tag))) {
           sheet();
         } else {

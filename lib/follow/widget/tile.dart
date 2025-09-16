@@ -1,6 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:e1547/app/app.dart';
-import 'package:e1547/domain/domain.dart';
+import 'package:e1547/client/client.dart';
 import 'package:e1547/follow/follow.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/shared/shared.dart';
@@ -15,7 +15,7 @@ class FollowTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final domain = context.watch<Domain>();
+    final client = context.watch<Client>();
     PromptActionController? promptController = PromptActions.maybeOf(context);
     bool active = follow.latest != null && follow.thumbnail != null;
 
@@ -33,7 +33,7 @@ class FollowTile extends StatelessWidget {
             submit: (value) {
               String? title = value.trim();
               if (follow.title != value) {
-                domain.follows.update(id: follow.id, title: title);
+                client.follows.update(id: follow.id, title: title);
               }
             },
           ),
@@ -48,9 +48,9 @@ class FollowTile extends StatelessWidget {
           onSubmit: (value) {
             value = value.trim();
             if (value.isNotEmpty) {
-              domain.follows.update(id: follow.id, tags: value);
+              client.follows.update(id: follow.id, tags: value);
             } else {
-              domain.follows.delete(follow.id);
+              client.follows.delete(follow.id);
             }
           },
           actionController: promptController,
@@ -70,13 +70,13 @@ class FollowTile extends StatelessWidget {
         itemBuilder: (context) => [
           if ((follow.unseen ?? 0) > 0)
             PopupMenuTile(
-              value: () => domain.follows.markSeen(follow.id),
+              value: () => client.follows.markSeen(follow.id),
               title: 'Mark as read',
               icon: Icons.mark_email_read,
             ),
           if (PlatformCapabilities.hasNotifications && !bookmarked)
             PopupMenuTile(
-              value: () => domain.follows.update(
+              value: () => client.follows.update(
                 id: follow.id,
                 type: !notified ? FollowType.notify : FollowType.update,
               ),
@@ -89,7 +89,7 @@ class FollowTile extends StatelessWidget {
             ),
           if (!PlatformCapabilities.hasNotifications || !notified)
             PopupMenuTile(
-              value: () => domain.follows.update(
+              value: () => client.follows.update(
                 id: follow.id,
                 type: !bookmarked ? FollowType.bookmark : FollowType.update,
               ),
@@ -101,7 +101,7 @@ class FollowTile extends StatelessWidget {
           if (promptController != null)
             PopupMenuTile(value: edit, title: 'Edit', icon: Icons.edit),
           PopupMenuTile(
-            value: () => domain.follows.delete(follow.id),
+            value: () => client.follows.delete(follow.id),
             title: 'Unfollow',
             icon: Icons.person_remove,
           ),
