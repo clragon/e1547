@@ -21,4 +21,13 @@ extension ConditionalListenables on Listenable {
 abstract mixin class Disposable {
   @mustCallSuper
   void dispose() {}
+
+  static void tryDispose(Object? object) {
+    try {
+      (object as dynamic).dispose();
+      // ignore: avoid_catching_errors
+    } on NoSuchMethodError {
+      // this object is not disposable
+    }
+  }
 }

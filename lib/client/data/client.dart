@@ -82,6 +82,24 @@ class Client with Disposable {
   @override
   void dispose() {
     dio.close();
+    for (final client in [
+      accounts,
+      users,
+      posts,
+      tags,
+      wikis,
+      comments,
+      pools,
+      topics,
+      replies,
+      flags,
+      tickets,
+      follows,
+      followServer,
+      histories,
+    ]) {
+      Disposable.tryDispose(client);
+    }
     super.dispose();
   }
 }
