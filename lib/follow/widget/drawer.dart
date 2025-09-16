@@ -91,7 +91,7 @@ class FollowForceSyncTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final client = context.watch<Client>();
     return SubStream<FollowSync?>(
-      create: () => client.follows.syncStream,
+      create: () => client.followServer.syncStream,
       keys: [client],
       builder: (context, syncSnapshot) {
         bool enabled = false;
@@ -115,7 +115,7 @@ class FollowForceSyncTile extends StatelessWidget {
                 enabled: enabled,
                 onTap: () {
                   // Scaffold.of(context).closeEndDrawer();
-                  client.follows.sync(force: true);
+                  client.followServer.sync(force: true);
                 },
               ),
               if (sync != null)

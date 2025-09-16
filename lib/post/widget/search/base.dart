@@ -46,7 +46,7 @@ class _PostsSearchPageState extends State<PostsSearchPage> {
               follow = null;
             }
             if (follow != null) {
-              await client.follows.syncWith(
+              await client.followServer.syncWith(
                 id: follow!.id,
                 posts: controller.items,
                 pool: pool,

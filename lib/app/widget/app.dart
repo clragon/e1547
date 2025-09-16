@@ -1,6 +1,7 @@
 import 'package:e1547/account/account.dart';
 import 'package:e1547/app/app.dart';
 import 'package:e1547/app/widget/initialize.dart';
+import 'package:e1547/follow/follow.dart';
 import 'package:e1547/logs/logs.dart';
 import 'package:e1547/settings/settings.dart';
 import 'package:e1547/shared/shared.dart';
@@ -75,11 +76,13 @@ class App extends StatelessWidget {
                                   navigatorKey: navigatorKey,
                                   child: AccountConnector(
                                     navigatorKey: navigatorKey,
-                                    child: AppLinkHandler(
-                                      navigatorKey: navigatorKey,
-                                      child: NotificationHandler(
+                                    child: FollowConnector(
+                                      child: AppLinkHandler(
                                         navigatorKey: navigatorKey,
-                                        child: child!,
+                                        child: NotificationHandler(
+                                          navigatorKey: navigatorKey,
+                                          child: child!,
+                                        ),
                                       ),
                                     ),
                                   ),

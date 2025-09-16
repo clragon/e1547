@@ -63,9 +63,11 @@ Future<void> runClientFollowUpdate({
     query: FollowsQuery(types: [FollowType.notify]),
   );
 
-  cancelToken?.whenCancel.then((_) => client.follows.currentSync?.cancel());
+  cancelToken?.whenCancel.then(
+    (_) => client.followServer.currentSync?.cancel(),
+  );
 
-  await client.follows.sync();
+  await client.followServer.sync();
 
   List<Follow> updated = await client.follows.all(
     query: FollowsQuery(types: [FollowType.notify]),

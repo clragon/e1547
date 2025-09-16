@@ -61,6 +61,11 @@ class Client with Disposable {
   late final FollowClient follows = FollowClient(
     database: storage.sqlite,
     identity: identity,
+  );
+
+  late final FollowServer followServer = FollowServer(
+    database: storage.sqlite,
+    identity: identity,
     traits: traits,
     postsClient: posts,
     poolsClient: pools,
