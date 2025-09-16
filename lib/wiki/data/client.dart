@@ -1,4 +1,3 @@
-import 'package:deep_pick/deep_pick.dart';
 import 'package:dio/dio.dart';
 import 'package:e1547/shared/shared.dart';
 import 'package:e1547/wiki/wiki.dart';
@@ -33,9 +32,9 @@ class WikiClient {
         options: forceOptions(force),
         cancelToken: cancelToken,
       )
+      .then(unwrapRailsArray)
       .then(
-        (response) => pick(response.data).asListOrThrow(
-          (p0) => E621Wiki.fromJson(p0.asMapOrThrow<String, dynamic>()),
-        ),
+        (response) =>
+            (response.data as List).map<Wiki>(E621Wiki.fromJson).toList(),
       );
 }

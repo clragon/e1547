@@ -29,25 +29,17 @@ class CommentClient {
     QueryMap? query,
     bool? force,
     CancelToken? cancelToken,
-  }) async {
-    Object body = await dio
-        .get(
-          '/comments.json',
-          queryParameters: {'page': page, 'limit': limit, ...?query},
-          options: forceOptions(force),
-          cancelToken: cancelToken,
-        )
-        .then((response) => response.data);
-
-    List<Comment> comments = [];
-    if (body is List<dynamic>) {
-      for (Map<String, dynamic> rawComment in body) {
-        comments.add(E621Comment.fromJson(rawComment));
-      }
-    }
-
-    return comments;
-  }
+  }) => dio
+      .get(
+        '/comments.json',
+        queryParameters: {'page': page, 'limit': limit, ...?query},
+        options: forceOptions(force),
+        cancelToken: cancelToken,
+      )
+      .then(unwrapRailsArray)
+      .then(
+        (response) => response.data.map<Comment>(E621Comment.fromJson).toList(),
+      );
 
   Future<List<Comment>> byPost({
     required int id,

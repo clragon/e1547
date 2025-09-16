@@ -1,4 +1,3 @@
-import 'package:deep_pick/deep_pick.dart';
 import 'package:dio/dio.dart';
 import 'package:e1547/reply/reply.dart';
 import 'package:e1547/shared/shared.dart';
@@ -34,10 +33,11 @@ class ReplyClient {
         options: forceOptions(force),
         cancelToken: cancelToken,
       )
+      .then(unwrapRailsArray)
       .then(
-        (response) => pick(
-          response.data,
-        ).asListOrEmpty((p0) => E621Reply.fromJson(p0.asMapOrThrow())),
+        (response) => (response.data as List)
+            .map<Reply>((e) => E621Reply.fromJson(e))
+            .toList(),
       );
 
   Future<List<Reply>> byTopic({

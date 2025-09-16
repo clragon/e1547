@@ -1,4 +1,3 @@
-import 'package:deep_pick/deep_pick.dart';
 import 'package:dio/dio.dart';
 import 'package:e1547/pool/pool.dart';
 import 'package:e1547/shared/shared.dart';
@@ -30,9 +29,10 @@ class PoolClient {
         options: forceOptions(force),
         cancelToken: cancelToken,
       )
+      .then(unwrapRailsArray)
       .then(
-        (response) => pick(
-          response.data,
-        ).asListOrThrow((e) => E621Pool.fromJson(e.asMapOrThrow())),
+        (response) => (response.data as List)
+            .map<Pool>((e) => E621Pool.fromJson(e))
+            .toList(),
       );
 }

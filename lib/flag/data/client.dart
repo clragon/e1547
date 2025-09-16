@@ -1,4 +1,3 @@
-import 'package:deep_pick/deep_pick.dart';
 import 'package:dio/dio.dart';
 import 'package:e1547/flag/flag.dart';
 import 'package:e1547/shared/shared.dart';
@@ -21,10 +20,11 @@ class FlagClient {
         options: forceOptions(force),
         cancelToken: cancelToken,
       )
+      .then(unwrapRailsArray)
       .then(
-        (response) => pick(
-          response.data,
-        ).asListOrThrow((p0) => E621PostFlag.fromJson(p0.asMapOrThrow())),
+        (response) => (response.data as List)
+            .map<PostFlag>(E621PostFlag.fromJson)
+            .toList(),
       );
 
   Future<void> create(int postId, String flag, {int? parent}) => dio.post(

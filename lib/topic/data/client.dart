@@ -1,4 +1,3 @@
-import 'package:deep_pick/deep_pick.dart';
 import 'package:dio/dio.dart';
 import 'package:e1547/shared/shared.dart';
 import 'package:e1547/topic/topic.dart';
@@ -21,10 +20,11 @@ class TopicClient {
         options: forceOptions(force),
         cancelToken: cancelToken,
       )
+      .then(unwrapRailsArray)
       .then(
-        (response) => pick(
-          response.data,
-        ).asListOrEmpty((p0) => E621Topic.fromJson(p0.asMapOrThrow())),
+        (response) => (response.data as List)
+            .map<Topic>((e) => E621Topic.fromJson(e))
+            .toList(),
       );
 
   Future<Topic> get({

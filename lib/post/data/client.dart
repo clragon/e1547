@@ -27,7 +27,8 @@ class PostClient {
             options: forceOptions(force),
             cancelToken: cancelToken,
           )
-          .then((response) => E621Post.fromJson(response.data['post']));
+          .then(unwrapRailsArray)
+          .then((response) => E621Post.fromJson(response.data));
 
   Future<List<Post>> page({
     int? page,
@@ -74,8 +75,9 @@ class PostClient {
           options: forceOptions(force),
           cancelToken: cancelToken,
         )
+        .then(unwrapRailsArray)
         .then(
-          (response) => (response.data['posts'] as List<dynamic>)
+          (response) => (response.data as List<dynamic>)
               .map<Post>(E621Post.fromJson)
               .whereNot(
                 (e) => (e.file == null && !e.isDeleted) || e.ext == 'swf',
@@ -260,16 +262,16 @@ class PostClient {
     orderByAdded ??= true;
     String tags = query?['tags'] ?? '';
     if (tags.isEmpty && orderByAdded) {
-      Map<String, dynamic> body = await dio
+      List<dynamic> body = await dio
           .get(
             '/favorites.json',
             queryParameters: {'page': page, 'limit': limit, ...?query},
             options: forceOptions(force),
             cancelToken: cancelToken,
           )
+          .then(unwrapRailsArray)
           .then((response) => response.data);
-
-      List<Post> result = List.from(body['posts'].map(E621Post.fromJson));
+      List<Post> result = List.from(body.map(E621Post.fromJson));
       result.removeWhere((e) => e.isDeleted || e.file == null);
       return result;
     } else {
