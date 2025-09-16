@@ -17,11 +17,12 @@ class TopicsPage extends StatelessWidget {
         child: Consumer<TopicController>(
           builder: (context, controller, child) => ControllerHistoryConnector(
             controller: controller,
-            addToHistory: (context, client, controller) =>
-                client.histories.addTopicSearch(
-                  query: controller.query,
-                  topics: controller.items!,
-                ),
+            addToHistory: (context, client, controller) => client.histories.add(
+              TopicHistoryRequest.search(
+                query: controller.query,
+                topics: controller.items!,
+              ),
+            ),
             child: RefreshableDataPage(
               appBar: const DefaultAppBar(
                 title: Text('Topics'),

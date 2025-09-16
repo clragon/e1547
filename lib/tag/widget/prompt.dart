@@ -1,5 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:e1547/client/client.dart';
+import 'package:e1547/history/history.dart';
 import 'package:e1547/markup/markup.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/shared/shared.dart';
@@ -226,10 +227,12 @@ class _SearchTagDisplayState extends State<SearchTagDisplay> {
     final client = context.read<Client>();
     wiki.then((value) {
       if (value != null) {
-        client.histories.addWiki(wiki: value);
+        client.histories.add(WikiHistoryRequest.item(wiki: value));
       } else {
-        client.histories.addWikiSearch(
-          query: {'search[title]': tagToRaw(widget.tag)},
+        client.histories.add(
+          WikiHistoryRequest.search(
+            query: {'search[title]': tagToRaw(widget.tag)},
+          ),
         );
       }
     });

@@ -1,5 +1,6 @@
 import 'package:e1547/client/client.dart';
 import 'package:e1547/follow/follow.dart';
+import 'package:e1547/history/history.dart';
 import 'package:e1547/pool/pool.dart';
 import 'package:e1547/post/post.dart';
 import 'package:e1547/shared/shared.dart';
@@ -96,11 +97,15 @@ class _PostsSearchPageState extends State<PostsSearchPage> {
             if (controller.error != null) return;
             await updateFollow();
             if (pool != null) {
-              client.histories.addPool(pool: pool!, posts: controller.items);
+              client.histories.add(
+                PoolHistoryRequest.item(pool: pool!, posts: controller.items),
+              );
             } else {
-              client.histories.addPostSearch(
-                query: controller.query,
-                posts: controller.items,
+              client.histories.add(
+                PostHistoryRequest.search(
+                  query: controller.query,
+                  posts: controller.items,
+                ),
               );
             }
           }

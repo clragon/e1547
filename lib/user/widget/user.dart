@@ -174,8 +174,13 @@ class UserPage extends StatelessWidget {
 
             return ControllerHistoryConnector<PostController?>(
               controller: controllers.profilePost,
-              addToHistory: (context, client, controller) => client.histories
-                  .addUser(user: user, avatar: controller?.items?.first),
+              addToHistory: (context, client, controller) =>
+                  client.histories.add(
+                    UserHistoryRequest.item(
+                      user: user,
+                      avatar: controller?.items?.first,
+                    ),
+                  ),
               child: DefaultTabController(
                 length: tabs.length,
                 initialIndex: initialPage.index,

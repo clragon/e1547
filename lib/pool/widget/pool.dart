@@ -30,9 +30,11 @@ class _PoolPageState extends State<PoolPage> {
         builder: (context, controller, child) => ControllerHistoryConnector(
           controller: controller,
           addToHistory: (context, client, data) {
-            client.histories.addPool(
-              pool: widget.pool,
-              posts: controller.items,
+            client.histories.add(
+              PoolHistoryRequest.item(
+                pool: widget.pool,
+                posts: controller.items,
+              ),
             );
           },
           child: PostsPage(
